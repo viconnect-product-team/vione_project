@@ -130,12 +130,19 @@ export async function apiRequest<T = any>(
 
   // Thử gọi máy chủ chính (HTTPS port 5445)
   const primaryResult = await makeCall(DEFAULT_API_BASE_URL);
-  if (primaryResult.data !== null || primaryResult.status === 401 || !options.useFallbackOnFail) {
+  if (primaryResult.data !== null || primaryResult.status === 401) {
     return primaryResult;
   }
 
-  // Thử gọi máy chủ fallback (HTTP port 5001) nếu kết nối thất bại
-  return makeCall(FALLBACK_API_BASE_URL);
+  // Thử gọi máy chủ fallback (HTTP port 5001) nếu kết nối HTTPS thất bại (status === 0 do lỗi SSL/kết nối mạng trên Android APK)
+  if (primaryResult.status === 0 || primaryResult.status >= 500 || options.useFallbackOnFail) {
+    const fallbackResult = await makeCall(FALLBACK_API_BASE_URL);
+    if (fallbackResult.data !== null || (fallbackResult.status && fallbackResult.status > 0)) {
+      return fallbackResult;
+    }
+  }
+
+  return primaryResult;
 }
 
 // Typed Helper shortcuts

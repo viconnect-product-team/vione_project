@@ -43,6 +43,7 @@ import {
 import { monthLabel } from "./CommunityEvents";
 import { daysLeftLabel, opportunityCategoryLabel } from "./CommunityOpportunities";
 import { CompanyTaskManagement } from "./CompanyTaskManagement";
+import { sanitizeVietnameseText } from "@/lib/textSanitizer";
 import { CompanySupervisionView } from "./CompanySupervisionView";
 import { useRole } from "@/hooks/use-role";
 
@@ -128,17 +129,10 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
 
               {/* Category Pill Tag on Banner */}
               <div className="absolute bottom-3 right-4 z-10">
-                {detail.community.communityType === "company_internal" || 
-                 detail.community.name?.toLowerCase().includes("công ty") || 
-                 detail.community.name?.toLowerCase().includes("tập đoàn") ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-md bg-black/80 shadow-md border border-[#DFB76C] text-[#DFB76C]">
-                    <span>🏢 DOANH NGHIỆP NỘI BỘ</span>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider backdrop-blur-md bg-black/65 shadow-md border border-amber-400/40 text-amber-300">
-                    <span>🤝 MẠNG LƯỚI DOANH NHÂN B2B</span>
-                  </span>
-                )}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-md bg-black/80 shadow-md border border-[#DFB76C] text-[#DFB76C]">
+                  <Sparkles className="w-3 h-3 text-[#DFB76C]" />
+                  <span>🌐 CỘNG ĐỒNG DOANH NGHIỆP VIONE</span>
+                </span>
               </div>
             </div>
 
@@ -151,11 +145,11 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
               />
               <div className="min-w-0 flex-1 pt-6">
                 <h1 className="text-[22px] font-bold leading-tight tracking-tight text-[var(--bc-mobile-text)]">
-                  {detail.community.name}
+                  {sanitizeVietnameseText(detail.community.name)}
                 </h1>
                 {detail.community.shortDescription ? (
                   <p className="mt-1 text-[13.5px] text-[var(--bc-mobile-muted)] leading-relaxed">
-                    {detail.community.shortDescription}
+                    {sanitizeVietnameseText(detail.community.shortDescription)}
                   </p>
                 ) : null}
               </div>
@@ -177,6 +171,9 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                     {t("bc.mobile.community.memberCount", { count: detail.community.memberCount })}
                   </span>
                 ) : null}
+                <span className="rounded-full border border-[#DFB76C]/30 bg-[#DFB76C]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#DFB76C]">
+                  ✨ Trọn bộ tính năng
+                </span>
               </div>
 
               {/* Nút Quản Trị Viên: Chỉnh sửa tên, ảnh, thông tin cộng đồng */}
@@ -192,62 +189,33 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
               ) : null}
             </section>
 
-            {/* Các Nút Hành Động Theo Chuẩn 2 Kiểu Cộng Đồng */}
-            {isCompany ? (
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("tasks")}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[var(--bc-mobile-accent-grad)] text-black shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-                >
-                  <Briefcase className="w-3.5 h-3.5 text-black" />
-                  <span>+ Giao việc</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCreateNewsModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[var(--bc-mobile-accent-grad)] text-black shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-                >
-                  <Newspaper className="w-3.5 h-3.5 text-black" />
-                  <span>+ Đăng bài</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShareEventOpen(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[var(--bc-mobile-accent-grad)] text-black shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-                >
-                  <Calendar className="w-3.5 h-3.5 text-black" />
-                  <span>+ Chia sẻ SK</span>
-                </button>
-              </div>
-            ) : (
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCreateOppModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[var(--bc-mobile-accent-grad)] text-black shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-                >
-                  <PlusCircle className="w-3.5 h-3.5 text-black" />
-                  <span>+ Đăng cơ hội</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCreateNewsModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[var(--bc-mobile-accent-grad)] text-black shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-                >
-                  <Newspaper className="w-3.5 h-3.5 text-black" />
-                  <span>+ Đăng bài</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShareEventOpen(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[var(--bc-mobile-accent-grad)] text-black shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-                >
-                  <Calendar className="w-3.5 h-3.5 text-black" />
-                  <span>+ Chia sẻ SK</span>
-                </button>
-              </div>
-            )}
+            {/* Các Nút Hành Động Nghiệp Vụ Toàn Diện */}
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setCreateOppModalOpen(true)}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-slate-950" />
+                <span>+ Đăng cơ hội</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCreateNewsModalOpen(true)}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+              >
+                <Newspaper className="w-3.5 h-3.5 text-slate-950" />
+                <span>+ Đăng bài</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShareEventOpen(true)}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+              >
+                <Calendar className="w-3.5 h-3.5 text-slate-950" />
+                <span>+ Chia sẻ SK</span>
+              </button>
+            </div>
 
             {!isMember ? (
               <section className="mt-4 rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-transparent p-4 flex items-center justify-between gap-3 shadow-md">
@@ -293,8 +261,8 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                 label={t("bc.mobile.community.stat.events")}
               />
               <StatTile
-                value={isCompany ? (activity.preview?.openOpportunities?.length || 0) : detail.openOpportunityCount}
-                label={isCompany ? "Hoạt động" : t("bc.mobile.community.stat.opportunities")}
+                value={detail.openOpportunityCount || activity.preview?.openOpportunities?.length || 0}
+                label={t("bc.mobile.community.stat.opportunities")}
               />
             </section>
 
@@ -305,33 +273,28 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
               />
             </section>
 
-            {/* Modern Streamlined Navigation Tabs: Phân định rạch ròi 2 kiểu cộng đồng */}
+            {/* Modern Streamlined Navigation Tabs: Gộp tất cả 6 chức năng vào trong cộng đồng */}
             {(() => {
               const userCanAssign = canAssignTask(detail.community.createdById, detail.community.viewerRole === "admin");
+              const communityTabs = [
+                {
+                  id: "tasks",
+                  label: userCanAssign ? "📋 Giao việc & Điều hành" : "⚡ Nhận việc (Việc của tôi)",
+                },
+                { id: "supervision", label: "👁️ Giám sát CRM & Nhân sự" },
+                {
+                  id: "opportunities",
+                  label: `⭐ Cơ hội B2B (${detail.openOpportunityCount || activity.preview?.openOpportunities?.length || 0})`,
+                },
+                { id: "news", label: "📰 Bài viết & Tin tức" },
+                { id: "events", label: `📅 Lịch họp & SK (${detail.upcomingEvents.length || 0})` },
+                { id: "members", label: "👥 Thành viên" },
+              ];
+
               return (
                 <div className="mt-6 flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-[var(--bc-mobile-border)] [scrollbar-width:none]">
-                  {(isCompany
-                    ? [
-                        {
-                          id: "tasks",
-                          label: userCanAssign ? "📋 Giao việc & Điều hành" : "⚡ Nhận việc (Việc của tôi)",
-                        },
-                        { id: "supervision", label: "👁️ Giám sát CRM & Nhân sự" },
-                        { id: "news", label: "Bài viết nội bộ" },
-                        { id: "events", label: `Lịch họp & Sự kiện (${detail.upcomingEvents.length || 0})` },
-                        { id: "members", label: "Hội viên" },
-                      ]
-                    : [
-                        {
-                          id: "opportunities",
-                          label: `⭐ Cơ hội B2B (${detail.openOpportunityCount || activity.preview?.openOpportunities?.length || 0})`,
-                        },
-                        { id: "news", label: "Bài viết & Tin tức" },
-                        { id: "events", label: `Sự kiện B2B (${detail.upcomingEvents.length || 0})` },
-                        { id: "members", label: "Danh bạ đối tác" },
-                      ]
-                  ).map((tab) => {
-                    const isSelected = activeTab === tab.id || (activeTab === "all" && tab.id === (isCompany ? "tasks" : "opportunities"));
+                  {communityTabs.map((tab) => {
+                    const isSelected = activeTab === tab.id || (activeTab === "all" && tab.id === "tasks");
                     return (
                       <button
                         key={tab.id}

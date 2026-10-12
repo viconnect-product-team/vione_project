@@ -360,16 +360,20 @@
 - **Mẹo C-Level:** MẸO ĐIỀU HÀNH: Giám đốc tạo một cộng đồng công ty để tập hợp toàn bộ nhân viên và tham gia các cộng đồng B2B để săn cơ hội thầu.
 
 #### 30. [APP · GIAO VIỆC NỘI BỘ] Quy Trình Giao Việc & Nhận Việc 1-Chạm Trong Cộng Đồng Công Ty
-- **Mục tiêu:** Số hóa 100% quy trình làm việc trong doanh nghiệp, kiểm soát thời gian thực việc nhận và hoàn thành công việc.
+- **Mục tiêu:** Số hóa 100% quy trình làm việc trong doanh nghiệp, gói gọn toàn bộ hoạt động của 1 công ty vào bên trong cộng đồng, triệt tiêu các thao tác rời rạc ngoài luồng (gọi điện riêng, nhắn tin ngoài, đùn đẩy trách nhiệm).
 - **Đường dẫn:** `Cộng Đồng Nội Bộ Công Ty -> Tab: Công Việc (Tasks) & Tab: Giám Sát (Supervision)`
 - **Các bước:**
-  * Bước 1: Giám đốc bấm nút "+ Giao việc" trên Header hoặc trong Tab Công việc -> Mở form giao việc chi tiết.
-  * Bước 2: Nhập: Tiêu đề công việc, Mô tả nhiệm vụ, Chọn nhân viên phụ trách từ danh sách công ty, Thiết lập Thời hạn hoàn thành (Deadline), Chọn khách hàng CRM liên quan.
-  * Bước 3: Gửi công việc: Nhân viên phụ trách nhận được thông báo thời gian thực. Khi mở Tab Công việc, công việc hiển thị ở trạng thái "Chờ nhận việc" kèm nút bấm nổi bật [⚡ TIẾN HÀNH NHẬN VIỆC].
-  * Bước 4: Nhân viên bấm [⚡ TIẾN HÀNH NHẬN VIỆC]: Trạng thái công việc chuyển ngay sang "Đang làm" (in_progress), hệ thống ghi nhận chính xác mốc thời gian nhận việc (acceptedAt) và bắn thông báo xác nhận về máy Giám đốc.
-  * Bước 5: Giám đốc mở Tab "Giám Sát": Theo dõi ma trận nhân sự, danh sách khách hàng từng nhân viên đang chăm sóc, giai đoạn phễu và hoạt động thực tế.
-- **Lưu ý:** KIỂM SOÁT THỜI GIAN THỰC: Giám đốc biết chính xác nhân viên đã bấm nhận việc hay chưa thông qua nút [⚡ TIẾN HÀNH NHẬN VIỆC] và mốc thời gian acceptedAt.
-- **Mẹo C-Level:** MẸO VẬN HÀNH: Liên kết công việc với khách hàng CRM giúp nhân viên mở trực tiếp hồ sơ khách hàng chỉ với 1 chạm ngay trong chi tiết công việc.
+  * Bước 1: **Cơ cấu Phòng ban & Bộ lọc nhanh:** Lãnh đạo bấm `[+ Thêm phòng ban]` để khởi tạo phòng ban mới (Ban Giám Đốc, Kinh Doanh, Kỹ Thuật, Kế Toán, Nhân Sự, Marketing,...). Dùng thanh Department Filter Pills để lọc nhanh công việc theo từng ban.
+  * Bước 2: **Giao việc đa hình thức (Thủ công / Excel / Word):**
+    - *Giao việc thủ công:* Bấm nút `+ Giao việc` trên Header hoặc trong Tab Công việc -> Mở form giao việc chi tiết.
+    - *Nạp từ Excel (`[📊 Excel]`):* Bấm nút `[📊 Excel]` -> Tải file mẫu chuẩn ViOne (`mau_giao_viec_vione.xlsx`), kéo thả file danh sách công việc, xem trước bảng preview và nạp hàng loạt vào hệ thống.
+    - *Nạp từ Word (`[📄 Word]`):* Bấm nút `[📄 Word]` -> Tải lên kế hoạch / đề án nhiệm vụ `.docx`, tự động phân tích và đưa vào form giao việc.
+  * Bước 3: **Tiếp nhận việc 1-chạm:** Nhân viên phụ trách nhận được thông báo thời gian thực. Khi mở Tab Công việc, công việc hiển thị ở trạng thái "Chờ nhận việc" kèm nút bấm nổi bật [⚡ TIẾN HÀNH NHẬN VIỆC]. Bấm nút -> Chuyển sang "Đang làm" (`in_progress`), ghi nhận timestamp `acceptedAt`.
+  * Bước 4: **Chuyển giao việc tức thời (`[🔄 Chuyển việc]`):** Khi cần bàn giao công việc cho nhân sự khác hoặc phòng ban khác, bấm nút `[🔄 Chuyển việc]` trên thẻ task, chọn nhân sự mới và nhập lý do. Hệ thống tự động ghi nhận vết kiểm toán (Audit Trail) và bắn thông báo chuông đến người nhận mới (không cần gọi điện thoại riêng).
+  * Bước 5: **Nộp báo cáo nghiệm thu đính kèm Word & Excel (`[Nộp báo cáo]`):** Nhân viên mở modal nộp báo cáo, đính kèm đồng thời file thuyết minh Word (`.docx`) và file số liệu Excel (`.xlsx`), kéo % tiến độ và gửi. Thẻ task hiển thị huy hiệu `[📄 Word]` và `[📊 Excel]` để lãnh đạo bấm tải về nghiệm thu.
+  * Bước 6: **Triệu tập họp ban trực tuyến 1-chạm (`[📹 Họp ban 1-chạm]`):** Giám đốc/Trưởng ban bấm nút `[📹 Họp ban 1-chạm]`, nhập nội dung và bấm bắt đầu. Hệ thống kích hoạt ngay phòng họp video C-Level ViOne Executive Room và phát thông báo khẩn cấp tới toàn phòng ban.
+- **Lưu ý:** TỐI ƯU HÓA HOẠT ĐỘNG CÔNG TY: Mọi thao tác bàn giao, triệu tập họp, nộp báo cáo và duyệt việc được gói gọn 100% trong cộng đồng, dữ liệu minh bạch và bảo mật cao.
+- **Mẹo C-Level:** MẸO ĐIỀU HÀNH: Tải file mẫu Excel về phân công công việc tuần cho các phòng ban, sau đó import 1-chạm lên hệ thống để tiết kiệm 90% thời gian giao việc.
 
 #### 31. [APP · QUẢN TRỊ CỘNG ĐỒNG] Quyền Quản Trị Cộng Đồng Gia Đình ViOne Cho Admin Nền Tảng
 - **Mục tiêu:** Trao toàn quyền quản trị cộng đồng trung tâm Gia đình ViOne cho các tài khoản quản trị viên nền tảng.
@@ -493,4 +497,15 @@
   * Bước 5: Quản Trị Khách Hàng CRM: Tab Khách hàng trang bị 4 thẻ chỉ số Pipeline (Quy mô cơ hội, Đang đàm phán, Tỷ lệ chốt deal, Lịch chăm sóc tuần), kèm stepper tiến trình 4 giai đoạn, bộ chọn Deal Health và dòng thời gian ghi nhật ký chăm sóc đa kênh.
 - **Lưu ý:** DỮ LIỆU CHÍNH XÁC & MINH BẠCH: Toàn bộ thông tin hiển thị từ AI, danh bạ đến CRM đều được đối soát trực tiếp từ CSDL thực, đảm bảo sự trung thực tuyệt đối cho lãnh đạo.
 - **Mẹo C-Level:** MẸO SỬ DỤNG: Dùng nút chuyển giai đoạn 1-chạm trong chi tiết khách hàng CRM để cập nhật tức thì trạng thái đàm phán hợp đồng cho toàn bộ đội ngũ bán hàng.
+
+#### 41. [APP · ĐỒNG BỘ PARITY NATIVE & PWA] Quản Trị Giao Việc Doanh Nghiệp Chuẩn Chỉnh, Ổn Định Nhắn Tin & Cuộc Gọi, Trợ Lý AI Doanh Nhân Sáng Vàng Đồng Kèm Text-To-Speech
+- **Mục tiêu:** Đồng bộ 100% tính năng giữa bản PWA và Native Mobile: Giao việc & nhận việc đầy đủ trường và xóa việc; chống lặp chuông cuộc gọi đến; khắc phục tài khoản lạ trong tin nhắn; trợ lý AI giao diện sáng hoàng gia kèm phát giọng nói tự động và tự động chuyển hướng kết nối khi cài APK.
+- **Đường dẫn:** `Cộng Đồng Doanh Nghiệp -> Công việc & Nhiệm vụ / Hộp thư & Cuộc gọi / Trợ lý AI ViOne`
+- **Các bước:**
+  * Bước 1: **Giao Việc & Nhận Việc Chuẩn Doanh Nghiệp Lớn**: Màn hình nhận việc và giao việc chuyển sang tone màu ViOne Luxury Vàng đồng (`#DFB76C`), chữ than chì (`#0F172A`) trên nền trắng champagne ngọc trai (`#FAF8F5`). Khi tạo việc hoặc sửa việc, biểu mẫu hỗ trợ đầy đủ 100% các trường: chọn thời hạn datetime-local trực quan, chọn phòng ban, đính kèm link tài liệu/file, nộp link báo cáo nghiệm thu và ghi chú kết quả, kéo thanh trượt % tiến độ. Khi sửa việc có thêm nút [Xóa việc] với popup xác nhận an toàn.
+  * Bước 2: **Chống Lặp Chuông Cuộc Gọi Đến & Ổn Định Nhắn Tin**: Loại bỏ hoàn toàn hiện tượng sau khi người nhận bấm "Đồng ý" cuộc gọi mà popup chuông vẫn tiếp tục rung; khắc phục lỗi danh sách tin nhắn sinh thêm tài khoản ID chuỗi số dài lạ bằng thuật toán gom nhóm theo `counterpartUserId`. Giao diện chat Native thiết kế nền sáng sang trọng, avatar tròn viền vàng đồng và ảnh đính kèm chuẩn tỷ lệ.
+  * Bước 3: **Trợ Lý AI Doanh Nhân Sáng Hoàng Gia & Giọng Nói Tự Động**: Toàn bộ giao diện Trợ lý AI trên PWA và Native chuyển sang nền sáng champagne viền vàng đồng. Tích hợp bộ chuyển văn bản thành giọng nói (Text-To-Speech) phát tự động câu trả lời tiếng Việt ra loa. Bản APK Android được bổ sung cơ chế tự động chuyển hướng sang cổng HTTP 5001 nếu gặp lỗi chứng chỉ SSL trên cổng HTTPS 5445.
+  * Bước 4: **Đồng Bộ Trang Chủ**: Bổ sung phím tắt "Khách hàng CRM" và "Cộng đồng Doanh nghiệp" trên trang chủ PWA; tích hợp dải "Khoảnh khắc doanh nhân 24h" (Stories) và gợi ý kết nối chuẩn trên trang chủ Native.
+- **Lưu ý:** TẤT CẢ CÁC TRƯỜNG ĐỀU ĐỐI XỨNG: Bất kỳ trường thông tin nào có trong tạo việc đều xuất hiện đầy đủ trong sửa việc và phản ánh chuẩn xác trên cả PWA và Native.
+
 

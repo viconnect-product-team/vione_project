@@ -88,7 +88,7 @@ const AlertDialogAction = React.forwardRef<
     ref={ref}
     className={cn(
       buttonVariants(),
-      "rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs cursor-pointer font-semibold",
+      "rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] hover:brightness-105 active:scale-98 text-slate-950 shadow-md cursor-pointer font-bold border border-[#D8B282]/50",
       className,
     )}
     {...props}

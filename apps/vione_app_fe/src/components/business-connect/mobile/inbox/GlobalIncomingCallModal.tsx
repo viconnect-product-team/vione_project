@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Phone, PhoneOff, Video, Sparkles } from "lucide-react";
 import { getConnectAppSocket } from "@/hooks/use-connect-app-socket";
 import { useViewerUserId } from "@/hooks/use-viewer-user-id";
 import { sendExternalNotification, sendCallNotification } from "@/lib/notification-permissions";
+import { NEST_API_URL } from "@/lib/api-client";
 import { DmCallModal } from "./DmCallModal";
 
 export interface IncomingCallData {
@@ -20,8 +21,18 @@ export function GlobalIncomingCallModal() {
   const [activeCallData, setActiveCallData] = useState<IncomingCallData | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const ringIntervalRef = useRef<any>(null);
+  const activeCallRef = useRef<IncomingCallData | null>(null);
+  const incomingCallRef = useRef<IncomingCallData | null>(null);
 
-  const startRingtone = () => {
+  useEffect(() => {
+    activeCallRef.current = activeCallData;
+  }, [activeCallData]);
+
+  useEffect(() => {
+    incomingCallRef.current = incomingCall;
+  }, [incomingCall]);
+
+  const startRingtone = useCallback(() => {
     try {
       if (typeof window === "undefined") return;
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -55,9 +66,9 @@ export function GlobalIncomingCallModal() {
     } catch {
       /* ignore audio autoplay restrictions */
     }
-  };
+  }, []);
 
-  const stopRingtone = () => {
+  const stopRingtone = useCallback(() => {
     if (ringIntervalRef.current) {
       clearInterval(ringIntervalRef.current);
       ringIntervalRef.current = null;
@@ -70,37 +81,112 @@ export function GlobalIncomingCallModal() {
       }
       audioContextRef.current = null;
     }
-  };
+  }, []);
+
+  const handleIncomingCall = useCallback((data: IncomingCallData) => {
+    // NEVER show incoming call modal if caller is the viewer themselves
+    if (!viewerUserId || data.callerUserId === viewerUserId) {
+      return;
+    }
+    // Đã chấp nhận cuộc gọi này hoặc đang trong cuộc gọi đàm thoại thì tuyệt đối không mở popup lại
+    if (activeCallRef.current) {
+      return;
+    }
+    // Nếu đang hiển thị đúng cuộc gọi này rồi thì không lặp lại rung chuông
+    if (incomingCallRef.current?.callId === data.callId) {
+      return;
+    }
+    setIncomingCall(data);
+    incomingCallRef.current = data;
+    startRingtone();
+    // Báo cuộc gọi đến lên màn hình khóa điện thoại (Lockscreen Notification)
+    sendCallNotification(data.callerName || "Đối tác ViOne", data.callType, data.callId);
+  }, [viewerUserId, startRingtone]);
+
+  // Kiểm tra ngay lập tức khi đăng nhập / mở app xem có cuộc gọi nào đang ringing không
+  const checkActiveCall = useCallback(async () => {
+    if (!viewerUserId) return;
+    const socket = getConnectAppSocket();
+    try {
+      // 1. Gửi socket event check active
+      socket.emit("call:check_active", { userId: viewerUserId });
+
+      // 2. Fetch REST API active call để bắt ngay lập tức không phụ thuộc độ trễ socket
+      const token = typeof window !== "undefined" ? (localStorage.getItem("accessToken") || localStorage.getItem("token") || "") : "";
+      const base = NEST_API_URL || (typeof window !== "undefined" && window.location.hostname === "localhost" ? "http://127.0.0.1:4001" : "");
+      if (base) {
+        const res = await fetch(`${base}/connect-app/calls/active`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const activeCall = json?.activeCall;
+          if (
+            activeCall &&
+            activeCall.status === "ringing" &&
+            activeCall.recipientUserId === viewerUserId &&
+            !activeCallRef.current
+          ) {
+            handleIncomingCall({
+              callId: activeCall.callId,
+              callerUserId: activeCall.callerUserId,
+              callerName: activeCall.callerName,
+              callerAvatar: activeCall.callerAvatar,
+              callerTitle: activeCall.callerTitle,
+              callType: activeCall.callType,
+            });
+          }
+        }
+      }
+    } catch {
+      // ignore network errors
+    }
+  }, [viewerUserId, handleIncomingCall]);
 
   useEffect(() => {
     const socket = getConnectAppSocket();
     if (!socket || !viewerUserId) return;
 
-    const handleIncomingCall = (data: IncomingCallData) => {
-      // NEVER show incoming call modal if caller is the viewer themselves
-      if (!viewerUserId || data.callerUserId === viewerUserId) {
-        return;
-      }
-      setIncomingCall(data);
-      startRingtone();
-      // Báo cuộc gọi đến lên màn hình khóa điện thoại (Lockscreen Notification)
-      sendCallNotification(data.callerName || "Đối tác ViOne", data.callType, data.callId);
-    };
-
     const handleCallEnded = () => {
       stopRingtone();
       setIncomingCall(null);
+      incomingCallRef.current = null;
+    };
+
+    const handleCallMissed = (data: any) => {
+      stopRingtone();
+      if (incomingCallRef.current?.callId === data?.callId) {
+        setIncomingCall(null);
+        incomingCallRef.current = null;
+      }
+      // Báo cuộc gọi lỡ ra màn hình điện thoại
+      const callerName = data?.callerName || "Đối tác ViOne";
+      sendExternalNotification(`📞 Cuộc gọi nhỡ từ ${callerName}`, {
+        body: `Bạn đã bỏ lỡ cuộc gọi thoại/video lúc ${new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}. Nhấn để xem lại.`,
+        tag: `missed-call-${data?.callId || Date.now()}`,
+        url: "/connect-app/inbox",
+        requireInteraction: false,
+      });
     };
 
     socket.on("call:incoming", handleIncomingCall);
     socket.on("call:ended", handleCallEnded);
+    socket.on("call:declined", handleCallEnded);
+    socket.on("call:missed", handleCallMissed);
+    socket.on("connect", checkActiveCall);
+
+    // Kích hoạt kiểm tra ngay khi mount nếu user vừa đăng nhập
+    void checkActiveCall();
 
     return () => {
       stopRingtone();
       socket.off("call:incoming", handleIncomingCall);
       socket.off("call:ended", handleCallEnded);
+      socket.off("call:declined", handleCallEnded);
+      socket.off("call:missed", handleCallMissed);
+      socket.off("connect", checkActiveCall);
     };
-  }, [viewerUserId]);
+  }, [viewerUserId, handleIncomingCall, stopRingtone, checkActiveCall]);
 
   const handleDecline = () => {
     stopRingtone();
@@ -113,20 +199,24 @@ export function GlobalIncomingCallModal() {
       });
     }
     setIncomingCall(null);
+    incomingCallRef.current = null;
   };
 
   const handleAccept = () => {
     stopRingtone();
-    if (incomingCall && viewerUserId) {
+    const current = incomingCallRef.current || incomingCall;
+    if (current && viewerUserId) {
       const socket = getConnectAppSocket();
       socket.emit("call:accept", {
-        callId: incomingCall.callId,
-        callerUserId: incomingCall.callerUserId,
+        callId: current.callId,
+        callerUserId: current.callerUserId,
         calleeUserId: viewerUserId,
       });
-      setActiveCallData(incomingCall);
+      activeCallRef.current = current;
+      setActiveCallData(current);
     }
     setIncomingCall(null);
+    incomingCallRef.current = null;
   };
 
   return (

@@ -593,19 +593,12 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       />
 
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {/* 2. Page Title Header: Network + Add Person Button + Subtitle */}
+        {/* 2. Page Title Header: Network + Subtitle */}
         <View style={styles.titleSection}>
           <View style={styles.titleRow}>
             <Text style={[styles.pageTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
               Mạng lưới
             </Text>
-            <TouchableOpacity
-              style={styles.addPersonBtn}
-              onPress={() => setActiveTab("requests")}
-              activeOpacity={0.8}
-            >
-              <UserPlus size={18} color="#D8B282" />
-            </TouchableOpacity>
           </View>
           <Text style={styles.pageSubtitle}>
             <Text style={styles.boldText}>{partners.length} kết nối</Text>
@@ -1350,7 +1343,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 activeOpacity={0.85}
               >
                 <LinearGradient
-                  colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
+                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
                   style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingVertical: 6, gap: 5 }}
                 >
                   <Plus size={13} color="#050C15" strokeWidth={2.5} />

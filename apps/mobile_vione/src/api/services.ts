@@ -301,6 +301,87 @@ export const communityApi = {
   getCommunityEmployees: async (communityId: string) => {
     return api.get<{ ok: boolean; employees: any[] }>(API_ENDPOINTS.COMMUNITIES.EMPLOYEES(communityId));
   },
+  getCommunityDepartments: async (communityId: string) => {
+    return api.get<{ ok: boolean; departments: any[] }>(API_ENDPOINTS.COMMUNITIES.DEPARTMENTS(communityId));
+  },
+  createCommunityDepartment: async (communityId: string, data: any) => {
+    return api.post<{ ok: boolean; department: any; departments: any[] }>(API_ENDPOINTS.COMMUNITIES.DEPARTMENTS(communityId), data);
+  },
+  getMyDepartmentPermissions: async (communityId: string) => {
+    return api.get<{ ok?: boolean; success?: boolean; isExecutive: boolean; allowedDepartmentNames: string[]; memberships: any[] }>(
+      API_ENDPOINTS.COMMUNITIES.DEPARTMENT_PERMISSIONS_MY_ROLE(communityId)
+    );
+  },
+  getDepartmentMembers: async (communityId: string) => {
+    return api.get<{ ok?: boolean; success?: boolean; members: any[] }>(
+      API_ENDPOINTS.COMMUNITIES.DEPARTMENT_MEMBERS(communityId)
+    );
+  },
+  assignDepartmentMember: async (
+    communityId: string,
+    data: {
+      departmentId: string;
+      departmentName: string;
+      userId: string;
+      userName: string;
+      userEmail?: string;
+      userPhone?: string;
+      role?: "lead" | "member";
+      canAssign?: boolean;
+      canAccept?: boolean;
+      canReport?: boolean;
+      canHandover?: boolean;
+      canMeet?: boolean;
+    }
+  ) => {
+    return api.post<{ ok?: boolean; success?: boolean; message: string; member: any }>(
+      API_ENDPOINTS.COMMUNITIES.DEPARTMENT_MEMBER_ASSIGN(communityId),
+      data
+    );
+  },
+  deleteDepartmentMember: async (communityId: string, departmentId: string, userId: string) => {
+    return api.delete<{ ok?: boolean; success?: boolean; message: string }>(
+      API_ENDPOINTS.COMMUNITIES.DEPARTMENT_MEMBER_DELETE(communityId, departmentId, userId)
+    );
+  },
+  triggerInstantMeeting: async (communityId: string, data: { departmentName?: string; roomTitle?: string }) => {
+    return api.post<{ ok?: boolean; success?: boolean; meetingUrl: string; message: string }>(
+      API_ENDPOINTS.COMMUNITIES.INSTANT_MEETING(communityId),
+      data
+    );
+  },
+  handoverCommunityTask: async (
+    communityId: string,
+    taskId: string,
+    data: {
+      toAssigneeId: string;
+      toAssigneeName: string;
+      toDepartment?: string;
+      reason: string;
+      note?: string;
+    }
+  ) => {
+    return api.post<{ ok?: boolean; success?: boolean; message: string; handoverEntry: any }>(
+      API_ENDPOINTS.COMMUNITIES.TASK_HANDOVER(communityId, taskId),
+      data
+    );
+  },
+  submitCommunityTaskReport: async (
+    communityId: string,
+    taskId: string,
+    data: {
+      progress?: number;
+      reportNote?: string;
+      reportUrl?: string;
+      reportFileName?: string;
+      reportFileType?: string;
+    }
+  ) => {
+    return api.post<{ ok?: boolean; success?: boolean; message: string }>(
+      API_ENDPOINTS.COMMUNITIES.TASK_REPORT(communityId, taskId),
+      data
+    );
+  },
   getCommunityTasks: async (communityId: string, status?: string, isMyTasks?: boolean) => {
     const params = new URLSearchParams();
     if (status && status !== "all") params.append("status", status);
@@ -315,11 +396,20 @@ export const communityApi = {
   createCommunityTask: async (communityId: string, data: any) => {
     return api.post<{ ok: boolean; task: any; message: string }>(API_ENDPOINTS.COMMUNITIES.TASKS(communityId), data);
   },
+  updateCommunityTask: async (communityId: string, taskId: string, data: any) => {
+    return api.patch<{ ok: boolean; task: any; message: string }>(API_ENDPOINTS.COMMUNITIES.TASK_BY_ID(communityId, taskId), data);
+  },
+  deleteCommunityTask: async (communityId: string, taskId: string) => {
+    return api.delete<{ ok: boolean; message: string }>(API_ENDPOINTS.COMMUNITIES.TASK_BY_ID(communityId, taskId));
+  },
   acceptCommunityTask: async (communityId: string, taskId: string) => {
     return api.post<{ ok: boolean; message: string }>(API_ENDPOINTS.COMMUNITIES.TASK_ACCEPT(communityId, taskId), {});
   },
   updateCommunityTaskStatus: async (communityId: string, taskId: string, status: string) => {
     return api.patch<{ ok: boolean; task: any; message: string }>(API_ENDPOINTS.COMMUNITIES.TASK_STATUS(communityId, taskId), { status });
+  },
+  updateCommunityTaskProgress: async (communityId: string, taskId: string, data: { progress: number; note?: string; status?: string }) => {
+    return api.patch<{ ok: boolean; message: string }>(API_ENDPOINTS.COMMUNITIES.TASK_PROGRESS(communityId, taskId), data);
   },
   getCommunitySupervision: async (communityId: string) => {
     return api.get<{ ok: boolean; employees: any[]; tasks: any[]; customerCare: any[] }>(API_ENDPOINTS.COMMUNITIES.SUPERVISION(communityId));

@@ -21,6 +21,25 @@ const formatVNTime = (date: Date) => {
   return `${hh}:${mm}`;
 };
 
+function sanitizeVietnameseText(text?: string | null): string {
+  if (!text || typeof text !== 'string') return '';
+  let result = text;
+  result = result
+    .replace(/Gia\s*\?\?nh\s*ViOne/gi, 'Gia Đình ViOne')
+    .replace(/Gia\s*\?nh\s*ViOne/gi, 'Gia Đình ViOne')
+    .replace(/Gia\s*\?\?nh/gi, 'Gia Đình')
+    .replace(/Gia\s*\?nh/gi, 'Gia Đình')
+    .replace(/H\?\s*sinh\s*th\?i\s*k\?t\s*n\?i\s*&\s*chuy\?n\s*\?\?i\s*s\?\s*Gia\s*\?\?nh\s*ViOne/gi, 'Hệ sinh thái kết nối & chuyển đổi số Gia Đình ViOne')
+    .replace(/H\?\s*sinh\s*th\?i\s*k\?t\s*n\?i\s*&\s*chuy\?n\s*\?i\s*s\?\s*Gia\s*\?nh\s*ViOne/gi, 'Hệ sinh thái kết nối & chuyển đổi số Gia Đình ViOne')
+    .replace(/H\?\s*sinh\s*th\?i/gi, 'Hệ sinh thái')
+    .replace(/k\?t\s*n\?i/gi, 'kết nối')
+    .replace(/chuy\?n\s*\?\?i\s*s\?/gi, 'chuyển đổi số')
+    .replace(/chuy\?n\s*\?i\s*s\?/gi, 'chuyển đổi số')
+    .replace(/chuy\?n/gi, 'chuyển')
+    .replace(/th\?i/gi, 'thái');
+  return result;
+}
+
 @Injectable()
 export class ConnectAppService implements OnModuleInit {
   // Store quản lý loại hình Cộng đồng & Nghiệp vụ Doanh Nghiệp Nội Bộ
@@ -384,10 +403,10 @@ export class ConnectAppService implements OnModuleInit {
 
       result.push({
         communityId: String(m.association_id),
-        name: String(m.name),
+        name: sanitizeVietnameseText(String(m.name)),
         logoUrl: m.logo_url || null,
         bannerUrl: m.banner_url || null,
-        shortDescription: m.tagline || null,
+        shortDescription: sanitizeVietnameseText(m.tagline) || null,
         memberCount: count,
         viewerRole: m.role === 'admin' ? 'admin' : 'member',
         isDefault: m.is_default === true,
@@ -1076,11 +1095,11 @@ export class ConnectAppService implements OnModuleInit {
     return {
       community: {
         communityId: assoc.id,
-        name: assoc.name,
+        name: sanitizeVietnameseText(assoc.name),
         logoUrl: assoc.logo_url || null,
         bannerUrl: assoc.banner_url || null,
-        shortDescription: assoc.tagline || null,
-        description: assoc.about || null,
+        shortDescription: sanitizeVietnameseText(assoc.tagline) || null,
+        description: sanitizeVietnameseText(assoc.about) || null,
         memberCount,
         viewerRole: isCommunityAdmin ? 'admin' : 'member',
         canEdit: isCommunityAdmin,
@@ -5804,6 +5823,19 @@ export class ConnectAppService implements OnModuleInit {
       `;
     } catch {}
 
+    // Tự động kích hoạt gói dùng thử 30 ngày cho cộng đồng mới tạo
+    try {
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      await this.prisma.$executeRaw`
+        INSERT INTO public.vione_community_subscriptions 
+          (id, user_id, community_id, plan, status, is_trial, trial_days, starts_at, expires_at, created_at, updated_at)
+        VALUES 
+          (gen_random_uuid(), ${userId}::uuid, ${communityId}::uuid, 'community_trial_30d', 'active', true, 30, ${now}, ${expiresAt}, ${now}, ${now})
+        ON CONFLICT (user_id, community_id) DO UPDATE 
+        SET expires_at = ${expiresAt}, status = 'active', updated_at = ${now}
+      `;
+    } catch {}
+
     // Thông báo cho các client
     try {
       this.gateway.emitToRoom(`user:${userId}`, 'community:updated', { communityId });
@@ -5823,6 +5855,9 @@ export class ConnectAppService implements OnModuleInit {
       membershipStatus: 'active',
       memberCount: 1,
       communityType: determinedType,
+      isTrial: true,
+      trialDaysLeft: 30,
+      hasCommunityPlan: true,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
     };
@@ -5875,7 +5910,7 @@ export class ConnectAppService implements OnModuleInit {
       return {
         requestId: String(r.id),
         communityId: String(r.association_id),
-        name: assoc.name || "Cộng đồng",
+        name: sanitizeVietnameseText(assoc.name) || "Cộng đồng",
         logoUrl: assoc.logo_url || null,
         status: r.status,
         requestedAt: r.created_at ? new Date(r.created_at).toISOString() : null,
@@ -6662,6 +6697,10 @@ export class ConnectAppService implements OnModuleInit {
     return this.companyInternalService.updateCompanyTask(userId, communityId, taskId, body);
   }
 
+  async deleteCompanyTask(userId: string, communityId: string, taskId: string) {
+    return this.companyInternalService.deleteCompanyTask(userId, communityId, taskId);
+  }
+
   async acceptCompanyTask(userId: string, communityId: string, taskId: string) {
     return this.companyInternalService.acceptCompanyTask(userId, communityId, taskId);
   }
@@ -6692,19 +6731,132 @@ export class ConnectAppService implements OnModuleInit {
     return this.companyInternalService.importCompanyTasksFromExcel(userId, communityId, tasks);
   }
 
+  async listCommunityDepartments(communityId: string) {
+    return this.companyInternalService.listCommunityDepartments(communityId);
+  }
+
+  async createCommunityDepartment(userId: string, communityId: string, body: any) {
+    return this.companyInternalService.createCommunityDepartment(userId, communityId, body);
+  }
+
+  async deleteCommunityDepartment(userId: string, communityId: string, departmentId: string) {
+    return this.companyInternalService.deleteCommunityDepartment(userId, communityId, departmentId);
+  }
+
+  async handoverCompanyTask(userId: string, communityId: string, taskId: string, body: any) {
+    return this.companyInternalService.handoverCompanyTask(userId, communityId, taskId, body);
+  }
+
+  async submitCompanyTaskReport(userId: string, communityId: string, taskId: string, body: any) {
+    return this.companyInternalService.submitCompanyTaskReport(userId, communityId, taskId, body);
+  }
+
+  async triggerInstantMeeting(userId: string, communityId: string, body: any) {
+    return this.companyInternalService.triggerInstantMeeting(userId, communityId, body);
+  }
+
+  async getMyDepartmentPermissions(userId: string, communityId: string) {
+    return this.companyInternalService.getMyDepartmentPermissions(userId, communityId);
+  }
+
+  async listCommunityDepartmentMembers(userId: string, communityId: string) {
+    return this.companyInternalService.listCommunityDepartmentMembers(userId, communityId);
+  }
+
+  async assignDepartmentMember(userId: string, communityId: string, body: any) {
+    return this.companyInternalService.assignDepartmentMember(userId, communityId, body);
+  }
+
+  async deleteDepartmentMember(userId: string, communityId: string, departmentId: string, targetUserId: string) {
+    return this.companyInternalService.deleteDepartmentMember(userId, communityId, departmentId, targetUserId);
+  }
+
   async checkCompanyStaffStatus(userId: string) {
     const communities = await this.getMyCommunities(userId);
-    const companyCommunity = communities.find(
+    
+    // User has community plan if they own/administer a community OR have active 30-day trial in DB
+    let hasCommunityPlan = false;
+    let isTrial = true;
+    let trialDaysLeft = 30;
+
+    const ownedCommunity = communities.find(
       (c: any) =>
-        (c.communityType === 'company_internal' || c.communityType === 'company') &&
+        (c.viewerRole === 'admin' || c.isOwner || c.role === 'admin' || c.createdById === userId) &&
+        !String(c.name || '').includes('1983')
+    );
+
+    if (ownedCommunity) {
+      hasCommunityPlan = true;
+    }
+
+    try {
+      const subs = await this.prisma.$queryRaw<any[]>`
+        SELECT * FROM public.vione_community_subscriptions
+        WHERE user_id = ${userId}::uuid AND expires_at > now()
+        ORDER BY expires_at DESC LIMIT 1
+      `;
+      if (subs && subs.length > 0) {
+        hasCommunityPlan = true;
+        isTrial = Boolean(subs[0].is_trial);
+        const diffMs = new Date(subs[0].expires_at).getTime() - Date.now();
+        trialDaysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      }
+    } catch {}
+
+    const companyCommunity = ownedCommunity || communities.find(
+      (c: any) =>
         (c.viewerRole === 'admin' || c.isOwner || c.role === 'admin') &&
         (Number(c.memberCount) > 1 || Number(c.staffCount) > 0),
     );
+
     return {
       ok: true,
+      hasCommunityPlan,
+      isTrial,
+      trialDaysLeft,
       hasCompanyWithStaff: Boolean(companyCommunity),
       companyCommunity: companyCommunity || null,
       communitiesCount: communities.length,
+    };
+  }
+
+  async getCommunitySubscriptionStatus(userId: string) {
+    return this.checkCompanyStaffStatus(userId);
+  }
+
+  async activateCommunityTrial(userId: string, body?: { communityId?: string; plan?: string }) {
+    const now = new Date();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const plan = body?.plan || 'community_trial_30d';
+    const communityId = body?.communityId ? body.communityId : null;
+
+    try {
+      if (communityId) {
+        await this.prisma.$executeRaw`
+          INSERT INTO public.vione_community_subscriptions 
+            (id, user_id, community_id, plan, status, is_trial, trial_days, starts_at, expires_at, created_at, updated_at)
+          VALUES 
+            (gen_random_uuid(), ${userId}::uuid, ${communityId}::uuid, ${plan}, 'active', true, 30, ${now}, ${expiresAt}, ${now}, ${now})
+          ON CONFLICT (user_id, community_id) DO UPDATE 
+          SET expires_at = ${expiresAt}, status = 'active', updated_at = ${now}
+        `;
+      } else {
+        await this.prisma.$executeRaw`
+          INSERT INTO public.vione_community_subscriptions 
+            (id, user_id, plan, status, is_trial, trial_days, starts_at, expires_at, created_at, updated_at)
+          VALUES 
+            (gen_random_uuid(), ${userId}::uuid, ${plan}, 'active', true, 30, ${now}, ${expiresAt}, ${now}, ${now})
+        `;
+      }
+    } catch {}
+
+    return {
+      ok: true,
+      hasCommunityPlan: true,
+      isTrial: true,
+      trialDaysLeft: 30,
+      startsAt: now.toISOString(),
+      expiresAt: expiresAt.toISOString(),
     };
   }
 
@@ -8097,7 +8249,7 @@ export class ConnectAppService implements OnModuleInit {
     }
     return {
       associationId: String(assoc.id),
-      name: String(assoc.name || 'ViOne Connect'),
+      name: sanitizeVietnameseText(String(assoc.name || 'ViOne Connect')),
       slug: assoc.slug ? String(assoc.slug) : 'vione',
       logoUrl: assoc.logo_url || null,
       role: assoc.role || 'admin',
@@ -8389,6 +8541,10 @@ export class ConnectAppService implements OnModuleInit {
       greetingAudioText,
       fullMessage,
     };
+  }
+
+  getActiveCallForUser(userId: string) {
+    return this.gateway.getActiveCallForUser(userId);
   }
 }
 
@@ -8805,6 +8961,7 @@ Tráº£ vá» DUY NHáº¤T JSON dáº¡ng: {"suggestions":[{"name":"...","re
     return { ok: false, error: "unavailable" as const };
   }
 }
+
 
 
 

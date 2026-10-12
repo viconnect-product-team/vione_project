@@ -5,11 +5,13 @@ cd /root/ssl-proxy
 
 # 1. Mở các cổng trên UFW nếu có UFW
 if command -v ufw >/dev/null 2>&1; then
-    echo "[UFW] Mở cổng 5443, 5444, 5445, 5446, 9050, 9051, 9060, 9061 trên tường lửa Ubuntu..."
+    echo "[UFW] Mở cổng 5443, 5444, 5445, 5446, 5006, 5007, 9050, 9051, 9060, 9061 trên tường lửa Ubuntu..."
     ufw allow 5443/tcp >/dev/null 2>&1 || true
     ufw allow 5444/tcp >/dev/null 2>&1 || true
     ufw allow 5445/tcp >/dev/null 2>&1 || true
     ufw allow 5446/tcp >/dev/null 2>&1 || true
+    ufw allow 5006/tcp >/dev/null 2>&1 || true
+    ufw allow 5007/tcp >/dev/null 2>&1 || true
     ufw allow 9050/tcp >/dev/null 2>&1 || true
     ufw allow 9051/tcp >/dev/null 2>&1 || true
     ufw allow 9060/tcp >/dev/null 2>&1 || true
@@ -17,15 +19,19 @@ if command -v ufw >/dev/null 2>&1; then
     ufw reload >/dev/null 2>&1 || true
 fi
 
-# 2. Mở cổng trên iptables
-iptables -I INPUT -p tcp --dport 5443 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 5444 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 5445 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 5446 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 9050 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 9051 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 9060 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT -p tcp --dport 9061 -j ACCEPT 2>/dev/null || true
+# 2. Mở cổng trên iptables (cả INPUT và DOCKER-USER chain để không bị Docker/UFW nuốt gói)
+for port in 5443 5444 5445 5446 5006 5007 9050 9051 9060 9061; do
+    iptables -C INPUT -p tcp --dport $port -j ACCEPT 2>/dev/null || iptables -I INPUT -p tcp --dport $port -j ACCEPT 2>/dev/null || true
+    iptables -C DOCKER-USER -p tcp --dport $port -j ACCEPT 2>/dev/null || iptables -I DOCKER-USER -p tcp --dport $port -j ACCEPT 2>/dev/null || true
+done
+
+# 3. Lưu quy tắc tường lửa vĩnh viễn (chống mất cấu hình sau khi DHCP renew hoặc reboot)
+if command -v netfilter-persistent >/dev/null 2>&1; then
+    netfilter-persistent save >/dev/null 2>&1 || true
+elif command -v iptables-save >/dev/null 2>&1; then
+    mkdir -p /etc/iptables
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+fi
 
 # 3. Chuẩn hóa tệp tin cấu hình (xóa bỏ \r nếu có)
 sed -i 's/\r$//' nginx.conf docker-compose.ssl.yml 2>/dev/null || true

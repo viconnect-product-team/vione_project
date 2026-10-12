@@ -444,10 +444,18 @@ export class ConnectDmService {
         const peerUserId = mem?.user_id ? String(mem.user_id).toLowerCase() : null;
 
         // Nếu đối tác đã có thread trong resultThreads: cập nhật nếu tin nhắn legacy mới hơn
-        const existingIdx = resultThreads.findIndex((rt) =>
-          (peerUserId && rt.personId === `u:${peerUserId}`) ||
-          rt.threadId === peerKey
-        );
+        const existingIdx = resultThreads.findIndex((rt) => {
+          const cpId = String(rt.counterpartUserId || '').toLowerCase();
+          const pId = String(rt.personId || '').toLowerCase();
+          const tId = String(rt.threadId || '').toLowerCase();
+          const peerKeyLower = peerKey.toLowerCase();
+          if (peerUserId) {
+            const pUserLower = peerUserId.toLowerCase();
+            if (cpId === pUserLower || pId === `u:${pUserLower}`) return true;
+          }
+          if (cpId === peerKeyLower || pId === `code:${peerKeyLower}` || tId === peerKeyLower) return true;
+          return false;
+        });
 
         if (existingIdx >= 0) {
           const existing = resultThreads[existingIdx];
@@ -459,8 +467,11 @@ export class ConnectDmService {
             existing.lastMessageFromMe = latest.isFromMe;
           }
         } else {
-          // Chưa có thread: tạo mới và đảm bảo hiển thị
+          // Tránh tạo trùng lặp nếu counterpart đã tồn tại trong tập hợp
           const targetCounterpartId = peerUserId || peerKey;
+          if (addedCounterparts.has(targetCounterpartId)) {
+            continue;
+          }
           addedCounterparts.add(targetCounterpartId);
 
           let ensuredThreadId: string = crypto.randomUUID();
@@ -470,14 +481,19 @@ export class ConnectDmService {
             if (created) ensuredThreadId = created;
           }
 
+          let resolvedName = isSystem
+            ? 'Ban Hỗ Trợ Gia Đình ViOne'
+            : (mem?.display_name || mem?.name || 'Doanh nhân ViOne');
+          if (resolvedName.startsWith('Hội viên ') && /[0-9a-f-]{8,}/i.test(resolvedName)) {
+            resolvedName = 'Doanh nhân đối tác ViOne';
+          }
+
           const unread = pMsgs.filter((m) => !m.isFromMe && m.read_at == null).length;
           resultThreads.push({
             threadId: ensuredThreadId,
             personId: peerUserId ? `u:${peerUserId}` : `code:${peerKey}`,
             counterpartUserId: peerUserId || peerKey,
-            displayName: isSystem
-              ? 'Ban Hỗ Trợ Gia Đình ViOne'
-              : (mem?.display_name || mem?.name || `Hội viên ${peerKey.toUpperCase()}`),
+            displayName: resolvedName,
             avatarUrl: isSystem ? '/vione-logo.png' : (mem?.avatar_url || mem?.avatar || null),
             headline: isSystem ? 'Hỗ trợ hội viên ViOne' : (mem?.headline || mem?.position || null),
             companyName: isSystem ? 'Gia Đình ViOne' : (mem?.company_name || mem?.company || null),

@@ -26,7 +26,6 @@ import type { CommunitySummaryDTO } from "@/lib/business-connect/mobile/communit
 import { BusinessConnectTopBar } from "../BusinessConnectTopBar";
 import { ViOneLogo } from "../ViOneLogo";
 import { MobileSearchBar } from "../MobileSearchBar";
-import icon from "../icon.svg";
 import { CommunityJoinSection } from "./CommunityJoinSection";
 import { CommunityJoinHistory } from "./CommunityJoinHistory";
 import {
@@ -34,12 +33,13 @@ import {
   CommunityJoinStatusCards,
 } from "./CommunityJoinStatusCards";
 import { useCommunityJoinAdminRequests } from "@/hooks/use-community-join";
+import { sanitizeVietnameseText } from "@/lib/textSanitizer";
 import { useCommunityJoinDecisionAlerts, useCommunityJoinLiveSync } from "@/hooks/use-community-join";
 import { CommunityUpcomingEvents } from "./CommunityUpcomingEvents";
 import { CommunityOpportunitiesSection } from "./CommunityOpportunitiesSection";
 import { CreateCommunityModal } from "./CreateCommunityModal";
 
-type CommunityTab = "all" | "company" | "networking" | "admin" | "joined" | "history";
+type CommunityTab = "all" | "admin" | "joined" | "history";
 
 export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}) {
   const t = useT();
@@ -65,20 +65,13 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
 
   const visible = useMemo(() => {
     return enterpriseCommunities.filter((c: any) => {
-      const isCompany = c.communityType === "company_internal" || 
-        c.name?.toLowerCase().includes("công ty") || 
-        c.name?.toLowerCase().includes("tập đoàn") ||
-        c.name?.toLowerCase().includes("doanh nghiệp");
-
-      if (tab === "company" && !isCompany) return false;
-      if (tab === "networking" && isCompany) return false;
-      if (tab === "admin" && c.viewerRole !== "admin") return false;
+      if (tab === "admin" && c.viewerRole !== "admin" && !c.isOwner) return false;
       if (tab === "joined") {
         const isJoined = c.viewerRole === "member" || c.viewerRole === "admin" || c.isMember || c.membershipStatus === "active";
         if (!isJoined) return false;
       }
       if (!query) return true;
-      return c.name.toLowerCase().includes(query);
+      return c.name.toLowerCase().includes(query) || (c.shortDescription && c.shortDescription.toLowerCase().includes(query));
     });
   }, [enterpriseCommunities, query, tab]);
 
@@ -114,7 +107,7 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
               {t("bc.mobile.nav.community")}
             </h1>
             <p className="mt-0.5 text-[13px] leading-relaxed text-[var(--bc-mobile-muted)]">
-              Thành viên · Sự kiện · Cơ hội
+              Điều hành · Giao việc · CRM · Cơ hội B2B
             </p>
           </div>
           <button
@@ -123,7 +116,7 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md border border-[#E5C07B]/60 hover:brightness-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
           >
             <Plus className="h-4 w-4 stroke-[2.5]" />
-            <span>Tạo cộng đồng</span>
+            <span>Tạo cộng đồng (30 ngày free)</span>
           </button>
         </div>
 
@@ -147,7 +140,7 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
               className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md border border-[#E5C07B]/60 hover:brightness-105 active:scale-95 transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4 stroke-[2.5]" />
-              <span>Tạo cộng đồng đầu tiên</span>
+              <span>Tạo cộng đồng dùng thử 30 ngày</span>
             </button>
             <CommunityJoinStatusCards />
             <CommunityJoinSection />
@@ -158,12 +151,10 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
             {/* D — Tabs nằm ngay dưới Header */}
             <div className="mt-5 flex items-center gap-5 border-b border-slate-200 dark:border-[#D8B282]/20 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {[
-                { id: "all", label: "Tất cả" },
-                { id: "company", label: "🏢 Doanh nghiệp của tôi" },
-                { id: "networking", label: "🤝 Mạng lưới B2B" },
-                ...(hasAdmin ? [{ id: "admin", label: "Đang quản trị" }] : []),
-                { id: "joined", label: "Đã tham gia" },
-                { id: "history", label: "Lịch sử yêu cầu" }
+                { id: "all", label: "Tất cả cộng đồng" },
+                { id: "admin", label: "👑 Đang quản trị" },
+                { id: "joined", label: "🤝 Đã tham gia" },
+                { id: "history", label: "📋 Lịch sử yêu cầu" }
               ].map((item) => {
                 const isActive = tab === item.id;
                 return (
@@ -376,7 +367,9 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
   const eventCount = preview?.nextEvents.length ?? null;
   const oppCount = preview?.openOpportunities.length ?? null;
 
-  const visuals = getCommunityVisuals(community.name, community.logoUrl, community.bannerUrl);
+  const cleanName = sanitizeVietnameseText(community.name);
+  const visuals = getCommunityVisuals(cleanName, community.logoUrl, community.bannerUrl);
+  const cleanDesc = sanitizeVietnameseText(community.shortDescription) || sanitizeVietnameseText(visuals.descFallback);
   const memberCount = community.memberCount ?? 24;
 
   return (
@@ -390,7 +383,7 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
       >
         <img
           src={visuals.bannerUrl}
-          alt={community.name}
+          alt={cleanName}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-[0.85] dark:brightness-[0.70]"
         />
@@ -399,8 +392,8 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
         {/* Category Badge over Banner */}
         <div className="absolute top-2.5 left-3 flex items-center gap-1.5">
           {community.communityType === "company_internal" || 
-           community.name?.toLowerCase().includes("công ty") || 
-           community.name?.toLowerCase().includes("tập đoàn") ? (
+           cleanName.toLowerCase().includes("công ty") || 
+           cleanName.toLowerCase().includes("tập đoàn") ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase backdrop-blur-md border border-[#DFB76C] bg-black/75 text-[#DFB76C] shadow-sm">
               <span>🏢 CÔNG TY NỘI BỘ</span>
             </span>
@@ -425,7 +418,7 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
         {/* Floating Avatar + Community Name Header */}
         <div className="flex items-start gap-3.5 -mt-6 relative z-10">
           <CommunityAvatar
-            name={community.name}
+            name={cleanName}
             logoUrl={visuals.avatarUrl}
             className="h-14 w-14 ring-2 ring-[var(--bc-mobile-surface)] shadow-md"
           />
@@ -437,7 +430,7 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
               className="group flex items-center justify-between gap-1.5 cursor-pointer"
             >
               <h3 className="truncate text-base font-bold text-[var(--bc-mobile-text)] group-hover:text-[var(--bc-mobile-accent)] transition-colors">
-                {community.name}
+                {cleanName}
               </h3>
               <ChevronRight
                 aria-hidden="true"
@@ -447,7 +440,7 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
             </Link>
 
             <p className="mt-1 text-xs text-[var(--bc-mobile-muted)] line-clamp-2 leading-relaxed font-normal">
-              {community.shortDescription || visuals.descFallback}
+              {cleanDesc}
             </p>
           </div>
         </div>

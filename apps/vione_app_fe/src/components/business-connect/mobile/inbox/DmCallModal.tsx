@@ -141,6 +141,11 @@ export function DmCallModal({
     }
   }, [callIdProp]);
 
+  const durationRef = useRef(0);
+  useEffect(() => {
+    durationRef.current = duration;
+  }, [duration]);
+
   const recordCallOnce = (rec: CallRecordPayload) => {
     if (hasRecordedRef.current) return;
     hasRecordedRef.current = true;
@@ -272,7 +277,7 @@ export function DmCallModal({
       const handleCallEnded = (payload: any) => {
         clearTimeout(ringTimeout);
         setStatus("ended");
-        const finalDuration = payload?.duration || duration;
+        const finalDuration = payload?.duration || durationRef.current;
         recordCallOnce({ callType, status: finalDuration > 0 ? "ended" : "missed", duration: finalDuration });
         toast.info("Cuộc gọi đã kết thúc");
         setTimeout(onClose, 600);
@@ -291,7 +296,7 @@ export function DmCallModal({
     } else if (isIncomingAcceptance) {
       const handleCallEnded = (payload: any) => {
         setStatus("ended");
-        const finalDuration = payload?.duration || duration;
+        const finalDuration = payload?.duration || durationRef.current;
         recordCallOnce({ callType, status: finalDuration > 0 ? "ended" : "missed", duration: finalDuration });
         toast.info("Cuộc gọi đã kết thúc");
         setTimeout(onClose, 600);
@@ -301,7 +306,7 @@ export function DmCallModal({
         socket.off("call:ended", handleCallEnded);
       };
     }
-  }, [isOpen, callType, isIncomingAcceptance, counterpartUserId, viewerUserId, counterpartName, onClose, duration, myProfile]);
+  }, [isOpen, callType, isIncomingAcceptance, counterpartUserId, viewerUserId, counterpartName, onClose, myProfile]);
 
   // WebRTC PeerConnection Real P2P Transmission
   useEffect(() => {

@@ -209,6 +209,60 @@ export class ConnectDdlRepository {
         ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS progress INT DEFAULT 0;
         ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS progress_note TEXT;
         ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS department TEXT;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS attachments TEXT;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS report_url TEXT;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS report_note TEXT;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS report_file_name TEXT;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS report_file_type TEXT;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS handover_history JSONB DEFAULT '[]'::jsonb;
+        ALTER TABLE public.company_tasks ADD COLUMN IF NOT EXISTS task_type TEXT DEFAULT 'general';
+      `).catch(() => {});
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS public.vione_community_departments (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          community_id TEXT NOT NULL,
+          name TEXT NOT NULL,
+          description TEXT,
+          manager_id TEXT,
+          manager_name TEXT,
+          color TEXT DEFAULT '#DFB76C',
+          members_count INT DEFAULT 0,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        );
+      `).catch(() => {});
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE INDEX IF NOT EXISTS idx_vcd_comm ON public.vione_community_departments (community_id);
+      `).catch(() => {});
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS public.vione_community_department_members (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          community_id TEXT NOT NULL,
+          department_id TEXT NOT NULL,
+          department_name TEXT NOT NULL,
+          user_id TEXT NOT NULL,
+          user_name TEXT,
+          user_email TEXT,
+          user_phone TEXT,
+          user_avatar TEXT,
+          role TEXT DEFAULT 'member',
+          can_assign BOOLEAN DEFAULT false,
+          can_accept BOOLEAN DEFAULT true,
+          can_report BOOLEAN DEFAULT true,
+          can_handover BOOLEAN DEFAULT true,
+          can_meet BOOLEAN DEFAULT true,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT uq_vcdm_user_dept UNIQUE (community_id, department_id, user_id)
+        );
+      `).catch(() => {});
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE INDEX IF NOT EXISTS idx_vcdm_user ON public.vione_community_department_members (community_id, user_id);
+        CREATE INDEX IF NOT EXISTS idx_vcdm_dept ON public.vione_community_department_members (community_id, department_id);
       `).catch(() => {});
 
       await this.prisma.$executeRawUnsafe(`
@@ -269,18 +323,45 @@ export class ConnectDdlRepository {
       await this.prisma.$executeRawUnsafe(`
         UPDATE public.associations
         SET name = 'Gia Đình ViOne',
-            tagline = 'Gia Đình ViOne',
+            tagline = 'Hệ sinh thái kết nối & chuyển đổi số Gia Đình ViOne',
             about = 'Cộng đồng chính thức Gia Đình ViOne — Gắn kết thịnh vượng, kết nối cơ hội kinh doanh và kiến tạo giá trị bền vững.',
             description = 'Mạng lưới kết nối và kiến tạo giá trị chung cho toàn thể thành viên Gia Đình ViOne.',
             short_name = 'ViOne Family',
             updated_at = now()
-        WHERE id = 'c1983000-0000-4000-8000-000000001983'::uuid
+        WHERE name LIKE '%Gia%nh%'
+           OR name LIKE '%Gia ??nh%'
+           OR name LIKE '%Gia ?nh%'
+           OR tagline LIKE '%H? sinh th?i%'
+           OR tagline LIKE '%k?t n?i%'
+           OR tagline LIKE '%chuy?n%'
+           OR id = 'c1983000-0000-4000-8000-000000001983'::uuid
            OR slug = 'ceo-1983'
            OR name ILIKE '%ceo 1983%'
            OR name ILIKE '%ceo1983%';
       `).catch(() => {});
 
       this.logger.log('ConnectApp database schema verified successfully by ConnectDdlRepository.');
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS public.vione_community_subscriptions (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id UUID NOT NULL,
+          community_id UUID,
+          plan TEXT NOT NULL DEFAULT 'community_trial_30d',
+          status TEXT NOT NULL DEFAULT 'active',
+          is_trial BOOLEAN NOT NULL DEFAULT true,
+          trial_days INTEGER NOT NULL DEFAULT 30,
+          starts_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '30 days'),
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT uq_vcs_user_comm UNIQUE (user_id, community_id)
+        );
+      `).catch(() => {});
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE INDEX IF NOT EXISTS idx_vcs_user_exp ON public.vione_community_subscriptions (user_id, expires_at DESC);
+      `).catch(() => {});
     } catch (err) {
       this.logger.warn('Could not ensure all tables on module init:', err);
     }

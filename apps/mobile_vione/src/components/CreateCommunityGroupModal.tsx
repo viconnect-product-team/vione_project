@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { X, Users, Award, ShieldCheck, Sparkles, Building2 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { CommunityItem } from "../types";
@@ -39,7 +40,7 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
 
   const handleCreate = async () => {
     if (!name.trim()) {
-      Alert.alert("Thông báo", "Vui lòng nhập tên cộng đồng / nhóm doanh nghiệp.");
+      Alert.alert("Thông báo", "Vui lòng nhập tên cộng đồng / nhóm doanh nghiệp của bạn.");
       return;
     }
 
@@ -62,8 +63,17 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
       console.warn("Lỗi tạo community lên API:", err);
     }
 
+    try {
+      await AsyncStorage.setItem("vione_community_subscription_active", "true");
+    } catch (err) {
+      console.warn("Lỗi lưu subscription AsyncStorage:", err);
+    }
+
     onGroupCreated(newCommunity);
-    Alert.alert("Thành công", `Đã khởi tạo liên minh/cộng đồng: ${name.trim()}`);
+    Alert.alert(
+      "Kích hoạt thành công!",
+      `Chúc mừng bạn! Cộng đồng "${name.trim()}" đã được khởi tạo thành công cùng Gói dùng thử 30 ngày miễn phí. Toàn bộ phân hệ Giao việc & Điều hành đã sẵn sàng.`
+    );
     setName("");
     setDescription("");
     onClose();
@@ -75,9 +85,9 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
         <View style={styles.sheetContainer}>
           <View style={styles.headerRow}>
             <View>
-              <Text style={styles.headerTitle}>Tạo Cộng Đồng / Liên Minh Mới</Text>
+              <Text style={styles.headerTitle}>Tạo Cộng Đồng Của Bạn (30 Ngày Free)</Text>
               <Text style={styles.headerSubtitle}>
-                Kết nối các doanh nghiệp C-Level cùng hệ sinh thái phát triển
+                Mở khóa toàn bộ phân hệ Giao việc, Giám sát CRM, Cơ hội B2B và Lịch họp
               </Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
@@ -86,10 +96,26 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 480 }}>
-            <Text style={styles.inputLabel}>TÊN CỘNG ĐỒNG / LIÊN MINH DOANH NGHIỆP</Text>
+            {/* Banner Khuyến Mãi Dùng Thử 30 Ngày Free */}
+            <View style={styles.trialBanner}>
+              <LinearGradient
+                colors={["rgba(216, 178, 130, 0.22)", "rgba(216, 178, 130, 0.06)"]}
+                style={styles.trialBannerGrad}
+              >
+                <Sparkles size={18} color="#DFB76C" />
+                <View style={{ flex: 1, marginLeft: 10 }}>
+                  <Text style={styles.trialBannerTitle}>🎉 GÓI DÙNG THỬ 30 NGÀY MIỄN PHÍ</Text>
+                  <Text style={styles.trialBannerDesc}>
+                    Khởi tạo cộng đồng của bạn ngay hôm nay để nhận 30 ngày trải nghiệm miễn phí trọn bộ phân hệ Giao việc & Điều hành (Trị giá 990.000đ/tháng).
+                  </Text>
+                </View>
+              </LinearGradient>
+            </View>
+
+            <Text style={styles.inputLabel}>TÊN CỘNG ĐỒNG / DOANH NGHIỆP CỦA BẠN</Text>
             <TextInput
               style={styles.textInput}
-              placeholder="Ví dụ: Liên Minh Logistics & Bán Lẻ Toàn Quốc..."
+              placeholder="Ví dụ: Cộng đồng Doanh Nghiệp Hoàng Long / Liên Minh Logistics..."
               placeholderTextColor="#94A3B8"
               value={name}
               onChangeText={setName}
@@ -115,7 +141,7 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
               style={[styles.textInput, { minHeight: 80, textAlignVertical: "top" }]}
               multiline
               numberOfLines={3}
-              placeholder="Mô tả mục tiêu liên kết kinh doanh, chuỗi giá trị và đối tượng doanh nghiệp tham gia..."
+              placeholder="Mô tả mục tiêu liên kết kinh doanh, chuỗi giá trị và phân công công việc..."
               placeholderTextColor="#94A3B8"
               value={description}
               onChangeText={setDescription}
@@ -124,7 +150,7 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
             <View style={styles.infoBox}>
               <ShieldCheck size={16} color="#D8B282" style={{ marginRight: 8 }} />
               <Text style={styles.infoBoxText}>
-                Tài khoản khởi tạo sẽ tự động được cấp quyền <Text style={{ color: "#D8B282", fontWeight: "700" }}>Ban Điều Hành</Text> của cộng đồng.
+                Tài khoản của bạn sẽ tự động là <Text style={{ color: "#D8B282", fontWeight: "700" }}>Quản Trị Viên</Text> của cộng đồng với quyền quản lý thành viên & phân công công việc.
               </Text>
             </View>
           </ScrollView>
@@ -142,7 +168,7 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
                 style={styles.submitGradient}
               >
                 <Sparkles size={16} color="#050C15" style={{ marginRight: 6 }} />
-                <Text style={styles.submitBtnText}>Khởi Tạo Liên Minh</Text>
+                <Text style={styles.submitBtnText}>🎉 Kích Hoạt & Dùng Thử 30 Ngày Free</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -286,5 +312,29 @@ const styles = StyleSheet.create({
     color: "#050C15",
     fontSize: 13,
     fontWeight: "700",
+  },
+  trialBanner: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.4)",
+    marginBottom: 16,
+    overflow: "hidden",
+  },
+  trialBannerGrad: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+  },
+  trialBannerTitle: {
+    color: "#DFB76C",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  trialBannerDesc: {
+    color: "#E2E8F0",
+    fontSize: 11,
+    lineHeight: 15,
   },
 });

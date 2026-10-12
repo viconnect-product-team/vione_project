@@ -11,6 +11,7 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -359,7 +360,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                     <View style={[styles.msgRow, isMe ? styles.msgRowRight : styles.msgRowLeft, { maxWidth: "90%" }]}>
                       {!isMe && !thread.isGroup && (
                         <View style={{ marginRight: 8, alignSelf: "flex-end" }}>
-                          <Avatar url={thread.avatarUrl} name={thread.displayName} size={28} />
+                          <Avatar url={thread.avatarUrl} name={thread.displayName} size={34} showGoldBorder />
                         </View>
                       )}
                       <View style={{ flex: 1 }}>
@@ -373,11 +374,18 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                   );
                 }
 
+                const isImageMsg = (
+                  item.body.startsWith("[image]") ||
+                  /\.(jpeg|jpg|png|webp|gif)(\?.*)?$/i.test(item.body.trim()) ||
+                  (item.body.trim().startsWith("http") && (item.body.includes("/upload/") || item.body.includes("images.unsplash.com") || item.body.includes("minio")))
+                );
+                const displayImageUrl = item.body.replace("[image]", "").trim();
+
                 return (
                   <View style={[styles.msgRow, isMe ? styles.msgRowRight : styles.msgRowLeft]}>
                     {!isMe && !thread.isGroup && (
-                      <View style={{ marginRight: 8 }}>
-                        <Avatar url={thread.avatarUrl} name={thread.displayName} size={28} />
+                      <View style={{ marginRight: 8, alignSelf: "flex-end", marginBottom: 2 }}>
+                        <Avatar url={thread.avatarUrl} name={thread.displayName} size={34} showGoldBorder />
                       </View>
                     )}
                     <View
@@ -388,22 +396,38 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                           : [
                               styles.bubbleLeft,
                               {
-                                backgroundColor: isDark ? "#181D2A" : "#FFFFFF",
-                                borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
+                                backgroundColor: isDark ? "#161D2B" : "#FFFFFF",
+                                borderColor: isDark ? "rgba(223, 183, 108, 0.25)" : "rgba(223, 183, 108, 0.35)",
                               },
                             ],
                       ]}
                     >
-                      <Text
-                        style={[
-                          styles.bubbleText,
-                          isMe
-                            ? styles.bubbleTextRight
-                            : { color: isDark ? "#FFFFFF" : "#0F172A" },
-                        ]}
-                      >
-                        {item.body}
-                      </Text>
+                      {isImageMsg ? (
+                        <View style={{ marginBottom: 4 }}>
+                          <Image
+                            source={{ uri: displayImageUrl }}
+                            style={{
+                              width: 210,
+                              height: 150,
+                              borderRadius: 12,
+                              backgroundColor: isDark ? "#0B0F17" : "#F1F5F9",
+                            }}
+                            resizeMode="cover"
+                          />
+                        </View>
+                      ) : (
+                        <Text
+                          style={[
+                            styles.bubbleText,
+                            isMe
+                              ? styles.bubbleTextRight
+                              : { color: isDark ? "#FFFFFF" : "#0F172A" },
+                          ]}
+                        >
+                          {item.body}
+                        </Text>
+                      )}
+
                       <View style={styles.bubbleFooter}>
                         <Text
                           style={[
@@ -429,8 +453,8 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
             style={[
               styles.inputBar,
               {
-                backgroundColor: isDark ? "#0B0F17" : "#FFFFFF",
-                borderTopColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
+                backgroundColor: isDark ? "#0F1420" : "#FFFFFF",
+                borderTopColor: isDark ? "rgba(223, 183, 108, 0.2)" : "rgba(223, 183, 108, 0.3)",
               },
             ]}
           >
@@ -438,9 +462,9 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
               style={[
                 styles.textInput,
                 {
-                  backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
+                  backgroundColor: isDark ? "#161D2B" : "#FAF8F5",
                   color: isDark ? "#FFFFFF" : "#0F172A",
-                  borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
+                  borderColor: isDark ? "rgba(223, 183, 108, 0.25)" : "rgba(223, 183, 108, 0.4)",
                 },
               ]}
               placeholder="Nhập tin nhắn..."
@@ -459,7 +483,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
               disabled={!inputText.trim() || isSending}
             >
               {isSending ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color="#050C15" />
               ) : (
                 <Send size={18} color="#050C15" />
               )}
@@ -565,17 +589,17 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   systemPill: {
-    backgroundColor: "#181D2A",
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    backgroundColor: "rgba(223, 183, 108, 0.12)",
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.08)",
+    borderColor: "rgba(223, 183, 108, 0.35)",
   },
   systemPillText: {
-    fontSize: 11,
-    color: "#D4C3A3",
-    fontWeight: "500",
+    fontSize: 11.5,
+    color: "#8C653B",
+    fontWeight: "600",
   },
   msgRow: {
     flexDirection: "row",
@@ -595,21 +619,31 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   bubbleLeft: {
-    backgroundColor: "#181D2A",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.08)",
+    borderColor: "rgba(223, 183, 108, 0.35)",
     borderBottomLeftRadius: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   bubbleRight: {
-    backgroundColor: "#D8B282",
+    backgroundColor: "#DFB76C",
     borderBottomRightRadius: 4,
+    shadowColor: "#DFB76C",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 1,
   },
   bubbleText: {
     fontSize: 14,
     lineHeight: 20,
   },
   bubbleTextLeft: {
-    color: "#FFFFFF",
+    color: "#0F172A",
   },
   bubbleTextRight: {
     color: "#050C15",
@@ -625,7 +659,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   bubbleTimeLeft: {
-    color: "#94A3B8",
+    color: "#64748B",
   },
   bubbleTimeRight: {
     color: "rgba(5, 12, 21, 0.7)",
@@ -635,34 +669,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: "#0B0F17",
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "rgba(216, 178, 130, 0.2)",
+    borderTopColor: "rgba(223, 183, 108, 0.3)",
   },
   textInput: {
     flex: 1,
     minHeight: 40,
     maxHeight: 100,
-    backgroundColor: "#181D2A",
+    backgroundColor: "#FAF8F5",
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 10,
     fontSize: 14,
-    color: "#FFFFFF",
+    color: "#0F172A",
     marginRight: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.08)",
+    borderColor: "rgba(223, 183, 108, 0.4)",
   },
   sendBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#D8B282",
+    backgroundColor: "#DFB76C",
     alignItems: "center",
     justifyContent: "center",
   },
   sendBtnDisabled: {
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(223, 183, 108, 0.35)",
   },
 });

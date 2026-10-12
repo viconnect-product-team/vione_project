@@ -48,6 +48,18 @@ export class CommunityController {
     return this.connectAppService.checkCompanyStaffStatus(req.user.id);
   }
 
+  @Get('subscription')
+  @UseGuards(JwtAuthGuard)
+  async getCommunitySubscription(@Request() req) {
+    return this.connectAppService.getCommunitySubscriptionStatus(req.user.id);
+  }
+
+  @Post('trial')
+  @UseGuards(JwtAuthGuard)
+  async activateCommunityTrial(@Request() req, @Body() body: any) {
+    return this.connectAppService.activateCommunityTrial(req.user.id, body);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   async createCommunity(
@@ -559,6 +571,16 @@ export class CommunityController {
     return this.connectAppService.updateCompanyTask(req.user.id, cleanCommunityId(communityId), taskId, body);
   }
 
+  @Delete(':communityId/tasks/:taskId')
+  @UseGuards(JwtAuthGuard)
+  async deleteCompanyTask(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.connectAppService.deleteCompanyTask(req.user.id, cleanCommunityId(communityId), taskId);
+  }
+
   @Post(':communityId/tasks/:taskId/accept')
   @UseGuards(JwtAuthGuard)
   async acceptCompanyTask(
@@ -628,5 +650,108 @@ export class CommunityController {
     @Body() body: any,
   ) {
     return this.connectAppService.addCustomerCareLog(req.user.id, cleanCommunityId(communityId), body);
+  }
+
+  // --- PHÒNG BAN CÔNG TY (DEPARTMENTS) ---
+  @Get(':communityId/departments')
+  async listCommunityDepartments(
+    @Param('communityId') communityId: string,
+  ) {
+    return this.connectAppService.listCommunityDepartments(cleanCommunityId(communityId));
+  }
+
+  @Post(':communityId/departments')
+  @UseGuards(JwtAuthGuard)
+  async createCommunityDepartment(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Body() body: any,
+  ) {
+    return this.connectAppService.createCommunityDepartment(req.user.id, cleanCommunityId(communityId), body);
+  }
+
+  @Delete(':communityId/departments/:departmentId')
+  @UseGuards(JwtAuthGuard)
+  async deleteCommunityDepartment(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Param('departmentId') departmentId: string,
+  ) {
+    return this.connectAppService.deleteCommunityDepartment(req.user.id, cleanCommunityId(communityId), departmentId);
+  }
+
+  // --- BÀN GIAO & CHUYỂN GIAO VIỆC (TASK HANDOVER) ---
+  @Post(':communityId/tasks/:taskId/handover')
+  @UseGuards(JwtAuthGuard)
+  async handoverCompanyTask(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Param('taskId') taskId: string,
+    @Body() body: any,
+  ) {
+    return this.connectAppService.handoverCompanyTask(req.user.id, cleanCommunityId(communityId), taskId, body);
+  }
+
+  // --- NỘP BÁO CÁO NGHIỆM THU WORD / EXCEL ---
+  @Post(':communityId/tasks/:taskId/report')
+  @UseGuards(JwtAuthGuard)
+  async submitCompanyTaskReport(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Param('taskId') taskId: string,
+    @Body() body: any,
+  ) {
+    return this.connectAppService.submitCompanyTaskReport(req.user.id, cleanCommunityId(communityId), taskId, body);
+  }
+
+  // --- HỌP BAN TRỰC TUYẾN 1-CHẠM (INSTANT MEETING) ---
+  @Post(':communityId/instant-meeting')
+  @UseGuards(JwtAuthGuard)
+  async triggerInstantMeeting(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Body() body: any,
+  ) {
+    return this.connectAppService.triggerInstantMeeting(req.user.id, cleanCommunityId(communityId), body);
+  }
+
+  // --- PHÂN QUYỀN PHÒNG BAN (DEPARTMENT RBAC) ---
+  @Get(':communityId/department-permissions/my-role')
+  @UseGuards(JwtAuthGuard)
+  async getMyDepartmentPermissions(
+    @Request() req,
+    @Param('communityId') communityId: string,
+  ) {
+    return this.connectAppService.getMyDepartmentPermissions(req.user.id, cleanCommunityId(communityId));
+  }
+
+  @Get(':communityId/department-members')
+  @UseGuards(JwtAuthGuard)
+  async listCommunityDepartmentMembers(
+    @Request() req,
+    @Param('communityId') communityId: string,
+  ) {
+    return this.connectAppService.listCommunityDepartmentMembers(req.user.id, cleanCommunityId(communityId));
+  }
+
+  @Post(':communityId/department-members/assign')
+  @UseGuards(JwtAuthGuard)
+  async assignDepartmentMember(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Body() body: any,
+  ) {
+    return this.connectAppService.assignDepartmentMember(req.user.id, cleanCommunityId(communityId), body);
+  }
+
+  @Delete(':communityId/department-members/:departmentId/:userId')
+  @UseGuards(JwtAuthGuard)
+  async deleteDepartmentMember(
+    @Request() req,
+    @Param('communityId') communityId: string,
+    @Param('departmentId') departmentId: string,
+    @Param('userId') targetUserId: string,
+  ) {
+    return this.connectAppService.deleteDepartmentMember(req.user.id, cleanCommunityId(communityId), departmentId, targetUserId);
   }
 }

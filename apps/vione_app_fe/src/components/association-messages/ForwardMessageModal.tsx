@@ -123,7 +123,7 @@ export function ForwardMessageModal({
                         setForwardingCode(null);
                       }
                     }}
-                    className="flex items-center gap-1.5 rounded-xl bg-[#0084FF] hover:bg-blue-600 text-white px-3 py-1.5 text-[11px] font-bold shadow-xs active:scale-95 transition cursor-pointer shrink-0 disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] hover:brightness-105 text-slate-950 px-3 py-1.5 text-[11px] font-bold shadow-md active:scale-95 transition cursor-pointer shrink-0 disabled:opacity-50 border border-[#D8B282]/50"
                   >
                     {isSending ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

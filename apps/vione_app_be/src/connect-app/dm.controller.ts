@@ -3,10 +3,16 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ConnectAppService } from './connect-app.service';
 import { SendDmMessageDto, ReactDmMessageDto } from './dto';
 
-@Controller(['dm', 'connect-app/dm'])
+@Controller(['dm', 'connect-app/dm', 'connect-app/calls'])
 @UseGuards(JwtAuthGuard)
 export class DmController {
   constructor(private readonly connectAppService: ConnectAppService) {}
+
+  @Get(['active', 'calls/active'])
+  async getActiveCall(@Request() req) {
+    const activeCall = this.connectAppService.getActiveCallForUser(req.user.id);
+    return { ok: true, activeCall };
+  }
 
   // ── Member Messaging (PWA) ──
   @Get('member/conversations')

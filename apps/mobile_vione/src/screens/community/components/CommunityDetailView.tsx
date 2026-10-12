@@ -23,6 +23,7 @@ import {
   Briefcase,
   Clock,
   ShieldCheck,
+  ShieldAlert,
   Check,
   Phone,
   Mail,
@@ -38,6 +39,8 @@ import {
   Target,
   Share2,
   Eye,
+  Video,
+  ArrowRightLeft,
 } from "lucide-react-native";
 import { B2BEvent } from "../../../types";
 import { CommunityOpportunityItem } from "../../../components/OpportunityDetailModal";
@@ -54,6 +57,7 @@ import {
 } from "./community.types";
 import { styles } from "./community.styles";
 import { resolveMediaUrl } from "../../../utils/media";
+import { sanitizeVietnameseText } from "../../../utils/textSanitizer";
 
 export interface CommunityDetailViewProps {
   isDark: boolean;
@@ -92,6 +96,12 @@ export interface CommunityDetailViewProps {
   onSelectEvent: (event: B2BEvent) => void;
   onRegisterEvent: (event: B2BEvent) => void;
   onSelectMember: (member: MemberCardData) => void;
+  departments?: any[];
+  myDeptPermissions?: any | null;
+  selectedDeptFilter?: string;
+  onChangeDeptFilter?: (deptName: string) => void;
+  onOpenDeptPermissions?: () => void;
+  onTriggerInstantMeeting?: (deptName: string) => void;
 }
 
 export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
@@ -131,7 +141,43 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
   onSelectEvent,
   onRegisterEvent,
   onSelectMember,
+  departments = [],
+  myDeptPermissions = null,
+  selectedDeptFilter = "all",
+  onChangeDeptFilter,
+  onOpenDeptPermissions,
+  onTriggerInstantMeeting,
 }) => {
+  const isExecutive = Boolean(
+    myDeptPermissions?.isExecutive ||
+    currentCommunity?.viewerRole === "admin" ||
+    currentCommunity?.viewerRole === "owner"
+  );
+
+  const checkCanOperate = (
+    deptName?: string,
+    action: "assign" | "accept" | "report" | "handover" | "meet" = "assign"
+  ): boolean => {
+    if (isExecutive) return true;
+    if (!deptName) return false;
+    const mem = myDeptPermissions?.memberships?.find(
+      (m: any) => (m.departmentName || "").trim().toLowerCase() === deptName.trim().toLowerCase()
+    );
+    if (!mem) return false;
+    if (action === "assign") return Boolean(mem.canAssign);
+    if (action === "accept") return Boolean(mem.canAccept);
+    if (action === "report") return Boolean(mem.canReport);
+    if (action === "handover") return Boolean(mem.canHandover);
+    if (action === "meet") return Boolean(mem.canMeet);
+    return true;
+  };
+
+  const isCurrentDeptAllowed =
+    selectedDeptFilter === "all" ||
+    checkCanOperate(selectedDeptFilter, "accept") ||
+    checkCanOperate(selectedDeptFilter, "assign") ||
+    checkCanOperate(selectedDeptFilter, "report");
+
   return (
     <>
       {currentCommunity && (
@@ -158,7 +204,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
               numberOfLines={1}
               style={[styles.detailTopTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
             >
-              {currentCommunity.name}
+              {sanitizeVietnameseText(currentCommunity.name)}
             </Text>
 
             <TouchableOpacity
@@ -198,15 +244,9 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
 
               {/* Category Pill Tag on Banner */}
               <View style={styles.detailCategoryPill}>
-                {currentCommunity.communityType === "company_internal" ? (
-                  <View style={styles.companyPill}>
-                    <Text style={styles.companyPillText}>🏢 DOANH NGHIỆP NỘI BỘ</Text>
-                  </View>
-                ) : (
-                  <View style={styles.b2bPill}>
-                    <Text style={styles.b2bPillText}>🤝 MẠNG LƯỚI DOANH NHÂN B2B</Text>
-                  </View>
-                )}
+                <View style={styles.b2bPill}>
+                  <Text style={styles.b2bPillText}>🌐 CỘNG ĐỒNG DOANH NGHIỆP VIONE</Text>
+                </View>
               </View>
             </View>
 
@@ -223,11 +263,11 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
 
               <View style={styles.detailInfoCol}>
                 <Text style={[styles.detailNameText, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                  {currentCommunity.name}
+                  {sanitizeVietnameseText(currentCommunity.name)}
                 </Text>
                 {currentCommunity.shortDescription && (
                   <Text style={[styles.detailShortDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>
-                    {currentCommunity.shortDescription}
+                    {sanitizeVietnameseText(currentCommunity.shortDescription)}
                   </Text>
                 )}
               </View>
@@ -294,99 +334,50 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
               )}
             </View>
 
-            {/* 3 Nút Hành Động Theo Chuẩn 2 Kiểu Cộng Đồng (PWA 100%) */}
-            {currentCommunity.communityType === "company_internal" ? (
-              <View style={styles.actionButtons3Col}>
-                <TouchableOpacity
-                  style={styles.primaryActionButton}
-                  onPress={() => {
-                    onChangeDetailTab("tasks");
-                    onOpenAssignTask();
-                  }}
+            {/* Nút Hành Động Toàn Diện Cho Cộng Đồng ViOne */}
+            <View style={styles.actionButtons3Col}>
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => onOpenCreateOpp()}
+              >
+                <LinearGradient
+                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                  style={styles.actionBtnGrad}
                 >
-                  <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                    style={styles.actionBtnGrad}
-                  >
-                    <Briefcase size={14} color="#050C15" />
-                    <Text style={styles.actionBtnText}>+ Giao việc</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                  <Target size={14} color="#050C15" />
+                  <Text style={styles.actionBtnText}>+ Đăng cơ hội</Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.primaryActionButton}
-                  onPress={() => {
-                    onChangeDetailTab("news");
-                    onOpenCreateNews();
-                  }}
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => {
+                  onChangeDetailTab("news");
+                  onOpenCreateNews();
+                }}
+              >
+                <LinearGradient
+                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                  style={styles.actionBtnGrad}
                 >
-                  <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                    style={styles.actionBtnGrad}
-                  >
-                    <Newspaper size={14} color="#050C15" />
-                    <Text style={styles.actionBtnText}>+ Đăng bài</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                  <Newspaper size={14} color="#050C15" />
+                  <Text style={styles.actionBtnText}>+ Đăng bài</Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.primaryActionButton}
-                  onPress={() => onOpenShareEvent()}
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => onOpenShareEvent()}
+              >
+                <LinearGradient
+                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                  style={styles.actionBtnGrad}
                 >
-                  <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                    style={styles.actionBtnGrad}
-                  >
-                    <Calendar size={14} color="#050C15" />
-                    <Text style={styles.actionBtnText}>+ Chia sẻ SK</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.actionButtons3Col}>
-                <TouchableOpacity
-                  style={styles.primaryActionButton}
-                  onPress={() => onOpenCreateOpp()}
-                >
-                  <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                    style={styles.actionBtnGrad}
-                  >
-                    <Target size={14} color="#050C15" />
-                    <Text style={styles.actionBtnText}>+ Đăng cơ hội</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.primaryActionButton}
-                  onPress={() => {
-                    onChangeDetailTab("news");
-                    onOpenCreateNews();
-                  }}
-                >
-                  <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                    style={styles.actionBtnGrad}
-                  >
-                    <Newspaper size={14} color="#050C15" />
-                    <Text style={styles.actionBtnText}>+ Đăng bài</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.primaryActionButton}
-                  onPress={() => onOpenShareEvent()}
-                >
-                  <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                    style={styles.actionBtnGrad}
-                  >
-                    <Calendar size={14} color="#050C15" />
-                    <Text style={styles.actionBtnText}>+ Chia sẻ SK</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            )}
+                  <Calendar size={14} color="#050C15" />
+                  <Text style={styles.actionBtnText}>+ Chia sẻ SK</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
 
             {/* Gia nhập cộng đồng banner nếu chưa là thành viên */}
             {!currentCommunity.isMember && (
@@ -405,7 +396,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   onPress={() => onJoinCommunity(currentCommunity.id)}
                 >
                   <LinearGradient
-                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
+                    colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
                     style={styles.joinNowGrad}
                   >
                     <UserPlus size={14} color="#050C15" />
@@ -453,38 +444,27 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                 ]}
               >
                 <Text style={styles.statValue}>
-                  {currentCommunity.communityType === "company_internal"
-                    ? tasks.length
-                    : currentCommunity.openOpportunityCount}
+                  {tasks.length} việc · {currentCommunity.openOpportunityCount} cơ hội
                 </Text>
-                <Text style={styles.statLabel}>
-                  {currentCommunity.communityType === "company_internal" ? "Việc nội bộ" : "Cơ hội B2B"}
-                </Text>
+                <Text style={styles.statLabel}>Việc & Cơ hội</Text>
               </View>
             </View>
 
-            {/* Streamlined Navigation Tabs: Phân định rạch ròi 2 kiểu cộng đồng */}
+            {/* Streamlined Navigation Tabs: Đầy đủ 6 phân hệ bên trong cộng đồng */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.detailTabsScroll}
               style={styles.detailTabsWrapper}
             >
-              {(currentCommunity.communityType === "company_internal"
-                ? [
-                    { id: "tasks", label: "⚡ Giao việc & Nhận việc" },
-                    { id: "supervision", label: "👁️ Giám sát CRM & Nhân sự" },
-                    { id: "news", label: "Bài viết nội bộ" },
-                    { id: "events", label: `Lịch họp & Sự kiện (${events.length})` },
-                    { id: "members", label: "Hội viên" },
-                  ]
-                : [
-                    { id: "opportunities", label: `⭐ Cơ hội B2B (${opportunities.length})` },
-                    { id: "news", label: "Bài viết & Tin tức" },
-                    { id: "events", label: `Sự kiện B2B (${events.length})` },
-                    { id: "members", label: "Danh bạ đối tác" },
-                  ]
-              ).map((tab) => {
+              {[
+                { id: "tasks", label: `⚡ Giao việc & Nhận việc (${totalTasks})` },
+                { id: "supervision", label: "👁️ Giám sát CRM & Nhân sự" },
+                { id: "opportunities", label: `⭐ Cơ hội B2B (${opportunities.length})` },
+                { id: "news", label: "Bài viết & Tin tức" },
+                { id: "events", label: `Lịch họp & Sự kiện (${events.length})` },
+                { id: "members", label: `Hội viên (${currentCommunity.memberCount})` },
+              ].map((tab) => {
                 const isSelected = detailTab === tab.id;
                 return (
                   <TouchableOpacity
@@ -544,18 +524,77 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                       </Text>
                     </View>
 
-                    <TouchableOpacity
-                      style={styles.tasksNewBtn}
-                      onPress={() => onOpenAssignTask()}
-                    >
-                      <LinearGradient
-                        colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                        style={styles.tasksNewGrad}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                      {/* Nút Họp ban trực tuyến */}
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 4,
+                          paddingHorizontal: 8,
+                          paddingVertical: 6,
+                          borderRadius: 12,
+                          backgroundColor: isDark ? "rgba(223, 183, 108, 0.15)" : "#FEF3C7",
+                          borderWidth: 1,
+                          borderColor: "rgba(223, 183, 108, 0.4)",
+                        }}
+                        onPress={() => {
+                          const targetDept = selectedDeptFilter !== "all" ? selectedDeptFilter : "Toàn công ty";
+                          if (selectedDeptFilter !== "all" && !checkCanOperate(selectedDeptFilter, "meet")) {
+                            Alert.alert("Chế độ chỉ xem", `Bạn không có quyền triệu tập họp tại "${selectedDeptFilter}"!`);
+                            return;
+                          }
+                          onTriggerInstantMeeting?.(targetDept);
+                        }}
                       >
-                        <Plus size={14} color="#050C15" strokeWidth={2.5} />
-                        <Text style={styles.tasksNewBtnText}>Giao việc</Text>
-                      </LinearGradient>
-                    </TouchableOpacity>
+                        <Video size={13} color="#D97706" />
+                        <Text style={{ fontSize: 11, fontWeight: "700", color: "#D97706" }}>Họp ban</Text>
+                      </TouchableOpacity>
+
+                      {/* Nút Phân quyền ban */}
+                      {isExecutive && (
+                        <TouchableOpacity
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 4,
+                            paddingHorizontal: 8,
+                            paddingVertical: 6,
+                            borderRadius: 12,
+                            backgroundColor: isDark ? "rgba(56, 189, 248, 0.15)" : "#E0F2FE",
+                            borderWidth: 1,
+                            borderColor: "rgba(56, 189, 248, 0.4)",
+                          }}
+                          onPress={() => onOpenDeptPermissions?.()}
+                        >
+                          <ShieldCheck size={13} color="#0284C7" />
+                          <Text style={{ fontSize: 11, fontWeight: "700", color: "#0284C7" }}>Phân quyền</Text>
+                        </TouchableOpacity>
+                      )}
+
+                      {/* Nút Giao việc */}
+                      <TouchableOpacity
+                        style={styles.tasksNewBtn}
+                        onPress={() => {
+                          if (selectedDeptFilter !== "all" && !checkCanOperate(selectedDeptFilter, "assign")) {
+                            Alert.alert(
+                              "Chế độ chỉ xem",
+                              `Bạn không có quyền giao việc tại "${selectedDeptFilter}"! Thao tác này chỉ dành cho Ban Giám Đốc hoặc nhân sự có quyền trong ban.`
+                            );
+                            return;
+                          }
+                          onOpenAssignTask();
+                        }}
+                      >
+                        <LinearGradient
+                          colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                          style={styles.tasksNewGrad}
+                        >
+                          <Plus size={14} color="#050C15" strokeWidth={2.5} />
+                          <Text style={styles.tasksNewBtnText}>Giao việc</Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </View>
                   </View>
 
                   {/* 4 Thống kê nhanh */}
@@ -596,6 +635,105 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                     </View>
                   </View>
                 </View>
+
+                {/* Bộ chọn phòng ban nội bộ */}
+                {departments && departments.length > 0 && (
+                  <View style={{ marginTop: 12, marginBottom: 4 }}>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ gap: 8 }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => onChangeDeptFilter?.("all")}
+                        style={[
+                          styles.taskFilterPill,
+                          {
+                            backgroundColor: selectedDeptFilter === "all"
+                              ? (isDark ? "#FFFFFF" : "#0F172A")
+                              : (isDark ? "rgba(255, 255, 255, 0.05)" : "#F1F5F9"),
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.taskFilterPillText,
+                            {
+                              color: selectedDeptFilter === "all"
+                                ? (isDark ? "#050C15" : "#FFFFFF")
+                                : (isDark ? "#94A3B8" : "#64748B"),
+                              fontWeight: selectedDeptFilter === "all" ? "800" : "500",
+                            },
+                          ]}
+                        >
+                          Tất cả ban
+                        </Text>
+                      </TouchableOpacity>
+
+                      {departments.map((dept) => {
+                        const isSelected = selectedDeptFilter.toLowerCase() === (dept.name || "").toLowerCase();
+                        return (
+                          <TouchableOpacity
+                            key={dept.id || dept.name}
+                            onPress={() => onChangeDeptFilter?.(isSelected ? "all" : dept.name)}
+                            style={[
+                              styles.taskFilterPill,
+                              {
+                                backgroundColor: isSelected
+                                  ? "#DFB76C"
+                                  : (isDark ? "rgba(255, 255, 255, 0.05)" : "#F1F5F9"),
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 6,
+                              },
+                            ]}
+                          >
+                            <Building2 size={12} color={isSelected ? "#050C15" : (isDark ? "#94A3B8" : "#64748B")} />
+                            <Text
+                              style={[
+                                styles.taskFilterPillText,
+                                {
+                                  color: isSelected ? "#050C15" : (isDark ? "#94A3B8" : "#64748B"),
+                                  fontWeight: isSelected ? "800" : "500",
+                                },
+                              ]}
+                            >
+                              {dept.name}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
+                )}
+
+                {/* Banner cảnh báo Chế độ chỉ xem nếu không thuộc ban đang chọn */}
+                {selectedDeptFilter !== "all" && !isCurrentDeptAllowed && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-start",
+                      gap: 8,
+                      padding: 12,
+                      borderRadius: 16,
+                      backgroundColor: isDark ? "rgba(223, 183, 108, 0.12)" : "#FEF3C7",
+                      borderColor: "#DFB76C",
+                      borderWidth: 1,
+                      marginTop: 10,
+                      marginBottom: 4,
+                    }}
+                  >
+                    <ShieldAlert size={18} color="#D97706" style={{ marginTop: 2 }} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#DFB76C" : "#92400E" }}>
+                        Chế độ chỉ xem — {selectedDeptFilter}
+                      </Text>
+                      <Text style={{ fontSize: 11, color: isDark ? "#CBD5E1" : "#78350F", marginTop: 2, lineHeight: 16 }}>
+                        Bạn chưa được phân quyền trong ban này. Các chức năng giao việc mới, nhận việc, nộp báo cáo hoặc triệu tập họp ban chỉ dành cho nhân sự thuộc ban.
+                      </Text>
+                    </View>
+                  </View>
+                )}
 
                 {/* Filter Tabs Nhiệm Vụ */}
                 <ScrollView
@@ -708,30 +846,72 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                                 </Text>
                               </View>
 
+                              {/* Department Tag */}
+                              {(task as any).department && (
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 3,
+                                    paddingHorizontal: 6,
+                                    paddingVertical: 2,
+                                    borderRadius: 6,
+                                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#F1F5F9",
+                                  }}
+                                >
+                                  <Building2 size={10} color={isDark ? "#D8B282" : "#8C653B"} />
+                                  <Text style={{ fontSize: 10, color: isDark ? "#D8B282" : "#8C653B", fontWeight: "700" }}>
+                                    {(task as any).department}
+                                  </Text>
+                                </View>
+                              )}
+
                               <View style={styles.taskDeadlineRow}>
                                 <Clock size={11} color="#94A3B8" />
                                 <Text style={styles.taskDeadlineText}>Hạn: {task.deadline}</Text>
                               </View>
                             </View>
 
-                            {/* Status Indicator */}
-                            <View>
+                            {/* Status Indicator & Handover button */}
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                              {checkCanOperate((task as any).department, "handover") && (
+                                <TouchableOpacity
+                                  style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 3,
+                                    paddingHorizontal: 7,
+                                    paddingVertical: 3,
+                                    borderRadius: 8,
+                                    backgroundColor: "rgba(168, 85, 247, 0.12)",
+                                    borderWidth: 0.5,
+                                    borderColor: "#A855F7",
+                                  }}
+                                  onPress={() => {
+                                    Alert.alert("Chuyển việc", `Bạn có muốn chuyển việc "${task.title}" cho nhân sự khác trong ban?`);
+                                  }}
+                                >
+                                  <ArrowRightLeft size={11} color="#A855F7" />
+                                  <Text style={{ fontSize: 10, fontWeight: "700", color: "#A855F7" }}>Chuyển</Text>
+                                </TouchableOpacity>
+                              )}
+
                               {isAssigned && (
                                 <View style={styles.statusAssignedPill}>
                                   <AlertTriangle size={11} color="#DFB76C" />
-                                  <Text style={styles.statusAssignedText}>CHỜ NHẬN VIỆC</Text>
+                                  <Text style={styles.statusAssignedText}>CHỜ NHẬN</Text>
                                 </View>
                               )}
                               {isInProgress && (
                                 <View style={styles.statusProgressPill}>
                                   <Clock size={11} color="#38BDF8" />
-                                  <Text style={styles.statusProgressText}>ĐANG THỰC HIỆN</Text>
+                                  <Text style={styles.statusProgressText}>ĐANG LÀM</Text>
                                 </View>
                               )}
                               {isCompleted && (
                                 <View style={styles.statusCompletedPill}>
                                   <CheckCircle2 size={11} color="#10B981" />
-                                  <Text style={styles.statusCompletedText}>ĐÃ HOÀN THÀNH</Text>
+                                  <Text style={styles.statusCompletedText}>XONG</Text>
                                 </View>
                               )}
                             </View>
@@ -796,47 +976,59 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                             ]}
                           >
                             {isAssigned ? (
-                              <>
-                                <Text style={styles.acceptPromptText}>
-                                  Tài khoản nhân sự hãy xác nhận:
-                                </Text>
-                                <TouchableOpacity
-                                  style={styles.acceptTaskBtn}
-                                  disabled={acceptingTaskId === task.id}
-                                  onPress={() => onAcceptTask(task)}
-                                >
-                                  <LinearGradient
-                                    colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 0 }}
-                                    style={styles.acceptTaskGrad}
+                              checkCanOperate((task as any).department, "accept") ? (
+                                <>
+                                  <Text style={styles.acceptPromptText}>
+                                    Tài khoản nhân sự hãy xác nhận:
+                                  </Text>
+                                  <TouchableOpacity
+                                    style={styles.acceptTaskBtn}
+                                    disabled={acceptingTaskId === task.id}
+                                    onPress={() => onAcceptTask(task)}
                                   >
-                                    {acceptingTaskId === task.id ? (
-                                      <ActivityIndicator size="small" color="#050C15" />
-                                    ) : (
-                                      <>
-                                        <Sparkles size={14} color="#050C15" />
-                                        <Text style={styles.acceptTaskBtnText}>
-                                          TIẾN HÀNH NHẬN VIỆC
-                                        </Text>
-                                      </>
-                                    )}
-                                  </LinearGradient>
-                                </TouchableOpacity>
-                              </>
-                            ) : isInProgress ? (
-                              <>
-                                <Text style={styles.inProgressPromptText}>
-                                  Đang xử lý · Cập nhật khi xong:
+                                    <LinearGradient
+                                      colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                                      start={{ x: 0, y: 0 }}
+                                      end={{ x: 1, y: 0 }}
+                                      style={styles.acceptTaskGrad}
+                                    >
+                                      {acceptingTaskId === task.id ? (
+                                        <ActivityIndicator size="small" color="#050C15" />
+                                      ) : (
+                                        <>
+                                          <Sparkles size={14} color="#050C15" />
+                                          <Text style={styles.acceptTaskBtnText}>
+                                            TIẾN HÀNH NHẬN VIỆC
+                                          </Text>
+                                        </>
+                                      )}
+                                    </LinearGradient>
+                                  </TouchableOpacity>
+                                </>
+                              ) : (
+                                <Text style={{ fontSize: 11, fontWeight: "700", color: "#D97706" }}>
+                                  ⏳ Chờ nhân sự ban tiếp nhận
                                 </Text>
-                                <TouchableOpacity
-                                  style={styles.completeTaskBtn}
-                                  onPress={() => onCompleteTask(task)}
-                                >
-                                  <Check size={14} color="#050C15" strokeWidth={2.5} />
-                                  <Text style={styles.completeTaskBtnText}>Đánh dấu xong</Text>
-                                </TouchableOpacity>
-                              </>
+                              )
+                            ) : isInProgress ? (
+                              checkCanOperate((task as any).department, "report") ? (
+                                <>
+                                  <Text style={styles.inProgressPromptText}>
+                                    Đang xử lý · Cập nhật khi xong:
+                                  </Text>
+                                  <TouchableOpacity
+                                    style={styles.completeTaskBtn}
+                                    onPress={() => onCompleteTask(task)}
+                                  >
+                                    <Check size={14} color="#050C15" strokeWidth={2.5} />
+                                    <Text style={styles.completeTaskBtnText}>Đánh dấu xong</Text>
+                                  </TouchableOpacity>
+                                </>
+                              ) : (
+                                <Text style={{ fontSize: 11, fontWeight: "700", color: "#0284C7" }}>
+                                  ⚡ Đang xử lý trong ban
+                                </Text>
+                              )
                             ) : (
                               <View style={styles.completedStatusRow}>
                                 <CheckCircle2 size={16} color="#10B981" />

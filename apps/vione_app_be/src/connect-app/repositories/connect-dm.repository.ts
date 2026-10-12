@@ -262,15 +262,22 @@ export class ConnectDmRepository {
 
   async findAllMembersWithProfiles(): Promise<any[]> {
     return this.prisma.$queryRaw<any[]>`
-      SELECT m.id, m.code, m.user_id, m.name, m.avatar, m.company, m.position,
-             COALESCE(up.display_name, vu.name, bi.display_name, m.name) as display_name,
-             COALESCE(up.avatar_url, bi.avatar_url, vu.avatar_url, m.avatar) as avatar_url,
-             COALESCE(bi.headline, bi.job_title, up.professional_title, m.position) as headline,
-             COALESCE(bi.company_name, up.company_name, m.company) as company_name
-      FROM public.members m
-      LEFT JOIN public.user_profiles up ON up.user_id = m.user_id
-      LEFT JOIN public.business_identities bi ON bi.owner_user_id = m.user_id AND bi.status = 'active'
-      LEFT JOIN public.vione_users vu ON vu.id = m.user_id
+      SELECT 
+        COALESCE(m.id::text, vu.id::text) as id,
+        m.code,
+        COALESCE(vu.id, m.user_id) as user_id,
+        COALESCE(vu.name, m.name, 'Thành viên ViOne') as name,
+        COALESCE(up.avatar_url, bi.avatar_url, vu.avatar_url, m.avatar) as avatar,
+        COALESCE(bi.company_name, up.company_name, m.company, 'ViOne Member') as company,
+        COALESCE(bi.headline, bi.job_title, up.professional_title, m.position, 'Lãnh đạo Doanh nghiệp') as position,
+        COALESCE(up.display_name, vu.name, bi.display_name, m.name, 'Thành viên ViOne') as display_name,
+        COALESCE(up.avatar_url, bi.avatar_url, vu.avatar_url, m.avatar, '') as avatar_url,
+        COALESCE(bi.headline, bi.job_title, up.professional_title, m.position, 'Lãnh đạo Doanh nghiệp') as headline,
+        COALESCE(bi.company_name, up.company_name, m.company, 'Gia Đình ViOne') as company_name
+      FROM public.vione_users vu
+      FULL OUTER JOIN public.members m ON m.user_id = vu.id
+      LEFT JOIN public.user_profiles up ON up.user_id = vu.id
+      LEFT JOIN public.business_identities bi ON bi.owner_user_id = vu.id AND bi.status = 'active'
     `.catch(() => []);
   }
 

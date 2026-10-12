@@ -430,6 +430,12 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
   const [dashboardSearch, setDashboardSearch] = useState("");
   const [searchCategory, setSearchCategory] = useState<"all" | "members" | "opps" | "invoices" | "events">("all");
 
+  // Bộ lọc theo trạng thái cho các khối dữ liệu trên Dashboard
+  const [taskStatusFilter, setTaskStatusFilter] = useState<"all" | "pending" | "processing" | "completed">("all");
+  const [memberStatusFilter, setMemberStatusFilter] = useState<"all" | "active" | "pending">("all");
+  const [productStatusFilter, setProductStatusFilter] = useState<"all" | "active" | "sold">("all");
+  const [oppStatusFilter, setOppStatusFilter] = useState<"all" | "open" | "popular">("all");
+
   const [trafficTab, setTrafficTab] = useState<"day" | "week" | "month">("day");
   const [financePeriod, setFinancePeriod] = useState<"week" | "month">("week");
   const [isExportingFinanceExcel, setIsExportingFinanceExcel] = useState(false);
@@ -672,8 +678,32 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
         const timeB = b.createdAt || b.created_at || b.joinedAt || b.joined_at ? new Date(b.createdAt || b.created_at || b.joinedAt || b.joined_at).getTime() : 0;
         return timeB - timeA;
       })
-      .slice(0, 4);
+      .slice(0, 8);
   }, [membersQ.data]);
+
+  // Danh sách có bộ lọc trạng thái
+  const filteredTasks = useMemo(() => {
+    if (taskStatusFilter === "all") return tasks;
+    return tasks.filter((t) => t.status === taskStatusFilter);
+  }, [tasks, taskStatusFilter]);
+
+  const filteredMembers = useMemo(() => {
+    if (memberStatusFilter === "all") return recentMembers;
+    if (memberStatusFilter === "active") return recentMembers.filter((m: any) => m.status === "active");
+    return recentMembers.filter((m: any) => m.status !== "active");
+  }, [recentMembers, memberStatusFilter]);
+
+  const filteredProducts = useMemo(() => {
+    if (productStatusFilter === "all") return recentProducts;
+    if (productStatusFilter === "active") return recentProducts.filter((p: any) => p.status === "active");
+    return recentProducts.filter((p: any) => p.status !== "active");
+  }, [recentProducts, productStatusFilter]);
+
+  const filteredOpps = useMemo(() => {
+    if (oppStatusFilter === "all") return topOpps;
+    if (oppStatusFilter === "open") return topOpps.filter((o) => o.opp.status === "open");
+    return topOpps.filter((o) => o.interests > 0);
+  }, [topOpps, oppStatusFilter]);
 
   const recent = useMemo<ActivityLog[]>(() => {
     const list = [...(activityQ.data ?? [])];
@@ -1767,15 +1797,54 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel
           title="Hội viên mới gia nhập gần đây"
-          action={<ViewAll to="/members" label={t("exec.viewAll")} />}
+          action={
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded-lg bg-muted/60 p-0.5 text-[11px] font-medium">
+                <button
+                  type="button"
+                  onClick={() => setMemberStatusFilter("all")}
+                  className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                    memberStatusFilter === "all"
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Tất cả
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMemberStatusFilter("active")}
+                  className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                    memberStatusFilter === "active"
+                      ? "bg-background text-emerald-600 font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Chính thức
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMemberStatusFilter("pending")}
+                  className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                    memberStatusFilter === "pending"
+                      ? "bg-background text-amber-600 font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Mới đăng ký
+                </button>
+              </div>
+              <ViewAll to="/members" label={t("exec.viewAll")} />
+            </div>
+          }
         >
           {membersQ.isLoading ? (
             <ListSkeleton rows={4} />
-          ) : recentMembers.length === 0 ? (
+          ) : filteredMembers.length === 0 ? (
             <EmptyState />
           ) : (
             <ul className="space-y-2.5">
-              {recentMembers.map((m: any) => (
+              {filteredMembers.map((m: any) => (
                 <li key={m.id}>
                   <Link
                     to="/members/$memberId"
@@ -1813,15 +1882,54 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
 
         <Panel
           title="Sản phẩm & Dịch vụ mới lên sàn Marketplace"
-          action={<ViewAll to="/marketplace" label={t("exec.viewAll")} />}
+          action={
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded-lg bg-muted/60 p-0.5 text-[11px] font-medium">
+                <button
+                  type="button"
+                  onClick={() => setProductStatusFilter("all")}
+                  className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                    productStatusFilter === "all"
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Tất cả
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProductStatusFilter("active")}
+                  className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                    productStatusFilter === "active"
+                      ? "bg-background text-emerald-600 font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Đang mở
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProductStatusFilter("sold")}
+                  className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                    productStatusFilter === "sold"
+                      ? "bg-background text-amber-600 font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Đã bán / Chờ
+                </button>
+              </div>
+              <ViewAll to="/marketplace" label={t("exec.viewAll")} />
+            </div>
+          }
         >
           {productsQ.isLoading ? (
             <ListSkeleton rows={4} />
-          ) : recentProducts.length === 0 ? (
+          ) : filteredProducts.length === 0 ? (
             <EmptyState />
           ) : (
             <ul className="space-y-2.5">
-              {recentProducts.map((p: any) => (
+              {filteredProducts.map((p: any) => (
                 <li key={p.id}>
                   <Link
                     to="/marketplace/$productId"
@@ -2167,7 +2275,7 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
         </div>
 
         {/* Urgent Tasks */}
-        <div className="w-full lg:w-96 p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-[0px_4px_12px_0px_rgba(9,11,26,0.04)] border border-slate-100 dark:border-slate-800 flex flex-col justify-start items-start gap-5">
+        <div className="w-full lg:w-96 p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-[0px_4px_12px_0px_rgba(9,11,26,0.04)] border border-slate-100 dark:border-slate-800 flex flex-col justify-start items-start gap-4">
           <div className="self-stretch flex justify-between items-center">
             <div className="text-gray-900 dark:text-white text-base font-bold font-['Inter']">
               Công việc cần xử lý ngay
@@ -2179,13 +2287,61 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
             </div>
           </div>
 
+          {/* Bộ lọc trạng thái công việc */}
+          <div className="self-stretch flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-[11px] font-medium">
+            <button
+              type="button"
+              onClick={() => setTaskStatusFilter("all")}
+              className={`flex-1 py-1 rounded-lg transition text-center cursor-pointer ${
+                taskStatusFilter === "all"
+                  ? "bg-white dark:bg-slate-900 text-foreground font-semibold shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Tất cả
+            </button>
+            <button
+              type="button"
+              onClick={() => setTaskStatusFilter("pending")}
+              className={`flex-1 py-1 rounded-lg transition text-center cursor-pointer ${
+                taskStatusFilter === "pending"
+                  ? "bg-white dark:bg-slate-900 text-amber-600 font-semibold shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Chờ xử lý
+            </button>
+            <button
+              type="button"
+              onClick={() => setTaskStatusFilter("processing")}
+              className={`flex-1 py-1 rounded-lg transition text-center cursor-pointer ${
+                taskStatusFilter === "processing"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 font-semibold shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Đang làm
+            </button>
+            <button
+              type="button"
+              onClick={() => setTaskStatusFilter("completed")}
+              className={`flex-1 py-1 rounded-lg transition text-center cursor-pointer ${
+                taskStatusFilter === "completed"
+                  ? "bg-white dark:bg-slate-900 text-emerald-600 font-semibold shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Đã xong
+            </button>
+          </div>
+
           <div className="self-stretch flex flex-col justify-start items-start gap-3">
-            {tasks.length === 0 ? (
+            {filteredTasks.length === 0 ? (
               <div className="self-stretch py-8 text-center rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-xs text-slate-400">
-                Không có công việc khẩn cấp nào trong CSDL
+                Không có công việc nào trong trạng thái đã chọn
               </div>
             ) : (
-              tasks.map((task) => {
+              filteredTasks.map((task) => {
                 const isCompleted = task.status === "completed";
                 return (
                   <div
@@ -2231,16 +2387,55 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
         <div className="grid gap-5 lg:grid-cols-3">
           <Panel
             title={t("exec.opps.title")}
-            action={<ViewAll to="/opportunities" label={t("exec.viewAll")} />}
+            action={
+              <div className="flex items-center gap-2">
+                <div className="inline-flex rounded-lg bg-muted/60 p-0.5 text-[11px] font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setOppStatusFilter("all")}
+                    className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                      oppStatusFilter === "all"
+                        ? "bg-background text-foreground shadow-xs font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Tất cả
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOppStatusFilter("open")}
+                    className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                      oppStatusFilter === "open"
+                        ? "bg-background text-amber-600 font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Đang mở
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOppStatusFilter("popular")}
+                    className={`rounded-md px-2 py-0.5 transition cursor-pointer ${
+                      oppStatusFilter === "popular"
+                        ? "bg-background text-emerald-600 font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Nhiều tương tác
+                  </button>
+                </div>
+                <ViewAll to="/opportunities" label={t("exec.viewAll")} />
+              </div>
+            }
             className="lg:col-span-2"
           >
             {oppsQ.isLoading ? (
               <ListSkeleton rows={3} />
-            ) : topOpps.length === 0 ? (
+            ) : filteredOpps.length === 0 ? (
               <EmptyState />
             ) : (
               <ul className="grid gap-2.5 sm:grid-cols-2">
-                {topOpps.map(({ opp, interests }) => (
+                {filteredOpps.map(({ opp, interests }) => (
                   <li key={opp.id}>
                     <Link
                       to="/opportunities/$id"

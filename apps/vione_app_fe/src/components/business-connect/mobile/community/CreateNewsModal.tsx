@@ -68,6 +68,10 @@ export function CreateNewsModal({
       toast.error("Vui lòng nhập tiêu đề bài viết.");
       return;
     }
+    if (!content.trim() && !excerpt.trim()) {
+      toast.error("Vui lòng nhập nội dung chi tiết hoặc tóm tắt bài viết.");
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -255,7 +259,7 @@ export function CreateNewsModal({
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md disabled:opacity-50 transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 disabled:opacity-50 transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>

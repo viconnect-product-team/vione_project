@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/lib/i18n";
 import { LuxuryLangSwitcher } from "@/components/LuxuryLangSwitcher";
@@ -81,6 +81,7 @@ function CrmAdminAuthPage() {
   const [authErrorInfo, setAuthErrorInfo] = useState<AuthErrorInfo | null>(null);
   const [remember, setRemember] = useState(true);
   const { user, setAuthData } = useAuth();
+  const hasRedirectedRef = useRef(false);
 
   const destPath = safeRedirect(redirectTo) ?? "";
 
@@ -108,6 +109,8 @@ function CrmAdminAuthPage() {
   }, [searchPortal, destPath, redirectTo, navigate]);
 
   async function goPostLogin() {
+    if (hasRedirectedRef.current) return;
+    hasRedirectedRef.current = true;
     const target = safeRedirect(redirectTo);
     if (
       target &&
@@ -135,22 +138,29 @@ function CrmAdminAuthPage() {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && !hasRedirectedRef.current) {
       void goPostLogin();
     }
   }, [user]);
 
   async function submit() {
-    if (!email.trim()) {
-      setAuthError("Vui lòng nhập tài khoản hoặc email quản trị");
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      const err = "Vui lòng nhập tài khoản hoặc email quản trị";
+      setAuthError(err);
+      toast.error(err);
       return;
     }
     if (!password) {
-      setAuthError("Vui lòng nhập mật khẩu");
+      const err = "Vui lòng nhập mật khẩu";
+      setAuthError(err);
+      toast.error(err);
       return;
     }
     if (mode === "signup" && password !== confirmPassword) {
-      setAuthError("Mật khẩu xác nhận không khớp");
+      const err = "Mật khẩu xác nhận không khớp";
+      setAuthError(err);
+      toast.error(err);
       return;
     }
 
@@ -162,28 +172,40 @@ function CrmAdminAuthPage() {
       if (mode === "signup") {
         await fetchNestApi("/auth/register", {
           method: "POST",
-          body: JSON.stringify({ username: email.trim(), password }),
+          body: JSON.stringify({ username: trimmedEmail, password }),
         });
         toast.success(t("auth.signUpSuccess") || "Đăng ký thành công! Hãy đăng nhập");
         setMode("signin");
       } else {
         const res = await fetchNestApi("/auth/login", {
           method: "POST",
-          body: JSON.stringify({ email: email.trim(), password }),
+          body: JSON.stringify({ email: trimmedEmail, password }),
         });
         if (!res?.access_token) {
-          throw new Error("Đăng nhập không thành công. Vui lòng kiểm tra lại tài khoản và mật khẩu.");
+          throw new Error("Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!");
         }
         setAuthData(res);
-        applyRememberPreference(remember, email.trim());
+        applyRememberPreference(remember, trimmedEmail);
         await goPostLogin();
       }
     } catch (e: any) {
       const info = classifyAuthError(e, { provider: "password" });
       setAuthErrorInfo(info);
-      const msg = t(info.messageKey as Parameters<typeof t>[0]) || e?.message || "Đăng nhập thất bại";
-      setAuthError(msg);
-      toast.error(msg);
+      let errorMsg = "";
+      if (info.kind === "credentials") {
+        errorMsg = "Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!";
+      } else {
+        const translated = t(info.messageKey as Parameters<typeof t>[0]);
+        if (translated && translated !== "auth.genericError" && translated !== "Có lỗi xảy ra") {
+          errorMsg = translated;
+        } else if (e?.message && !e.message.includes("Object") && !e.message.includes("500")) {
+          errorMsg = e.message;
+        } else {
+          errorMsg = "Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!";
+        }
+      }
+      setAuthError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -191,53 +213,6 @@ function CrmAdminAuthPage() {
 
   return (
     <main className="relative min-h-[100dvh] w-full overflow-x-hidden flex flex-col justify-between bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* Dynamic Keyframes for seamless floating zero-gravity animations */}
-      <style>{`
-        @keyframes vione-orbit-cw {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes vione-orbit-ccw {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        @keyframes vione-free-float-1 {
-          0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-          50% { transform: translate(-10px, -18px) rotate(1.2deg); }
-        }
-        @keyframes vione-free-float-2 {
-          0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-          50% { transform: translate(12px, -14px) rotate(-1.5deg); }
-        }
-        @keyframes vione-free-float-3 {
-          0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-          50% { transform: translate(-12px, 16px) rotate(-1deg); }
-        }
-        @keyframes vione-free-float-4 {
-          0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-          50% { transform: translate(10px, 18px) rotate(1.2deg); }
-        }
-        @keyframes vione-pulse-aura {
-          0%, 100% { opacity: 0.35; transform: scale(0.96); }
-          50% { opacity: 0.75; transform: scale(1.08); }
-        }
-        @keyframes vione-particle-drift {
-          0% { transform: translateY(0px) scale(0.9); opacity: 0.3; }
-          50% { transform: translateY(-16px) scale(1.15); opacity: 0.85; }
-          100% { transform: translateY(0px) scale(0.9); opacity: 0.3; }
-        }
-        .anim-orbit-cw { animation: vione-orbit-cw 42s linear infinite; }
-        .anim-orbit-ccw { animation: vione-orbit-ccw 28s linear infinite; }
-        .anim-float-free-1 { animation: vione-free-float-1 7s ease-in-out infinite; }
-        .anim-float-free-2 { animation: vione-free-float-2 8s ease-in-out infinite 0.8s; }
-        .anim-float-free-3 { animation: vione-free-float-3 7.5s ease-in-out infinite 1.5s; }
-        .anim-float-free-4 { animation: vione-free-float-4 8.5s ease-in-out infinite 2.2s; }
-        .anim-aura-glow { animation: vione-pulse-aura 5s ease-in-out infinite; }
-        .anim-particle-1 { animation: vione-particle-drift 4.5s ease-in-out infinite 0.3s; }
-        .anim-particle-2 { animation: vione-particle-drift 5.5s ease-in-out infinite 1.8s; }
-        .anim-particle-3 { animation: vione-particle-drift 6s ease-in-out infinite 2.5s; }
-      `}</style>
-
       {/* 1. Ảnh chìm nền Skyline Architecture */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-90 dark:opacity-40"
@@ -247,21 +222,19 @@ function CrmAdminAuthPage() {
       />
 
       {/* 2. Soft Light / Dark Overlay for Optimal Contrast */}
-      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-white/88 via-slate-50/78 to-white/92 dark:from-slate-950/92 dark:via-slate-900/85 dark:to-slate-950/94 backdrop-blur-[2px]" />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-white/90 via-slate-50/80 to-white/95 dark:from-slate-950/95 dark:via-slate-900/90 dark:to-slate-950/95 backdrop-blur-[2px]" />
 
-      {/* 3. Ambient Champagne Gold Glow Accents */}
+      {/* 3. Ambient Champagne Gold Glow Accents (Tĩnh, không animation) */}
       <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-40 dark:opacity-25"
+        className="pointer-events-none fixed inset-0 z-0 opacity-30 dark:opacity-20"
         style={{
           background:
-            "radial-gradient(circle at 30% 35%, rgba(223, 183, 108, 0.32) 0%, rgba(201, 158, 85, 0.1) 50%, transparent 75%)",
+            "radial-gradient(circle at 25% 30%, rgba(223, 183, 108, 0.25) 0%, rgba(201, 158, 85, 0.08) 50%, transparent 70%)",
         }}
       />
-      <div className="pointer-events-none fixed -top-40 -left-40 h-96 w-96 rounded-full bg-amber-400/20 blur-[140px]" />
-      <div className="pointer-events-none fixed -bottom-40 -right-40 h-96 w-96 rounded-full bg-amber-200/25 blur-[140px]" />
 
       {/* Top Navbar */}
-      <header className="relative z-20 w-full px-6 py-4 flex items-center justify-between border-b border-amber-400/15 backdrop-blur-md bg-white/40 dark:bg-slate-950/40">
+      <header className="relative z-20 w-full px-6 py-4 flex items-center justify-between border-b border-amber-400/20 backdrop-blur-md bg-white/60 dark:bg-slate-950/60">
         <a
           href="https://viconnect.vn/"
           target="_blank"
@@ -269,7 +242,7 @@ function CrmAdminAuthPage() {
           className="inline-flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-400 transition hover:text-amber-950 dark:hover:text-amber-200"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Website chính thức</span>
+          <span>Website chính thức ViOne</span>
         </a>
         <div className="flex items-center gap-2.5">
           <ThemeSwitcher />
@@ -277,149 +250,158 @@ function CrmAdminAuthPage() {
         </div>
       </header>
 
-      {/* Main Content: 2 Cột (Animation Bên Trái Lơ Lửng Tự Nhiên & Đăng Nhập Sát Bên Phải) */}
+      {/* Main Content: 2 Cột Chuẩn Mực (Trái: Ảnh + Biểu đồ PR Điểm Lợi ViOne; Phải: Đăng Nhập CRM) */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 flex-1 flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full items-center">
           
-          {/* CỘT BÊN TRÁI: GIAO DIỆN ANIMATION LƠ LỬNG TỰ NHIÊN (HOÀN TOÀN KHÔNG BORDER, KHÔNG BACKGROUND CARD) */}
-          <div className="lg:col-span-7 w-full hidden lg:flex flex-col justify-center relative min-h-[580px]">
+          {/* CỘT BÊN TRÁI: ẢNH KÈM TEXT & BIỂU ĐỒ PR ĐIỂM LỢI THẾ VIONE (HOÀN TOÀN KHÔNG ANIMATION) */}
+          <div className="lg:col-span-7 w-full hidden lg:flex flex-col justify-center space-y-6">
             
-            {/* Header Text giới thiệu kiến trúc điều hành (Nhẹ nhàng, bay bổng không viền) */}
-            <div className="relative z-10 mb-4 pl-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-amber-400/15 border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300 backdrop-blur-md">
+            {/* Header Text giới thiệu kiến trúc điều hành */}
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-amber-400/15 border border-amber-400/35 px-3.5 py-1 text-xs font-bold text-amber-800 dark:text-amber-300 backdrop-blur-md">
                 <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                <span>KIẾN TRÚC ĐIỀU HÀNH DOANH NGHIỆP C-LEVEL</span>
+                <span>HỆ ĐIỀU HÀNH DOANH NGHIỆP TOÀN DIỆN VIONE CRM</span>
               </div>
-              <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
                 Vận Hành Tự Động Hóa & <br />
-                <span className="bg-gradient-to-r from-amber-700 via-amber-500 to-amber-800 dark:from-amber-400 dark:via-amber-300 dark:to-amber-500 bg-clip-text text-transparent">
-                  Kết Nối Khách Hàng B2B
+                <span className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 dark:from-amber-400 dark:via-amber-300 dark:to-amber-500 bg-clip-text text-transparent">
+                  Đột Phá Tăng Trưởng Doanh Nghiệp
                 </span>
               </h2>
-              <p className="mt-2 text-xs sm:text-[13.5px] text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed">
-                Nền tảng kiểm soát dòng tiền, phê duyệt VietQR 3 cấp và tối ưu hóa phễu kinh doanh đa chi nhánh cùng Trợ lý AI Copilot.
+              <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                Giải pháp All-in-One thay thế hệ thống rời rạc: Tích hợp Quản trị Khách hàng, Phân quyền Phòng ban, Phê duyệt VietQR 3 cấp và Sàn Giao thương B2B trực tiếp.
               </p>
             </div>
 
-            {/* Khu vực Animation: Trôi tự do trong không gian (Zero Background, Zero Border) */}
-            <div className="relative w-full h-[450px] flex items-center justify-center select-none pointer-events-none">
+            {/* Banner Ảnh + Mockup Thống Kê ViOne Cao Cấp */}
+            <div className="relative rounded-2xl overflow-hidden border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white/80 to-amber-500/5 dark:from-slate-900/90 dark:via-slate-900/80 dark:to-amber-950/30 p-5 shadow-lg backdrop-blur-xl">
+              <div className="flex flex-col sm:flex-row items-center gap-5">
+                <div className="relative h-28 w-28 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/40 shadow-md">
+                  <img
+                    src="/skyline_perspective_light.jpg"
+                    alt="ViOne Enterprise Architecture"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end justify-center p-1.5">
+                    <span className="text-[10px] font-extrabold text-amber-300 tracking-wider">C-LEVEL ERP</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      Hiệu năng Vận hành Doanh nghiệp
+                    </span>
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    Tối ưu hóa đến 45% chi phí &amp; 3x tốc độ phê duyệt
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-normal">
+                    Đồng bộ thời gian thực giữa Web CRM, App Mobile Native và Kế toán tài chính PostgreSQL.
+                  </p>
+                </div>
+              </div>
+
+              {/* Biểu Đồ So Sánh PR Trực Quan (Trước vs Sau khi dùng ViOne) */}
+              <div className="mt-4 pt-4 border-t border-amber-400/20 grid grid-cols-3 gap-3 text-center">
+                <div className="rounded-xl bg-white/70 dark:bg-slate-800/60 p-2.5 border border-slate-200/60 dark:border-slate-700/60">
+                  <div className="text-lg font-black text-amber-600 dark:text-amber-400">+168%</div>
+                  <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Hiệu suất điều hành</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">Tự động hóa luồng việc</div>
+                </div>
+                <div className="rounded-xl bg-white/70 dark:bg-slate-800/60 p-2.5 border border-slate-200/60 dark:border-slate-700/60">
+                  <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">&lt; 30 Giây</div>
+                  <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Duyệt chi VietQR 3 cấp</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">Tự động gạch nợ tức thì</div>
+                </div>
+                <div className="rounded-xl bg-white/70 dark:bg-slate-800/60 p-2.5 border border-slate-200/60 dark:border-slate-700/60">
+                  <div className="text-lg font-black text-sky-600 dark:text-sky-400">100%</div>
+                  <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Phân quyền phòng ban</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">Bàn giao &amp; Audit Trail</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4 Thẻ Điểm Lợi Cốt Lõi ViOne (Static, Giao diện chuẩn mực) */}
+            <div className="grid grid-cols-2 gap-3.5">
               
-              {/* Glowing Aura Particle Clusters bay lơ lửng */}
-              <div className="absolute top-12 left-1/4 h-3 w-3 rounded-full bg-amber-400 shadow-[0_0_15px_#DFB76C] anim-particle-1" />
-              <div className="absolute bottom-16 right-1/3 h-2.5 w-2.5 rounded-full bg-amber-300 shadow-[0_0_12px_#DFB76C] anim-particle-2" />
-              <div className="absolute top-1/3 right-1/4 h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_10px_#C99E55] anim-particle-3" />
-
-              {/* Hào quang tâm điểm phát sáng dịu mắt */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-80 h-80 rounded-full bg-amber-400/20 dark:bg-amber-500/15 blur-[110px] anim-aura-glow" />
-              </div>
-
-              {/* 1. Các Vòng Quỹ Đạo Ánh Sáng Xoay Tự Do (Orbital Rings in Open Space) */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                {/* Vòng ngoài lớn */}
-                <div className="w-[380px] h-[380px] rounded-full border border-amber-400/20 anim-orbit-cw flex items-center justify-center">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-amber-400 shadow-[0_0_14px_#DFB76C]" />
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 h-2.5 w-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_#DFB76C]" />
-                </div>
-                {/* Vòng giữa nét đứt kim loại mạ vàng */}
-                <div className="w-[270px] h-[270px] rounded-full border border-dashed border-amber-400/35 anim-orbit-ccw flex items-center justify-center">
-                  <div className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-amber-500 shadow-[0_0_12px_#C99E55]" />
-                  <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-amber-300 shadow-[0_0_8px_#DFB76C]" />
-                </div>
-                {/* Vòng trong tinh tế */}
-                <div className="w-[170px] h-[170px] rounded-full border border-amber-400/15 anim-orbit-cw flex items-center justify-center" />
-                
-                {/* Lõi Trung Tâm Holographic Core ViOne (Bay lơ lửng) */}
-                <div className="relative z-10 flex flex-col items-center justify-center anim-aura-glow">
-                  <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-amber-400/35 via-white/85 to-amber-300/40 dark:from-amber-600/35 dark:via-slate-800 dark:to-amber-400/35 p-[2px] shadow-[0_0_40px_rgba(223,183,108,0.5)] backdrop-blur-xl">
-                    <div className="h-full w-full rounded-full bg-white/95 dark:bg-slate-900/95 flex flex-col items-center justify-center p-2 text-center shadow-inner">
-                      <img
-                        src="/vione-gold-192.png"
-                        alt="ViOne Core"
-                        className="h-9 w-9 object-contain drop-shadow-md"
-                      />
-                      <span className="text-[9.5px] font-black text-amber-700 dark:text-amber-400 tracking-wider mt-0.5">VIONE AI</span>
-                    </div>
+              {/* Điểm lợi 1 */}
+              <div className="rounded-2xl border border-amber-400/30 bg-white/85 dark:bg-slate-900/85 p-4 shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Kiểm Soát Dòng Tiền</h4>
+                    <span className="text-[10.5px] font-semibold text-emerald-600 dark:text-emerald-400">Duyệt chi VietQR 3 cấp</span>
                   </div>
                 </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Ngăn chặn 90% rủi ro chi sai, tự động hóa đối soát kế toán và tạo lệnh thanh toán QR trực tiếp.
+                </p>
               </div>
 
-              {/* 2. Bốn Thẻ KPI Động Lơ Lửng Độc Lập Trôi Tự Do (Floating Orbit Satellites) */}
-
-              {/* Thẻ 1: Doanh Thu & Dòng Tiền (Góc Trên Trái) */}
-              <div className="absolute top-2 left-2 xl:left-6 z-20 anim-float-free-1">
-                <div className="rounded-2xl border border-amber-400/40 bg-white/90 dark:bg-slate-900/90 p-4 shadow-[0_16px_36px_rgba(216,178,130,0.22)] backdrop-blur-2xl w-58">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="h-8 w-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shadow-xs">
-                      <TrendingUp className="h-4 w-4" />
-                    </div>
-                    <span className="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
-                      <ArrowUpRight className="h-3 w-3" /> +38.5%
-                    </span>
+              {/* Điểm lợi 2 */}
+              <div className="rounded-2xl border border-amber-400/30 bg-white/85 dark:bg-slate-900/85 p-4 shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="h-8 w-8 rounded-xl bg-blue-500/15 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <Layers className="h-4 w-4" />
                   </div>
-                  <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Dòng Tiền & Doanh Thu</div>
-                  <div className="text-sm font-extrabold text-slate-900 dark:text-white">Duyệt chi VietQR 3 cấp</div>
-                </div>
-              </div>
-
-              {/* Thẻ 2: ViOne AI Copilot (Góc Trên Phải) */}
-              <div className="absolute top-4 right-2 xl:right-6 z-20 anim-float-free-2">
-                <div className="rounded-2xl border border-amber-400/40 bg-white/90 dark:bg-slate-900/90 p-4 shadow-[0_16px_36px_rgba(216,178,130,0.22)] backdrop-blur-2xl w-58">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 flex items-center justify-center shadow-xs">
-                      <Bot className="h-4 w-4" />
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold text-amber-700 dark:text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
-                      Live AI 24/7
-                    </span>
-                  </div>
-                  <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Trợ Lý Điều Hành</div>
-                  <div className="text-sm font-extrabold text-slate-900 dark:text-white">Cảnh báo & Phân tích tự động</div>
-                </div>
-              </div>
-
-              {/* Thẻ 3: Mạng Lưới Khách Hàng B2B (Góc Dưới Trái) */}
-              <div className="absolute bottom-6 left-2 xl:left-6 z-20 anim-float-free-3">
-                <div className="rounded-2xl border border-amber-400/40 bg-white/90 dark:bg-slate-900/90 p-4 shadow-[0_16px_36px_rgba(216,178,130,0.22)] backdrop-blur-2xl w-58">
-                  <div className="flex items-center gap-2.5 mb-2">
-                    <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shadow-xs">
-                      <Users className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-extrabold text-slate-900 dark:text-white">1,280+ Đối tác</div>
-                      <div className="text-[10.5px] text-slate-500 dark:text-slate-400">Doanh nghiệp B2B kết nối</div>
-                    </div>
-                  </div>
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 rounded-full w-[88%]" />
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Phân Quyền Phòng Ban</h4>
+                    <span className="text-[10.5px] font-semibold text-blue-600 dark:text-blue-400">Department RBAC</span>
                   </div>
                 </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Bảo mật dữ liệu kinh doanh, kỹ thuật, kế toán. Tự động chuyển giao việc khi thay đổi nhân sự.
+                </p>
               </div>
 
-              {/* Thẻ 4: Vận Hành Đa Chi Nhánh (Góc Dưới Phải) */}
-              <div className="absolute bottom-4 right-2 xl:right-6 z-20 anim-float-free-4">
-                <div className="rounded-2xl border border-amber-400/40 bg-white/90 dark:bg-slate-900/90 p-4 shadow-[0_16px_36px_rgba(216,178,130,0.22)] backdrop-blur-2xl w-58">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shadow-xs">
-                      <Layers className="h-4 w-4" />
-                    </div>
-                    <span className="text-[11px] font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/50 px-2 py-0.5 rounded-full">
-                      SLA 99.98%
-                    </span>
+              {/* Điểm lợi 3 */}
+              <div className="rounded-2xl border border-amber-400/30 bg-white/85 dark:bg-slate-900/85 p-4 shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <Users className="h-4 w-4" />
                   </div>
-                  <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Đồng Bộ Hệ Thống</div>
-                  <div className="text-sm font-extrabold text-slate-900 dark:text-white">Đa Chi Nhánh Thời Gian Thực</div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Mạng Lưới B2B Connect</h4>
+                    <span className="text-[10.5px] font-semibold text-emerald-600 dark:text-emerald-400">1,280+ Đối tác liên minh</span>
+                  </div>
                 </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Tiếp cận cộng đồng doanh nhân chất lượng cao, chia sẻ cơ hội giao thương và niêm yết Marketplace.
+                </p>
               </div>
 
-              {/* Dải Trạng Thái Hệ Thống Bay Tự Nhiên Ở Dưới Cùng */}
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 rounded-full bg-white/70 dark:bg-slate-900/70 border border-amber-400/25 px-4 py-1.5 text-xs text-slate-600 dark:text-slate-300 backdrop-blur-xl shadow-xs">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-semibold">Hệ thống ViOne CRM sẵn sàng kết nối</span>
-                <span className="text-amber-500 font-bold">• Enterprise v5.0</span>
+              {/* Điểm lợi 4 */}
+              <div className="rounded-2xl border border-amber-400/30 bg-white/85 dark:bg-slate-900/85 p-4 shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="h-8 w-8 rounded-xl bg-purple-500/15 text-purple-700 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <Bot className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Trợ Lý AI Doanh Nghiệp</h4>
+                    <span className="text-[10.5px] font-semibold text-purple-600 dark:text-purple-400">ViOne AI Copilot 24/7</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Tự động phân tích báo cáo tài chính, cảnh báo công nợ đến hạn và gợi ý chiến lược tăng trưởng.
+                </p>
               </div>
 
+            </div>
+
+            {/* Dải trạng thái cam kết bảo mật & ổn định */}
+            <div className="flex items-center justify-between px-4 py-2.5 rounded-xl border border-amber-400/25 bg-white/70 dark:bg-slate-900/70 text-xs text-slate-600 dark:text-slate-300">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <span className="font-semibold">Bảo mật đa tầng TLS 1.3 &amp; AES-256</span>
+              </div>
+              <div className="flex items-center gap-2 font-medium">
+                <Activity className="h-3.5 w-3.5 text-amber-500" />
+                <span>SLA Uptime 99.98% • Enterprise v5.0</span>
+              </div>
             </div>
 
           </div>
@@ -570,7 +552,7 @@ function CrmAdminAuthPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="relative mt-2 flex h-12 w-full items-center justify-center rounded-xl text-[15px] sm:text-[16px] font-bold text-slate-950 transition-all hover:bg-[#d4a85a] active:scale-[0.99] disabled:opacity-50 cursor-pointer shadow-lg bg-[#DFB76C] border border-[#f0d499]/80 shadow-amber-500/25"
+                  className="relative mt-2 flex h-12 w-full items-center justify-center rounded-xl text-[15px] sm:text-[16px] font-bold text-slate-950 transition-all hover:brightness-105 active:scale-[0.99] disabled:opacity-50 cursor-pointer shadow-lg bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] border border-[#D8B282]/50 shadow-amber-500/25"
                 >
                   {loading ? (
                     <span className="flex items-center gap-2 text-slate-950 font-bold">

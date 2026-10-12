@@ -252,7 +252,7 @@ export function PersonalProfileBottomSheet({
               {profile.phone ? (
                 <a
                   href={`tel:${profile.phone}`}
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-[#DFB76C] hover:bg-[#d4a85a] border border-[#f0d499]/80 text-slate-950 font-extrabold text-xs shadow-sm active:scale-95 transition cursor-pointer"
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] hover:brightness-105 border border-[#D8B282]/50 text-slate-950 font-bold text-xs shadow-md active:scale-95 transition cursor-pointer"
                 >
                   <Phone className="h-4 w-4" />
                   <span>Gọi điện</span>
@@ -273,9 +273,9 @@ export function PersonalProfileBottomSheet({
                   href={zaloUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-sm active:scale-95 transition cursor-pointer"
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 dark:border-slate-700 font-extrabold text-xs shadow-sm active:scale-95 transition cursor-pointer"
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-4 w-4 text-blue-600" />
                   <span>Chat Zalo</span>
                 </a>
               ) : (

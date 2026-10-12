@@ -69,6 +69,10 @@ export function ShareEventModal({
       toast.error("Vui lòng nhập tên sự kiện!");
       return;
     }
+    if (!date) {
+      toast.error("Vui lòng chọn ngày diễn ra sự kiện!");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -147,7 +151,7 @@ export function ShareEventModal({
               onClick={() => setIsExternal(true)}
               className={`flex-1 py-1.5 px-3 rounded-lg text-[12px] font-bold transition cursor-pointer ${
                 isExternal
-                  ? "bg-amber-500 dark:bg-[#DFB76C] text-slate-950 shadow-xs"
+                  ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-xs"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
@@ -158,7 +162,7 @@ export function ShareEventModal({
               onClick={() => setIsExternal(false)}
               className={`flex-1 py-1.5 px-3 rounded-lg text-[12px] font-bold transition cursor-pointer ${
                 !isExternal
-                  ? "bg-amber-500 dark:bg-[#DFB76C] text-slate-950 shadow-xs"
+                  ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-xs"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
@@ -310,7 +314,7 @@ export function ShareEventModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-[13.5px] bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md active:scale-98 transition disabled:opacity-50 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-[13.5px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? (
                 <>

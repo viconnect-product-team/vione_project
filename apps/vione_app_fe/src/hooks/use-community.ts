@@ -11,6 +11,7 @@ import { useViewerUserId } from "@/hooks/use-viewer-user-id";
 import { useAuth } from "@/context/AuthContext";
 import { fetchNestApi } from "@/lib/api-client";
 import type { CommunityMemberRoleFilter } from "@/lib/business-connect/mobile/community.types";
+import { sanitizeVietnameseText } from "@/lib/textSanitizer";
 
 export const communityKeys = {
   root: ["bc-mobile", "community"] as const,
@@ -58,11 +59,19 @@ export function useMyCommunities(enabled = true) {
           list = [];
         }
       }
-      return list.filter((c: any) => {
-        const name = String(c.name || "").toLowerCase();
-        const slug = String(c.slug || "").toLowerCase();
-        return !name.includes("1983") && !slug.includes("1983");
-      });
+      return list
+        .filter((c: any) => {
+          const name = String(c.name || "").toLowerCase();
+          const slug = String(c.slug || "").toLowerCase();
+          return !name.includes("1983") && !slug.includes("1983");
+        })
+        .map((c: any) => ({
+          ...c,
+          name: sanitizeVietnameseText(c.name),
+          shortDescription: sanitizeVietnameseText(c.shortDescription || c.tagline),
+          description: sanitizeVietnameseText(c.description || c.about),
+          tagline: sanitizeVietnameseText(c.tagline),
+        }));
     },
   });
   return {

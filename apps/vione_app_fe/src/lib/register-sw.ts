@@ -7,7 +7,11 @@ export function registerServiceWorker() {
           console.log("[PWA] Service Worker registered:", reg.scope);
         })
         .catch((err) => {
-          console.warn("[PWA] Service Worker registration failed:", err);
+          if (err?.name === "SecurityError" || String(err).includes("SSL") || String(err).includes("SecurityError")) {
+            console.debug("[PWA] Service Worker registration skipped in current SSL context:", err);
+          } else {
+            console.warn("[PWA] Service Worker registration failed:", err);
+          }
         });
     };
 

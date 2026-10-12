@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
   Building2,
@@ -158,13 +158,12 @@ function Index() {
   // so sessions are established before we redirect.
   const hasCallback = hasAuthCallbackParams();
   const navigate = useNavigate();
-
-
+  const redirectedRef = useRef(false);
 
   // Force root to connect-app for mobile or Capacitor users unless explicit CRM portal
   useEffect(() => {
     try {
-      if (hasCallback) return;
+      if (hasCallback || redirectedRef.current) return;
       const search = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
       const isCrmPort =
         typeof window !== "undefined" &&
@@ -182,6 +181,7 @@ function Index() {
           window.location.port === "5002");
 
       if (isAssociationApp && window.location.pathname === "/") {
+        redirectedRef.current = true;
         navigate({ to: "/association", replace: true });
         return;
       }
@@ -195,6 +195,7 @@ function Index() {
           window.location.hostname.includes("dev-vione."));
 
       if (isViOneApp && window.location.pathname === "/") {
+        redirectedRef.current = true;
         navigate({ to: "/connect-app", replace: true });
         return;
       }

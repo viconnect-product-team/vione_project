@@ -121,16 +121,28 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
         method: "POST",
         body: JSON.stringify({
           name: cleanName,
-          communityType,
+          communityType: "company_internal", // Unified: holds both internal ops & B2B capabilities
           tagline: tagline.trim() || undefined,
           about: about.trim() || undefined,
           slug: slug.trim() || undefined,
           logoUrl: logoUrl.trim() || undefined,
           bannerUrl: bannerUrl.trim() || undefined,
+          isTrial: true,
+          trialDays: 30,
         }),
       });
 
-      toast.success(`Đã tạo ${communityType === "company_internal" ? "cộng đồng công ty" : "cộng đồng"} "${cleanName}" thành công!`);
+      // Lưu trạng thái đã kích hoạt gói cộng đồng dùng thử 30 ngày
+      try {
+        localStorage.setItem("vione_community_subscription_active", "true");
+        localStorage.setItem("vione_community_subscription_trial", "true");
+        localStorage.setItem("vione_community_trial_days", "30");
+        localStorage.setItem("vione_community_trial_expires_at", String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+        window.dispatchEvent(new Event("storage"));
+        window.dispatchEvent(new CustomEvent("community-created", { detail: { communityId: res?.id || res?.communityId } }));
+      } catch {}
+
+      toast.success(`✓ Chúc mừng! Bạn đã kích hoạt Gói Cộng Đồng dùng thử 30 ngày miễn phí và tạo "${cleanName}" thành công!`);
       void queryClient.invalidateQueries({ queryKey: communityKeys.root });
       
       // Reset form
@@ -163,11 +175,16 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
               <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B]">
-                Tạo Phân Hệ Cộng Đồng
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B]">
+                  Tạo Cộng Đồng Doanh Nghiệp
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#DFB76C]/20 text-[#DFB76C] border border-[#DFB76C]/40">
+                  FREE 30 NGÀY
+                </span>
+              </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Chọn mô hình hoạt động phù hợp cho doanh nghiệp hoặc mạng lưới
+                Gói Cộng Đồng ViOne — Trọn vẹn tất cả tính năng điều hành & kết nối
               </p>
             </div>
           </div>
@@ -182,64 +199,35 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
 
         {/* Form Body (Scrollable) */}
         <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 py-4 space-y-4 pr-1">
-          {/* 1. LỰA CHỌN 2 LOẠI HÌNH CỘNG ĐỒNG */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8C653B] dark:text-[#DFB76C] mb-2">
-              Loại hình cộng đồng
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {/* Option 1: Cộng đồng nội bộ công ty */}
-              <div
-                onClick={() => setCommunityType("company_internal")}
-                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-                  communityType === "company_internal"
-                    ? "border-[#DFB76C] bg-[#DFB76C]/10 ring-1 ring-[#DFB76C]"
-                    : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121824] hover:border-zinc-300"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-[#DFB76C]/20 to-[#8C653B]/20 text-[#D4AF37] font-bold">
-                      <Briefcase className="h-4 w-4" />
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#DFB76C]/20 text-[#D4AF37] border border-[#DFB76C]/30">
-                      DOANH NGHIỆP
-                    </span>
-                  </div>
-                  <h4 className="text-[13px] font-bold text-zinc-950 dark:text-white">
-                    Nội Bộ Công Ty Của Tôi
-                  </h4>
-                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Giám đốc add nhân viên, giao việc, nhân viên bấm nhận việc & giám sát khách hàng CRM.
-                  </p>
-                </div>
+          {/* BANNER GÓI CỘNG ĐỒNG TOÀN NĂNG — DÙNG THỬ 30 NGÀY MIỄN PHÍ */}
+          <div className="p-4 rounded-2xl border border-[#DFB76C]/40 bg-gradient-to-br from-[#DFB76C]/15 via-amber-500/10 to-transparent shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-[#DFB76C] text-slate-950">
+                <Sparkles className="w-3 h-3 fill-slate-950" />
+                <span>Dùng thử VIP 30 ngày free</span>
+              </span>
+              <span className="text-[11px] font-bold text-[#DFB76C]">
+                30 Ngày Miễn Phí
+              </span>
+            </div>
+            <h4 className="text-[13.5px] font-black text-zinc-950 dark:text-white leading-snug">
+              Cộng Đồng Toàn Năng ViOne — Gộp Trọn Vẹn Tất Cả Tính Năng
+            </h4>
+            <p className="mt-1 text-[11.5px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
+              Khi tạo cộng đồng, bạn được cấp quyền Quản trị tối cao và mở khóa toàn bộ phân hệ:
+            </p>
+            <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px] text-zinc-700 dark:text-zinc-300 font-medium">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#DFB76C] font-bold">✓</span> Giao việc & Điều hành nhân sự
               </div>
-
-              {/* Option 2: Mạng lưới giao lưu B2B */}
-              <div
-                onClick={() => setCommunityType("b2b_networking")}
-                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-                  communityType === "b2b_networking"
-                    ? "border-[#DFB76C] bg-[#DFB76C]/10 ring-1 ring-[#DFB76C]"
-                    : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121824] hover:border-zinc-300"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="grid h-8 w-8 place-items-center rounded-xl bg-zinc-200 dark:bg-white/10 text-zinc-700 dark:text-zinc-300 font-bold">
-                      <Users className="h-4 w-4" />
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-200 dark:bg-white/10 text-zinc-600 dark:text-zinc-400">
-                      MẠNG LƯỚI
-                    </span>
-                  </div>
-                  <h4 className="text-[13px] font-bold text-zinc-950 dark:text-white">
-                    Giao Lưu Doanh Nhân B2B
-                  </h4>
-                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Dành cho các Giám đốc / CEO kết bạn, giao lưu, tìm kiếm đối tác và cơ hội hợp tác kinh doanh.
-                  </p>
-                </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#DFB76C] font-bold">✓</span> Giám sát khách hàng CRM
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#DFB76C] font-bold">✓</span> Đăng cơ hội hợp tác B2B
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#DFB76C] font-bold">✓</span> Tổ chức sự kiện & Bản tin
               </div>
             </div>
           </div>
@@ -422,12 +410,12 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
               {submitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Đang khởi tạo...
+                  Đang kích hoạt gói dùng thử...
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Tạo cộng đồng ngay
+                  ⚡ Kích hoạt & Tạo cộng đồng (Dùng thử 30 ngày)
                 </>
               )}
             </button>

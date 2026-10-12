@@ -286,11 +286,14 @@ export function CompanySupervisionView({ communityId }: Props) {
     }
   };
 
-  // Cập nhật log chăm sóc khách hàng
   const handleAddCareLog = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!careCustomerName.trim() || !careAction.trim()) {
-      toast.error("Vui lòng điền đủ tên khách hàng và hành động chăm sóc");
+    if (!careCustomerName.trim()) {
+      toast.error("Vui lòng nhập tên khách hàng hoặc doanh nghiệp");
+      return;
+    }
+    if (!careAction.trim()) {
+      toast.error("Vui lòng nhập hành động chăm sóc vừa thực hiện");
       return;
     }
     setSubmittingLog(true);
@@ -350,7 +353,7 @@ export function CompanySupervisionView({ communityId }: Props) {
           <button
             type="button"
             onClick={() => setAddEmpModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B] text-slate-950 font-extrabold text-xs shadow-lg active:scale-95 cursor-pointer hover:opacity-95"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md border border-[#D8B282]/50 active:scale-95 cursor-pointer hover:brightness-105 transition"
           >
             <Plus className="h-4 w-4 text-slate-950" />
             <span>Thêm nhân viên</span>
@@ -601,7 +604,7 @@ export function CompanySupervisionView({ communityId }: Props) {
               <button
                 type="submit"
                 disabled={submittingEmp || !empName.trim()}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B] text-slate-950 font-black text-xs shadow-lg active:scale-98 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md border border-[#D8B282]/50 active:scale-98 disabled:opacity-50 cursor-pointer hover:brightness-105 transition flex items-center justify-center gap-2"
               >
                 {submittingEmp ? <Loader2 className="h-4 w-4 animate-spin text-slate-950" /> : <Send className="h-4 w-4 text-slate-950" />}
                 XÁC NHẬN THÊM VÀO CỘNG ĐỒNG CÔNG TY
@@ -681,7 +684,7 @@ export function CompanySupervisionView({ communityId }: Props) {
               <button
                 type="submit"
                 disabled={submittingLog || !careCustomerName.trim()}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B] text-slate-950 font-black text-xs shadow-lg active:scale-98 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md border border-[#D8B282]/50 active:scale-98 disabled:opacity-50 cursor-pointer hover:brightness-105 transition flex items-center justify-center gap-2"
               >
                 {submittingLog ? <Loader2 className="h-4 w-4 animate-spin text-slate-950" /> : <Send className="h-4 w-4 text-slate-950" />}
                 LƯU NHẬT KÝ VÀO HỆ THỐNG GIÁM SÁT

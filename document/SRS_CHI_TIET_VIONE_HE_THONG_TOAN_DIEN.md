@@ -1,7 +1,7 @@
 # TÀI LIỆU ĐẶC TẢ YÊU CẦU PHẦN MỀM (SRS) TOÀN DIỆN HỆ THỐNG VÀ APP VIONE
 ## CHUẨN QUỐC TẾ IEEE 830 - PHÂN RÃ MECE CHI TIẾT KHÔNG BỎ SÓT CHỨC NĂNG
 **Dự án:** Hệ Thống Quản Trị Doanh Nghiệp Toàn Diện ViOne & Mạng Xã Hội Giao Thương Doanh Nhân B2B ViOne Connect  
-**Mã tài liệu:** SRS-VIONE-MASTER-6.0 | **Ngày ban hành:** 05/10/2026 | **Phiên bản:** 6.0 Enterprise  
+**Mã tài liệu:** SRS-VIONE-MASTER-6.6 | **Ngày ban hành:** 12/10/2026 | **Phiên bản:** 6.6 Enterprise (Nâng cấp Phân quyền Phòng ban, Auto-Handover, CRM Auth Tĩnh & Filter Trạng Thái Dashboard / Marketplace)  
 **Đơn vị thực hiện:** Senior Business Analyst & Solution Architect Team (15 năm kinh nghiệm)
 
 ---
@@ -85,17 +85,28 @@ Hệ thống chuẩn hóa cấp bậc quyền lực và phân quyền dữ liệ
 #### MODULE 01: XÁC THỰC, ĐĂNG NHẬP & QUẢN LÝ PHIÊN C-LEVEL
 *Mục tiêu Epic:* Quản trị danh tính và phiên truy cập bảo mật đa kênh trên Web CRM
 
-##### FR-01.01 - Đăng nhập Quản trị Đa phương thức (Email, SĐT, Google, Apple OAuth)
-- **Actor:** Admin, Ban Giám Đốc, Kế toán, Quản lý chi nhánh, Nhân viên
-- **Input:** Identifier (Email hoặc Số điện thoại 9-12 chữ số), Mật khẩu (tối thiểu 8 ký tự), hoặc OAuth Authorization Code, reCAPTCHA v3 token.
+##### FR-01.01 - Đăng nhập Quản trị CRM C-Level Đa Phương Thức & Giao Diện Tĩnh Thượng Lưu
+- **Actor:** Ban Lãnh Đạo C-Level (CEO, COO, CFO), Quản Trị Viên (`quan_tri`, `admin`), Trưởng Phòng Ban, Kế Toán, Nhân Viên.
+- **Yêu Cầu Thiết Kế UI/UX (Static Luxury Layout - Zero Animation):**
+  1. Triệt tiêu hoàn toàn 100% các CSS animations (`@keyframes`, vòng orbit xoay tròn, hạt trôi lơ lửng, aura pulse rung lắc) để tối ưu hiệu năng và đạt vẻ đẹp tĩnh lặng, đỉnh đạc của dòng sản phẩm Executive.
+  2. Bố cục chia đôi màn hình (Split-Screen 2 Cột):
+     - **Cột Trái (Brand Heritage & Value Proposition):**
+       * Ảnh nền kiến trúc đẳng cấp `/skyline_perspective_light.jpg` phối lớp phủ gradient tối Obsidian Navy `from-black/85 via-black/75 to-black/90`.
+       * Huy hiệu Doanh nghiệp C-Level: "HỆ ĐIỀU HÀNH DOANH NGHIỆP TOÀN DIỆN C-LEVEL" mạ vàng Champagne Gold.
+       * Biểu đồ PR hiệu năng ViOne: So sánh định lượng trước và sau triển khai (+168% hiệu suất điều hành, < 30 giây duyệt chi VietQR 3 cấp, 100% Department RBAC & Audit Trail).
+       * 4 Thẻ điểm lợi cốt lõi ViOne: Vận Hành Liền Mạch Không Độ Trễ, Thẻ Số Doanh Nhân Titanium NFC, Phân Quyền Phòng Ban 7 Cấp & Tự Động Bàn Giao, AI Copilot 6.0 Tiếng Việt.
+     - **Cột Phải (Enterprise Login Form):**
+       * Thẻ form đăng nhập sang trọng, bo góc lớn, viền sáng vàng đồng nhạt `border-amber-500/20`.
+       * Logo vector mạ vàng ViOne 53x20, tiêu đề "Đăng nhập Hệ thống CRM ViOne", phụ đề hướng dẫn.
+       * Input trường Identifier (Email hoặc SĐT 9-12 chữ số), Input Mật khẩu có nút mắt ẩn/hiện, ghi nhớ đăng nhập, nút bấm "Đăng nhập ngay" ánh kim Champagne Gold.
+- **Input:** Identifier (Email hoặc Số điện thoại), Mật khẩu (tối thiểu 8 ký tự), hoặc Google / Apple OAuth token.
 - **Logic Xử Lý:**
-  1. Hệ thống tiếp nhận payload và chuẩn hóa định dạng (lowercase email, chuẩn hóa SĐT +84).
+  1. Chuẩn hóa định dạng identifier (lowercase email, chuẩn hóa SĐT +84).
   2. Kiểm tra Rate Limiting (tối đa 5 lần thử sai trong 15 phút trên 1 địa chỉ IP).
-  3. Kiểm tra người dùng trong CSDL PostgreSQL qua NestJS AuthService, đối soát mật khẩu đã băm bcrypt.
-  4. Khởi tạo cặp JWT token: Access Token (HS256, hạn 60 phút) và Refresh Token (hạn 30 ngày) lưu phiên an toàn.
-  5. Trả về thông tin hồ sơ tài khoản (User Profile, vai trò RBAC, danh sách quyền) và thiết lập HttpOnly cookie nếu trên môi trường HTTPS.
-- **Output:** JSON chứa access_token, refresh_token, thông tin user và chuyển hướng vào /dashboard.
-- **Luồng Ngoại Lệ (Exception Handling):** Tài khoản không tồn tại hoặc sai mật khẩu: Báo lỗi mã 401 "Thông tin đăng nhập không chính xác". Khóa tài khoản sau 5 lần nhập sai.
+  3. Đối soát mật khẩu đã băm bcrypt trong PostgreSQL qua NestJS AuthService.
+  4. Khởi tạo cặp JWT token: Access Token (HS256, hạn 60 phút) và Refresh Token (hạn 30 ngày).
+  5. Trả về Profile, thông tin Phòng ban (`departmentId`, `departmentRole`), danh sách quyền RBAC và điều hướng vào `/dashboard`.
+- **Output:** JSON envelope chuẩn `{ status: 200, data: { user, access_token, refresh_token } }`.
 - **RESTful API Endpoint:** `POST /api/auth/login`
 
 ##### FR-01.02 - Xác thực Đăng nhập Hai Lớp (MFA) & Cấp lại Mật khẩu OTP
@@ -559,401 +570,40 @@ Hệ thống chuẩn hóa cấp bậc quyền lực và phân quyền dữ liệ
 - **RESTful API Endpoint:** `POST /api/settings/branding, GET /api/settings`
 
 
-#### MODULE 21: NHẬT KÝ KIỂM TOÁN & AI AUDIT LOG (SECURITY & COMPLIANCE)
-*Mục tiêu Epic:* Ghi nhận toàn bộ hành vi người dùng, lịch sử gọi AI và kiểm soát an ninh ISO/IEC 27001
+#### MODULE 21: QUẢN TRỊ TỔ CHỨC PHÒNG BAN (DEPARTMENT RBAC) & BÀN GIAO TỰ ĐỘNG (AUTO-HANDOVER)
+*Mục tiêu Epic:* Quản lý cơ cấu phòng ban đa cấp, phân lập quyền hạn dữ liệu nội bộ và tự động hóa chuyển giao công việc bàn giao nhân sự.
 
-##### FR-21.01 - Nhật Ký Kiểm Toán Hoạt Động & Kiểm Soát An Ninh (Audit Trail)
-- **Actor:** Admin, Bộ phận An ninh mạng, Kiểm toán nội bộ
-- **Input:** Bộ lọc thời gian, loại hành động (Đăng nhập, Tạo mới, Sửa, Xóa, Xuất dữ liệu), người thực hiện.
-- **Logic Xử Lý:**
-  1. Mọi yêu cầu HTTP thay đổi trạng thái (POST, PUT, DELETE) tự động được bắt bởi NestJS AuditInterceptor.
-  2. Trích xuất địa chỉ IP, User-Agent, ID người dùng, payload và phản hồi.
-  3. Ghi bản ghi bất biến vào bảng audit_logs với cơ chế cấm xóa sửa.
-  4. Cung cấp màn hình tra cứu kiểm toán để phục vụ thanh tra an toàn thông tin.
-- **Output:** Bảng nhật ký kiểm toán minh bạch, phục vụ truy vết sự cố.
-- **Luồng Ngoại Lệ (Exception Handling):** Cố tình xóa sửa nhật ký kiểm toán: Hệ thống từ chối mọi câu lệnh xóa bảng audit_logs.
-- **RESTful API Endpoint:** `GET /api/platform/audit-logs`
+##### FR-21.01 - Phân Quyền Theo Phạm Vi Phòng Ban (Department Scoping Guard)
+- **Actor:** Ban Giám Đốc, Trưởng Phòng Ban, Cán Bộ Nhân Sự.
+- **Database Schema:**
+  ```sql
+  CREATE TABLE departments (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(64) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(64) UNIQUE NOT NULL,
+    head_user_id VARCHAR(64),
+    parent_dept_id VARCHAR(64),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  ```
+- **Logic Phân Quyền:**
+  1. `DepartmentGuard` kiểm tra `user.departmentId` gắn trong JWT payload.
+  2. Nhân viên chỉ được xem và tạo các task, cơ hội, tài liệu thuộc phòng ban của mình (`record.departmentId === user.departmentId`).
+  3. Trưởng phòng (`head_user_id === user.id`) có toàn quyền giao việc, duyệt chi hạn mức phòng, và đánh giá KPI thành viên trong phòng.
+  4. Ban Giám Đốc (`quan_tri`, `admin`, CEO/COO/CFO) có cờ `isExecutive: true`, được phép truy cập liên phòng ban.
 
-
-#### MODULE 22: XÁC THỰC DI ĐỘNG & ĐĂNG KÝ TÀI KHOẢN IN-APP
-*Mục tiêu Epic:* Đăng ký và đăng nhập tức thì ngay trong ứng dụng di động, không redirect ra ngoài
-
-##### FR-22.01 - Đăng Ký Tài Khoản In-App Đa Phương Thức (Email & SĐT)
-- **Actor:** Người dùng mới, Doanh nhân cài app
-- **Input:** Họ và tên, Email hoặc Số điện thoại, Tên công ty/Doanh nghiệp, Mật khẩu, Xác nhận mật khẩu.
-- **Logic Xử Lý:**
-  1. Người dùng chọn nút "Tạo tài khoản mới" ngay tại màn hình đăng nhập in-app (không chuyển hướng ra web landing).
-  2. Kiểm tra tính hợp lệ dữ liệu nhập liệu trên client và gửi yêu cầu đăng ký lên backend.
-  3. Hệ thống khởi tạo tài khoản mới trong CSDL, tự động sinh hồ sơ danh thiếp số ban đầu.
-  4. Tự động lưu phiên xác thực vào AsyncStorage và đưa người dùng thẳng vào Trang chủ ứng dụng.
-- **Output:** Tài khoản được kích hoạt và đăng nhập thành công vào app di động.
-- **Luồng Ngoại Lệ (Exception Handling):** Email hoặc SĐT đã tồn tại: Báo lỗi "Tài khoản đã tồn tại, vui lòng đăng nhập".
-- **RESTful API Endpoint:** `POST /api/auth/register`
-
-
-#### MODULE 23: TRANG CHỦ DOANH NHÂN & THẺ HỘI VIÊN VUỐT TAY XUỐNG
-*Mục tiêu Epic:* Dashboard điều hành di động, Thẻ Doanh nhân NFC và Bottom Sheet vuốt tay mượt mà
-
-##### FR-23.01 - Tương Tác Thẻ Doanh Nhân Mở Bottom Sheet Bo Tròn 36px Vuốt Tay
-- **Actor:** Lãnh đạo doanh nghiệp sử dụng Mobile App
-- **Input:** Thao tác chạm (Tap) vào thẻ doanh nhân trên màn hình chính; Cử chỉ vuốt ngón tay xuống (Swipe Down).
-- **Logic Xử Lý:**
-  1. Khi người dùng chạm vào Thẻ Doanh Nhân mạ vàng tại trang chủ, hệ thống kích hoạt Bottom Sheet trượt mượt mà từ dưới lên.
-  2. Giao diện được bo tròn cong 36px sang trọng, viền vàng champagne, hiển thị mã QR định danh và các phím tắt chia sẻ.
-  3. Tích hợp bộ điều khiển cử chỉ PanResponder: Người dùng có thể đặt ngón tay và vuốt nhẹ xuống dưới để đóng popup tự nhiên tương tự giao diện iOS gốc cao cấp.
-- **Output:** Bottom Sheet mở/đóng mượt mà theo thao tác chạm và vuốt tay.
-- **Luồng Ngoại Lệ (Exception Handling):** Vuốt không đủ khoảng cách ngưỡng (< 50px): Tự động nảy ngược trở lại vị trí mở ban đầu.
-- **RESTful API Endpoint:** `In-app Component: MemberCardBottomSheet.tsx`
-
-
-#### MODULE 24: TRUNG TÂM HÀNH ĐỘNG 1-CHẠM VIONE MẠ VÀNG (VACTIONSHEET)
-*Mục tiêu Epic:* Nút tròn V trung tâm mạ vàng nổi bật mở bảng điều khiển siêu tốc các tác vụ lãnh đạo
-
-##### FR-24.01 - Kích Hoạt Nút ViOne Trung Tâm Mở VActionSheet
-- **Actor:** Doanh nhân sử dụng ứng dụng di động
-- **Input:** Chạm vào nút tròn ViOne dập nổi 3D vector vàng kim champagne ở giữa thanh điều hướng đáy.
-- **Logic Xử Lý:**
-  1. Hệ thống bật bảng điều khiển VActionSheet nổi với hiệu ứng làm mờ nền kính Obsidian.
-  2. Cung cấp 6 lối tắt hành động siêu tốc: Quét danh thiếp OCR, Chấm công định vị GPS, Phê duyệt chi tiền, Đăng nhu cầu B2B, Tạo cuộc hẹn 1-1, Gọi trợ lý AI Copilot.
-  3. Chạm vào bất kỳ nút nào sẽ chuyển hướng ngay đến modal nghiệp vụ tương ứng.
-- **Output:** Menu hành động 1-chạm xuất hiện tức thì với hiệu ứng đổ bóng phát quang kép.
-- **Luồng Ngoại Lệ (Exception Handling):** Chạm vào vùng ngoài bảng điều khiển: Tự động đóng action sheet mượt mà.
-- **RESTful API Endpoint:** `In-app Component: VActionSheet.tsx`
-
-
-#### MODULE 25: MẠNG LƯỚI ĐỐI TÁC, STORIES 24H & QUÉT DANH THIẾP OCR
-*Mục tiêu Epic:* Kết nối cộng đồng doanh nhân, chia sẻ khoảnh khắc kinh doanh 24h và số hóa danh thiếp giấy
-
-##### FR-25.01 - Bản Tin Khoảnh Khắc Doanh Nhân 24 Giờ (B2B Stories Strip)
-- **Actor:** Doanh nhân, Hội viên mạng lưới
-- **Input:** Ảnh chụp hoạt động kinh doanh, nội dung chú thích ngắn, thời lượng hiển thị 24h.
-- **Logic Xử Lý:**
-  1. Người dùng đăng ảnh khoảnh khắc lên dải Stories tại đầu tab Network.
-  2. Hệ thống nén ảnh và gán thời hạn hết hạn sau đúng 24 giờ kể từ thời điểm đăng.
-  3. Các đối tác trong mạng lưới chạm vào avatar để xem trình chiếu toàn màn hình câu chuyện của doanh nghiệp.
-- **Output:** Story hiển thị trên dải tin 24h và tự động ẩn khi hết hạn.
-- **Luồng Ngoại Lệ (Exception Handling):** Hết hạn 24 giờ: Chuyển story vào kho lưu trữ cá nhân, không hiển thị công khai.
-- **RESTful API Endpoint:** `POST /api/connect-app/moments/story, GET /api/connect-app/moments/stories`
-
-
-#### MODULE 26: HỒ SƠ DANH TÍNH SỐ, DANH THIẾP TITANIUM 3D & CHIA SẺ CHẠM NFC
-*Mục tiêu Epic:* Danh thiếp số 3D lật mặt sang trọng, chạm NFC một chạm và bảo vệ quyền riêng tư C-Level
-
-##### FR-26.01 - Danh Thiếp Số Titanium 3D Lật Mặt & Chia Sẻ NFC Một Chạm
-- **Actor:** Lãnh đạo doanh nghiệp
-- **Input:** Thao tác chạm để lật thẻ 3D; đưa điện thoại lại gần thiết bị hỗ trợ NFC.
-- **Logic Xử Lý:**
-  1. Thẻ danh thiếp số hiển thị với hiệu ứng 3D lật mặt trước và mặt sau mượt mà.
-  2. Mặt trước hiển thị ảnh chân dung, họ tên, chức vụ, tên công ty và huy hiệu xác thực.
-  3. Mặt sau hiển thị mã QR định danh và thông tin kết nối nhanh (Gọi điện, Mail, Viber, WhatsApp, Telegram).
-  4. Khi chạm vào điện thoại đối tác qua chip NFC, tự động mở trang danh thiếp công khai và tải danh bạ vCard (.vcf) vào danh bạ máy đối tác chỉ trong 1 giây.
-- **Output:** Đối tác nhận được toàn bộ thông tin liên hệ mà không cần cài đặt ứng dụng.
-- **Luồng Ngoại Lệ (Exception Handling):** Thiết bị đối tác không có chip NFC: Quét mã QR thay thế mượt mà.
-- **RESTful API Endpoint:** `GET /card/:code, GET /api/cards/vcard/:code`
-
-
-#### MODULE 27: GIẢI PHÁP CÀI ĐẶT PWA 1-CHẠM TRÊN IOS (APPLE WEBCLIP PROFILE)
-*Mục tiêu Epic:* Cài đặt trực tiếp ứng dụng ViOne Connect lên Màn hình chính iPhone/iPad tương tự file APK Android
-
-##### FR-27.01 - Cài Đặt PWA Độc Quyền Qua File Cấu Hình Apple (.mobileconfig)
-- **Actor:** Người dùng thiết bị Apple iOS (iPhone/iPad)
-- **Input:** Nhấp vào liên kết tải file vione_ios_install.mobileconfig từ trình duyệt Safari.
-- **Logic Xử Lý:**
-  1. Người dùng mở link tải file cấu hình chuẩn Apple Configuration Profile.
-  2. Safari hiển thị hộp thoại: "Trang web này đang cố tải về một hồ sơ cấu hình. Cho phép?".
-  3. Người dùng chọn "Cho phép" -> Mở Cài đặt máy -> "Đã tải về hồ sơ" -> Nhấn "Cài đặt".
-  4. iOS tự động tạo biểu tượng ViOne Connect vàng kim ra Màn hình chính (Home Screen).
-  5. Khi nhấp vào biểu tượng, ứng dụng khởi chạy ở chế độ Toàn màn hình Native (FullScreen), loại bỏ hoàn toàn thanh địa chỉ trình duyệt Safari.
-- **Output:** Ứng dụng ViOne Connect được cài đặt ra màn hình chính tương tự như cài app từ App Store.
-- **Luồng Ngoại Lệ (Exception Handling):** Tải bằng trình duyệt Chrome trên iOS: Hiển thị hướng dẫn chuyển sang mở bằng Safari để cài profile.
-- **RESTful API Endpoint:** `Static Asset: /vione_ios_install.mobileconfig`
-
-
-#### MODULE 28: PHÂN HỆ QUẢN TRỊ CỘNG ĐỒNG 2 KIỂU (B2B NETWORKING & COMPANY INTERNAL)
-*Mục tiêu Epic:* Phân định logic hiển thị, cơ chế tương tác và bảo mật giữa 2 mô hình cộng đồng kèm quyền Quản trị viên/Chủ sở hữu chỉnh sửa thông tin cộng đồng
-
-##### FR-28.01 - Phân Định Phân Hệ 2 Kiểu Cộng Đồng (B2B Networking vs Company Internal)
-- **Actor:** Doanh nhân, Hội viên, Quản trị viên cộng đồng, Nhân viên nội bộ
-- **Input:** Mã định danh cộng đồng (communityId), loại cộng đồng (community_type: b2b_networking | company_internal), vai trò thành viên (role).
-- **Logic Xử Lý:**
-  1. Hệ thống nạp dữ liệu cộng đồng từ bảng vba_communities và kiểm tra trường community_type.
-  2. Nếu là b2b_networking: Kích hoạt tab Giao thương B2B, hiển thị nút "Đăng cơ hội kinh doanh" (Buy/Sell Leads), cho phép chia sẻ bài viết, chia sẻ sự kiện ngoài vào bảng tin cộng đồng qua ShareEventModal.
-  3. Nếu là company_internal: Ẩn toàn bộ tính năng đăng cơ hội B2B thương mại tự do; kích hoạt luồng "Giao việc & Phân công nhiệm vụ", nút 1-chạm [⚡ TIẾN HÀNH NHẬN VIỆC] (claim task) trực tiếp trên bài đăng công việc, tích hợp liên kết giám sát tiến độ CRM và báo cáo nội bộ.
-  4. Kiểm tra quyền thành viên: Người dùng chỉ được xem và tương tác trong cộng đồng nội bộ khi đã được ban quản trị phê duyệt làm thành viên chính thức (is_active = true).
-- **Output:** Giao diện cộng đồng tự động render đúng các phím chức năng, biểu mẫu đăng bài và quyền hạn tương ứng theo từng mô hình.
-- **Luồng Ngoại Lệ (Exception Handling):** Người dùng ngoài cố tình truy cập cộng đồng company_internal: Hệ thống chặn hiển thị và trả về cảnh báo "Cộng đồng nội bộ bảo mật, bạn cần yêu cầu quyền truy cập".
-- **RESTful API Endpoint:** `GET /api/connect-app/communities/:id, GET /api/connect-app/communities`
-
-##### FR-28.02 - Quyền Quản Trị Cộng Đồng & Chỉnh Sửa Thông Tin (Edit Community Modal)
-- **Actor:** Admin / Owner cộng đồng (Ví dụ: Cộng đồng Gia đình ViOne có canEdit: true, role: "admin")
-- **Input:** Dữ liệu chỉnh sửa gồm: Tên cộng đồng, Mô tả chi tiết, Ảnh đại diện (Avatar), Ảnh bìa (Cover Banner), Phân loại cộng đồng (b2b_networking / company_internal), Quy tắc tham gia.
-- **Logic Xử Lý:**
-  1. Kiểm tra quyền hạn của người dùng đối với cộng đồng (role === "admin" || role === "owner" hoặc canEdit === true).
-  2. Nếu hợp lệ, hiển thị nút quản trị [⚙️ Chỉnh sửa cộng đồng] nổi bật trên trang chi tiết cộng đồng.
-  3. Nhấp nút kích hoạt popup EditCommunityModal tải sẵn dữ liệu hiện tại của cộng đồng.
-  4. Người dùng thay đổi thông tin, tải ảnh mới lên bucket lưu trữ MinIO/S3 và nhấn "Lưu thay đổi".
-  5. Backend kiểm tra quyền xác thực, cập nhật bản ghi trong bảng vba_communities, đồng thời phát sự kiện realtime cập nhật giao diện người dùng.
-- **Output:** Thông tin cộng đồng được cập nhật tức thì trên toàn hệ thống và ứng dụng di động.
-- **Luồng Ngoại Lệ (Exception Handling):** Người dùng không có quyền admin: Nút chỉnh sửa bị ẩn hoàn toàn; backend trả về lỗi 403 Forbidden nếu cố tình gọi API.
-- **RESTful API Endpoint:** `PATCH /api/connect-app/communities/:id, POST /api/connect-app/upload`
-
-
-#### MODULE 29: QUY TRÌNH BÀY TỎ QUAN TÂM CƠ HỘI & HẸN GẶP TRAO ĐỔI B2B QUA CHAT
-*Mục tiêu Epic:* Kết nối giao thương trực tiếp từ tin đăng cơ hội kinh doanh sang phòng chat riêng 1-1, trao đổi đề xuất hẹn gặp và tự động ghim lịch vào Trang chủ điều hành C-Level
-
-##### FR-29.01 - Khởi Tạo Đề Xuất Hẹn Gặp B2B Từ Tin Đăng Cơ Hội
-- **Actor:** Doanh nhân, Đối tác mua/bán, Nhà đầu tư
-- **Input:** Bấm nút [📅 Nhắn tin hẹn gặp trao đổi cơ hội] tại chi tiết cơ hội B2B; Thời gian hẹn (meeting_time), Địa điểm / Hình thức (Gặp trực tiếp / Trực tuyến Google Meet / Zoom), Nội dung tóm tắt nhu cầu hợp tác.
-- **Logic Xử Lý:**
-  1. Hệ thống tiếp nhận thao tác, kiểm tra hoặc tự động tạo cuộc trò chuyện riêng 1-1 (Direct Chat Thread) giữa người quan tâm và chủ nhân bài đăng cơ hội.
-  2. Mở hộp thoại ProposeOpportunityMeetingModal với thông tin cơ hội được nạp sẵn tự động.
-  3. Người dùng chọn thời gian, địa điểm gặp gỡ và nhập lời mời trao đổi.
-  4. Khi bấm gửi, hệ thống khởi tạo bản ghi đề xuất hẹn gặp trong CSDL, đồng thời gửi một tin nhắn định dạng thẻ tương tác đặc biệt OpportunityMeetingProposalCard vào phòng chat.
-- **Output:** Thẻ đề xuất hẹn gặp hiển thị nổi bật trong khung chat với đầy đủ thông tin cơ hội, thời gian, địa điểm và hai nút hành động: [Đồng ý hẹn] và [Từ chối / Đổi giờ].
-- **Luồng Ngoại Lệ (Exception Handling):** Chủ tin tự gửi hẹn gặp cho chính mình: Hệ thống cảnh báo "Bạn không thể gửi đề xuất hẹn gặp cho bài đăng của chính mình".
-- **RESTful API Endpoint:** `POST /api/connect-app/inbox/messages, POST /api/connect-app/opportunities/:id/propose-meeting`
-
-##### FR-29.02 - Xác Nhận Đề Xuất Hẹn Gặp & Tự Động Ghim Lịch Điều Hành Hôm Nay (Executive Home)
-- **Actor:** Chủ bài đăng cơ hội (bên nhận đề xuất)
-- **Input:** Thao tác bấm nút [Đồng ý hẹn] trên thẻ OpportunityMeetingProposalCard trong phòng chat.
-- **Logic Xử Lý:**
-  1. Hệ thống cập nhật trạng thái đề xuất thành accepted (Đã xác nhận).
-  2. Tự động khởi tạo sự kiện lịch trình vào bảng vba_calendar_events / personal_agenda của cả hai bên.
-  3. Tự động ghim lịch hẹn vào danh mục "Lịch trình hôm nay" tại màn hình chính ExecutiveHome của ứng dụng di động và Web CRM.
-  4. Kích hoạt dịch vụ WebSocket gửi thông báo tức thời (Push Notification) đến điện thoại của người gửi đề xuất: "Đối tác đã chấp thuận lịch hẹn trao đổi cơ hội!".
-- **Output:** Thẻ trong chat chuyển sang trạng thái "Đã chốt lịch hẹn"; lịch hẹn hiển thị đồng bộ trong Lịch trình hôm nay của cả 2 doanh nhân.
-- **Luồng Ngoại Lệ (Exception Handling):** Cuộc hẹn đã bị hủy hoặc đối tác đã bấm từ chối trước đó: Hiển thị thông báo trạng thái cập nhật và vô hiệu hóa nút bấm.
-- **RESTful API Endpoint:** `PATCH /api/connect-app/inbox/meeting-proposals/:id/accept`
-
-
-#### MODULE 30: NHẬT KÝ GHI ÂM KHOẢNH KHẮC ĐIỀU HÀNH & KÝ ỨC GIỌNG NÓI (VOICE MOMENTS HISTORY)
-*Mục tiêu Epic:* Thu âm tức thời các chỉ đạo điều hành, ý tưởng kinh doanh, cuộc họp đàm phán và lưu trữ vào CSDL kèm giao diện nghe lại trực tiếp (inline player) trên App di động
-
-##### FR-30.01 - Thu Âm & Lưu Trữ Khoảnh Khắc Giọng Nói C-Level
-- **Actor:** Lãnh đạo doanh nghiệp, Giám đốc điều hành
-- **Input:** Nhấn nút micro ghi âm tại Trung tâm hành động VActionSheet hoặc widget ghi âm nhanh; luồng âm thanh định dạng audio/m4a, webm hoặc mp3; Tiêu đề/Ghi chú tóm tắt.
-- **Logic Xử Lý:**
-  1. Ứng dụng kích hoạt micro thiết bị thông qua MediaRecorder API hoặc React Native Audio Recorder.
-  2. Hiển thị đồ thị sóng âm realtime (waveform animation) và đồng hồ đếm thời lượng ghi âm.
-  3. Khi kết thúc, người dùng nhấn "Lưu bản ghi", file âm thanh được nén và tải lên kho lưu trữ MinIO/S3.
-  4. Lưu thông tin metadata vào bảng CSDL vba_voice_moments_history gồm: user_id, audio_url, duration_seconds, file_size, tags, transcript_preview và thời gian tạo.
-- **Output:** Bản ghi âm được lưu trữ bền vững với mã UUID duy nhất.
-- **Luồng Ngoại Lệ (Exception Handling):** Quyền truy cập micro bị từ chối: Hiển thị hướng dẫn cấp quyền Micro trong Cài đặt thiết bị.
-- **RESTful API Endpoint:** `POST /api/connect-app/voice-moments/upload, POST /api/connect-app/voice-moments`
-
-##### FR-30.02 - Phân Mục Thứ 4 "Ghi Âm" & Trình Phát Âm Thanh Trực Tiếp (Inline Audio Player)
-- **Actor:** Lãnh đạo C-Level, Quản trị viên
-- **Input:** Chọn tab "Lịch sử" trên Trang chủ ExecutiveHome -> Chuyển sang phân mục thứ 4 "🎙️ Ghi âm" (bên cạnh Lịch sử công việc, Lịch sử cuộc gọi, Lịch sử duyệt).
-- **Logic Xử Lý:**
-  1. Hệ thống truy vấn danh sách các bản ghi âm từ bảng vba_voice_moments_history theo user_id hiện tại.
-  2. Hiển thị danh sách bản ghi gồm: Tên đoạn ghi âm, Thời lượng (phút:giây), Ngày giờ thu âm, dung lượng tệp.
-  3. Tích hợp Trình phát âm thanh trực tiếp (Inline Audio Player) với nút Play/Pause, thanh kéo tua âm thanh và điều chỉnh âm lượng.
-  4. Cung cấp nút chia sẻ nội bộ hoặc tải tệp âm thanh gốc về máy.
-- **Output:** Người dùng nghe lại toàn bộ các chỉ đạo bằng giọng nói ngay trên màn hình chính mà không cần mở ứng dụng ngoài.
-- **Luồng Ngoại Lệ (Exception Handling):** Tệp âm thanh bị lỗi đường truyền: Tự động thử lại hoặc hiển thị tùy chọn tải lại bản ghi.
-- **RESTful API Endpoint:** `GET /api/connect-app/voice-moments`
-
-
-#### MODULE 31: TRỢ LÝ GIÁM ĐỐC AI COPILOT 5.0 ĐA TÁC VỤ & TÌM KIẾM GIỌNG NÓI
-*Mục tiêu Epic:* Siêu trợ lý điều hành doanh nghiệp tích hợp đa mô hình ngôn ngữ lớn (LLM), truy vấn âm thanh bằng giọng nói, quét đối tác quanh đây và phân tích động kèm Evidence Cards
-
-##### FR-31.01 - Tìm Kiếm Đoạn Ghi Âm Theo Lệnh Giọng Nói (Voice-Driven Audio Search)
-- **Actor:** CEO, Lãnh đạo doanh nghiệp
-- **Input:** Khẩu lệnh giọng nói hoặc văn bản tự nhiên (Ví dụ: "Tìm đoạn ghi âm tuần trước tôi nói về hợp đồng với đối tác Hòa Phát").
-- **Logic Xử Lý:**
-  1. Trợ lý AI nhận diện giọng nói qua Speech-to-Text (Whisper / Google STT).
-  2. Trích xuất thực thể thời gian, từ khóa ngữ nghĩa và đối tượng nhắc tới.
-  3. Truy vấn bảng vba_voice_moments_history kết hợp vector embedding nội dung transcript.
-  4. Trả về đúng đoạn ghi âm khớp nhất kèm mốc thời gian phát chính xác.
-- **Output:** Thẻ phát âm thanh trực tiếp hiển thị ngay trong hội thoại AI với nút nghe đúng vị trí được hỏi.
-- **Luồng Ngoại Lệ (Exception Handling):** Không tìm thấy bản ghi âm phù hợp: AI phản hồi thông minh và gợi ý mở rộng khoảng thời gian tìm kiếm.
-- **RESTful API Endpoint:** `POST /api/connect-app/ai/voice-search`
-
-##### FR-31.02 - Quét Tìm Đối Tác & Người Dùng ViOne Quanh Đây Theo Bán Kính GPS
-- **Actor:** Doanh nhân đang đi công tác, tham gia sự kiện triển lãm
-- **Input:** Tọa độ GPS hiện tại (Latitude, Longitude), bán kính quét lựa chọn (1km, 5km, 10km, 20km).
-- **Logic Xử Lý:**
-  1. Người dùng bật tính năng "Tìm đối tác quanh đây" trên AI Copilot hoặc tab Network.
-  2. Ứng dụng xin quyền vị trí và gửi tọa độ địa lý lên backend.
-  3. Hệ thống sử dụng thuật toán tính khoảng cách không gian (PostGIS ST_DWithin / Haversine) quét danh sách người dùng ViOne đang bật chế độ kết nối xung quanh.
-  4. Trả về danh sách đối tác gồm họ tên, công ty, ngành nghề kinh doanh, khoảng cách (ví dụ: cách bạn 350m) và bản đồ nhiệt trực quan.
-- **Output:** Danh sách hồ sơ đối tác gần nhất kèm phím tắt chạm kết nối, gửi lời chào hoặc hẹn cà phê 1-chạm.
-- **Luồng Ngoại Lệ (Exception Handling):** Người dùng tắt chia sẻ vị trí: Hệ thống bảo mật ẩn vị trí và chỉ hiển thị đối tác trong cùng thành phố/tỉnh.
-- **RESTful API Endpoint:** `POST /api/connect-app/partners/nearby`
-
-##### FR-31.03 - Phân Tích Động Cơ Hội Kinh Doanh Kèm Evidence Cards & Bắn Thông Báo Đa Tương Tác
-- **Actor:** Giám đốc điều hành, Trưởng phòng kinh doanh
-- **Input:** Yêu cầu phân tích phễu bán hàng, cơ hội B2B hoặc báo cáo tài chính.
-- **Logic Xử Lý:**
-  1. AI Copilot phân tích dữ liệu thực tế từ CRM và cơ hội giao thương B2B.
-  2. Tự động sinh các thẻ bằng chứng dữ liệu trực quan (Evidence Cards) gồm số liệu tăng trưởng, bảng đối soát và biểu đồ mini.
-  3. Đưa ra gợi ý hành động chiến lược (Actionable Insights).
-  4. Hỗ trợ cơ chế bắn thông báo đa tương tác (Interactive Push Notifications) với các nút hành động nhanh ngay trên thông báo điện thoại (Duyệt ngay / Nhắn tin / Xem chi tiết).
-- **Output:** Hội thoại tư vấn phân tích chuyên sâu kèm Evidence Cards và thông báo đẩy tương tác.
-- **Luồng Ngoại Lệ (Exception Handling):** Dữ liệu chưa đủ chu kỳ phân tích: AI hiển thị cảnh báo mức độ tin cậy của dữ liệu và đề xuất nhập bổ sung.
-- **RESTful API Endpoint:** `POST /api/ai/analyze-opportunities, POST /api/notifications/interactive-push`
-
-
-#### MODULE 32: BẢNG ĐIỀU HÀNH LỊCH TRÌNH TÁC NGHIỆP HÔM NAY & DUYỆT HỒ SƠ C-LEVEL MOBILE (EXECUTIVE HOME & APPROVALS)
-*Mục tiêu Epic:* Trung tâm điều hành di động hợp nhất toàn bộ lịch trình công việc, các cuộc hẹn đối tác B2B và phê duyệt hồ sơ giấy tờ mọi lúc mọi nơi cho lãnh đạo bận rộn
-
-##### FR-32.01 - Lịch Trình Tác Nghiệp Hôm Nay (Today's Executive Agenda)
-- **Actor:** CEO, Lãnh đạo doanh nghiệp
-- **Input:** Mở màn hình chính ExecutiveHome trên App ViOne Connect.
-- **Logic Xử Lý:**
-  1. Hệ thống tự động truy vấn và tổng hợp 3 nguồn lịch trình trong ngày hôm nay:
-     - Lịch họp nội bộ và công việc được giao từ module Quản lý công việc CRM.
-     - Lịch hẹn gặp đối tác giao thương B2B đã được cả hai bên xác nhận (từ Module 29).
-     - Sự kiện hội thảo, gala doanh nhân mà người dùng đã đăng ký vé QR.
-  2. Hiển thị dạng dòng thời gian (Timeline) rõ ràng theo từng khung giờ: Sáng, Chiều, Tối.
-  3. Nhấp vào mỗi thẻ lịch trình mở ngay chi tiết cuộc họp, phòng họp trực tuyến hoặc vị trí trên Google Maps.
-- **Output:** Lịch trình hôm nay toàn diện, cập nhật theo thời gian thực không bỏ sót sự kiện.
-- **Luồng Ngoại Lệ (Exception Handling):** Không có lịch trình trong ngày: Hiển thị thông điệp "Hôm nay bạn không có lịch trình nào, tận hưởng một ngày làm việc hiệu quả!".
-- **RESTful API Endpoint:** `GET /api/connect-app/executive/today-agenda`
-
-##### FR-32.02 - Trung Tâm Duyệt Hồ Sơ Nhanh Di Động (Approvals Mobile Sheet)
-- **Actor:** Ban Giám Đốc, Kế toán trưởng, Trưởng bộ phận
-- **Input:** Chạm vào biểu tượng "Duyệt hồ sơ" hoặc thẻ số lượng cần duyệt trên ExecutiveHome.
-- **Logic Xử Lý:**
-  1. Mở giao diện Approvals Mobile Sheet hiển thị danh sách các hồ sơ đang chờ ký duyệt: Đơn nghỉ phép nhân viên, Đề xuất chi tiền tạm ứng, Hóa đơn thanh toán, Hợp đồng kinh tế.
-  2. Phân loại theo mức độ khẩn cấp (Khẩn cấp, Bình thường) và số tiền.
-  3. Cung cấp 2 phím tắt hành động 1-chạm: [Phê duyệt ngay] (kèm mã PIN hoặc FaceID) và [Từ chối / Yêu cầu giải trình].
-  4. Ghi nhận nhật ký kiểm toán và tự động đồng bộ trạng thái về Web CRM trong thời gian thực.
-- **Output:** Hồ sơ được phê duyệt lập tức, thông báo tự động chuyển đến nhân viên đề xuất.
-- **Luồng Ngoại Lệ (Exception Handling):** Không đủ hạn mức phê duyệt: Hiển thị thông báo chuyển hồ sơ lên cấp phê duyệt cao hơn (CEO/CFO).
-- **RESTful API Endpoint:** `GET /api/connect-app/approvals/pending, POST /api/connect-app/approvals/:id/decide`
-
-
-#### MODULE 33: BẮT TAY KẾT NỐI SONG PHƯƠNG QR THỜI GIAN THỰC & TRÌNH CHỈNH SỬA HỒ SƠ NATIVE PARITY
-*Mục tiêu Epic:* Cơ chế kết nối song phương qua WebSocket khi quét QR, bộ công cụ cập nhật danh tính số C-Level thuần Native và Trợ lý AI Copilot đa năng
-
-##### FR-33.01 - Bắt Tay Kết Nối Song Phương Thời Gian Thực (Bilateral QR Handshake Flow)
-- **Actor:** Hai doanh nhân quét mã QR của nhau (Web PWA và Native Mobile)
-- **Input:** Doanh nhân A quét mã QR của Doanh nhân B, gửi sự kiện WebSocket qr:connect.
-- **Logic Xử Lý:**
-  1. Doanh nhân A mở ScanQrModal quét mã QR của Doanh nhân B.
-  2. Ứng dụng phát sự kiện WebSocket "qr:connect" tới ConnectAppGateway.
-  3. Gateway nhận diện socket của Doanh nhân B và emit sự kiện "connection:incoming".
-  4. Màn hình Doanh nhân B tự động hiển thị IncomingQrConnectionModal (Mobile) hoặc IncomingConnectionModal (Web) với thông tin hồ sơ của A.
-  5. Doanh nhân B bấm [Đồng ý kết nối] -> phát "connection:respond" (accepted). Gateway cập nhật kết nối hai chiều trong CSDL, bắn thông báo xác nhận cho A và mở luồng chat 1-1.
-- **Output:** Kết nối song phương xác lập thành công tức thì trên cả 2 thiết bị.
-- **Luồng Ngoại Lệ (Exception Handling):** Doanh nhân B từ chối: Phát "connection:respond" (declined), đóng modal và không lưu kết nối.
-- **RESTful API Endpoint:** `WS qr:connect, WS connection:incoming, WS connection:respond, WS connection:accepted`
-
-##### FR-33.02 - Trình Chỉnh Sửa Hồ Sơ Cá Nhân Doanh Nhân Thuần Native (Native Edit Profile Parity)
-- **Actor:** Doanh nhân thành viên C-Level
-- **Input:** Bấm nút [Chỉnh sửa] trên màn hình ProfileScreen Native.
-- **Logic Xử Lý:**
-  1. Mở EditProfileModal thuần Native với đầy đủ 8 trường thông tin chuẩn Web: Họ tên hiển thị, Chức danh, Tên doanh nghiệp, Ngành nghề, Số điện thoại, Email, Website, Tiểu sử.
-  2. Người dùng chỉnh sửa và bấm [Lưu thay đổi].
-  3. Ứng dụng gọi API PATCH /users/profile (hoặc lưu offline cache AsyncStorage).
-  4. Cập nhật hồ sơ trong AuthContext, đồng bộ danh thiếp số 3D Titanium và làm mới giao diện Profile tức thì.
-- **Output:** Thông tin cá nhân và danh thiếp doanh nhân được cập nhật chuẩn xác 100%.
-- **Luồng Ngoại Lệ (Exception Handling):** Dữ liệu không hợp lệ (email sai định dạng): Báo lỗi tại trường nhập liệu tương ứng.
-- **RESTful API Endpoint:** `PATCH /api/users/profile, GET /api/users/me`
-
-##### FR-33.03 - Trợ Lý AI Copilot Đa Năng Dynamic Nắm Trọn Vẹn Dữ Liệu Nền Tảng
-- **Actor:** Toàn bộ người dùng hệ thống
-- **Input:** Câu hỏi của người dùng về sự kiện, cộng đồng, tài khoản, cơ hội kinh doanh (Text hoặc Voice).
-- **Logic Xử Lý:**
-  1. Tiếp nhận câu hỏi tại ViOneVoiceAssistantModal (Mobile) hoặc ViOneVoiceAssistant (Web).
-  2. Backend AiService phân tích ý định động, truy xuất CSDL thời gian thực: sự kiện đang diễn ra, danh sách cộng đồng đã tham gia, chỉ số kết nối tài khoản, cơ hội kinh doanh mới.
-  3. Tổng hợp câu trả lời tự nhiên như Chief of Staff, kèm Evidence Cards và Suggested Actions 1-chạm.
-  4. Giao diện modal tối ưu: Header không đè lấn sóng micro, Footer nhập liệu luôn cố định ở đáy.
-- **Output:** Phản hồi thông thái, chính xác 100% dữ liệu nền tảng, không rập khuôn.
-- **Luồng Ngoại Lệ (Exception Handling):** Mất kết nối mạng: Chuyển sang bộ dữ liệu fallback nội bộ thông minh.
-- **RESTful API Endpoint:** `POST /api/ai/chat`
-
-
-#### MODULE 34: VIONE AI COPILOT ĐA NĂNG, XUẤT BÁO CÁO EXCEL THỰC TẾ & BẢNG ĐIỀU HÀNH EXECUTIVE POSTGRESQL
-*Mục tiêu Epic:* Trợ lý AI đối thoại thông minh, trích xuất bảng tính Excel (.xlsx) chuẩn C-Level từ CSDL thực, bảng điều hành lưu lượng web landing và sổ cái tài chính PostgreSQL
-
-##### FR-34.01 - Dynamic ViOne AI Copilot & Xuất Báo Cáo Excel (.xlsx) Tự Động
-- **Actor:** Ban Lãnh Đạo C-Level, Quản lý tài chính, Nhân sự, Sales
-- **Input:** Câu lệnh hỏi đáp có từ khóa xuất dữ liệu: "báo cáo tài chính", "excel thu chi", "chấm công", "danh sách hội viên", "trình ký".
-- **Logic Xử Lý:**
-  1. AiService.chat() nhận diện ý định xuất báo cáo.
-  2. Gọi generateExcelReport(reportType, options) truy vấn PostgreSQL: finance (transactions, invoices), attendance (member_checkins), members, traffic (landing_page_visits), approvals (document_approvals).
-  3. Dùng exceljs tạo workbook Navy & Champagne Gold, auto column widths, định dạng tiền tệ VND, SUM formula.
-  4. Trả về downloadUrl /api/ai/download-excel/:id.
-- **Output:** File Excel .xlsx chuẩn doanh nghiệp tải về máy.
-- **Luồng Ngoại Lệ (Exception Handling):** Không có dữ liệu trong kỳ: Sinh bảng tính thông báo không phát sinh dữ liệu.
-- **RESTful API Endpoint:** `POST /api/ai/export-excel, GET /api/ai/download-excel/:id, POST /api/ai/chat`
-
-##### FR-34.02 - Bảng Điều Hành Lưu Lượng Web Landing Doanh Nghiệp Thời Gian Thực
-- **Actor:** Tổng Giám Đốc, Ban Quản Trị, Marketing Director
-- **Input:** Bộ chọn chu kỳ: Ngày, Tuần, Tháng.
-- **Logic Xử Lý:**
-  1. API GET /api/admin/traffic-analytics truy vấn bảng landing_page_visits.
-  2. Thống kê Hôm nay, Hôm qua, Tuần này, Tháng này và tăng trưởng tuần.
-  3. Trả về biểu đồ AreaChart và bảng xếp hạng Top Landing Pages.
-- **Output:** Chỉ số lưu lượng và đồ thị biến động traffic trực quan.
-- **Luồng Ngoại Lệ (Exception Handling):** Không kết nối được DB: Fallback số liệu cache gần nhất.
-- **RESTful API Endpoint:** `GET /api/admin/traffic-analytics`
-
-
-#### MODULE 35: HOÀN THIỆN 5 PHÂN HỆ CỐT LÕI HỆ SINH THÁI VIONE C-LEVEL
-*Mục tiêu Epic:* AI Copilot trung thực & typewriter streaming, đăng tin linh hoạt, tin nhắn tự khởi tạo luồng, chỉnh sửa thẻ trang chủ tinh gọn & CRM khách hàng điều hành
-
-##### FR-35.01 - AI Copilot Trung Thực Tuyệt Đối & Hiệu Ứng Typewriter Streaming
-- **Actor:** Mọi người dùng, Lãnh đạo doanh nghiệp
-- **Input:** Câu hỏi: "tôi có bao nhiêu bạn bè", "danh sách bạn bè".
-- **Logic Xử Lý:**
-  1. Truy vấn CSDL thực tế public.user_connections với status = accepted.
-  2. Khi kết nối = 0: Tuyệt đối không giả lập 156 bạn bè; báo cáo trung thực 0 kết nối và gợi ý đối tác tiềm năng thực từ public.vione_users đồng bộ với Tab Mạng lưới.
-  3. Hiển thị hiệu ứng gõ chữ Typewriter Streaming từng ký tự kèm con trỏ nhấp nháy ▎ (chu kỳ 14ms).
-- **Output:** Phản hồi trung thực, mượt mà và gợi ý đối tác thực.
-- **Luồng Ngoại Lệ (Exception Handling):** Lỗi mạng: Fallback thông minh báo cáo 0 kết nối.
-- **RESTful API Endpoint:** `POST /api/ai/chat`
-
-##### FR-35.02 - Đăng Tin & Khoảnh Khắc Linh Hoạt & Đính Kèm Ảnh Bền Vững
-- **Actor:** Doanh nhân, Thành viên cộng đồng
-- **Input:** Nội dung bài viết, chủ đề/chuyên mục tùy chọn, ảnh đính kèm tùy chọn.
-- **Logic Xử Lý:**
-  1. Chủ đề/chuyên mục không bắt buộc (mặc định null), có nút [Bỏ chọn chủ đề] / [Bỏ chọn chuyên mục].
-  2. Bỏ ảnh mẫu cưỡng ép, cho phép bài thuần text hoặc ảnh thật.
-  3. Backend prepareMoment lưu storage_path vào media và finalizeMoment bảo vệ media slots.
-- **Output:** Bài viết/khoảnh khắc xuất bản thành công kèm ảnh nguyên vẹn.
-- **Luồng Ngoại Lệ (Exception Handling):** Tải ảnh thất bại: Thông báo và cho phép đăng bài dạng text.
-- **RESTful API Endpoint:** `POST /connect-app/moments/prepare, POST /connect-app/moments/finalize`
-
-##### FR-35.03 - Hộp Thư Tin Nhắn Phân Giải Đối Tác & Khắc Phục Lỗi Tiền Tố Thread ID
-- **Actor:** Người gửi và Người nhận tin nhắn
-- **Input:** Thread ID hoặc Counterpart ID (th-, u:, p:), nội dung tin nhắn.
-- **Logic Xử Lý:**
-  1. Backend bóc tách an toàn các tiền tố th-, u:, p: trước khi kiểm tra UUID.
-  2. Tự động khởi tạo thread mới nếu counterpart UUID chưa có thread, tránh lỗi thread_not_found.
-  3. listMyDmThreads truy vấn vione_users đảm bảo trả về tên, avatar và counterpartUserId.
-- **Output:** Hộp thư hiển thị đầy đủ mọi tài khoản đã chat và mở kênh chat 1-1 liền mạch.
-- **Luồng Ngoại Lệ (Exception Handling):** ID không hợp lệ: Báo lỗi định dạng ID.
-- **RESTful API Endpoint:** `GET /connect-app/dm/threads, GET /connect-app/dm/threads/:id, POST /connect-app/dm/threads/:id/messages`
-
-##### FR-35.04 - Chỉnh Sửa Nhanh Thẻ Doanh Nhân Trang Chủ & Khử Trùng Lặp Nút Upload
-- **Actor:** Doanh nhân chủ tài khoản
-- **Input:** Mở trang chủ hoặc bấm chỉnh sửa thẻ.
-- **Logic Xử Lý:**
-  1. HomeScreen tự động gọi meApi.getIdentity() nạp avatar_url và cover_url từ vione_users.
-  2. Backend upsertMyIdentity đồng bộ hai chiều sang vione_users.
-  3. Modal QuickEditProfileModal chỉ giữ đúng 1 nút tải ảnh bìa và 1 nút tải avatar.
-- **Output:** Ảnh bìa và avatar hiển thị ổn định, giao diện chỉnh sửa tinh gọn.
-- **Luồng Ngoại Lệ (Exception Handling):** Lỗi tải ảnh: Fallback gradient mạ vàng sang trọng.
-- **RESTful API Endpoint:** `GET /connect-app/me/identity, PUT /connect-app/me/identity`
-
-##### FR-35.05 - Quản Trị Khách Hàng CRM Chuẩn Điều Hành C-Level
-- **Actor:** Lãnh đạo doanh nghiệp, Giám đốc kinh doanh, Sales
-- **Input:** Quản lý danh sách khách hàng và cơ hội trong Tab Mạng lưới.
-- **Logic Xử Lý:**
-  1. 4 Thẻ chỉ số Pipeline điều hành mạ vàng: Quy mô cơ hội, Đang đàm phán, Tỷ lệ chốt deal, Lịch chăm sóc tuần.
-  2. Stage Filter Pills: Tất cả, Đàm phán, Đề xuất, Ký kết.
-  3. Stepper tương tác 4 giai đoạn: Tiếp cận -> Tư vấn -> Đàm phán -> Ký kết chuyển trạng thái 1-chạm.
-  4. Chỉ báo Deal Health (Nóng 90%, Ổn định 70%, Cần chăm sóc 40%) và Touchpoint Logs đa kênh.
-  5. Kết nối onUpdateCustomer cập nhật phản ứng tức thì ra danh sách ngoài.
-- **Output:** Giao diện CRM khách hàng di động chuẩn Executive C-Level.
-- **Luồng Ngoại Lệ (Exception Handling):** Dữ liệu thiếu trường: Tự động gán mặc định an toàn.
-- **RESTful API Endpoint:** `GET /connect-app/network/customers, POST /connect-app/network/customers`
-
-
----
+##### FR-21.02 - Quy Trình Bàn Giao Tự Động Hàng Loạt (Auto-Handover Engine)
+- **Actor:** Trưởng Phòng, Quản Trị Viên, Nhân sự chuyển giao (Handover Initiator), Nhân sự tiếp quản (Assignee).
+- **Quy Trình Xử Lý:**
+  1. Khi nhân viên chuyển phòng hoặc thôi việc, Quản trị viên/Trưởng phòng khởi tạo phiên bàn giao: `POST /api/handovers/initiate`.
+  2. Hệ thống tự động truy vấn toàn bộ dữ liệu đang giao cho nhân viên:
+     - Công việc chưa hoàn tất (`status IN ('todo', 'in_progress', 'review')`).
+     - Khách hàng CRM do nhân viên phụ trách (`owner_id = user.id`).
+     - Cơ hội kinh doanh B2B (`creator_id = user.id`).
+  3. Người khởi tạo chọn nhân sự tiếp quản trong phòng ban (`targetUserId`).
+  4. Hệ thống cập nhật hàng loạt `assignee_id = targetUserId`, ghi nhận lịch sử vào `handover_records`.
+  5. Tự động xuất biên bản bàn giao điện tử (`.pdf` có mã QR xác thực), gửi thông báo chuông và Push Notification cho các bên liên quan.
 
 ### PHẦN 4: YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS - NFR)
 

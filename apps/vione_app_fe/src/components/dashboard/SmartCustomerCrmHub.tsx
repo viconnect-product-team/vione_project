@@ -194,8 +194,12 @@ export function SmartCustomerCrmHub() {
 
   const handleAddCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCustName.trim() || !newCustPhone.trim()) {
-      toast.error("Vui lòng điền họ tên và số điện thoại khách hàng");
+    if (!newCustName.trim()) {
+      toast.error("Vui lòng nhập họ tên khách hàng");
+      return;
+    }
+    if (!newCustPhone.trim()) {
+      toast.error("Vui lòng nhập số điện thoại khách hàng");
       return;
     }
     try {
@@ -372,7 +376,7 @@ export function SmartCustomerCrmHub() {
           <button
             type="button"
             onClick={() => setNewCustomerModalOpen(true)}
-            className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#E8C98E] to-[#C99E55] px-4 text-xs font-bold text-slate-950 shadow-md shadow-[#DFB76C]/25 hover:brightness-105 active:scale-[0.98] transition cursor-pointer"
+            className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-4 text-xs font-bold text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-[0.98] transition cursor-pointer"
           >
             <Plus className="h-4 w-4 stroke-[2.5]" />
             <span>Thêm khách hàng</span>
@@ -603,7 +607,7 @@ export function SmartCustomerCrmHub() {
                     navigator.clipboard.writeText(aiPitchModalCustomer.aiPitch);
                     toast.success("Đã sao chép kịch bản AI vào bộ nhớ tạm");
                   }}
-                  className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#E8C98E] to-[#C99E55] px-4 text-xs font-bold text-slate-950 shadow-md shadow-[#DFB76C]/25 hover:brightness-105 transition cursor-pointer"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-4 text-xs font-bold text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 transition cursor-pointer"
                 >
                   <span>Sao chép kịch bản</span>
                 </button>
@@ -712,7 +716,7 @@ export function SmartCustomerCrmHub() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#E8C98E] to-[#C99E55] px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-[#DFB76C]/25"
+                  className="rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-4 py-2 text-xs font-bold text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer"
                 >
                   Lưu vào CRM
                 </button>

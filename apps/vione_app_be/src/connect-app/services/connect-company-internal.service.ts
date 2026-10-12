@@ -135,6 +135,13 @@ export class ConnectCompanyInternalService {
           customer_phone as "customerPhone",
           customer_contact as "customerContact",
           customer_requirements as "customerRequirements",
+          COALESCE(attachments, '') as "attachments",
+          COALESCE(report_url, '') as "reportUrl",
+          COALESCE(report_note, '') as "reportNote",
+          COALESCE(report_file_name, '') as "reportFileName",
+          COALESCE(report_file_type, '') as "reportFileType",
+          COALESCE(handover_history, '[]'::jsonb) as "handoverHistory",
+          COALESCE(task_type, 'general') as "taskType",
           created_at as "createdAt"
         FROM public.company_tasks
         WHERE 1=1
@@ -207,12 +214,16 @@ export class ConnectCompanyInternalService {
       throw new BadRequestException('Tiêu đề công việc không được để trống');
     }
 
-    // Phân quyền giao việc: Chỉ có role quản trị, role admin và người thiết lập công ty ở cộng đồng mới được giao việc
-    const canAssign = await this.repo.checkUserCanAssignTask(userId, communityId);
-    if (!canAssign) {
-      throw new ForbiddenException(
-        'Bạn không có quyền giao việc. Chức năng giao việc chỉ dành cho Role Quản trị, Role Admin và Tài khoản thiết lập công ty ở cộng đồng!',
-      );
+    // Phân quyền giao việc: Ban Giám Đốc / Quản trị có toàn quyền, hoặc Trưởng ban được phân công ở phòng ban này
+    const isExec = await this.repo.isUserExecutive(userId, communityId);
+    const targetDept = body.department || 'Vận hành';
+    if (!isExec) {
+      const canAssignInDept = await this.repo.checkUserCanOperateInDepartment(userId, communityId, targetDept, 'assign');
+      if (!canAssignInDept) {
+        throw new ForbiddenException(
+          `Bạn không có quyền giao việc cho ${targetDept}. Chức năng giao việc chỉ dành cho Ban Giám Đốc hoặc Trưởng ban được phân công!`,
+        );
+      }
     }
 
     let assignerName = 'Ban Giám Đốc';
@@ -220,13 +231,16 @@ export class ConnectCompanyInternalService {
       assignerName = await this.repo.findCallerName(userId);
     } catch {}
 
-    let assigneeName = body.assigneeName || 'Nhân sự ViOne';
+    let assigneeName = (body.assigneeName || '').trim();
     const assigneeId = body.assigneeId || body.userId;
-    if (assigneeId) {
-      try {
-        assigneeName = await this.repo.findAssigneeName(assigneeId);
-      } catch {}
+    if (!assigneeName || assigneeName === 'Nhân sự ViOne' || assigneeName === 'Thành viên được giao') {
+      if (assigneeId) {
+        try {
+          assigneeName = await this.repo.findAssigneeName(assigneeId);
+        } catch {}
+      }
     }
+    if (!assigneeName) assigneeName = 'Thành viên được giao';
 
     const now = new Date();
     const taskId = `task-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`;
@@ -250,6 +264,10 @@ export class ConnectCompanyInternalService {
       customerPhone: body.customerPhone?.trim() || '',
       customerContact: body.customerContact?.trim() || '',
       customerRequirements: body.customerRequirements?.trim() || '',
+      attachments: typeof body.attachments === 'string' ? body.attachments : JSON.stringify(body.attachments || []),
+      reportUrl: body.reportUrl || body.report_url || '',
+      reportNote: body.reportNote || body.report_note || '',
+      taskType: body.taskType || body.task_type || 'general',
       createdAt: now.toISOString(),
     };
 
@@ -360,6 +378,12 @@ export class ConnectCompanyInternalService {
       throw new ForbiddenException('Bạn không có quyền chỉnh sửa bản ghi do tài khoản khác tạo ra!');
     }
 
+    if (body.assigneeId && !body.assigneeName) {
+      try {
+        body.assigneeName = await this.repo.findAssigneeName(body.assigneeId);
+      } catch {}
+    }
+
     await this.repo.updateCompanyTask(taskId, body);
 
     const tasks = this.companyTasksStore.get(communityId) || [];
@@ -380,6 +404,28 @@ export class ConnectCompanyInternalService {
     return {
       ok: true,
       message: 'Đã cập nhật thông tin công việc thành công!',
+    };
+  }
+
+  async deleteCompanyTask(userId: string, communityId: string, taskId: string) {
+    const canDelete = (await this.repo.checkUserCanEditTask(userId, taskId)) || (await this.repo.checkUserCanAssignTask(userId, communityId));
+    if (!canDelete) {
+      throw new ForbiddenException('Bạn không có quyền xóa công việc này!');
+    }
+
+    await this.repo.deleteCompanyTask(taskId);
+
+    const tasks = this.companyTasksStore.get(communityId) || [];
+    const filtered = tasks.filter((t) => t.id !== taskId);
+    this.companyTasksStore.set(communityId, filtered);
+
+    try {
+      this.gateway.emitToAll('company_task:deleted', { communityId, taskId });
+    } catch {}
+
+    return {
+      ok: true,
+      message: 'Đã xóa công việc thành công!',
     };
   }
 
@@ -636,6 +682,454 @@ export class ConnectCompanyInternalService {
       ok: true,
       log: newLog,
       message: 'Đã lưu nhật ký khách hàng thành công.',
+    };
+  }
+
+  // ==========================================
+  // --- QUẢN LÝ PHÒNG BAN (DEPARTMENTS) ---
+  // ==========================================
+
+  async listCommunityDepartments(communityId: string) {
+    let departments = await this.repo.listCommunityDepartments(communityId);
+    if (!departments || departments.length === 0) {
+      // Seed mặc định 6 phòng ban cho doanh nghiệp
+      const defaults = [
+        { name: 'Ban Giám Đốc', description: 'Điều hành chiến lược, phê duyệt kế hoạch & quyết sách tối cao', color: '#B8860B', membersCount: 3 },
+        { name: 'Phòng Kinh Doanh & Bán Hàng', description: 'Phát triển thị trường, tìm kiếm khách hàng, ký kết hợp đồng', color: '#2563EB', membersCount: 8 },
+        { name: 'Phòng Kỹ Thuật & Công Nghệ', description: 'Nghiên cứu phát triển sản phẩm, chuyển đổi số & hạ tầng công nghệ', color: '#059669', membersCount: 6 },
+        { name: 'Phòng Kế Toán & Tài Chính', description: 'Quản trị dòng tiền, hạch toán thu chi, quyết toán & báo cáo tài chính', color: '#D97706', membersCount: 4 },
+        { name: 'Phòng Hành Chính & Nhân Sự', description: 'Tuyển dụng, đào tạo, quản lý hồ sơ nhân sự & quy chế nội bộ', color: '#9333EA', membersCount: 4 },
+        { name: 'Phòng Marketing & Truyền Thông', description: 'Xây dựng thương hiệu, chiến dịch truyền thông & kết nối đối tác', color: '#E11D48', membersCount: 5 },
+      ];
+      for (const d of defaults) {
+        await this.repo.insertCommunityDepartment({
+          communityId,
+          ...d,
+        });
+      }
+      departments = await this.repo.listCommunityDepartments(communityId);
+    }
+    return {
+      ok: true,
+      departments: departments || [],
+    };
+  }
+
+  async createCommunityDepartment(userId: string, communityId: string, body: any) {
+    if (!body?.name || !body.name.trim()) {
+      throw new BadRequestException('Tên phòng ban không được để trống.');
+    }
+    const canManage = await this.repo.checkUserCanAssignTask(userId, communityId);
+    if (!canManage) {
+      throw new ForbiddenException('Chỉ Ban Quản Trị hoặc Giám Đốc mới có quyền tạo phòng ban.');
+    }
+
+    const dept = {
+      communityId,
+      name: body.name.trim(),
+      description: body.description?.trim() || '',
+      managerId: body.managerId || null,
+      managerName: body.managerName || '',
+      color: body.color || '#DFB76C',
+      membersCount: Number(body.membersCount) || 1,
+    };
+
+    await this.repo.insertCommunityDepartment(dept);
+    const listRes = await this.listCommunityDepartments(communityId);
+
+    try {
+      this.gateway.emitToAll('department:created', { communityId, department: dept });
+    } catch {}
+
+    return {
+      ok: true,
+      department: dept,
+      departments: listRes.departments,
+      message: `Đã tạo phòng ban "${dept.name}" thành công!`,
+    };
+  }
+
+  async deleteCommunityDepartment(userId: string, communityId: string, departmentId: string) {
+    const canManage = await this.repo.checkUserCanAssignTask(userId, communityId);
+    if (!canManage) {
+      throw new ForbiddenException('Chỉ Ban Quản Trị hoặc Giám Đốc mới có quyền xóa phòng ban.');
+    }
+    await this.repo.deleteCommunityDepartment(communityId, departmentId);
+    return {
+      ok: true,
+      message: 'Đã xóa phòng ban thành công.',
+    };
+  }
+
+  // ==========================================
+  // --- CHUYỂN GIAO VIỆC (TASK HANDOVER) ---
+  // ==========================================
+
+  async handoverCompanyTask(userId: string, communityId: string, taskId: string, body: any) {
+    const toAssigneeId = body.toAssigneeId || body.assigneeId;
+    const toAssigneeName = (body.toAssigneeName || body.assigneeName || 'Nhân sự nhận bàn giao').trim();
+    const toDepartment = body.toDepartment || body.department;
+    const reason = (body.reason || body.handoverReason || 'Bàn giao chuyển giao công việc nội bộ').trim();
+    const note = (body.note || body.handoverNote || '').trim();
+
+    if (!toAssigneeId && !toDepartment) {
+      throw new BadRequestException('Vui lòng chọn nhân sự hoặc phòng ban nhận bàn giao.');
+    }
+
+    const dbTask = await this.repo.findTaskSimple(taskId);
+    if (!dbTask) {
+      throw new BadRequestException('Không tìm thấy công việc tương ứng.');
+    }
+
+    const isExec = await this.repo.isUserExecutive(userId, communityId);
+    const isAssignee = String(dbTask.assigneeId) === String(userId);
+    const canHandoverInDept = await this.repo.checkUserCanOperateInDepartment(userId, communityId, dbTask.department || 'Vận hành', 'handover');
+    if (!isExec && !isAssignee && !canHandoverInDept) {
+      throw new ForbiddenException('Bạn không có quyền chuyển giao công việc này. Chỉ Ban Giám Đốc, Trưởng ban hoặc người trực tiếp phụ trách mới được chuyển việc!');
+    }
+
+    let callerName = 'Đồng nghiệp';
+    try {
+      callerName = await this.repo.findCallerName(userId);
+    } catch {}
+
+    const now = new Date();
+    const handoverEntry = {
+      fromAssigneeId: dbTask.assigneeId,
+      fromAssigneeName: dbTask.assigneeName || 'Nhân sự phụ trách trước',
+      fromDepartment: dbTask.department || 'Vận hành',
+      toAssigneeId,
+      toAssigneeName,
+      toDepartment: toDepartment || dbTask.department || 'Vận hành',
+      reason,
+      note,
+      transferredBy: callerName,
+      transferredAt: now.toISOString(),
+    };
+
+    await this.repo.handoverCompanyTask(taskId, toAssigneeId, toAssigneeName, toDepartment, handoverEntry);
+
+    // Gửi notification cho người nhận việc mới
+    const isAssigneeUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(toAssigneeId);
+    if (isAssigneeUuid) {
+      const notifId = crypto.randomUUID();
+      const dedupe = `task_handover_${taskId}_${toAssigneeId}_${Date.now()}`;
+      await this.repo.insertBusinessNotification(
+        notifId,
+        toAssigneeId,
+        taskId,
+        dedupe,
+        '🔄 Bạn được chuyển giao công việc mới',
+        `${callerName} đã chuyển giao công việc: "${dbTask.title}" cho bạn. Lý do: ${reason}.`,
+        JSON.stringify({ taskId, title: dbTask.title, transferredBy: callerName, reason, note, communityId }),
+      );
+    }
+
+    await this.repo.insertMemberNotification(
+      toAssigneeId,
+      '🔄 Chuyển giao công việc',
+      `${callerName} vừa bàn giao công việc "${dbTask.title}" cho bạn: "${reason}".`,
+      taskId,
+    );
+
+    // Đồng bộ bộ nhớ ram
+    const tasks = this.companyTasksStore.get(communityId) || [];
+    const idx = tasks.findIndex((t) => t.id === taskId);
+    if (idx !== -1) {
+      tasks[idx].assigneeId = toAssigneeId;
+      tasks[idx].assigneeName = toAssigneeName;
+      if (toDepartment) tasks[idx].department = toDepartment;
+      tasks[idx].status = 'assigned';
+      if (!Array.isArray(tasks[idx].handoverHistory)) tasks[idx].handoverHistory = [];
+      tasks[idx].handoverHistory.unshift(handoverEntry);
+      this.companyTasksStore.set(communityId, tasks);
+    }
+
+    try {
+      this.gateway.emitToAll('company_task:updated', {
+        communityId,
+        taskId,
+        assigneeId: toAssigneeId,
+        assigneeName: toAssigneeName,
+        department: toDepartment,
+        status: 'assigned',
+        handoverEntry,
+      });
+      this.gateway.emitToAll('notification:new', {
+        title: 'Chuyển giao công việc nội bộ',
+        body: `${callerName} đã chuyển giao công việc "${dbTask.title}" cho ${toAssigneeName}.`,
+        targetUserId: toAssigneeId,
+        appScope: 'all',
+        sentAt: now.toISOString(),
+      });
+      this.gateway.emitToAll('notification:count', {});
+    } catch {}
+
+    return {
+      ok: true,
+      message: `Đã chuyển giao công việc "${dbTask.title}" cho ${toAssigneeName} thành công! Hệ thống đã tự động gửi thông báo trực tiếp.`,
+      handoverEntry,
+    };
+  }
+
+  // ==========================================
+  // --- NỘP BÁO CÁO FILE WORD & EXCEL ---
+  // ==========================================
+
+  async submitCompanyTaskReport(userId: string, communityId: string, taskId: string, body: any) {
+    const dbTask = await this.repo.findTaskSimple(taskId);
+    if (!dbTask) {
+      throw new BadRequestException('Không tìm thấy công việc tương ứng.');
+    }
+
+    const isExec = await this.repo.isUserExecutive(userId, communityId);
+    const isAssignee = String(dbTask.assigneeId) === String(userId);
+    const canReportInDept = await this.repo.checkUserCanOperateInDepartment(userId, communityId, dbTask.department || 'Vận hành', 'report');
+    if (!isExec && !isAssignee && !canReportInDept) {
+      throw new ForbiddenException('Bạn không có quyền nộp báo cáo cho công việc này. Chỉ Ban Giám Đốc, Trưởng ban hoặc người trực tiếp phụ trách mới được nộp báo cáo!');
+    }
+
+    const progress = Math.min(100, Math.max(0, Math.round(Number(body.progress) || 100)));
+    const isCompleted = progress >= 100;
+    const status = isCompleted ? 'completed' : 'in_progress';
+    const reportUrl = (body.reportUrl || body.report_url || '').trim();
+    const reportNote = (body.reportNote || body.report_note || body.note || '').trim();
+    const reportFileName = (body.reportFileName || body.report_file_name || '').trim();
+    const reportFileType = (body.reportFileType || body.report_file_type || 'other').trim();
+
+    await this.repo.updateCompanyTask(taskId, {
+      progress,
+      progressNote: reportNote,
+      status,
+      reportUrl,
+      reportNote,
+      reportFileName,
+      reportFileType,
+    });
+
+    const now = new Date();
+    let callerName = 'Nhân sự';
+    try {
+      callerName = await this.repo.findCallerName(userId);
+    } catch {}
+
+    const tasks = this.companyTasksStore.get(communityId) || [];
+    const idx = tasks.findIndex((t) => t.id === taskId);
+    if (idx !== -1) {
+      tasks[idx].progress = progress;
+      tasks[idx].progressNote = reportNote;
+      tasks[idx].status = status;
+      tasks[idx].reportUrl = reportUrl;
+      tasks[idx].reportNote = reportNote;
+      tasks[idx].reportFileName = reportFileName;
+      tasks[idx].reportFileType = reportFileType;
+      if (isCompleted) tasks[idx].completedAt = now.toISOString();
+      this.companyTasksStore.set(communityId, tasks);
+    }
+
+    try {
+      this.gateway.emitToAll('company_task:updated', {
+        communityId,
+        taskId,
+        progress,
+        status,
+        reportUrl,
+        reportFileName,
+        reportFileType,
+        reportNote,
+      });
+
+      const fileInfo = reportFileName ? ` (Tệp: ${reportFileName})` : '';
+      this.gateway.emitToAll('notification:new', {
+        title: isCompleted ? '✓ Báo cáo hoàn thành công việc' : `Tiến độ công việc đạt ${progress}%`,
+        body: `${callerName} vừa nộp báo cáo cho công việc "${dbTask?.title || 'Nhiệm vụ'}"${fileInfo}.`,
+        appScope: 'all',
+        sentAt: now.toISOString(),
+      });
+      this.gateway.emitToAll('notification:count', {});
+    } catch {}
+
+    return {
+      ok: true,
+      progress,
+      status,
+      reportUrl,
+      reportFileName,
+      reportFileType,
+      message: isCompleted
+        ? '✓ Đã nộp báo cáo và nghiệm thu hoàn tất công việc 100%!'
+        : `✓ Đã cập nhật tiến độ đạt ${progress}% kèm tệp báo cáo.`,
+    };
+  }
+
+  // ==========================================
+  // --- HỌP BAN TRỰC TUYẾN 1-CHẠM (INSTANT MEETING) ---
+  // ==========================================
+
+  async triggerInstantMeeting(userId: string, communityId: string, body: any) {
+    const departmentName = body.departmentName || 'Toàn công ty';
+    const isExec = await this.repo.isUserExecutive(userId, communityId);
+    if (!isExec && departmentName !== 'Toàn công ty') {
+      const canMeetInDept = await this.repo.checkUserCanOperateInDepartment(userId, communityId, departmentName, 'meet');
+      if (!canMeetInDept) {
+        throw new ForbiddenException(`Bạn chỉ có quyền triệu tập cuộc họp cho phòng ban bạn phụ trách (${departmentName})!`);
+      }
+    }
+
+    const roomTitle = body.roomTitle || `Họp điều hành ${departmentName}`;
+    const randRoom = Math.random().toString(36).substring(2, 9);
+    const meetingUrl =
+      body.meetingUrl ||
+      `https://meet.jit.si/vione-executive-${communityId.replace(/-/g, '').slice(0, 8)}-${randRoom}`;
+
+    let callerName = 'Ban Giám Đốc';
+    try {
+      callerName = await this.repo.findCallerName(userId);
+    } catch {}
+
+    const now = new Date();
+    try {
+      this.gateway.emitToAll('meeting:instant_started', {
+        communityId,
+        departmentName,
+        roomTitle,
+        meetingUrl,
+        hostName: callerName,
+        startedAt: now.toISOString(),
+      });
+      this.gateway.emitToAll('notification:new', {
+        title: `📹 Họp trực tuyến khẩn cấp: ${departmentName}`,
+        body: `${callerName} triệu tập cuộc họp trực tuyến "${roomTitle}". Nhấn để tham gia ngay!`,
+        appScope: 'all',
+        sentAt: now.toISOString(),
+        safeData: { meetingUrl, roomTitle, departmentName },
+      });
+      this.gateway.emitToAll('notification:count', {});
+    } catch {}
+
+    return {
+      ok: true,
+      meetingUrl,
+      roomTitle,
+      departmentName,
+      hostName: callerName,
+      message: `Đã mở phòng họp trực tuyến và phát thông báo triệu tập khẩn cấp tới ${departmentName}!`,
+    };
+  }
+
+  // ==========================================
+  // --- PHÂN QUYỀN PHÒNG BAN (DEPARTMENT RBAC) ---
+  // ==========================================
+
+  async getMyDepartmentPermissions(userId: string, communityId: string) {
+    const isExecutive = await this.repo.isUserExecutive(userId, communityId);
+    const departments = await this.repo.findUserDepartmentMemberships(userId, communityId);
+    const allowedDepartmentNames = isExecutive ? ['*'] : departments.map((d: any) => d.departmentName);
+
+    return {
+      ok: true,
+      isExecutive,
+      departments,
+      allowedDepartmentNames,
+    };
+  }
+
+  async listCommunityDepartmentMembers(userId: string, communityId: string) {
+    const members = await this.repo.listCommunityDepartmentMembers(communityId);
+    return {
+      ok: true,
+      members,
+    };
+  }
+
+  async assignDepartmentMember(userId: string, communityId: string, body: any) {
+    const isExec = await this.repo.isUserExecutive(userId, communityId);
+    const targetDeptId = body.departmentId || body.department_id;
+    const targetDeptName = body.departmentName || body.department_name;
+    const targetUserId = body.userId || body.user_id;
+
+    if (!targetDeptId || !targetDeptName || !targetUserId) {
+      throw new BadRequestException('Thiếu thông tin phòng ban hoặc nhân sự cần phân quyền');
+    }
+
+    if (!isExec) {
+      const isLead = await this.repo.checkUserCanOperateInDepartment(userId, communityId, targetDeptName, 'assign');
+      if (!isLead) {
+        throw new ForbiddenException('Chỉ Ban Giám Đốc hoặc Trưởng ban mới có quyền phân công thành viên vào phòng ban.');
+      }
+    }
+
+    let targetUserName = (body.userName || body.user_name || '').trim();
+    if (!targetUserName) {
+      try {
+        targetUserName = (await this.repo.findAssigneeName(targetUserId)) || 'Thành viên';
+      } catch {
+        targetUserName = 'Thành viên';
+      }
+    }
+
+    await this.repo.upsertDepartmentMember({
+      communityId,
+      departmentId: targetDeptId,
+      departmentName: targetDeptName,
+      userId: targetUserId,
+      userName: targetUserName,
+      userEmail: body.userEmail || body.user_email || '',
+      userPhone: body.userPhone || body.user_phone || '',
+      userAvatar: body.userAvatar || body.user_avatar || '',
+      role: body.role || 'member',
+      canAssign: body.canAssign !== undefined ? Boolean(body.canAssign) : (body.role === 'lead'),
+      canAccept: body.canAccept !== undefined ? Boolean(body.canAccept) : true,
+      canReport: body.canReport !== undefined ? Boolean(body.canReport) : true,
+      canHandover: body.canHandover !== undefined ? Boolean(body.canHandover) : true,
+      canMeet: body.canMeet !== undefined ? Boolean(body.canMeet) : (body.role === 'lead'),
+    });
+
+    const now = new Date();
+    try {
+      this.gateway.emitToAll('department:member_updated', {
+        communityId,
+        departmentId: targetDeptId,
+        departmentName: targetDeptName,
+        userId: targetUserId,
+        userName: targetUserName,
+        role: body.role || 'member',
+      });
+      this.gateway.emitToAll('notification:new', {
+        title: '🛡️ Phân quyền phòng ban',
+        body: `Bạn vừa được phân quyền vào "${targetDeptName}" với vai trò ${body.role === 'lead' ? 'Trưởng ban' : 'Chuyên viên'}.`,
+        targetUserId,
+        appScope: 'all',
+        sentAt: now.toISOString(),
+      });
+      this.gateway.emitToAll('notification:count', {});
+    } catch {}
+
+    return {
+      ok: true,
+      message: `Đã phân quyền cho ${targetUserName} vào ${targetDeptName} thành công!`,
+    };
+  }
+
+  async deleteDepartmentMember(userId: string, communityId: string, departmentId: string, targetUserId: string) {
+    const isExec = await this.repo.isUserExecutive(userId, communityId);
+    if (!isExec) {
+      throw new ForbiddenException('Chỉ Ban Giám Đốc hoặc Quản trị viên mới có quyền gỡ thành viên khỏi phòng ban.');
+    }
+
+    await this.repo.deleteDepartmentMember(communityId, departmentId, targetUserId);
+
+    try {
+      this.gateway.emitToAll('department:member_deleted', {
+        communityId,
+        departmentId,
+        userId: targetUserId,
+      });
+    } catch {}
+
+    return {
+      ok: true,
+      message: 'Đã gỡ thành viên khỏi phòng ban thành công.',
     };
   }
 }

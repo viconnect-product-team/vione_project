@@ -191,7 +191,7 @@ export function UserGuideModal({ open, onClose }: UserGuideModalProps) {
               href={docUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg border border-white/20 active:scale-95 transition"
+              className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg border border-[#D8B282]/50 hover:brightness-105 active:scale-95 transition"
             >
               <Download className="h-4 w-4" />
               <span>Xem toàn màn hình & Tải về</span>

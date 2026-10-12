@@ -27,7 +27,15 @@ $bound["EnableHttps"] = $EnableHttps
 
 Write-Host "`n=================================================================" -ForegroundColor Green
 Write-Host "TRIEN KHAI VIONE ENTERPRISE CRM THANH CONG!" -ForegroundColor Green
-Write-Host "1. ViOne Enterprise CRM (HTTPS) : https://14.225.217.232:5446" -ForegroundColor Yellow
-Write-Host "   -> Mien sslip.io             : https://dev-vione-crm.14-225-217-232.sslip.io:5446" -ForegroundColor Yellow
-Write-Host "2. ViOne Connect App (HTTPS)    : https://14.225.217.232:5445" -ForegroundColor Cyan
+Write-Host "1. Web CRM Quan tri Dang Hoat Dong (PORT 5443):" -ForegroundColor Green
+Write-Host "   -> URL truc tiep (HTTPS)      : https://14.225.217.232:5443" -ForegroundColor Yellow
+Write-Host "   -> Mien sslip.io (PWA/SSL)    : https://dev-crm.14-225-217-232.sslip.io:5443" -ForegroundColor Yellow
+Write-Host "2. ViOne Connect App & CRM Portal (PORT 5445):" -ForegroundColor Cyan
+Write-Host "   -> ViOne Connect App (HTTPS)  : https://14.225.217.232:5445" -ForegroundColor Cyan
+Write-Host "   -> ViOne CRM Portal (HTTPS)   : https://14.225.217.232:5445/?portal=crm" -ForegroundColor Cyan
+Write-Host "3. ViOne Standalone CRM (PORT 5446):" -ForegroundColor Magenta
+Write-Host "   -> URL truc tiep (HTTPS)      : https://14.225.217.232:5446" -ForegroundColor Magenta
+Write-Host "   -> Mien sslip.io              : https://dev-vione-crm.14-225-217-232.sslip.io:5446" -ForegroundColor Magenta
+Write-Host "   [Luu y]: Neu cong 5446 bi ERR_CONNECTION_REFUSED, hay mo Port 5446 (TCP Inbound)" -ForegroundColor DarkYellow
+Write-Host "            tren Viettel Cloud Console -> Security Group. Trong khi cho mo, hay dung cong 5443 hoac 5445." -ForegroundColor DarkYellow
 Write-Host "=================================================================" -ForegroundColor Green

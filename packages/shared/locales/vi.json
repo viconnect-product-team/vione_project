@@ -49,7 +49,7 @@
   "bc.mobile.auth.err.deniedHint": "Hãy chấp nhận yêu cầu cấp quyền để tiếp tục.",
   "bc.mobile.auth.err.callback": "Không hoàn tất được bước quay lại ứng dụng.",
   "bc.mobile.auth.err.callbackHint": "Phiên xác thực đã hết hiệu lực. Hãy bắt đầu đăng nhập lại.",
-  "bc.mobile.auth.err.credentials": "Email hoặc mật khẩu chưa đúng.",
+  "bc.mobile.auth.err.credentials": "Tên đăng nhập (Email / Số điện thoại) hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!",
   "bc.mobile.auth.err.unconfirmed": "Tài khoản chưa xác nhận email. Hãy mở email xác nhận trước khi đăng nhập.",
   "bc.mobile.auth.err.rateLimit": "Bạn đã thử quá nhiều lần.",
   "bc.mobile.auth.err.rateLimitHint": "Vui lòng chờ ít phút rồi thử lại.",

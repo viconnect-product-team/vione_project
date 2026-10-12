@@ -23,8 +23,10 @@ import {
 } from "lucide-react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiRequest } from "../../api/client";
 import { StickyBrandHeader } from "../../components/common/StickyBrandHeader";
+import { CreateCommunityGroupModal } from "../../components/CreateCommunityGroupModal";
 import { MyQrModal } from "../quick-connect/MyQrModal";
 import { ScanQrModal } from "../quick-connect/ScanQrModal";
 import { AttendanceModal } from "../../components/AttendanceModal";
@@ -66,6 +68,49 @@ export {
   HomeScreenProps,
 };
 
+const HOME_STORIES = [
+  {
+    id: "st-1",
+    name: "Vũ Minh Tuấn",
+    title: "Chủ tịch HĐQT",
+    company: "Tập đoàn VTech",
+    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+    caption: "Ký kết thỏa thuận hợp tác phân phối độc quyền tại Diễn đàn Kinh tế 2026.",
+  },
+  {
+    id: "st-2",
+    name: "Hoàng Mai Anh",
+    title: "Giám đốc Tài chính",
+    company: "VNPay FinTech",
+    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
+    caption: "Chuyến công tác thẩm định dự án năng lượng tái tạo tại Hải Phòng.",
+  },
+  {
+    id: "st-3",
+    name: "Trần Đức Nam",
+    title: "Tổng Giám đốc",
+    company: "Nam Phát Logistics",
+    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+    caption: "Khai trương trung tâm kho bãi thông minh 10.000m2 tại Bắc Ninh.",
+  },
+  {
+    id: "st-4",
+    name: "Lê Thu Hương",
+    title: "CEO & Founder",
+    company: "EcoWear Global",
+    avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150",
+    caption: "Ra mắt bộ sưu tập thời trang doanh nhân xanh tuần lễ thời trang ASEAN.",
+  },
+  {
+    id: "st-5",
+    name: "Phạm Quốc Huy",
+    title: "Viện trưởng",
+    company: "Viện Đổi mới B2B",
+    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150",
+    caption: "Bàn tròn chuyển đổi số doanh nghiệp vừa và nhỏ quý IV.",
+  },
+];
+
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) => {
   const { user, updateUser } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -74,6 +119,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
 
   // Quyền truy cập chấm công & ký duyệt: Chỉ xuất hiện khi có cộng đồng công ty có nhân sự
   const [hasCompanyWithStaff, setHasCompanyWithStaff] = useState<boolean>(false);
+
+  // Quyền gói cộng đồng / Dùng thử 30 ngày: Chỉ khi có gói mới hiện phân hệ giao việc trên trang chủ
+  const [hasCommunityPlan, setHasCommunityPlan] = useState<boolean>(false);
+  const [createCommunityVisible, setCreateCommunityVisible] = useState<boolean>(false);
 
   // Thông báo tìm bạn bè từ danh bạ điện thoại (giống Zalo)
   const [contactsBannerDismissed, setContactsBannerDismissed] = useState<boolean>(false);
@@ -338,12 +387,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
     } catch {}
 
     try {
-      // 6. Kiểm tra quyền hiển thị Chấm công & Ký duyệt (chỉ khi có công ty có đội ngũ nhân sự)
-      const staffStatusRes = await apiRequest<{ ok?: boolean; hasCompanyWithStaff?: boolean }>(
-        "connect-app/community/company-staff-status"
-      );
-      if (staffStatusRes?.data && typeof staffStatusRes.data.hasCompanyWithStaff === "boolean") {
-        setHasCompanyWithStaff(staffStatusRes.data.hasCompanyWithStaff);
+      // 6. Kiểm tra quyền hiển thị Chấm công, Ký duyệt & Gói cộng đồng giao việc
+      const cachedSub = await AsyncStorage.getItem("vione_community_subscription_active");
+      if (cachedSub === "true") {
+        setHasCommunityPlan(true);
+      }
+
+      const staffStatusRes = await apiRequest<{
+        ok?: boolean;
+        hasCompanyWithStaff?: boolean;
+        hasCommunityPlan?: boolean;
+      }>("connect-app/community/company-staff-status");
+
+      if (staffStatusRes?.data) {
+        if (typeof staffStatusRes.data.hasCompanyWithStaff === "boolean") {
+          setHasCompanyWithStaff(staffStatusRes.data.hasCompanyWithStaff);
+        }
+        if (staffStatusRes.data.hasCommunityPlan) {
+          setHasCommunityPlan(true);
+        }
       }
     } catch {}
   };
@@ -450,19 +512,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
           />
         }
       >
-
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#D8B282"
-            colors={["#D8B282"]}
-          />
-        }
-      >
         {/* 1. Thẻ Doanh Nhân ViOne */}
         <EntrepreneurCard
           isDark={isDark}
@@ -473,6 +522,119 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
           setMemberCardModalVisible={setMemberCardModalVisible}
           setTodayCustomizeVisible={setTodayCustomizeVisible}
         />
+
+        {/* Dải Khoảnh Khắc Doanh Nhân 24h (Stories Strip) — Đồng bộ 100% với PWA */}
+        <View style={{ marginTop: 14, marginBottom: 4 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10, paddingHorizontal: 2 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Sparkles size={15} color="#D8B282" />
+              <Text style={{ fontSize: 13, fontWeight: "800", color: isDark ? "#FFFFFF" : "#0F172A", letterSpacing: 0.2 }}>
+                Khoảnh khắc doanh nhân 24h
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => setPostMomentVisible(true)} activeOpacity={0.7}>
+              <Text style={{ fontSize: 12, fontWeight: "700", color: "#D8B282" }}>+ Đăng tin</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingVertical: 2 }}>
+            {/* My Story Add Button */}
+            <TouchableOpacity
+              onPress={() => setPostMomentVisible(true)}
+              style={{ alignItems: "center", width: 68 }}
+              activeOpacity={0.8}
+            >
+              <View style={{ position: "relative" }}>
+                <View
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 29,
+                    borderWidth: 2,
+                    borderColor: "#D8B282",
+                    padding: 2,
+                    backgroundColor: isDark ? "#121A26" : "#FAF8F5",
+                  }}
+                >
+                  <Image
+                    source={{ uri: user?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }}
+                    style={{ width: "100%", height: "100%", borderRadius: 26 }}
+                  />
+                </View>
+                <View
+                  style={{
+                    position: "absolute",
+                    bottom: -2,
+                    right: -2,
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    backgroundColor: "#DFB76C",
+                    borderWidth: 2,
+                    borderColor: isDark ? "#0B0F17" : "#FFFFFF",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ color: "#050C15", fontSize: 13, fontWeight: "900", lineHeight: 15 }}>+</Text>
+                </View>
+              </View>
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontWeight: "600",
+                  color: isDark ? "#E2E8F0" : "#1E293B",
+                  marginTop: 5,
+                  textAlign: "center",
+                }}
+                numberOfLines={1}
+              >
+                Tin của bạn
+              </Text>
+            </TouchableOpacity>
+
+            {/* Partner Stories */}
+            {HOME_STORIES.map((st) => (
+              <TouchableOpacity
+                key={st.id}
+                onPress={() => {
+                  Alert.alert(`Khoảnh khắc: ${st.name}`, `${st.title} · ${st.company}\n\n"${st.caption}"`);
+                }}
+                style={{ alignItems: "center", width: 68 }}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 29,
+                    borderWidth: 2,
+                    borderColor: "#DFB76C",
+                    padding: 2,
+                    backgroundColor: isDark ? "#121A26" : "#FAF8F5",
+                  }}
+                >
+                  <Image
+                    source={{ uri: st.avatarUrl }}
+                    style={{ width: "100%", height: "100%", borderRadius: 26 }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "500",
+                    color: isDark ? "#CBD5E1" : "#334155",
+                    marginTop: 5,
+                    textAlign: "center",
+                  }}
+                  numberOfLines={1}
+                >
+                  {st.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Banner Khám Phá Bạn Bè Từ Danh Bạ (Zalo-style) */}
         {!contactsBannerDismissed && (
@@ -581,22 +743,124 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
           setPostMomentVisible={setPostMomentVisible}
         />
 
-        {/* 3 & 4 & 5. Phân Hệ Điều Hành C-Level, Quick Actions, Insights */}
-        <ExecutiveCenterSection
-          isDark={isDark}
-          navigation={navigation}
-          hasCompanyWithStaff={hasCompanyWithStaff}
-          setSelectedPartnerForMeeting={setSelectedPartnerForMeeting}
-          setCardScanReviewVisible={setCardScanReviewVisible}
-          setMemberCardModalVisible={setMemberCardModalVisible}
-          setScheduleMeetingVisible={setScheduleMeetingVisible}
-          setScanQrVisible={setScanQrVisible}
-          setMyQrVisible={setMyQrVisible}
-          setAttendanceVisible={setAttendanceVisible}
-          setWorkflowVisible={setWorkflowVisible}
-          setApprovalsVisible={setApprovalsVisible}
-          setAiAssistantVisible={setAiAssistantVisible}
-        />
+        {/* 3 & 4 & 5. Phân Hệ Điều Hành C-Level & Giao Việc: Chỉ hiển thị khi có Gói Cộng Đồng */}
+        {hasCommunityPlan ? (
+          <ExecutiveCenterSection
+            isDark={isDark}
+            navigation={navigation}
+            hasCompanyWithStaff={hasCompanyWithStaff}
+            setSelectedPartnerForMeeting={setSelectedPartnerForMeeting}
+            setCardScanReviewVisible={setCardScanReviewVisible}
+            setMemberCardModalVisible={setMemberCardModalVisible}
+            setScheduleMeetingVisible={setScheduleMeetingVisible}
+            setScanQrVisible={setScanQrVisible}
+            setMyQrVisible={setMyQrVisible}
+            setAttendanceVisible={setAttendanceVisible}
+            setWorkflowVisible={setWorkflowVisible}
+            setApprovalsVisible={setApprovalsVisible}
+            setAiAssistantVisible={setAiAssistantVisible}
+          />
+        ) : (
+          <View
+            style={{
+              marginTop: 18,
+              marginBottom: 4,
+              borderRadius: 20,
+              borderWidth: 1.5,
+              borderColor: "rgba(216, 178, 130, 0.4)",
+              overflow: "hidden",
+              backgroundColor: isDark ? "#121A28" : "#FFFFFF",
+            }}
+          >
+            <LinearGradient
+              colors={
+                isDark
+                  ? ["rgba(216, 178, 130, 0.2)", "rgba(11, 15, 23, 0.95)"]
+                  : ["#FFF9F0", "#FFFFFF"]
+              }
+              style={{ padding: 18 }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <View
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 10,
+                      backgroundColor: "rgba(216, 178, 130, 0.2)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Sparkles size={16} color="#DFB76C" />
+                  </View>
+                  <Text style={{ fontSize: 11.5, fontWeight: "800", color: "#DFB76C", letterSpacing: 0.6 }}>
+                    GÓI CỘNG ĐỒNG VI-ONE · DÙNG THỬ 30 NGÀY FREE
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: "rgba(16, 185, 129, 0.15)",
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: "rgba(16, 185, 129, 0.3)",
+                  }}
+                >
+                  <Text style={{ fontSize: 10.5, fontWeight: "800", color: "#10B981" }}>0đ / 30 ngày</Text>
+                </View>
+              </View>
+
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "800",
+                  color: isDark ? "#FFFFFF" : "#0F172A",
+                  marginBottom: 6,
+                }}
+              >
+                Mở Khóa Phân Hệ Giao Việc & Điều Hành C-Level
+              </Text>
+
+              <Text
+                style={{
+                  fontSize: 12.5,
+                  lineHeight: 18,
+                  color: isDark ? "#94A3B8" : "#64748B",
+                  marginBottom: 16,
+                }}
+              >
+                Theo cơ chế bản quyền ViOne, phân hệ giao việc và điều hành chỉ kích hoạt khi tài khoản sở hữu cộng đồng. Đăng ký khởi tạo cộng đồng của bạn ngay hôm nay để nhận 30 ngày trải nghiệm miễn phí trọn bộ: Giao việc & Nhận việc 1-chạm, Giám sát CRM, Cơ hội B2B & Lịch họp!
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => setCreateCommunityVisible(true)}
+                activeOpacity={0.85}
+                style={{ borderRadius: 12, overflow: "hidden" }}
+              >
+                <LinearGradient
+                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingVertical: 13,
+                    paddingHorizontal: 16,
+                    gap: 8,
+                  }}
+                >
+                  <Sparkles size={16} color="#050C15" />
+                  <Text style={{ fontSize: 13.5, fontWeight: "800", color: "#050C15" }}>
+                    + Tạo cộng đồng & Dùng thử 30 ngày free
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        )}
 
         {/* 6. Khối Đối Tác Khuyên Dùng (AI) */}
         <AiPartnersSection
@@ -612,8 +876,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
         />
 
         <View style={{ height: 100 }} />
-      </ScrollView>
-
       </ScrollView>
 
       {/* Modals hỗ trợ kết nối & nghiệp vụ */}
@@ -760,6 +1022,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
             communityName: evt.company || "Cộng đồng Doanh nhân ViOne",
           });
           setEventDetailModalVisible(true);
+        }}
+      />
+
+      {/* Modal Tạo Cộng Đồng Dùng Thử 30 Ngày Free */}
+      <CreateCommunityGroupModal
+        visible={createCommunityVisible}
+        onClose={() => setCreateCommunityVisible(false)}
+        onGroupCreated={() => {
+          setHasCommunityPlan(true);
+          loadData();
         }}
       />
     </SafeAreaView>

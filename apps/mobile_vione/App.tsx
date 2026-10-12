@@ -4,6 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "./src/context/AuthContext";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { AppNavigator } from "./src/navigation/AppNavigator";
+import { GlobalCallManager } from "./src/components/GlobalCallManager";
 
 function AppContent() {
   const { isDark } = useTheme();
@@ -11,6 +12,7 @@ function AppContent() {
     <>
       <StatusBar style={isDark ? "light" : "dark"} />
       <AppNavigator />
+      <GlobalCallManager />
     </>
   );
 }

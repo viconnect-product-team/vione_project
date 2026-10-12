@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import {
   Alert,
   Share,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../context/ThemeContext";
@@ -18,6 +19,7 @@ import { ProposeOpportunityMeetingModal } from "../../components/ProposeOpportun
 import { EditCommunityModal } from "../../components/EditCommunityModal";
 import { ShareEventModal } from "../../components/ShareEventModal";
 import { AssignTaskModal } from "../../components/AssignTaskModal";
+import { DepartmentPermissionsModal } from "../../components/DepartmentPermissionsModal";
 import { CreateNewsModal } from "../../components/CreateNewsModal";
 import { CommunityNewsDetailModal } from "../../components/CommunityNewsDetailModal";
 import { CommunityInviteModal } from "../../components/CommunityInviteModal";
@@ -86,6 +88,12 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   const [tasks, setTasks] = useState<TaskItem[]>(INITIAL_TASKS);
   const [taskFilter, setTaskFilter] = useState<TaskFilterType>(route?.params?.filter || "all");
   const [acceptingTaskId, setAcceptingTaskId] = useState<string | null>(null);
+
+  // Department-based RBAC states
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [myDeptPermissions, setMyDeptPermissions] = useState<any | null>(null);
+  const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>("all");
+  const [deptPermissionsVisible, setDeptPermissionsVisible] = useState(false);
 
   useEffect(() => {
     if (route?.params?.communityId) {
@@ -244,9 +252,34 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     }
   };
 
+  const loadDepartments = async (commId: string) => {
+    try {
+      const res = await communityApi.getCommunityDepartments(commId);
+      const list = res?.data?.departments || (Array.isArray(res?.data) ? res.data : []);
+      if (Array.isArray(list) && list.length > 0) {
+        setDepartments(list);
+      }
+    } catch (e) {
+      console.warn("Failed to load community departments:", e);
+    }
+  };
+
+  const loadMyDeptPermissions = async (commId: string) => {
+    try {
+      const res = await communityApi.getMyDepartmentPermissions(commId);
+      if (res?.data) {
+        setMyDeptPermissions(res.data);
+      }
+    } catch (e) {
+      console.warn("Failed to load my dept permissions:", e);
+    }
+  };
+
   useEffect(() => {
     if (selectedCommunityId) {
       loadTasks(selectedCommunityId);
+      loadDepartments(selectedCommunityId);
+      loadMyDeptPermissions(selectedCommunityId);
     }
   }, [selectedCommunityId]);
 
@@ -259,6 +292,8 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     await loadData();
     if (selectedCommunityId) {
       await loadTasks(selectedCommunityId);
+      await loadDepartments(selectedCommunityId);
+      await loadMyDeptPermissions(selectedCommunityId);
     }
     setRefreshing(false);
   };
@@ -338,6 +373,38 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     }
   };
 
+  // Kích hoạt họp tức thì (Instant Meeting) theo phòng ban
+  const handleTriggerInstantMeeting = async (deptName: string) => {
+    if (!selectedCommunityId) return;
+    try {
+      const res = await communityApi.triggerInstantMeeting(selectedCommunityId, {
+        departmentName: deptName === "all" ? "Toàn bộ phòng ban" : deptName,
+      });
+      const meetUrl = res?.data?.meetingUrl || (res as any)?.meetingUrl;
+      if (meetUrl) {
+        Alert.alert(
+          "Phòng Họp Trực Tuyến Đã Mở",
+          `Hệ thống đã khởi tạo phòng họp video cho ${deptName === "all" ? "Toàn bộ phòng ban" : deptName}.\n\nBạn có muốn tham gia phòng họp ngay?`,
+          [
+            { text: "Để sau", style: "cancel" },
+            {
+              text: "Vào phòng họp ngay",
+              onPress: () => {
+                Linking.openURL(meetUrl).catch(() => {
+                  Alert.alert("Lỗi", "Không thể mở liên kết phòng họp");
+                });
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert("✓ Đã gửi thông báo", "Đã gửi thông báo triệu tập họp tới các thành viên trong ban!");
+      }
+    } catch (err: any) {
+      Alert.alert("Lỗi", err?.message || "Không thể khởi tạo cuộc họp. Vui lòng kiểm tra quyền hạn!");
+    }
+  };
+
   // Join community
   const handleJoinCommunity = (commId: string) => {
     setCommunities((prev) =>
@@ -353,9 +420,6 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   // Filtered communities for Level 1 Home
   const filteredCommunities = useMemo(() => {
     return communities.filter((c) => {
-      const isCompany = c.communityType === "company_internal";
-      if (activeTab === "company" && !isCompany) return false;
-      if (activeTab === "networking" && isCompany) return false;
       if (activeTab === "admin" && c.viewerRole !== "admin") return false;
       if (activeTab === "joined" && !c.isMember) return false;
 
@@ -506,6 +570,12 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             setSelectedMember(m);
             setMemberSheetVisible(true);
           }}
+          departments={departments}
+          myDeptPermissions={myDeptPermissions}
+          selectedDeptFilter={selectedDeptFilter}
+          onChangeDeptFilter={setSelectedDeptFilter}
+          onOpenDeptPermissions={() => setDeptPermissionsVisible(true)}
+          onTriggerInstantMeeting={handleTriggerInstantMeeting}
         />
       )}
 
@@ -572,8 +642,26 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           visible={assignTaskVisible}
           onClose={() => setAssignTaskVisible(false)}
           communityId={currentCommunity.id}
+          myDeptPermissions={myDeptPermissions}
+          departmentsList={departments.map((d: any) => d.name || d.departmentName || d)}
           onTaskCreated={(newTask) => {
             setTasks((prev) => [newTask, ...prev]);
+          }}
+        />
+      )}
+
+      {/* Modal Phân quyền phòng ban nội bộ */}
+      {currentCommunity && (
+        <DepartmentPermissionsModal
+          visible={deptPermissionsVisible}
+          onClose={() => setDeptPermissionsVisible(false)}
+          communityId={currentCommunity.id}
+          isDark={isDark}
+          onPermissionsUpdated={() => {
+            if (selectedCommunityId) {
+              loadMyDeptPermissions(selectedCommunityId);
+              loadDepartments(selectedCommunityId);
+            }
           }}
         />
       )}

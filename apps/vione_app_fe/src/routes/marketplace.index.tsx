@@ -977,6 +977,7 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
   const [tab, setTab] = useState<"browse" | "mine">("browse");
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<ProductCategoryKey | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | ProductStatus>("all");
   const [view, setView] = useState<"card" | "list">("card");
   const [sort, setSort] = useState<Sort>("newest");
   const [pinnedOnly, setPinnedOnly] = useState(false);
@@ -1059,11 +1060,12 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
   const mine = all.filter(isMyProduct);
   const active = all.filter((p) => p.status === "active");
 
-  const hasFilters = cat !== "all" || query.trim() !== "" || pinnedOnly || sort !== "newest";
+  const hasFilters = cat !== "all" || statusFilter !== "all" || query.trim() !== "" || pinnedOnly || sort !== "newest";
 
   const visible = useMemo(() => {
     let list = tab === "mine" ? mine : all;
     if (cat !== "all") list = list.filter((p) => p.category === cat);
+    if (statusFilter !== "all") list = list.filter((p) => p.status === statusFilter);
     if (pinnedOnly) list = list.filter((p) => pinned.has(p.id));
     const q = query.trim().toLowerCase();
     if (q) {
@@ -1077,7 +1079,7 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
       );
     }
     return sortProducts(list, sort);
-  }, [tab, cat, query, all, mine, sort, pinnedOnly, pinned]);
+  }, [tab, cat, statusFilter, query, all, mine, sort, pinnedOnly, pinned]);
 
   const accessors = useMemo(
     () => ({
@@ -1275,19 +1277,29 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
         </div>
       )}
 
-      <div className="sm:sticky sm:top-18 z-20 -mx-4 mb-4 space-y-3 bg-background/90 px-4 py-3 backdrop-blur lg:-mx-8 lg:px-8">
+      {/* Sticky Search & Multi-Filter Bar: Sửa lỗi top-18 và tràn ngang, bổ sung Filter Trạng thái */}
+      <div className="sticky top-16 z-20 mb-5 space-y-3.5 rounded-2xl border border-border/80 bg-background/95 p-4 shadow-sm backdrop-blur-md">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 shadow-[var(--shadow-card)]">
-            <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2 shadow-xs">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("mk.search")}
+              placeholder="Tìm kiếm theo tên sản phẩm, dịch vụ, ngành nghề, người đăng hoặc doanh nghiệp..."
               aria-label={t("mk.search")}
-              className="flex-1 bg-transparent text-sm outline-none"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="text-xs text-muted-foreground hover:text-foreground cursor-pointer px-1.5 py-0.5"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <label className="sr-only" htmlFor="mk-sort">
               {t("mk.sort.label")}
             </label>
@@ -1295,7 +1307,7 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
               id="mk-sort"
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
-              className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer shadow-xs"
             >
               {SORT_KEYS.map((s) => (
                 <option key={s.key} value={s.key}>
@@ -1303,16 +1315,17 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
                 </option>
               ))}
             </select>
-            <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-0.5">
+            <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-0.5 shadow-xs">
               <button
                 onClick={() => setView("card")}
                 aria-pressed={view === "card"}
                 aria-label={t("mk.view.card")}
-                className={`rounded-md p-1.5 transition ${
+                className={`rounded-lg p-1.5 transition cursor-pointer ${
                   view === "card"
-                    ? "bg-secondary text-foreground"
+                    ? "bg-secondary text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                 } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+                title="Hiển thị dạng thẻ Lưới (Grid)"
               >
                 <LayoutGrid className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -1320,25 +1333,97 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
                 onClick={() => setView("list")}
                 aria-pressed={view === "list"}
                 aria-label={t("mk.view.list")}
-                className={`rounded-md p-1.5 transition ${
+                className={`rounded-lg p-1.5 transition cursor-pointer ${
                   view === "list"
-                    ? "bg-secondary text-foreground"
+                    ? "bg-secondary text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                 } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+                title="Hiển thị dạng Bảng đối soát (Table)"
               >
                 <List className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap gap-1.5">
+
+        {/* Bộ lọc Trạng thái sản phẩm (Status Filter) */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mr-1">
+            Trạng thái:
+          </span>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("all")}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              statusFilter === "all"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <span>Tất cả</span>
+            <span className={`text-[10px] px-1 rounded-full ${statusFilter === "all" ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}>
+              {all.length}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("active")}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              statusFilter === "active"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span>Đang mở bán</span>
+            <span className={`text-[10px] px-1 rounded-full ${statusFilter === "active" ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}>
+              {all.filter((p) => p.status === "active").length}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("sold")}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              statusFilter === "sold"
+                ? "bg-amber-600 text-white shadow-xs"
+                : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <span>Đã bán / Tạm đóng</span>
+            <span className={`text-[10px] px-1 rounded-full ${statusFilter === "sold" ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}>
+              {all.filter((p) => p.status === "sold").length}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("draft")}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              statusFilter === "draft"
+                ? "bg-slate-700 text-white shadow-xs"
+                : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+            <span>Bản nháp / Chờ duyệt</span>
+            <span className={`text-[10px] px-1 rounded-full ${statusFilter === "draft" ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}>
+              {all.filter((p) => p.status === "draft").length}
+            </span>
+          </button>
+        </div>
+
+        {/* Bộ lọc Danh mục ngành hàng */}
+        <div className="flex flex-wrap items-center gap-1.5 border-t border-border/50 pt-2.5">
+          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mr-1">
+            Ngành hàng:
+          </span>
           <button
             onClick={() => setCat("all")}
             aria-pressed={cat === "all"}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`rounded-full px-3 py-1 text-xs font-medium transition cursor-pointer ${
               cat === "all"
-                ? "bg-primary text-primary-foreground"
-                : "border border-border text-muted-foreground hover:bg-secondary"
+                ? "bg-foreground text-background font-semibold shadow-xs"
+                : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
             {t("mk.filter.all")}
@@ -1348,10 +1433,10 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
               key={c}
               onClick={() => setCat(c)}
               aria-pressed={cat === c}
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              className={`rounded-full px-3 py-1 text-xs font-medium transition cursor-pointer ${
                 cat === c
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border text-muted-foreground hover:bg-secondary"
+                  ? "bg-foreground text-background font-semibold shadow-xs"
+                  : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
               }`}
             >
               {t(c)}
@@ -1360,10 +1445,10 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
           <button
             onClick={() => setPinnedOnly((v) => !v)}
             aria-pressed={pinnedOnly}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition cursor-pointer ${
               pinnedOnly
-                ? "bg-primary text-primary-foreground"
-                : "border border-border text-muted-foreground hover:bg-secondary"
+                ? "bg-amber-500 text-slate-950 font-bold shadow-xs"
+                : "border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
             <Pin className="h-3 w-3" aria-hidden="true" />
@@ -1406,7 +1491,7 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
             {t("mk.results", { n: visible.length })}
           </p>
           {visible.length === 0 ? (
-            query.trim() || pinnedOnly || cat !== "all" ? (
+            query.trim() || pinnedOnly || cat !== "all" || statusFilter !== "all" ? (
               <NoSearchResult />
             ) : (
               <EmptyState
@@ -1415,23 +1500,23 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
               />
             )
           ) : view === "list" ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
               <div className="overflow-x-auto relative">
-                <table className="w-full text-sm border-separate border-spacing-0">
+                <table className="w-full text-sm border-collapse min-w-[920px]">
                   <thead>
-                    <tr className="border-b border-border bg-secondary/80 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                      <th className="sticky left-0 z-20 w-[56px] min-w-[56px] max-w-[56px] bg-secondary px-3 py-3 text-center border-r border-b border-border">
+                    <tr className="border-b border-border bg-secondary/90 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <th className="sticky left-0 z-20 w-14 min-w-[56px] bg-secondary px-3 py-3.5 text-center border-r border-border">
                         STT
                       </th>
-                      <th className="sticky left-[56px] z-20 min-w-[100px] bg-secondary px-4 py-3 border-r border-b border-border shadow-[4px_0_6px_-2px_rgba(0,0,0,0.05)]">
-                        Mã
+                      <th className="sticky left-[56px] z-20 w-28 min-w-[110px] bg-secondary px-4 py-3.5 border-r border-border shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+                        Mã SP
                       </th>
-                      <th className="px-4 py-3 border-b border-border">Sản phẩm / Dịch vụ</th>
-                      <th className="px-4 py-3 border-b border-border">Danh mục</th>
-                      <th className="px-4 py-3 border-b border-border text-right">Giá niêm yết</th>
-                      <th className="px-4 py-3 border-b border-border">Người đăng</th>
-                      <th className="px-4 py-3 border-b border-border">Trạng thái</th>
-                      <th className="sticky right-0 z-20 min-w-[140px] bg-secondary px-4 py-3 text-right border-l border-b border-border shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
+                      <th className="px-4 py-3.5">Sản phẩm / Dịch vụ</th>
+                      <th className="px-4 py-3.5">Danh mục</th>
+                      <th className="px-4 py-3.5 text-right">Giá niêm yết</th>
+                      <th className="px-4 py-3.5">Người đăng / Doanh nghiệp</th>
+                      <th className="px-4 py-3.5">Trạng thái</th>
+                      <th className="sticky right-0 z-20 w-36 min-w-[140px] bg-secondary px-4 py-3.5 text-right border-l border-border shadow-[-2px_0_5px_rgba(0,0,0,0.06)]">
                         Thao tác
                       </th>
                     </tr>
@@ -1443,21 +1528,21 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
                       return (
                         <tr
                           key={p.id}
-                          className="group border-b border-border transition-all duration-150 hover:bg-secondary/60 cursor-pointer"
+                          className="group border-b border-border transition-colors hover:bg-muted/40 cursor-pointer"
                           onClick={(e) => {
                             if ((e.target as HTMLElement).closest("a,button,input")) return;
                             navigate({ to: "/marketplace/$productId", params: { productId: p.id } });
                           }}
                         >
-                          <td className="sticky left-0 z-10 w-[56px] min-w-[56px] max-w-[56px] bg-card group-hover:bg-muted/70 px-3 py-3 text-center text-xs font-medium text-muted-foreground border-r border-b border-border transition-colors">
+                          <td className="sticky left-0 z-10 w-14 min-w-[56px] bg-card dark:bg-slate-900 group-hover:bg-muted/80 px-3 py-3 text-center text-xs font-medium text-muted-foreground border-r border-border transition-colors">
                             {(tc.page - 1) * tc.pageSize + idx + 1}
                           </td>
-                          <td className="sticky left-[56px] z-10 min-w-[100px] bg-card group-hover:bg-muted/70 px-4 py-3 font-mono text-[12px] font-semibold text-primary border-r border-b border-border shadow-[4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors">
+                          <td className="sticky left-[56px] z-10 w-28 min-w-[110px] bg-card dark:bg-slate-900 group-hover:bg-muted/80 px-4 py-3 font-mono text-[12px] font-semibold text-primary border-r border-border shadow-[2px_0_5px_rgba(0,0,0,0.05)] transition-colors">
                             SP-{p.id.slice(0, 6).toUpperCase()}
                           </td>
-                          <td className="px-4 py-3 border-b border-border">
+                          <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
-                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary/40 flex items-center justify-center text-lg">
+                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary/50 flex items-center justify-center text-lg border border-border/60">
                                 {(() => {
                                   const imgUrl = (p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls[0] : null) || (p as any).imageUrl;
                                   const resolved = resolveMediaUrl(imgUrl);
@@ -1483,44 +1568,46 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-xs border-b border-border">
+                          <td className="px-4 py-3 text-xs whitespace-nowrap">
                             <Pill color="primary">{t(p.category)}</Pill>
                           </td>
-                          <td className="px-4 py-3 text-xs font-bold text-foreground text-right border-b border-border font-mono">
+                          <td className="px-4 py-3 text-xs font-bold text-foreground text-right font-mono whitespace-nowrap">
                             <div>{fmt.money(p.price)}</div>
                             {p.originalPrice && p.originalPrice > p.price && (
                               <div className="text-[11px] text-muted-foreground line-through font-normal">{fmt.money(p.originalPrice)}</div>
                             )}
                             {p.unit && <div className="text-[10px] text-muted-foreground font-normal">/ {p.unit}</div>}
                           </td>
-                          <td className="px-4 py-3 text-xs text-muted-foreground border-b border-border">
-                            <div className="font-medium text-foreground">{p.sellerName || p.company || seller?.name || "Thành viên"}</div>
+                          <td className="px-4 py-3 text-xs text-muted-foreground">
+                            <div className="font-medium text-foreground truncate max-w-[180px]">{p.sellerName || p.company || seller?.name || "Thành viên"}</div>
                             {p.sellerPhone && <div className="text-[11px] text-primary">{p.sellerPhone}</div>}
                             <div className="text-[10px] text-muted-foreground/70">{fmt.date(p.createdAt)}</div>
                           </td>
-                          <td className="px-4 py-3 border-b border-border">
+                          <td className="px-4 py-3 whitespace-nowrap">
                             <Pill color={STATUS_COLOR[p.status]}>{t(STATUS_KEY[p.status])}</Pill>
                           </td>
-                          <td className="sticky right-0 z-10 min-w-[140px] bg-card group-hover:bg-muted/70 px-4 py-3 text-right border-l border-b border-border shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)] transition-colors">
-                            <div className="inline-flex items-center justify-end gap-1">
+                          <td className="sticky right-0 z-10 w-36 min-w-[140px] bg-card dark:bg-slate-900 group-hover:bg-muted/80 px-4 py-3 text-right border-l border-border shadow-[-2px_0_5px_rgba(0,0,0,0.06)] transition-colors">
+                            <div className="inline-flex items-center justify-end gap-1.5">
                               <Link
                                 to="/marketplace/$productId"
                                 params={{ productId: p.id }}
-                                className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+                                className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition"
+                                title="Xem chi tiết"
                               >
                                 <Eye className="h-3.5 w-3.5" />
                               </Link>
                               <button
                                 onClick={() => setEditing(p)}
                                 title="Chỉnh sửa sản phẩm"
-                                className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+                                className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition cursor-pointer"
                               >
                                 <Pencil className="h-3.5 w-3.5" />
                               </button>
                               {isMine ? (
                                 <button
                                   onClick={() => setDeleting(p)}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-destructive/20 bg-background px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-destructive/20 bg-background px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 transition cursor-pointer"
+                                  title="Xóa sản phẩm"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </button>
@@ -1533,8 +1620,9 @@ function MarketplaceContent({ all, reload }: { all: Product[]; reload: () => voi
                                       search: { quote: true },
                                     })
                                   }
-                                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-glow)]"
+                                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-glow)] cursor-pointer"
                                   style={{ background: "var(--gradient-primary)" }}
+                                  title="Yêu cầu báo giá trực tiếp"
                                 >
                                   <FileText className="h-3.5 w-3.5" /> Báo giá
                                 </button>

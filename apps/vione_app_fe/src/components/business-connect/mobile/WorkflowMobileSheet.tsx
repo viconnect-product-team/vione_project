@@ -252,7 +252,10 @@ export function WorkflowMobileSheet({ open, onClose }: WorkflowMobileSheetProps)
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim()) {
+      toast.error("Vui lòng nhập tên công việc cần giao.");
+      return;
+    }
     setCreating(true);
 
     const newTask: TaskItem = {
@@ -466,7 +469,7 @@ export function WorkflowMobileSheet({ open, onClose }: WorkflowMobileSheetProps)
             <button
               type="submit"
               disabled={creating || !newTitle.trim()}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:brightness-105 active:scale-95 transition disabled:opacity-50 cursor-pointer border border-[#E5C07B]/60"
+              className="w-full py-2.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition disabled:opacity-50 cursor-pointer border border-[#D8B282]/50"
             >
               {creating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               Xác nhận Giao việc & Thông báo
@@ -548,7 +551,7 @@ export function WorkflowMobileSheet({ open, onClose }: WorkflowMobileSheetProps)
                       <button
                         type="button"
                         onClick={() => handleAcceptTask(t)}
-                        className="px-2.5 py-1 rounded-lg bg-[#DFB76C] text-slate-950 font-extrabold text-[10.5px] flex items-center gap-1 hover:brightness-105 active:scale-95 transition cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-extrabold text-[10.5px] flex items-center gap-1 hover:brightness-105 active:scale-95 transition cursor-pointer border border-[#D8B282]/50 shadow-xs"
                       >
                         <UserCheck className="h-3 w-3" />
                         Nhận việc
@@ -622,7 +625,7 @@ export function WorkflowMobileSheet({ open, onClose }: WorkflowMobileSheetProps)
             <button
               type="button"
               onClick={handleSaveProgress}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-extrabold text-xs shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer border border-[#D8B282]/50"
             >
               Lưu & Báo Cáo Cho Sếp
             </button>
@@ -666,7 +669,7 @@ export function WorkflowMobileSheet({ open, onClose }: WorkflowMobileSheetProps)
               type="button"
               onClick={handleImportExcel}
               disabled={importing}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-md hover:brightness-105 active:scale-95 transition disabled:opacity-50 cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-md hover:brightness-105 active:scale-95 transition disabled:opacity-50 cursor-pointer border border-[#D8B282]/50"
             >
               {importing ? (
                 <Loader2 className="h-4 w-4 animate-spin text-slate-950" />

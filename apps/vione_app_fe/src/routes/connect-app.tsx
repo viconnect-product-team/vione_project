@@ -11,9 +11,15 @@ import { rememberVioneAppContext } from "@/lib/business-connect/mobile/vione-aut
 export const Route = createFileRoute("/connect-app")({
   ssr: false,
   beforeLoad: async ({ location }) => {
+    if (typeof window === "undefined") {
+      return;
+    }
     rememberVioneAppContext();
-    const token = typeof window !== "undefined" ? localStorage.getItem("vibe_token") : null;
+    const token = localStorage.getItem("vibe_token") || localStorage.getItem("access_token");
     if (!token) {
+      if (location.pathname.startsWith("/vione/login") || location.pathname.startsWith("/auth")) {
+        return;
+      }
       // Preserve the intended deep-link destination for post-auth return.
       throw redirect({ to: "/vione/login", search: { redirect: location.href } });
     }

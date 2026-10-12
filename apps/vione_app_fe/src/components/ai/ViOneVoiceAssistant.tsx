@@ -21,6 +21,8 @@ import {
   ScanLine,
   Users,
   CheckCircle2,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
@@ -61,6 +63,7 @@ export function ViOneVoiceAssistant() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sessions, setSessions] = useState<AiSession[]>([]);
@@ -69,6 +72,34 @@ export function ViOneVoiceAssistant() {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<any>(null);
+
+  // Text to speech hỗ trợ tiếng Việt
+  const speakVietnamese = useCallback((rawText: string) => {
+    if (!isSpeechEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      // Lược bỏ emoji và định dạng markdown trước khi đọc
+      const cleanText = rawText
+        .replace(/[#*_`~>]/g, "")
+        .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
+        .trim();
+      if (!cleanText) return;
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = "vi-VN";
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const viVoice = voices.find((v) => v.lang.toLowerCase().includes("vi"));
+      if (viVoice) {
+        utterance.voice = viVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn("Speech synthesis error:", e);
+    }
+  }, [isSpeechEnabled]);
 
   // Load sessions from localStorage
   useEffect(() => {
@@ -400,17 +431,22 @@ export function ViOneVoiceAssistant() {
       });
 
       const reply =
+        res?.answer ||
+        res?.data?.answer ||
         res?.reply ||
         res?.data?.reply ||
+        res?.voiceText ||
         "Tôi đã ghi nhận yêu cầu của Lãnh đạo. Tôi có thể hỗ trợ điều hướng ứng dụng hoặc phân tích dữ liệu ngay.";
 
       addMessageToCurrentSession("assistant", reply);
+      speakVietnamese(reply);
     } catch {
       const fallbackReply = `Dạ thưa Lãnh đạo, em đã tiếp nhận: "${text}". Em có thể giúp Sếp thực hiện ngay các tác vụ: Giao việc nhân sự, Kiểm tra chấm công hoặc Mở bảng điều hành công việc.`;
       addMessageToCurrentSession("assistant", fallbackReply, {
         label: "Mở bảng công việc",
         command: "Mở bảng điều hành công việc",
       });
+      speakVietnamese(fallbackReply);
     } finally {
       setIsLoading(false);
     }
@@ -440,34 +476,54 @@ export function ViOneVoiceAssistant() {
   }
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4 transition-all">
+    <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-slate-950/60 backdrop-blur-md p-0 sm:p-4 transition-all">
       <div
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#0B0F17] border border-[#DFB76C]/30 shadow-2xl overflow-hidden h-[90vh] flex flex-col animate-in slide-in-from-bottom duration-300"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#FAF8F5] border border-[#DFB76C]/60 shadow-[0_20px_60px_rgba(216,178,130,0.35)] overflow-hidden h-[90vh] flex flex-col animate-in slide-in-from-bottom duration-300 text-slate-900"
         style={{ fontFamily: "'Be Vietnam Pro', system-ui, sans-serif" }}
       >
-        {/* Minimalist Executive Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-[#0E1522]">
+        {/* Executive Minimalist Header - Chuẩn ViOne sáng vàng đồng */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#DFB76C]/30 bg-white shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#DFB76C]/15 border border-[#DFB76C]/30 text-[#DFB76C]">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_100%)] border border-[#DFB76C] text-slate-950 shadow-sm">
               <Sparkles className="h-4.5 w-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white leading-tight">
+              <h3 className="text-sm font-extrabold text-slate-950 leading-tight">
                 Trợ Lý Doanh Nhân ViOne
               </h3>
-              <p className="text-[11px] font-semibold text-[#DFB76C]">
+              <p className="text-[11px] font-bold text-[#8C653B]">
                 {isListening ? "🎙️ Đang lắng nghe giọng nói..." : "● Giọng nói sẵn sàng"}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
+            {/* Toggle TTS Speech Button */}
+            <button
+              type="button"
+              onClick={() => {
+                const nextState = !isSpeechEnabled;
+                setIsSpeechEnabled(nextState);
+                if (!nextState && typeof window !== "undefined" && "speechSynthesis" in window) {
+                  window.speechSynthesis.cancel();
+                }
+              }}
+              title={isSpeechEnabled ? "Đang bật giọng đọc AI (Bấm để tắt)" : "Đang tắt giọng đọc (Bấm để bật)"}
+              className={`grid h-8 w-8 place-items-center rounded-lg border transition cursor-pointer ${
+                isSpeechEnabled
+                  ? "border-[#DFB76C] bg-[#DFB76C]/20 text-[#8C653B]"
+                  : "border-slate-200 bg-slate-100 text-slate-400 hover:text-slate-600"
+              }`}
+            >
+              {isSpeechEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </button>
+
             {/* New Chat Button */}
             <button
               type="button"
               onClick={createNewSession}
               title="Cuộc trò chuyện mới"
-              className="grid h-8 w-8 place-items-center rounded-lg border border-[#DFB76C]/30 bg-[#DFB76C]/10 text-[#DFB76C] hover:bg-[#DFB76C]/20 transition cursor-pointer"
+              className="grid h-8 w-8 place-items-center rounded-lg border border-[#DFB76C]/50 bg-[#DFB76C]/15 text-[#8C653B] hover:bg-[#DFB76C]/25 transition cursor-pointer"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -479,8 +535,8 @@ export function ViOneVoiceAssistant() {
               title="Lịch sử trò chuyện"
               className={`grid h-8 w-8 place-items-center rounded-lg border transition cursor-pointer ${
                 showHistoryDrawer
-                  ? "border-[#DFB76C] bg-[#DFB76C]/20 text-[#DFB76C]"
-                  : "border-slate-800 bg-slate-900 text-slate-400 hover:text-white"
+                  ? "border-[#DFB76C] bg-[#DFB76C]/25 text-[#8C653B]"
+                  : "border-slate-200 bg-slate-100 text-slate-500 hover:text-slate-900"
               }`}
             >
               <History className="h-4 w-4" />
@@ -491,7 +547,7 @@ export function ViOneVoiceAssistant() {
               type="button"
               onClick={clearAllHistory}
               title="Xóa lịch sử"
-              className="grid h-8 w-8 place-items-center rounded-lg border border-slate-800 bg-slate-900 text-rose-400 hover:bg-rose-500/10 transition cursor-pointer"
+              className="grid h-8 w-8 place-items-center rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition cursor-pointer"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -499,8 +555,13 @@ export function ViOneVoiceAssistant() {
             {/* Close */}
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
-              className="grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:text-white transition cursor-pointer ml-1"
+              onClick={() => {
+                if (typeof window !== "undefined" && "speechSynthesis" in window) {
+                  window.speechSynthesis.cancel();
+                }
+                setIsOpen(false);
+              }}
+              className="grid h-8 w-8 place-items-center rounded-full text-slate-500 hover:text-slate-900 transition cursor-pointer ml-1"
             >
               <X className="h-4.5 w-4.5" />
             </button>
@@ -509,13 +570,13 @@ export function ViOneVoiceAssistant() {
 
         {/* History Drawer */}
         {showHistoryDrawer && (
-          <div className="p-3 bg-[#121A26] border-b border-[#DFB76C]/20 space-y-2">
+          <div className="p-3 bg-white border-b border-[#DFB76C]/30 space-y-2 shadow-xs">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-300">Lịch sử cuộc trò chuyện ({sessions.length})</span>
+              <span className="font-bold text-slate-800">Lịch sử cuộc trò chuyện ({sessions.length})</span>
               <button
                 type="button"
                 onClick={clearAllHistory}
-                className="text-rose-400 hover:underline text-[11px]"
+                className="text-red-600 hover:underline text-[11px] font-semibold"
               >
                 Xóa tất cả
               </button>
@@ -533,11 +594,11 @@ export function ViOneVoiceAssistant() {
                     }}
                     className={`shrink-0 px-3 py-1.5 rounded-xl border text-xs text-left max-w-[140px] truncate transition cursor-pointer ${
                       isSelected
-                        ? "border-[#DFB76C] bg-[#DFB76C]/15 text-[#DFB76C] font-bold"
-                        : "border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-700"
+                        ? "border-[#DFB76C] bg-[#DFB76C]/20 text-[#8C653B] font-bold"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:border-[#DFB76C]/50"
                     }`}
                   >
-                    <p className="truncate">{s.title || "Cuộc trò chuyện"}</p>
+                    <p className="truncate font-semibold">{s.title || "Cuộc trò chuyện"}</p>
                     <span className="text-[10px] text-slate-500 font-normal">
                       {new Date(s.createdAt).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}
                     </span>
@@ -549,7 +610,7 @@ export function ViOneVoiceAssistant() {
         )}
 
         {/* Chat Message Scroll Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3.5">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#FAF8F5]">
           {currentSession?.messages.map((msg) => {
             const isUser = msg.sender === "user";
             return (
@@ -558,18 +619,18 @@ export function ViOneVoiceAssistant() {
                 className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}
               >
                 {!isUser && (
-                  <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#DFB76C]/15 border border-[#DFB76C]/30 text-[#DFB76C]">
+                  <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_100%)] border border-[#DFB76C] text-slate-950 shadow-xs">
                     <Bot className="h-3.5 w-3.5" />
                   </div>
                 )}
                 <div
-                  className={`max-w-[82%] rounded-2xl p-3 text-xs leading-relaxed ${
+                  className={`max-w-[84%] rounded-2xl p-3 text-xs leading-relaxed ${
                     isUser
-                      ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-medium rounded-br-xs shadow-md"
-                      : "bg-[#121A26] border border-[#DFB76C]/20 text-slate-200 rounded-bl-xs"
+                      ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-semibold rounded-br-xs shadow-sm"
+                      : "bg-white border border-[#DFB76C]/35 text-slate-900 rounded-bl-xs shadow-sm"
                   }`}
                 >
-                  <p className="whitespace-pre-line">{msg.text}</p>
+                  <p className="whitespace-pre-line text-slate-900 font-normal leading-relaxed">{msg.text}</p>
 
                   {/* Action Button inside AI Bubble */}
                   {msg.suggestedAction && (
@@ -583,7 +644,7 @@ export function ViOneVoiceAssistant() {
                           handleSend(msg.suggestedAction.command);
                         }
                       }}
-                      className="mt-2.5 w-full py-1.5 px-2.5 rounded-lg border border-[#DFB76C]/50 bg-black/40 text-[#DFB76C] font-bold text-[11px] flex items-center justify-between hover:bg-black/60 active:scale-98 transition cursor-pointer"
+                      className="mt-2.5 w-full py-1.5 px-2.5 rounded-lg border border-[#DFB76C]/70 bg-[#FAF8F5] text-[#8C653B] font-bold text-[11px] flex items-center justify-between hover:bg-[#F3EAD8] active:scale-98 transition cursor-pointer shadow-xs"
                     >
                       <span>⚡ {msg.suggestedAction.label}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -591,8 +652,8 @@ export function ViOneVoiceAssistant() {
                   )}
 
                   <span
-                    className={`block text-[9.5px] mt-1 text-right ${
-                      isUser ? "text-slate-900/60" : "text-slate-500"
+                    className={`block text-[9.5px] mt-1 text-right font-medium ${
+                      isUser ? "text-slate-900/60" : "text-slate-400"
                     }`}
                   >
                     {msg.timestamp}
@@ -604,26 +665,26 @@ export function ViOneVoiceAssistant() {
 
           {isLoading && (
             <div className="flex gap-2.5 justify-start">
-              <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#DFB76C]/15 border border-[#DFB76C]/30 text-[#DFB76C]">
+              <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_100%)] border border-[#DFB76C] text-slate-950 shadow-xs">
                 <Bot className="h-3.5 w-3.5" />
               </div>
-              <div className="rounded-2xl bg-[#121A26] border border-[#DFB76C]/20 p-3 text-xs text-slate-400 flex items-center gap-2">
+              <div className="rounded-2xl bg-white border border-[#DFB76C]/30 p-3 text-xs text-slate-600 flex items-center gap-2 shadow-xs">
                 <span className="h-2 w-2 rounded-full bg-[#DFB76C] animate-ping" />
-                <span>Trợ lý AI đang tư duy và xử lý dữ liệu...</span>
+                <span className="font-medium text-[#8C653B]">Trợ lý AI đang tư duy và xử lý dữ liệu...</span>
               </div>
             </div>
           )}
         </div>
 
         {/* Quick Command Chips */}
-        <div className="px-4 py-2 bg-[#0E1522]/60 border-t border-slate-800/60">
+        <div className="px-4 py-2 bg-white/90 border-t border-[#DFB76C]/25">
           <div className="flex gap-1.5 overflow-x-auto pb-1">
             {QUICK_COMMANDS.map((item, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSend(item.cmd)}
-                className="shrink-0 px-2.5 py-1 rounded-full border border-slate-800 bg-[#121A26] text-slate-300 text-[11px] font-medium hover:border-[#DFB76C]/50 hover:text-white transition cursor-pointer"
+                className="shrink-0 px-2.5 py-1 rounded-full border border-[#DFB76C]/40 bg-[#FAF8F5] text-slate-700 text-[11px] font-semibold hover:border-[#DFB76C] hover:bg-white hover:text-[#8C653B] transition cursor-pointer shadow-xs"
               >
                 {item.label}
               </button>
@@ -633,15 +694,15 @@ export function ViOneVoiceAssistant() {
 
         {/* Voice Listening Active Banner */}
         {isListening && (
-          <div className="px-4 py-2 bg-amber-500/10 border-t border-amber-500/20 flex items-center justify-between text-xs text-[#DFB76C]">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+          <div className="px-4 py-2 bg-amber-50 border-t border-amber-300 flex items-center justify-between text-xs text-[#8C653B]">
+            <div className="flex items-center gap-2 font-semibold">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-600 animate-pulse" />
               <span>Đang nghe giọng nói... Hãy nói: "Giao việc", "Chấm công", "Tiến độ"</span>
             </div>
             <button
               type="button"
               onClick={toggleListening}
-              className="px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold cursor-pointer"
+              className="px-2.5 py-0.5 rounded-md bg-red-600 text-white text-[10px] font-bold cursor-pointer hover:bg-red-700"
             >
               Dừng
             </button>
@@ -649,15 +710,15 @@ export function ViOneVoiceAssistant() {
         )}
 
         {/* Bottom Input Field */}
-        <div className="p-3 border-t border-slate-800 bg-[#0B0F17] flex items-center gap-2">
+        <div className="p-3 border-t border-[#DFB76C]/25 bg-white flex items-center gap-2 shadow-sm">
           {/* Voice Microphone */}
           <button
             type="button"
             onClick={toggleListening}
-            className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition cursor-pointer ${
+            className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition cursor-pointer shadow-xs ${
               isListening
-                ? "bg-rose-600 text-white border-rose-500 animate-pulse"
-                : "border-[#DFB76C]/40 bg-[#DFB76C]/10 text-[#DFB76C] hover:bg-[#DFB76C]/20"
+                ? "bg-red-600 text-white border-red-500 animate-pulse"
+                : "border-[#DFB76C] bg-[#FAF8F5] text-[#8C653B] hover:bg-[#F3EAD8]"
             }`}
             title="Nói để điều khiển ứng dụng"
           >
@@ -676,7 +737,7 @@ export function ViOneVoiceAssistant() {
               }
             }}
             placeholder="Nói hoặc nhập lệnh điều hành..."
-            className="flex-1 h-10 rounded-full border border-slate-800 bg-[#121A26] px-4 text-xs text-white placeholder-slate-500 outline-none focus:border-[#DFB76C]"
+            className="flex-1 h-10 rounded-full border border-slate-200 bg-[#FAF8F5] px-4 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#DFB76C] focus:bg-white transition"
           />
 
           {/* Send Button */}
@@ -684,7 +745,7 @@ export function ViOneVoiceAssistant() {
             type="button"
             onClick={() => handleSend()}
             disabled={!inputText.trim() || isLoading}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold transition disabled:opacity-40 cursor-pointer shadow-md"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold transition disabled:opacity-40 cursor-pointer shadow-sm active:scale-95"
           >
             <Send className="h-4 w-4" />
           </button>

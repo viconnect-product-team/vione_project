@@ -32,7 +32,11 @@ export class AiController {
   @UseGuards(OptionalJwtAuthGuard)
   async chat(@Request() req: any, @Body() body: { message: string; conversationId?: string; capability?: string; currentUser?: any }) {
     const userId = req.user?.id || body.currentUser?.id || '00000000-0000-4000-8000-000000000002';
-    return this.aiService.chat(userId, body);
+    const result = await this.aiService.chat(userId, body);
+    return {
+      ...result,
+      reply: (result as any)?.answer || '',
+    };
   }
 
   /** POST /api/ai/export-excel — Tạo file báo cáo Excel động từ CSDL */

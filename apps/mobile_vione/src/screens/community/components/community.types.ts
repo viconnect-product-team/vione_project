@@ -17,11 +17,20 @@ export interface CommunityDetailModel {
   bannerUrl?: string | null;
   communityType: CommunityType;
   memberCount: number;
-  viewerRole: "admin" | "member" | "none";
+  viewerRole: "admin" | "owner" | "member" | "none";
   isMember: boolean;
   upcomingEventsCount: number;
   openOpportunityCount: number;
   canEdit?: boolean;
+}
+
+export interface DepartmentItem {
+  id: string;
+  name: string;
+  description?: string;
+  managerName?: string;
+  color?: string;
+  membersCount?: number;
 }
 
 export interface TaskItem {
@@ -34,6 +43,14 @@ export interface TaskItem {
   assignerName?: string;
   priority: "urgent" | "high" | "medium" | "low";
   status: "assigned" | "in_progress" | "completed" | "cancelled";
+  department?: string;
+  progress?: number;
+  progressNote?: string;
+  reportUrl?: string;
+  reportFileName?: string;
+  reportFileType?: string;
+  attachments?: string;
+  handoverHistory?: any[];
   acceptedAt: string | null;
   completedAt: string | null;
   deadline: string;

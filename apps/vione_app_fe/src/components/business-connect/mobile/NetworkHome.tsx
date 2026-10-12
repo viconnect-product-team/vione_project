@@ -30,9 +30,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { useFmt, useLang, useT } from "@/lib/i18n";
 import { getVNTimeGreeting } from "@/lib/utils";
 import { fetchNestApi, resolveMediaUrl } from "@/lib/api-client";
-import icon from "./icon.svg";
 import { MobileSearchBar } from "./MobileSearchBar";
-import image from "./image.svg";
 import { ViOneLogo } from "./ViOneLogo";
 import {
   useBusinessConnectNetwork,
@@ -286,22 +284,6 @@ export function NetworkHome({
             >
               Mạng lưới
             </h1>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleTabChange("requests")}
-                aria-label="Danh sách lời mời kết bạn"
-                title="Danh sách lời mời kết bạn"
-                className="relative grid h-9 w-9 place-items-center rounded-full text-[var(--bc-mobile-accent)] hover:bg-[var(--bc-mobile-surface-2)] transition-colors border border-solid border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] hover:border-[var(--bc-mobile-accent)] cursor-pointer"
-              >
-                <UserPlus className="h-4.5 w-4.5" strokeWidth={1.8} />
-                {incomingRequests.requests.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-xs">
-                    {incomingRequests.requests.length}
-                  </span>
-                )}
-              </button>
-            </div>
           </div>
           <p className="flex items-center gap-2 relative self-stretch w-full flex-[0_0_auto] mt-[-0.5px]">
             <span className="relative flex items-center w-fit mt-[-1.00px] [font-family:'Inter-Light',Helvetica] font-medium text-[var(--bc-mobile-muted,#64748B)] text-xs tracking-[0] leading-4 whitespace-nowrap">
@@ -669,7 +651,7 @@ function NetworkAllAiSuggestionsPanel({
     if (!viewerUserId) return;
     let active = true;
     fetchNestApi<any>("/connect-app/me/identity")
-      .then((payload) => {
+      .then((payload: any) => {
         if (active) setViewerCity(payload?.identity?.city ?? null);
       })
       .catch(() => {});

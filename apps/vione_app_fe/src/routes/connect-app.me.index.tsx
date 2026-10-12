@@ -194,7 +194,7 @@ function ThemeSettingRow() {
             aria-pressed={active}
             className={`flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-3 text-[12px] font-semibold transition text-center ${
               active
-                ? "bg-[#DFB76C] text-[#050c15] border-[#f0d499]/80 font-bold shadow-sm"
+                ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border-[#D8B282]/80 font-bold shadow-md"
                 : "border-[var(--bc-mobile-border)] text-[var(--bc-mobile-muted)] hover:border-[#D8B282]/40"
             }`}
           >
@@ -799,7 +799,7 @@ function ConnectAppMePage() {
                     aria-pressed={lang === l.code}
                     className={`rounded-2xl border px-3 py-2.5 text-[13px] font-semibold transition text-left flex items-center justify-between gap-1.5 cursor-pointer ${
                       lang === l.code
-                        ? "bg-[#DFB76C] text-[#050c15] border-[#f0d499]/80 font-bold shadow-xs"
+                        ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border-[#D8B282]/80 font-bold shadow-md"
                         : "border-[var(--bc-mobile-border)] text-[var(--bc-mobile-muted)] hover:border-[#D8B282]/50 hover:text-white"
                     }`}
                   >
@@ -884,7 +884,7 @@ function ConnectAppMePage() {
                           toast.error("Quyền thông báo bị chặn. Vui lòng cho phép trong cài đặt trình duyệt của máy.");
                         }
                       }}
-                      className="flex-1 py-2 px-3 rounded-xl bg-[#DFB76C] hover:bg-[#d4a85a] text-slate-950 font-bold text-xs shadow-sm hover:brightness-105 active:scale-95 transition cursor-pointer flex items-center justify-center gap-1.5 border border-[#f0d499]/80"
+                      className="flex-1 py-2 px-3 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-xs shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer flex items-center justify-center gap-1.5 border border-[#D8B282]/80"
                     >
                       <BellRing className="h-3.5 w-3.5" />
                       <span>Cấp quyền thông báo ngay</span>

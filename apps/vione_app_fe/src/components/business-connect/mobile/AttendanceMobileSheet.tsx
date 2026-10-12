@@ -96,7 +96,10 @@ export function AttendanceMobileSheet({ open, onClose }: AttendanceMobileSheetPr
 
   const handleSendLeave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!leaveReason.trim()) return;
+    if (!leaveReason.trim()) {
+      toast.error("Vui lòng nhập lý do xin nghỉ phép");
+      return;
+    }
     setSubmittingLeave(true);
     try {
       await fetchNestApi("/operations/attendance/leaves", {
@@ -211,7 +214,7 @@ export function AttendanceMobileSheet({ open, onClose }: AttendanceMobileSheetPr
                   <button
                     type="button"
                     onClick={onClose}
-                    className="mt-4 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B] text-slate-950 font-bold text-xs shadow-lg cursor-pointer hover:opacity-95"
+                    className="mt-4 px-6 py-2.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-xs shadow-md border border-[#D8B282]/50 cursor-pointer hover:brightness-105 active:scale-95 transition"
                   >
                     Hoàn tất & Đóng
                   </button>
@@ -273,7 +276,7 @@ export function AttendanceMobileSheet({ open, onClose }: AttendanceMobileSheetPr
                           type="button"
                           onClick={handleSimulateFaceScan}
                           disabled={faceMatching || faceVerified}
-                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B] text-slate-950 font-bold text-xs transition shadow-sm disabled:opacity-50 cursor-pointer"
+                          className="px-4 py-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-xs transition shadow-md border border-[#D8B282]/50 disabled:opacity-50 cursor-pointer hover:brightness-105 active:scale-95"
                         >
                           {faceMatching
                             ? "Đang đối soát AI..."
@@ -346,7 +349,7 @@ export function AttendanceMobileSheet({ open, onClose }: AttendanceMobileSheetPr
               <button
                 type="submit"
                 disabled={submittingLeave || !leaveReason.trim()}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#D4AF37] to-[#8C653B] text-slate-950 font-bold text-xs transition shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer hover:opacity-95"
+                className="w-full py-3 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-xs transition shadow-md border border-[#D8B282]/50 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer hover:brightness-105 active:scale-95"
               >
                 {submittingLeave ? <Loader2 className="h-4 w-4 animate-spin text-slate-950" /> : <Send className="h-4 w-4 text-slate-950" />}
                 Gửi Đơn Lên Ban Giám Đốc

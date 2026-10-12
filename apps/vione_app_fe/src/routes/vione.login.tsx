@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
@@ -54,8 +54,11 @@ function VioneMobileLoginPage() {
   const [scanOpen, setScanOpen] = useState(false);
   const [remember, setRemember] = useState(true);
   const { user, logout, setAuthData } = useAuth();
+  const hasRedirectedRef = useRef(false);
 
   async function goPostLogin() {
+    if (hasRedirectedRef.current) return;
+    hasRedirectedRef.current = true;
     const target = safeRedirect(redirectTo);
     if (target) {
       navigate({ to: target as any, replace: true });
@@ -83,18 +86,23 @@ function VioneMobileLoginPage() {
       logout();
       return;
     }
-    if (user && token) {
+    if (user && token && !hasRedirectedRef.current) {
       void goPostLogin();
     }
   }, [user, logout]);
 
   async function submit() {
-    if (!email.trim()) {
-      setAuthError("Vui lòng nhập Email hoặc Số điện thoại đăng nhập");
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      const err = "Vui lòng nhập Email hoặc Số điện thoại đăng nhập";
+      setAuthError(err);
+      toast.error(err);
       return;
     }
     if (!password) {
-      setAuthError("Vui lòng nhập mật khẩu");
+      const err = "Vui lòng nhập mật khẩu";
+      setAuthError(err);
+      toast.error(err);
       return;
     }
 
@@ -106,18 +114,32 @@ function VioneMobileLoginPage() {
     try {
       const res = await fetchNestApi("/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({ email: trimmedEmail, password }),
       });
       if (!res?.access_token) {
-        throw new Error("Đăng nhập không thành công. Vui lòng kiểm tra lại tài khoản và mật khẩu.");
+        throw new Error("Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!");
       }
       setAuthData(res);
-      applyRememberPreference(remember, email.trim());
+      applyRememberPreference(remember, trimmedEmail);
       await goPostLogin();
     } catch (e: any) {
       const info = classifyAuthError(e, { provider: "password" });
       setAuthErrorInfo(info);
-      setAuthError(t(info.messageKey as Parameters<typeof t>[0]) || e?.message || "Đăng nhập thất bại");
+      let errorMsg = "";
+      if (info.kind === "credentials") {
+        errorMsg = "Tên đăng nhập (Email / SĐT) hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!";
+      } else {
+        const translated = t(info.messageKey as Parameters<typeof t>[0]);
+        if (translated && translated !== "auth.genericError" && translated !== "Có lỗi xảy ra") {
+          errorMsg = translated;
+        } else if (e?.message && !e.message.includes("Object") && !e.message.includes("500")) {
+          errorMsg = e.message;
+        } else {
+          errorMsg = "Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!";
+        }
+      }
+      setAuthError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

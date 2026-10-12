@@ -26,6 +26,7 @@ import type {
   CommunityJoinHistoryItemDTO,
   CommunityJoinStatus,
 } from "@/lib/business-connect/mobile/community-join.types";
+import { sanitizeVietnameseText } from "@/lib/textSanitizer";
 
 const STATUS_KEYS = {
   none: "bc.mobile.community.join.status.pending",
@@ -172,7 +173,7 @@ export function CommunityJoinHistory({ panel = false }: { panel?: boolean } = {}
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[15px] font-semibold text-[var(--bc-mobile-text)]">
-                    {item.name}
+                    {sanitizeVietnameseText(item.name)}
                   </p>
                   <p className="mt-0.5 text-[12.5px] text-[var(--bc-mobile-muted)]">
                     {when

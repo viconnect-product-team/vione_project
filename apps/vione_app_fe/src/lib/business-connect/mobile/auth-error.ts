@@ -137,8 +137,17 @@ export function classifyAuthError(
   if (
     context.provider === "password" &&
     (status === 400 ||
+      status === 401 ||
+      status === 403 ||
+      text.includes("401") ||
+      text.includes("unauthorized") ||
       text.includes("invalid login") ||
       text.includes("invalid credentials") ||
+      text.includes("sai") ||
+      text.includes("không chính xác") ||
+      text.includes("không tồn tại") ||
+      text.includes("thông tin đăng nhập") ||
+      text.includes("mật khẩu") ||
       text.includes("invalid email or password"))
   ) {
     return {

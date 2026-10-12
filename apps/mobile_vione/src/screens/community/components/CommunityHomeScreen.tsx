@@ -38,6 +38,7 @@ import {
 } from "./community.types";
 import { styles } from "./community.styles";
 import { resolveMediaUrl } from "../../../utils/media";
+import { sanitizeVietnameseText } from "../../../utils/textSanitizer";
 
 export interface CommunityHomeScreenProps {
   isDark: boolean;
@@ -138,18 +139,18 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                 onPress={() => onOpenCreateCommunity()}
               >
                 <LinearGradient
-                  colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
+                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={styles.createCommunityGrad}
                 >
                   <Plus size={16} color="#050C15" strokeWidth={2.5} />
-                  <Text style={styles.createCommunityText}>Tạo cộng đồng</Text>
+                  <Text style={styles.createCommunityText}>+ Tạo cộng đồng (30 ngày free)</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
 
-            {/* Filter Tabs matching PWA: Tất cả, Doanh nghiệp của tôi, Mạng lưới B2B, Đang quản trị, Đã tham gia, Lịch sử yêu cầu */}
+            {/* Filter Tabs matching PWA: Tất cả, Đang quản trị, Đã tham gia, Lịch sử yêu cầu */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -158,11 +159,9 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
             >
               {[
                 { id: "all", label: "Tất cả" },
-                { id: "company", label: "🏢 Doanh nghiệp của tôi" },
-                { id: "networking", label: "🤝 Mạng lưới B2B" },
-                ...(hasAdmin ? [{ id: "admin", label: "Đang quản trị" }] : []),
-                { id: "joined", label: "Đã tham gia" },
-                { id: "history", label: "Lịch sử yêu cầu" },
+                ...(hasAdmin ? [{ id: "admin", label: "👑 Đang quản trị" }] : []),
+                { id: "joined", label: "🤝 Đã tham gia" },
+                { id: "history", label: "📋 Lịch sử yêu cầu" },
               ].map((item) => {
                 const isActive = activeTab === item.id;
                 return (
@@ -272,11 +271,13 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                 ) : (
                   <View style={styles.communitiesList}>
                     {filteredCommunities.map((community) => {
+                      const cleanName = sanitizeVietnameseText(community.name);
                       const visuals = getCommunityVisuals(
-                        community.name,
+                        cleanName,
                         community.logoUrl,
                         community.bannerUrl
                       );
+                      const cleanDesc = sanitizeVietnameseText(community.shortDescription) || sanitizeVietnameseText(visuals.descFallback);
                       const isCompany = community.communityType === "company_internal";
 
                       return (
@@ -294,7 +295,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                           <TouchableOpacity
                             activeOpacity={0.9}
                             onPress={() => {
-                              onSelectCommunity(community.id, isCompany ? "tasks" : "opportunities");
+                              onSelectCommunity(community.id, "tasks");
                             }}
                             style={styles.cardBannerWrap}
                           >
@@ -309,15 +310,9 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
 
                             {/* Category Pill Tag */}
                             <View style={styles.cardCategoryBadge}>
-                              {isCompany ? (
-                                <View style={styles.companyPill}>
-                                  <Text style={styles.companyPillText}>🏢 CÔNG TY NỘI BỘ</Text>
-                                </View>
-                              ) : (
-                                <View style={styles.b2bPill}>
-                                  <Text style={styles.b2bPillText}>🤝 MẠNG LƯỚI B2B</Text>
-                                </View>
-                              )}
+                              <View style={styles.b2bPill}>
+                                <Text style={styles.b2bPillText}>🌐 CỘNG ĐỒNG DOANH NGHIỆP</Text>
+                              </View>
                             </View>
 
                             {/* Member Status Badge */}
@@ -339,7 +334,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                               <TouchableOpacity
                                 style={styles.cardNameCol}
                                 onPress={() => {
-                                  onSelectCommunity(community.id, isCompany ? "tasks" : "opportunities");
+                                  onSelectCommunity(community.id, "tasks");
                                 }}
                               >
                                 <View style={styles.nameChevronRow}>
@@ -350,7 +345,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                                       { color: isDark ? "#FFFFFF" : "#0F172A" },
                                     ]}
                                   >
-                                    {community.name}
+                                    {cleanName}
                                   </Text>
                                   <ChevronRight size={18} color="#D8B282" />
                                 </View>
@@ -361,7 +356,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                                     { color: isDark ? "#94A3B8" : "#64748B" },
                                   ]}
                                 >
-                                  {community.shortDescription || visuals.descFallback}
+                                  {cleanDesc}
                                 </Text>
                               </TouchableOpacity>
                             </View>
@@ -453,12 +448,12 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                               <TouchableOpacity
                                 style={styles.actionCol}
                                 onPress={() => {
-                                  onSelectCommunity(community.id, isCompany ? "tasks" : "opportunities");
+                                  onSelectCommunity(community.id, "tasks");
                                 }}
                               >
                                 <Briefcase size={14} color="#D8B282" />
                                 <Text style={[styles.actionColText, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                                  {isCompany ? "Giao việc" : "Cơ hội"}
+                                  Giao việc
                                 </Text>
                               </TouchableOpacity>
                             </View>
@@ -604,7 +599,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                           }}
                         >
                           <LinearGradient
-                            colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
+                            colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
                             style={styles.oppConnectGrad}
                           >
                             <Handshake size={13} color="#050C15" />

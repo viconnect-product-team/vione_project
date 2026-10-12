@@ -48,7 +48,7 @@ function BusinessConnectHubPage() {
             onClick={() => setSelectedVersion("v1")}
             className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
               selectedVersion === "v1"
-                ? "bg-[#DFB76C] text-slate-950 border border-[#f0d499]/80 shadow-md ring-2 ring-[#DFB76C]/50"
+                ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/80 shadow-md ring-2 ring-[#D8B282]/50"
                 : "text-slate-400 hover:text-white border border-white/10"
             }`}
           >
@@ -113,7 +113,7 @@ function BusinessConnectHubPage() {
             onClick={() => setSelectedVersion("v6")}
             className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
               selectedVersion === "v6"
-                ? "bg-[#DFB76C] text-slate-950 border border-[#f0d499]/80 shadow-md ring-2 ring-[#DFB76C]/50"
+                ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/80 shadow-md ring-2 ring-[#D8B282]/50"
                 : "text-slate-400 hover:text-[#D4AF37] border border-[#D4AF37]/30"
             }`}
           >

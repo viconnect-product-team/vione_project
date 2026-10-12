@@ -431,12 +431,15 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
       const res = await aiApi.chat(text, currentSessionId);
 
       const reply =
+        res.data?.answer ||
+        res.data?.data?.answer ||
         res.data?.reply ||
         res.data?.data?.reply ||
-        "Tôi đã ghi nhận yêu cầu của Lãnh đạo. Tôi có thể hỗ trợ điều hướng ứng dụng hoặc phân tích dữ liệu ngay.";
+        res.data?.voiceText ||
+        (res.error ? `Lỗi kết nối máy chủ AI: ${res.error}` : "Tôi đã ghi nhận yêu cầu của Lãnh đạo. Tôi có thể hỗ trợ điều hướng ứng dụng hoặc phân tích dữ liệu ngay.");
 
       addMessageToCurrentSession("assistant", reply);
-    } catch (e) {
+    } catch (e: any) {
       // Fallback response with helpful action
       const fallbackReply = `Dạ thưa Lãnh đạo, em đã tiếp nhận: "${text}". Em có thể giúp Sếp thực hiện ngay các tác vụ: Giao việc nhân sự, Kiểm tra chấm công hoặc Mở bảng điều hành công việc.`;
       addMessageToCurrentSession("assistant", fallbackReply, {
@@ -449,12 +452,12 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
   };
 
   const isDarkMode = isDark;
-  const themeBg = isDarkMode ? "#0B0F17" : "#FFFFFF";
-  const themeCard = isDarkMode ? "#121A26" : "#F8FAFC";
-  const themeText = isDarkMode ? "#F1F5F9" : "#0F172A";
-  const themeSub = isDarkMode ? "#94A3B8" : "#64748B";
+  const themeBg = isDarkMode ? "#0F1420" : "#FAF8F5";
+  const themeCard = isDarkMode ? "#161E2E" : "#FFFFFF";
+  const themeText = isDarkMode ? "#F8FAFC" : "#0F172A";
+  const themeSub = isDarkMode ? "#94A3B8" : "#475569";
   const goldColor = "#DFB76C";
-  const goldBorder = isDarkMode ? "rgba(223, 183, 108, 0.25)" : "rgba(202, 138, 4, 0.35)";
+  const goldBorder = isDarkMode ? "rgba(223, 183, 108, 0.35)" : "rgba(218, 165, 32, 0.4)";
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>

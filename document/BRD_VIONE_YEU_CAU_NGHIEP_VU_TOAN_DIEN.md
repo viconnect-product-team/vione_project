@@ -1,15 +1,15 @@
-# TÀI LIỆU YÊU CẦU NGHIỆP VỤ DOANH NGHIỆP TOÀN DIỆN (BRD MASTER 6.5)
+# TÀI LIỆU YÊU CẦU NGHIỆP VỤ DOANH NGHIỆP TOÀN DIỆN (BRD MASTER 6.6)
 ## HỆ ĐIỀU HÀNH DOANH NGHIỆP TOÀN DIỆN VIONE & MẠNG XÃ HỘI GIAO THƯƠNG DOANH NHÂN VIONE CONNECT
-### PHIÊN BẢN HỢP NHẤT TOÀN DIỆN 6.5 (THẨM ĐỊNH THỰC TẾ MÃ NGUỒN 100% - ZERO MOCK DATA)
+### PHIÊN BẢN HỢP NHẤT TOÀN DIỆN 6.6 (NÂNG CẤP PHÂN QUYỀN PHÒNG BAN DEPARTMENT RBAC, BÀN GIAO TỰ ĐỘNG, CRM AUTH TĨNH C-LEVEL & BỘ LỌC TRẠNG THÁI DASHBOARD / MARKETPLACE)
 
 ---
 
 ### THÔNG TIN KIỂM SOÁT TÀI LIỆU (DOCUMENT CONTROL)
 * **Tên dự án:** Hệ Sinh Thái Quản Trị Doanh Nghiệp Toàn Diện ViOne & Mạng Xã Hội Giao Thương Doanh Nhân ViOne Connect
 * **Đơn vị phát triển:** Ban Công Nghệ & Chuyển Đổi Số — Tập Đoàn Công Nghệ VioConnect
-* **Mã tài liệu:** `BRD-VIONE-ENTERPRISE-CONNECT-MASTER-V6.5`
-* **Phiên bản:** `6.5 Master Enterprise Release` (Thẩm định khớp 100% mã nguồn Backend NestJS, Frontend Web CRM, Database PostgreSQL và Mobile App Native / PWA)
-* **Ngày phát hành:** 10/10/2026
+* **Mã tài liệu:** `BRD-VIONE-ENTERPRISE-CONNECT-MASTER-V6.6`
+* **Phiên bản:** `6.6 Master Enterprise Release` (Thẩm định khớp 100% mã nguồn Backend NestJS, Frontend Web CRM, Database PostgreSQL và Mobile App Native / PWA)
+* **Ngày phát hành:** 12/10/2026
 * **Cấp độ bảo mật:** TÀI LIỆU BẢO MẬT NỘI BỘ — LƯU HÀNH GIỚI HẠN
 * **Trạng thái thẩm định:** Đã kiểm thử chức năng thực tế trên Web CRM (Port 5446/5445), PWA Web Mobile (/connect-app), và Mobile App Native (Android Release APK & iOS WebClip)
 
@@ -17,27 +17,27 @@
 
 ## MỤC LỤC TỔNG QUAN
 
-1. **BÁO CÁO THẨM ĐỊNH HIỆN TRẠNG & TUYÊN NGÔN 5 NGUYÊN TẮC BẤT BIẾN**
+1. **BÁO CÁO THẨM ĐỊNH HIỆN TRẠNG & TUYÊN NGÔN 6 NGUYÊN TẮC BẤT BIẾN**
 2. **BỐI CẢNH CHIẾN LƯỢC, TẦM NHÌN & MỤC TIÊU KINH DOANH SMART**
 3. **PHÂN TÍCH 8 CHÂN DUNG NGƯỜI DÙNG & MÔ HÌNH VẬN HÀNH (AS-IS VS TO-BE)**
-4. **MÔ TẢ CHI TIẾT 24 MODULES HỆ THỐNG WEB CRM VIONE (DOANH NGHIỆP)**
+4. **MÔ TẢ CHI TIẾT 25 MODULES HỆ THỐNG WEB CRM VIONE (DOANH NGHIỆP)**
 5. **MÔ TẢ CHI TIẾT TOÀN DIỆN CÁC CHỨC NĂNG CỦA ỨNG DỤNG DI ĐỘNG APP VIONE (NATIVE & PWA)**
-6. **HỆ THỐNG 95 QUY TẮC NGHIỆP VỤ CỐT LÕI (BUSINESS RULES - 6 NHÓM)**
-7. **MA TRẬN PHÂN QUYỀN RBAC 7 NHÓM VAI TRÒ x 6 THAO TÁC & QUY TẮC SỞ HỮU DỮ LIỆU**
+6. **HỆ THỐNG 99 QUY TẮC NGHIỆP VỤ CỐT LÕI (BUSINESS RULES - 6 NHÓM)**
+7. **MA TRẬN PHÂN QUYỀN RBAC ĐA TẦNG (ROLE x DEPARTMENT) & CƠ CHẾ AUTO-HANDOVER**
 8. **YÊU CẦU PHI CHỨC NĂNG (ENTERPRISE NFR) & KIẾN TRÚC DỮ LIỆU THỰC TẾ**
 9. **KẾ HOẠCH TRIỂN KHAI, ĐỐI SOÁT & TIÊU CHUẨN NGHIỆM THU**
 
 ---
 
-## 1. BÁO CÁO THẨM ĐỊNH HIỆN TRẠNG & TUYÊN NGÔN 5 NGUYÊN TẮC BẤT BIẾN
+## 1. BÁO CÁO THẨM ĐỊNH HIỆN TRẠNG & TUYÊN NGÔN 6 NGUYÊN TẮC BẤT BIẾN
 
 ### 1.1. Báo cáo thẩm định hiện trạng mã nguồn
-Toàn bộ tài liệu BRD Master 6.5 được thẩm định chéo trực tiếp trên mã nguồn thực tế của hệ sinh thái ViOne:
-- **Backend NestJS (`apps/vione_app_be`):** 18 modules nghiệp vụ, tầng Repository Pattern chuẩn Enterprise bóc tách 100% raw SQL khỏi Domain Services, hệ thống DTOs độc lập (Single Responsibility Principle) tích hợp `class-validator`, `VietnameseValidationPipe`, bộ lọc bắt lỗi `AllExceptionsFilter` trả về JSON envelope đồng bộ, kết nối CSDL PostgreSQL độc lập qua Prisma ORM, dịch vụ lưu trữ MinIO S3 Object Storage, và Socket.IO WebSockets Gateway.
-- **Frontend Web CRM & PWA (`apps/vione_app_fe`):** TanStack React Start, Vite, React 19, TailwindCSS 4, hỗ trợ chế độ kép Web CRM Doanh nghiệp và PWA Mobile App (`/connect-app`).
+Toàn bộ tài liệu BRD Master 6.6 được thẩm định chéo trực tiếp trên mã nguồn thực tế của hệ sinh thái ViOne:
+- **Backend NestJS (`apps/vione_app_be`):** 19 modules nghiệp vụ, tầng Repository Pattern chuẩn Enterprise bóc tách 100% raw SQL khỏi Domain Services, hệ thống DTOs độc lập (Single Responsibility Principle) tích hợp `class-validator`, `VietnameseValidationPipe`, bộ lọc bắt lỗi `AllExceptionsFilter` trả về JSON envelope đồng bộ, kết nối CSDL PostgreSQL độc lập qua Prisma ORM, phân quyền phòng ban Department RBAC Guard, dịch vụ lưu trữ MinIO S3 Object Storage, và Socket.IO WebSockets Gateway.
+- **Frontend Web CRM & PWA (`apps/vione_app_fe`):** TanStack React Start, Vite, React 19, TailwindCSS 4, hỗ trợ chế độ kép Web CRM Doanh nghiệp và PWA Mobile App (`/connect-app`). Màn đăng nhập CRM tĩnh C-Level sang trọng loại bỏ 100% animation, Bảng điều hành C-Level Dashboard tích hợp bộ lọc trạng thái đa chiều, và Sàn giao dịch Marketplace chuẩn hóa responsive chống tràn viền.
 - **Mobile Native App (`apps/mobile_vione`):** Ứng dụng thuần Native React Native (Expo SDK 52) với Hermes JS Engine, đóng gói sẵn bytecode ngoại tuyến, tích hợp `expo-camera`, `StickyBrandHeader`, Logo vector mạ vàng `ViOneLogo.tsx` 53x20, và hơn 18 modals nghiệp vụ chuyên sâu.
 
-### 1.2. Tuyên ngôn 5 Nguyên Tắc Kỹ Thuật Bất Biến (Strict Engineering & Product Principles)
+### 1.2. Tuyên ngôn 6 Nguyên Tắc Kỹ Thuật Bất Biến (Strict Engineering & Product Principles)
 1. **100% CSDL Thực Tế PostgreSQL - Tuyệt Đối Không Mock Data / Fake Data:**
    - Nghiêm cấm mọi hình thức hardcode dữ liệu tĩnh, tạo mảng giả lập (`INITIAL_*`, `MOCK_*`, `fallbackList`, `dummyFallback`) ở tất cả các component Frontend.
    - Nghiêm cấm sử dụng các hàm giả lập chỉ số (`Math.max(dbValue, 33)`, `Math.max(..., 475000000)`) để "làm đẹp" số liệu KPI khi CSDL chưa có dữ liệu. Mọi chỉ số KPI, biểu đồ, bảng danh sách phản ánh 100% bản ghi thực từ PostgreSQL; nếu CSDL trống thì hiển thị giá trị 0 hoặc giao diện **EmptyState** chuẩn mực.
@@ -55,6 +55,10 @@ Toàn bộ tài liệu BRD Master 6.5 được thẩm định chéo trực tiế
    - Bản **PWA APK Siêu Tốc (~3.18 MB)** đóng gói qua Capacitor Android (`release_apk/ViOne-PWA-latest.apk`).
    - Bản **Native Standalone APK (~81.59 MB)** đóng gói qua React Native Gradle Release (`release_apk/ViOne-Connect-latest.apk`) chạy độc lập offline không phụ thuộc Metro server.
    - Bản **iOS Safari WebClip Profile (`.mobileconfig`)** cho phép người dùng iPhone cài đặt ứng dụng 1-chạm ra Màn hình chính tương tự file APK trên Android.
+6. **Thiết Kế Màn Đăng Nhập CRM Tĩnh C-Level (Bỏ Hoàn Toàn Animation) & Bắt Buộc Bộ Lọc Trạng Thái Toàn Diện (Dashboard & Marketplace):**
+   - **Màn đăng nhập CRM (`/auth`):** Triệt tiêu 100% các animation xoay vòng (`@keyframes`), hạt bụi lơ lửng, hào quang rung lắc. Áp dụng kiến trúc tĩnh 2 cột chuẩn C-Level: Cột trái ảnh kiến trúc skyline `/skyline_perspective_light.jpg` kết hợp biểu đồ PR hiệu năng (+168% hiệu suất điều hành, < 30 giây duyệt chi VietQR 3 cấp, 100% Department RBAC & Audit Trail) và 4 thẻ điểm lợi cốt lõi; Cột phải chuẩn hóa form đăng nhập CRM Champagne Gold.
+   - **Bảng điều hành C-Level Dashboard (`ExecutiveDashboard.tsx`):** Bắt buộc 100% khối dữ liệu (Công việc khẩn cấp, Thành viên mới gia nhập, Sản phẩm Marketplace, Cơ hội kinh doanh B2B, Hóa đơn tài chính) đều phải trang bị bộ lọc trạng thái (Status Filter Tabs/Pills) trực quan kèm badge đếm số lượng thời gian thực.
+   - **Sàn thương mại B2B Marketplace (`/marketplace`):** Khắc phục triệt để lỗi giao diện: loại bỏ hoàn toàn âm lề `-mx-4 lg:-mx-8` gây tràn viền ngang, chuẩn hóa sticky `top-16`, bổ sung bộ lọc trạng thái sản phẩm realtime (Tất cả, Đang mở bán, Đã bán / Tạm đóng, Bản nháp / Chờ duyệt), cấu trúc bảng đối soát table view có các cột STT, Mã SP, Thao tác sticky trái/phải phủ nền solid `bg-card dark:bg-slate-900` chống xuyên thấu khi cuộn ngang trên tablet/mobile.
 
 ---
 
@@ -117,10 +121,15 @@ Hệ thống Web CRM ViOne (`apps/vione_app_fe`) bao quát trọn vẹn 24 modul
 - **Mục tiêu:** Cung cấp cho Ban Lãnh Đạo (CEO, COO, CFO) cái nhìn 360 độ về toàn bộ hoạt động kinh doanh, tài chính và nhân sự của doanh nghiệp theo thời gian thực.
 - **Tính năng chi tiết:**
   * **Khối KPI Thời Gian Thực:** Thống kê Doanh thu ròng, Tăng trưởng, Tổng khách hàng, Hiệu suất dự án, Tỷ lệ chuyên cần nhân sự. Dữ liệu được tính toán 100% từ PostgreSQL, triệt tiêu hoàn toàn `Math.max` và `dummyFallback`.
+  * **Bắt Buộc Bộ Lọc Trạng Thái Toàn Diện (Status Filter Mandate):** Trang bị bộ lọc trạng thái chi tiết theo Tabs/Pills trực quan kèm badge số lượng thời gian thực trên tất cả các khối widget:
+    - *Công việc cần xử lý ngay (Urgent Tasks):* `[Tất cả]` `[Chờ xử lý]` `[Đang làm]` `[Đã xong]` lọc theo trường `status`.
+    - *Hội viên mới gia nhập (Members):* `[Tất cả]` `[Chính thức]` `[Mới đăng ký]` lọc theo trường `membershipTier` / `status`.
+    - *Sản phẩm & Dịch vụ Marketplace mới:* `[Tất cả]` `[Đang mở bán]` `[Đã bán / Chờ]` lọc theo trường `status`.
+    - *Cơ hội kinh doanh B2B (Opportunities):* `[Tất cả]` `[Đang mở]` `[Nhiều tương tác]` lọc theo trường `status` và `claimsCount`.
+    - *Hóa đơn tài chính (Invoices):* `[Tất cả]` `[Chờ duyệt]` `[Đã duyệt]` `[Đã thanh toán]` `[Từ chối]` lọc theo `status`.
   * **Phân Tích Lưu Lượng Web Landing Doanh Nghiệp:** Tích hợp 3 bộ lọc thời gian tương tác (Ngày, Tuần, Tháng); biểu đồ AreaChart mạ vàng Champagne Gold biểu diễn biến động truy cập; bảng xếp hạng Top trang đích truy cập nhiều nhất và tỷ lệ thiết bị (Mobile vs Desktop) từ bảng `landing_page_visits`. Nút xuất Excel phân tích lưu lượng.
   * **Báo Cáo Sổ Cái Thu - Chi Thực Tế:** Bộ chuyển đổi Tuần / Tháng; biểu đồ BarChart dòng tiền đa màu; bảng cơ cấu chi phí theo danh mục (Lương, Vận hành, Tiếp thị, Công tác); thanh đo tiến độ thu hồi công nợ. Nút xuất Excel sổ cái thu chi.
   * **Danh Mục Sản Phẩm & Dịch Vụ Chủ Lực:** Hiển thị thanh tiến độ doanh thu niêm yết, số lượng sản phẩm đang giao dịch trên sàn Marketplace, liên kết trực tiếp tới `/marketplace`.
-  * **Nhiệm Vụ Điều Hành Khẩn Cấp (Urgent Tasks):** Nạp danh sách các công việc sắp hoặc đã quá hạn từ `/operations/workflow/tasks` kèm badge cảnh báo đỏ, người phụ trách và nút xem chi tiết.
   * **Quy chuẩn hiển thị:** Toàn bộ bảng dữ liệu tự động sắp xếp theo `createdAt DESC` (bản ghi mới nhất luôn nằm trên đầu); tích hợp component `DashboardCellTooltip` tự động cắt chuỗi dài với dấu `...` và hiển thị tooltip nổi cao cấp khi rê chuột.
 
 ### Module 02: Quản Trị Khách Hàng Thông Minh (Smart Customer CRM Hub & Hồ Sơ 360°)
@@ -144,10 +153,15 @@ Hệ thống Web CRM ViOne (`apps/vione_app_fe`) bao quát trọn vẹn 24 modul
   * Quản lý danh sách chi nhánh, cấu hình phòng ban, phân quyền Giám đốc chi nhánh.
 
 ### Module 05: Sàn Thương Mại B2B & Quản Lý Sản Phẩm (B2B Marketplace & Catalog)
-- **Mục tiêu:** Số hóa danh mục sản phẩm/dịch vụ của doanh nghiệp và kết nối giao thương trong cộng đồng B2B.
-- **Tính năng chi tiết:**
-  * Quản lý danh mục sản phẩm/dịch vụ: Hình ảnh, giá niêm yết, quy cách đóng gói, thông số kỹ thuật, số lượng tồn kho.
-  * Quy trình Yêu Cầu Báo Giá (RFQ - Request For Quote): Đối tác gửi yêu cầu báo giá trực tuyến; hệ thống tự động phát thông báo 2 chiều đến người bán và người mua.
+- **Mục tiêu:** Số hóa danh mục sản phẩm/dịch vụ của doanh nghiệp và kết nối giao thương trong cộng đồng B2B với trải nghiệm mượt mà, chống lỗi hiển thị.
+- **Tính năng chi tiết & Khắc phục giao diện:**
+  * **Chuẩn Hóa Giao Diện & Khắc Phục Lỗi Hiển Thị (UI Bug Fixes):**
+    - Loại bỏ hoàn toàn âm lề `-mx-4 lg:-mx-8` tránh tràn viền ngang và lỗi horizontal scrollbar toàn trang.
+    - Sửa thanh công cụ tìm kiếm và lọc danh mục dính `sticky top-16` chuẩn hóa độ cao thanh điều hướng.
+    - Bổ sung thanh bộ lọc trạng thái sản phẩm 4 tabs kèm badge realtime: `[Tất cả]` `[Đang mở bán]` `[Đã bán / Tạm đóng]` `[Bản nháp / Chờ duyệt]`.
+    - Cấu trúc bảng đối soát (Table View) `border-collapse min-w-[920px]`: Các cột cố định STT (`left-0 w-14`), Mã SP (`left-[56px] w-28`), Thao tác (`right-0 w-36`) được cấu hình sticky trái/phải với nền solid `bg-card dark:bg-slate-900 group-hover:bg-muted/80`, chống hiện tượng chữ bị đè/xuyên thấu khi cuộn ngang trên tablet/mobile, viền phân cách và đổ bóng tinh tế.
+  * **Quản Lý Danh Mục Sản Phẩm/Dịch Vụ:** Hình ảnh, giá niêm yết, quy cách đóng gói, thông số kỹ thuật, số lượng tồn kho, nút chuyển đổi nhanh chế độ hiển thị Dạng Lưới (Grid View) và Dạng Bảng (Table View).
+  * **Quy trình Yêu Cầu Báo Giá (RFQ - Request For Quote):** Đối tác gửi yêu cầu báo giá trực tuyến; hệ thống tự động phát thông báo 2 chiều đến người bán và người mua.
 
 ### Module 06: Quản Lý Cơ Hội Giao Thương B2B (Opportunities & Tenders)
 - **Mục tiêu:** Đăng tải và tìm kiếm các cơ hội hợp tác kinh doanh, mời thầu, tìm kiếm đại lý phân phối.
@@ -286,6 +300,13 @@ Hệ thống Web CRM ViOne (`apps/vione_app_fe`) bao quát trọn vẹn 24 modul
   * Báo cáo lưu lượng truy cập web landing page theo Ngày, Tuần, Tháng từ CSDL PostgreSQL thực tế.
   * Nhật ký kiểm toán an toàn hệ thống (Audit Log): Ghi nhận bất biến 100% các hành động đăng nhập, đổi mật khẩu, phân quyền, giao dịch tài chính, xuất dữ liệu và lịch sử các câu lệnh AI Copilot (AI Audit Log).
 
+### Module 25: Quản Trị Tổ Chức Phòng Ban (Department RBAC) & Cơ Chế Bàn Giao Tự Động (Auto-Handover Engine)
+- **Mục tiêu:** Số hóa toàn diện cơ cấu tổ chức phân cấp doanh nghiệp (Phòng ban/Bộ phận, Chức danh, Cấp bậc), kiểm soát truy cập dữ liệu theo phạm vi phòng ban và tự động hóa quy trình chuyển giao công việc khi nhân sự thay đổi vị trí hoặc thôi việc.
+- **Tính năng chi tiết:**
+  * **Phân Cấp Cơ Cấu Tổ Chức & Phòng Ban:** Thiết lập danh mục Khối -> Phòng ban -> Nhóm chuyên trách (`vione_community_departments`). Mỗi phòng ban có Trưởng phòng (Head of Department), Phó phòng, và các thành viên chuyên môn.
+  * **Kiểm Soát Quyền Hạn Dữ Liệu Theo Phòng Ban (Department Scoping):** Nhân sự thuộc phòng ban nào chỉ xem và tương tác với công việc, khách hàng, và tài nguyên của phòng ban đó; Trưởng phòng có quyền xem, giao việc và duyệt chi cho toàn bộ nhân sự trong phòng; Ban Giám Đốc (`quan_tri`, `admin`, CEO/COO/CFO) có thẩm quyền xem và điều phối xuyên phòng ban.
+  * **Cơ Chế Bàn Giao Công Việc Tự Động (Auto-Handover Engine):** Khi nhân sự luân chuyển công tác, nghỉ phép dài hạn hoặc thôi việc, hệ thống cung cấp giao diện bàn giao hàng loạt (Bulk Reassignment): gom toàn bộ công việc chưa hoàn thành (`todo`, `in_progress`, `review`), danh sách khách hàng đang chăm sóc, cơ hội kinh doanh B2B để bàn giao sang nhân sự tiếp quản. Hệ thống tự động sinh Biên bản bàn giao điện tử, gửi thông báo chuông và Push Notification, đồng thời lưu vết Audit Trail 100% trong `handover_history`.
+
 ---
 
 ## 5. MÔ TẢ CHI TIẾT TOÀN DIỆN CÁC CHỨC NĂNG CỦA ỨNG DỤNG DI ĐỘNG APP VIONE (NATIVE & PWA)
@@ -356,22 +377,52 @@ Hệ thống Web CRM ViOne (`apps/vione_app_fe`) bao quát trọn vẹn 24 modul
 
 ---
 
-### 5.5. Tab 3: Cộng Đồng Doanh Nghiệp 2 Phân Hệ (Dual-Community Architecture)
-Ứng dụng phân lập rạch ròi 2 dạng cộng đồng với quyền hạn và luồng hành động hoàn toàn tách biệt:
-1. **Cộng Đồng Mạng Lưới Doanh Nhân B2B (`b2b_networking`):**
-   - **Mục đích:** Giao lưu, kết nối kinh doanh, tìm kiếm đối tác và quảng bá sự kiện giữa các Chủ tịch, CEO các công ty khác nhau.
-   - **3 Nút Hành Động:** `+ Đăng cơ hội` (mở `CreateOpportunityModal`), `+ Đăng bài`, `+ Chia sẻ SK` (từ bên ngoài vào qua `ShareEventModal`).
-   - **Tabs:** Cơ hội giao thương, Tin tức, Sự kiện, Thành viên.
-   - **Ràng buộc:** Tuyệt đối không có giao việc nhân sự hay giám sát nội bộ.
-2. **Cộng Đồng Nội Bộ Doanh Nghiệp (`company_internal`):**
-   - **Mục đích:** Không gian làm việc khép kín của Giám đốc và cán bộ nhân viên trong một công ty.
-   - **3 Nút Hành Động:** `+ Giao việc` (mở `AssignTaskModal`), `+ Đăng bài` (mở `CreateNewsModal`), `+ Chia sẻ SK`.
-   - **Tabs:** Quản lý công việc (nhận việc 1-chạm), Giám sát CRM, Tin tức, Sự kiện, Nhân sự công ty.
+### 5.5. Tab 3: Mô Hình Cộng Đồng Doanh Nghiệp Hợp Nhất & Gói Bản Quyền Cộng Đồng (Unified All-in-One Community & Subscription Architecture)
+Theo định hướng kiến trúc bản quyền ViOne mới: Khi người dùng mua hoặc đăng ký gói cộng đồng (hệ thống cung cấp **Gói dùng thử 30 ngày miễn phí**), người dùng sẽ được cấp quyền tạo 1 cộng đồng của riêng mình. Tất cả mọi tính năng điều hành, giao dịch và kết nối được đưa trọn vẹn vào bên trong cộng đồng:
+1. **Mô Hình Cộng Đồng Toàn Năng Hợp Nhất (All-in-One Community):**
+   - **Bản chất nghiệp vụ:** Gộp hoàn toàn 2 mô hình cũ (`company_internal` và `b2b_networking`) thành 1 mô hình Cộng Đồng Doanh Nghiệp ViOne thống nhất. Mỗi cộng đồng sở hữu trọn vẹn cả 6 phân hệ cốt lõi: Giao việc & Nhận việc (`tasks`), Giám sát CRM & Nhân sự (`supervision`), Cơ hội B2B (`opportunities`), Bài viết & Tin tức (`news`), Lịch họp & Sự kiện (`events`), Hội viên (`members`).
+   - **3 Nút Hành Động Chuẩn:** `+ Đăng cơ hội` (mở `CreateOpportunityModal`), `+ Đăng bài` (mở `CreateNewsModal`), `+ Chia sẻ SK` (mở `ShareEventModal`).
+   - **Bộ Lọc Tabs Cấp 1:** `Tất cả`, `👑 Đang quản trị`, `🤝 Đã tham gia`, `📋 Lịch sử yêu cầu`. Nút bấm nổi bật `+ Tạo cộng đồng (30 ngày free)`.
+2. **Cơ Chế Gói Bản Quyền & Gating Phân Hệ Giao Việc Tại Trang Chủ:**
+   - **Nguyên tắc bản quyền:** Phân hệ điều hành và giao việc tại Trang chủ (`ExecutiveHome` / `HomeScreen`) CHỈ hiển thị khi tài khoản đã mua gói cộng đồng hoặc đang trong thời hạn dùng thử 30 ngày miễn phí (`hasCommunityPlan === true`).
+   - **Thẻ Kêu Gọi Dùng Thử 30 Ngày Free (CTA Card):** Nếu tài khoản chưa đăng ký gói cộng đồng, trang chủ thay thế phân hệ giao việc bằng thẻ CTA sang trọng Luxury Champagne Gold `CommunityPackageTrialCta` kèm nút `[+ Tạo cộng đồng & Dùng thử 30 ngày free]`.
+   - **Form Khởi Tạo Cộng Đồng Dùng Thử 30 Ngày:** Cho phép nhập Tên cộng đồng, Lĩnh vực hoạt động, Mô tả tôn chỉ và kích hoạt tức thì quyền Quản trị viên cùng thời hạn dùng thử 30 ngày miễn phí (lưu bảng CSDL `public.vione_community_subscriptions` và `AsyncStorage`).
+3. **Quản Trị Cộng Đồng Cho Quản Trị Viên/Admin:**
    - **Quy Trình Nhận Việc 1-Chạm:** Khi Giám đốc giao việc, nhân viên thấy công việc ở trạng thái `assigned` có nút vàng nổi bật **`[⚡ TIẾN HÀNH NHẬN VIỆC]`**. Bấm nút $\rightarrow$ chuyển trạng thái sang `in_progress`, ghi nhận timestamp `acceptedAt` và bắn thông báo chuông đến Giám đốc; Modal "Cập nhật tiến độ" cho phép chọn % (0-100%) và gửi báo cáo; Modal "Nhập từ Excel" cho phép nạp danh sách việc theo phòng ban.
-   - **Ràng buộc:** Tuyệt đối không đăng cơ hội giao thương B2B trong cộng đồng công ty.
-- **Quản Trị Cộng Đồng Cho Quản Trị Viên/Admin:**
   * Nút bấm quản trị **`[⚙️ Chỉnh sửa cộng đồng]`** mở modal `EditCommunityModal` cho phép Quản trị viên cập nhật: Tên cộng đồng, Ảnh đại diện, Ảnh bìa, Tagline, Giới thiệu và Loại hình cộng đồng.
   * Modal mời thành viên (`CommunityInviteModal`): Tạo mã QR mời vào cộng đồng và sao chép liên kết mời tiện lợi.
+4. **Phân Hệ Cơ Cấu Phòng Ban Nội Bộ (Internal Departments):**
+   - **Khởi tạo & Quản trị Phòng Ban:** Cho phép thiết lập hệ thống phòng ban chuyên trách trực thuộc cộng đồng (Ban Giám Đốc, Phòng Kinh Doanh, Phòng Kỹ Thuật, Phòng Kế Toán, Phòng Nhân Sự, Phòng Marketing, Ban Sản Xuất, Ban CSKH, v.v.).
+   - **Thuộc tính phòng ban:** Tên phòng ban (`name`), mã định danh, người phụ trách / Trưởng ban (`lead_name`), màu nhận diện thương hiệu (`color_code`), số lượng nhân sự (`member_count`), mô tả chức năng.
+   - **Bộ Lọc Đa Chiều:** Hàng nút Filter Pills ngang cho phép lọc tức thời danh sách công việc theo từng phòng ban chỉ với 1-chạm.
+5. **Import Tệp Excel & Word Cho Cả Người Nhận Việc và Người Giao Việc:**
+   - **Người Giao Việc (Assigner):**
+     * Nút **`[📊 Excel]`**: Nạp danh sách công việc hàng loạt từ tệp bảng tính (`.xlsx`, `.csv`). Cung cấp nút tải file mẫu chuẩn ViOne (`mau_giao_viec_vione.xlsx`), giao diện kéo thả trực quan và bảng xem trước (preview) kiểm tra dữ liệu trước khi đẩy vào hệ thống.
+     * Nút **`[📄 Word]`**: Nạp đề án nhiệm vụ / kế hoạch công tác từ tệp văn bản Word (`.docx`, `.doc`). Hệ thống tự động bóc tách tiêu đề, đề cương thực thi và đưa vào form giao việc.
+   - **Người Nhận Việc (Assignee):**
+     * Khi hoàn thành hoặc cập nhật tiến độ, nhân viên bấm **`[Nộp báo cáo]`** mở modal chuyên dụng: Cho phép đính kèm song song cả **Tệp thuyết minh Word (`.docx`, `.doc`)** và **Tệp bảng tính số liệu Excel (`.xlsx`, `.xls`, `.csv`)**, cập nhật thanh % tiến độ (0-100%), link nghiệm thu và ghi chú giải trình.
+     * Thẻ công việc hiển thị huy hiệu tệp rõ ràng: **`[📄 Word]`** và **`[📊 Excel]`** để Giám đốc và quản trị viên bấm tải về kiểm tra nghiệm thu trực tiếp.
+6. **Cơ Chế Chuyển Giao Việc Tức Thời (Task Handover & Reassignment) — Triệt Tiêu Thao Tác Rời Rạc Ngoài Luồng:**
+   - Thay vì nhân viên phải gọi điện thoại hay nhắn tin riêng ở ứng dụng ngoài, hệ thống tích hợp nút **`[🔄 Chuyển việc]`** trực tiếp trên thẻ công việc.
+   - Cho phép bàn giao công việc sang nhân sự khác hoặc điều chuyển sang phòng ban khác kèm lý do bàn giao chi tiết.
+   - **Vết Kiểm Toán Bất Biến (Audit Trail):** Lưu giữ toàn bộ lịch sử bàn giao trong mảng JSONB `handover_history` (ai chuyển, chuyển cho ai, thời gian, lý do).
+   - Tự động phát thông báo chuông (Notification) kèm đẩy thời gian thực qua WebSocket đến tài khoản nhân sự mới tiếp nhận, bảo đảm luồng công việc thông suốt và minh bạch 100%.
+7. **Khởi Tạo Phòng Họp Ban Trực Tuyến 1-Chạm (Instant Department Meeting - C-Level Room):**
+   - Nút **`[📹 Họp ban 1-chạm]`** mạ vàng sang trọng trên thanh công cụ điều hành công việc.
+   - Cho phép Giám đốc / Trưởng ban khởi tạo ngay lập tức phòng họp video C-Level ViOne Executive Room độ bảo mật cao mà không cần tạo link phòng họp bên ngoài.
+   - Hệ thống tự động gửi thông báo triệu tập khẩn cấp (Push Notification & In-app Notification) đến toàn thể nhân sự trong phòng ban/cộng đồng tham gia ngay.
+8. **Phân Quyền Phòng Ban Chặt Chẽ (Department-based RBAC - `vione_community_department_members`):**
+   - **Nguyên tắc phân quyền theo phòng ban:** Nhân sự được add/gán vào ban nào thì CHỈ ĐƯỢC PHÉP thao tác các chức năng trong ban đó tương ứng với 5 cờ quyền chi tiết:
+     * `canAssign`: Quyền giao việc mới và phân công nhiệm vụ cho nhân sự trong ban.
+     * `canAccept`: Quyền nhận việc do cấp trên hoặc ban giao (`[⚡ TIẾN HÀNH NHẬN VIỆC]`).
+     * `canReport`: Quyền cập nhật tiến độ % và nộp báo cáo nghiệm thu bằng file Word/Excel.
+     * `canHandover`: Quyền điều phối, bàn giao chuyển việc sang nhân sự khác.
+     * `canMeet`: Quyền kích hoạt và tham gia phòng họp trực tuyến tức thì của ban.
+   - **Đặc quyền Executive C-Level:** Ban Giám Đốc, vai trò `quan_tri`, `admin` hoặc người khởi tạo cộng đồng (`owner`) có toàn quyền tối cao trên mọi phòng ban (`*`).
+   - **Bảo vệ giao diện & Realtime Security:**
+     * Khi nhân sự lọc xem phòng ban mà mình không có quyền, hệ thống hiển thị banner cảnh báo: `🔒 Chế độ chỉ xem - Bạn không thuộc phòng ban này hoặc chưa được cấp quyền thao tác nội bộ`.
+     * Toàn bộ nút hành động nhạy cảm (`Giao việc mới`, `Excel`, `Word`, `Họp ban`, `Chuyển việc`) sẽ tự động bị ẩn hoặc vô hiệu hóa.
+     * Cung cấp Modal Phân Quyền Phòng Ban (`DepartmentPermissionsModal`) chuẩn phong cách ViOne Luxury Champagne Gold cho Executive để gán thành viên, chỉ định vai trò (`Trưởng ban` / `Chuyên viên ban`), cấu hình 5 cờ quyền và lưu trực tiếp qua RESTful API Backend NestJS (`/department-members/assign`).
 
 ---
 
@@ -434,12 +485,19 @@ Hệ thống Web CRM ViOne (`apps/vione_app_fe`) bao quát trọn vẹn 24 modul
 * **BR-WRK-07:** Thẻ việc chỉ được phép kéo sang cột "Hoàn thành" khi toàn bộ các đầu mục trong Checklist đã được tick hoàn tất 100%.
 * **BR-WRK-08:** Trao đổi trong thẻ việc chỉ được chỉnh sửa hoặc xóa trong vòng 15 phút kể từ khi gửi; sau 15 phút sẽ khóa bất biến.
 * **BR-WRK-09:** Khi nhân viên bấm "Tiến hành nhận việc", trạng thái task tự động chuyển sang `in_progress` và lưu timestamp nhận việc.
-* **BR-WRK-10:** Nhân viên có thể gửi ghi chú cập nhật tiến độ % (0-100%); hệ thống tự động thông báo cho người giao việc.
-* **BR-WRK-11:** Cho phép nhập danh sách công việc hàng loạt từ tệp Excel theo cơ cấu phòng ban chuẩn.
+* **BR-WRK-10:** Nhân sự nhận việc nộp báo cáo nghiệm thu đính kèm song song tệp thuyết minh Word (`.docx`) và bảng tính số liệu Excel (`.xlsx`), cập nhật thanh tiến độ % (0-100%) và link sản phẩm; hệ thống tự động bắn thông báo chuông cho người giao việc.
+* **BR-WRK-11:** Người giao việc được hỗ trợ nạp công việc hàng loạt từ tệp Excel (`.xlsx`, `.csv`) kèm file mẫu chuẩn hoặc nạp đề án nhiệm vụ từ tệp Word (`.docx`).
 * **BR-WRK-12:** Chỉ người tạo task hoặc Quản Trị / Admin mới có quyền chỉnh sửa nội dung hoặc xóa công việc (`canEditRecord`).
 * **BR-WRK-13:** Bảng công việc mặc định luôn hiển thị các công việc mới tạo lên đầu tiên (`createdAt DESC`).
 * **BR-WRK-14:** Công việc bị quá hạn quá 3 ngày sẽ tự động báo cáo lên cấp Giám đốc điều hành (COO).
 * **BR-WRK-15:** Đính kèm tệp trong công việc giới hạn tối đa 50MB/tệp và tự động quét virus trước khi lưu trữ.
+* **BR-WRK-16:** Cho phép chuyển giao việc (Handover / Reassignment) trực tiếp trên giao diện không cần gọi điện thoại riêng; ghi nhận vết kiểm toán bất biến (Audit Trail) trong trường `handover_history` và tự động thông báo đến người nhận việc mới.
+* **BR-WRK-17:** Cho phép thiết lập, phân chia và lọc công việc theo cơ cấu phòng ban nội bộ chuyên trách (`vione_community_departments`).
+* **BR-WRK-18:** Lãnh đạo và trưởng ban có quyền khởi tạo phòng họp ban trực tuyến 1-chạm (`Instant Meeting`) và phát thông báo triệu tập khẩn cấp toàn phòng ban.
+* **BR-WRK-19:** Tự Động Bàn Giao Hàng Loạt (Bulk Auto-Handover): Khi nhân sự nghỉ việc hoặc luân chuyển công tác, quy trình Auto-Handover kích hoạt cho phép chọn người nhận tiếp quản (Assignee), gom toàn bộ task chưa hoàn thành (`todo`, `in_progress`, `review`), lead CRM, cơ hội kinh doanh chuyển sang người mới với biên bản bàn giao điện tử và gửi thông báo đa kênh.
+* **BR-WRK-20:** Phân Quyền Phòng Ban Chặt Chẽ (Department Scoping): Nhân viên thuộc phòng ban A chỉ được xem và tương tác với công việc, thành viên, và tài nguyên của phòng ban A. Trưởng phòng quản lý toàn bộ phòng ban của mình. Chỉ Ban Giám Đốc (`quan_tri`, `admin`, CEO/COO/CFO) mới có quyền truy cập xuyên phòng ban.
+* **BR-WRK-21:** Bắt Buộc Bộ Lọc Trạng Thái Trên Toàn Bộ Dashboard & Sàn Giao Dịch (Status Filtering Mandate): Mọi bảng danh sách và widget điều hành (Executive Tasks, Thành viên mới, Sản phẩm Marketplace, Cơ hội kinh doanh, Hóa đơn tài chính) bắt buộc phải tích hợp đầy đủ các nút/tabs lọc trạng thái thời gian thực. Sàn Marketplace bắt buộc hiển thị danh sách sản phẩm theo 4 trạng thái: Tất cả, Đang mở bán, Đã bán / Tạm đóng, Bản nháp / Chờ duyệt.
+* **BR-WRK-22:** Chuẩn Hóa Bảng Đối Soát Sticky Columns & Chống Xuyên Thấu (Solid Table View): Các cột cố định (STT, Mã SP, Thao tác) trên bảng table view của Sàn Marketplace phải có solid background đồng màu với theme (`bg-card`), viền sắc nét, loại bỏ âm lề tránh lỗi horizontal overflow.
 
 ### 6.3. Nhóm Quy Tắc Chấm Công & Quản Trị Nhân Sự (BR-HRM)
 * **BR-HRM-01:** Tọa độ GPS khi chấm công di động phải nằm trong bán kính tối đa 50 mét so với tọa độ văn phòng được cấu hình.
@@ -516,28 +574,39 @@ Hệ thống Web CRM ViOne (`apps/vione_app_fe`) bao quát trọn vẹn 24 modul
 
 ---
 
-## 7. MA TRẬN PHÂN QUYỀN RBAC 7 NHÓM VAI TRÒ x 6 THAO TÁC & QUY TẮC SỞ HỮU DỮ LIỆU
+## 7. MA TRẬN PHÂN QUYỀN RBAC ĐA TẦNG (ROLE x DEPARTMENT) & CƠ CHẾ AUTO-HANDOVER
 
 ### 7.1. Ma trận phân quyền 7 nhóm vai trò x 6 thao tác
 Hệ thống chuẩn hóa phân quyền trực tiếp tại Chức năng Nền tảng theo ma trận chặt chẽ:
 
 | Nhóm Vai Trò Doanh Nghiệp | Xem | Tạo | Sửa | Xóa | Duyệt | Xuất Dữ Liệu |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Role Quản Trị (`quan_tri`)** | ✓ | ✓ | ✓ (Toàn quyền) | ✓ (Toàn quyền) | ✓ (Toàn quyền) | ✓ (Toàn bộ) |
-| **Role Admin (`admin`)** | ✓ | ✓ | ✓ (Toàn quyền) | Hạn chế | ✓ (Điều hành) | ✓ (Toàn bộ) |
-| **Tổng Giám Đốc (CEO)** | ✓ | ✓ | ✓ | ✓ | ✓ (Toàn quyền) | ✓ |
-| **Giám Đốc Vận Hành (COO)** | ✓ | ✓ | ✓ | Hạn chế | ✓ (Quy trình/Việc) | ✓ |
-| **Giám Đốc Tài Chính (CFO)** | ✓ | ✓ | ✓ | Hạn chế | ✓ (Chi tiền/Sổ quỹ) | ✓ |
-| **Giám Đốc Kinh Doanh (Sales Manager)** | ✓ | ✓ | ✓ | Hạn chế | ✓ (Báo giá/Deal) | ✓ (Có ghi log) |
+| **Role Quản Trị (`quan_tri`)** | ✓ (Toàn hệ thống) | ✓ | ✓ (Toàn quyền) | ✓ (Toàn quyền) | ✓ (Toàn quyền) | ✓ (Toàn bộ) |
+| **Role Admin (`admin`)** | ✓ (Toàn hệ thống) | ✓ | ✓ (Toàn quyền) | Hạn chế | ✓ (Điều hành) | ✓ (Toàn bộ) |
+| **Tổng Giám Đốc (CEO)** | ✓ (Toàn hệ thống) | ✓ | ✓ | ✓ | ✓ (Toàn quyền) | ✓ |
+| **Giám Đốc Vận Hành (COO)** | ✓ (Toàn hệ thống) | ✓ | ✓ | Hạn chế | ✓ (Quy trình/Việc) | ✓ |
+| **Giám Đốc Tài Chính (CFO)** | ✓ (Toàn hệ thống) | ✓ | ✓ | Hạn chế | ✓ (Chi tiền/Sổ quỹ) | ✓ |
+| **Trưởng Phòng Ban (Head of Dept)** | ✓ (Trong phòng) | ✓ | ✓ (Trong phòng) | Hạn chế | ✓ (Cấp phòng) | ✓ (Có ghi log) |
+| **Giám Đốc Kinh Doanh (Sales Mgr)** | ✓ (Trong phòng) | ✓ | ✓ | Hạn chế | ✓ (Báo giá/Deal) | ✓ (Có ghi log) |
 | **Nhân Viên Chuyên Môn (Staff)** | ✓ (Phạm vi việc) | ✓ (Đề xuất) | ✓ (Bản thân) | ✗ | ✗ | ✗ |
 | **Đối Tác & Khách Hàng (Partner)** | ✓ (Công khai) | ✓ (Tương tác) | ✓ (Hồ sơ riêng) | ✗ | ✗ | ✗ |
 
-### 7.2. Quy tắc Phân quyền Sở hữu Dữ liệu Bắt Buộc (Data Ownership Rule)
+### 7.2. Cơ chế Phân Quyền Phòng Ban (Department Scoping & Hierarchy)
+- **Nguyên tắc phân lập dữ liệu phòng ban:** Dữ liệu hoạt động nội bộ (công việc, tài liệu mật, đề xuất chi nhánh) được cô lập theo mã `departmentId`. Thành viên phòng ban A không thể xem các tác vụ nội bộ phòng ban B trừ khi được cấp quyền liên kết (Cross-department collaborator).
+- **Phân cấp điều hành:** Trưởng phòng có toàn quyền phân công, điều động, duyệt công việc và đánh giá KPI thành viên trong phòng ban.
+
+### 7.3. Quy trình Bàn Giao Tự Động (Auto-Handover Workflow)
+1. **Kích hoạt luồng:** Quản trị viên, Trưởng phòng hoặc chính nhân sự luân chuyển mở chức năng Bàn giao công việc.
+2. **Lựa chọn người tiếp nhận:** Chọn thành viên tiếp nhận trong phòng ban hoặc nhân sự mới.
+3. **Tổng hợp tự động:** Hệ thống quét toàn bộ task trạng thái `todo`, `in_progress`, `review`, danh sách khách hàng CRM và deal đang mở.
+4. **Xác nhận & Ký duyệt:** Người bàn giao và người tiếp nhận ký xác nhận điện tử; hệ thống cập nhật `assigneeId` mới, ghi nhận vào `handover_history` và gửi thông báo đa kênh.
+
+### 7.4. Quy tắc Phân quyền Sở hữu Dữ liệu Bắt Buộc (Data Ownership Rule)
 - Nghiêm cấm bất kỳ tài khoản nào chỉnh sửa bản ghi do tài khoản khác tạo ra (`canEditRecord(user, recordCreatorId)`), **TRỪ KHI** tài khoản đó mang role **Quản Trị (`quan_tri`)** hoặc **Admin (`admin`)**.
 - Mọi hành vi vi phạm tại tầng Backend sẽ lập tức trả về mã lỗi HTTP `403 Forbidden` kèm thông điệp từ chối rõ ràng.
 - Giao diện người dùng tự động ẩn các nút chỉnh sửa (nút Bút chì, nút Sửa) đối với các bản ghi không thuộc quyền sở hữu của tài khoản đăng nhập.
 
-### 7.3. Phân lập giao diện Giao việc vs Nhận việc
+### 7.5. Phân lập giao diện Giao việc vs Nhận việc
 - **Chức năng Giao việc:** CHỈ hiển thị trên giao diện đối với Role Quản Trị, Role Admin và người thiết lập công ty tại cộng đồng (`isAssigner`). Các tài khoản role nhân viên/thành viên thường bị ẩn hoàn toàn tab Giao việc & nút Giao việc mới.
 - **Chức năng Nhận việc:** Các tài khoản role nhỏ chỉ nhìn thấy tab "⚡ Nhận việc (Việc của tôi)" để tiếp nhận công việc qua nút **`[⚡ TIẾN HÀNH NHẬN VIỆC]`**, cập nhật tiến độ % (0-100%) và gửi báo cáo hoàn thành.
 

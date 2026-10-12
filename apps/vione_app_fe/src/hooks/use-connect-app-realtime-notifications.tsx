@@ -9,6 +9,8 @@ import { GlobalNetworkSDK } from "@/lib/global-network/network.sdk";
 import {
   sendExternalNotification,
   sendConnectionNotification,
+  sendMessageNotification,
+  requestNotificationPermission,
 } from "@/lib/notification-permissions";
 
 // Global cache of recent notifications / connection event keys to strictly prevent double toasts across components & re-renders
@@ -407,6 +409,81 @@ export function useConnectAppRealtimeNotifications() {
       invalidateEverything();
     };
 
+    const handleCallMissed = (data: any) => {
+      invalidateEverything();
+      const callerName = data?.callerName || "Đối tác ViOne";
+      const callId = data?.callId || Date.now();
+      if (!shouldShowToast([`missed:${callId}`])) return;
+
+      playNotificationSound();
+      toast.error(`📞 Cuộc gọi nhỡ từ ${callerName}`, {
+        description: `Bạn có cuộc gọi nhỡ lúc ${new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}.`,
+        action: {
+          label: "Hộp thư",
+          onClick: () => {
+            if (typeof window !== "undefined") {
+              window.location.href = "/connect-app/inbox";
+            }
+          },
+        },
+        duration: 8000,
+      });
+
+      sendExternalNotification(`📞 Cuộc gọi nhỡ từ ${callerName}`, {
+        body: `Bạn đã bỏ lỡ cuộc gọi lúc ${new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}. Nhấn để xem.`,
+        tag: `missed-call-${callId}`,
+        url: "/connect-app/inbox",
+      });
+    };
+
+    const handleDmUpdated = (data: any) => {
+      invalidateEverything();
+      void qc.invalidateQueries({ queryKey: ["bc-dm-threads"] });
+      void qc.invalidateQueries({ queryKey: ["dm-messages"] });
+
+      const msg = data?.message;
+      const senderUserId = msg?.senderUserId || data?.senderUserId;
+      if (senderUserId && senderUserId === viewerUserId) {
+        return; // Tin nhắn do chính mình gửi, không hiện thông báo
+      }
+
+      const senderName = msg?.senderName || data?.threadSummary?.counterpartName || "Đối tác ViOne";
+      const bodyText = msg?.body || msg?.text || "Đã gửi một tin nhắn cho bạn";
+      const threadId = data?.threadId || msg?.threadId || "";
+      const avatarUrl = msg?.senderAvatar || data?.threadSummary?.counterpartAvatar;
+
+      if (!shouldShowToast([msg?.id ? `dm:${msg.id}` : null])) return;
+
+      playNotificationSound();
+      toast.info(`💬 ${senderName}`, {
+        description: bodyText,
+        action: {
+          label: "Trả lời",
+          onClick: () => {
+            if (typeof window !== "undefined") {
+              window.location.href = threadId ? `/connect-app/inbox/${threadId}` : "/connect-app/inbox";
+            }
+          },
+        },
+        duration: 6000,
+      });
+
+      sendMessageNotification(senderName, bodyText, threadId, avatarUrl);
+    };
+
+    // Tự động kích hoạt xin quyền notification khi user tương tác chạm lần đầu trên màn hình
+    const tryAutoRequestNotification = () => {
+      if (typeof window === "undefined" || !("Notification" in window)) return;
+      if (Notification.permission === "default") {
+        requestNotificationPermission().catch(() => {});
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("click", tryAutoRequestNotification, { once: true });
+      window.addEventListener("touchstart", tryAutoRequestNotification, { once: true });
+    }
+
     socket.on("notification:new", handleNewNotification);
     socket.on("notification:updated", handleNotificationUpdated);
     socket.on("notification:deleted", handleNotificationDeleted);
@@ -417,8 +494,15 @@ export function useConnectAppRealtimeNotifications() {
     socket.on("connection:accepted", handleConnectionAccepted);
     socket.on("connection:declined", handleConnectionDeclined);
     socket.on("connection:cancelled", handleConnectionCancelled);
+    socket.on("call:missed", handleCallMissed);
+    socket.on("dm:thread_updated", handleDmUpdated);
+    socket.on("dm:message_received", handleDmUpdated);
 
     return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("click", tryAutoRequestNotification);
+        window.removeEventListener("touchstart", tryAutoRequestNotification);
+      }
       socket.off("notification:new", handleNewNotification);
       socket.off("notification:updated", handleNotificationUpdated);
       socket.off("notification:deleted", handleNotificationDeleted);
@@ -429,6 +513,9 @@ export function useConnectAppRealtimeNotifications() {
       socket.off("connection:accepted", handleConnectionAccepted);
       socket.off("connection:declined", handleConnectionDeclined);
       socket.off("connection:cancelled", handleConnectionCancelled);
+      socket.off("call:missed", handleCallMissed);
+      socket.off("dm:thread_updated", handleDmUpdated);
+      socket.off("dm:message_received", handleDmUpdated);
     };
   }, [socket, viewerUserId, qc]);
 }
