@@ -72,7 +72,7 @@ export const ExecutiveCenterSection: React.FC<ExecutiveCenterSectionProps> = ({
           </Text>
 
           <Text style={[styles.insightSubtitle, { color: isDark ? "#94A3B8" : "#64748B" }]}>
-            Hệ thống trí tuệ nhân tạo đã phân tích hồ sơ và tìm thấy 15 doanh nhân C-Level cùng hệ sinh thái sẵn sàng giao thương.
+            Hệ thống trí tuệ nhân tạo đã phân tích hồ sơ và tìm thấy 15 doanh nhân cùng hệ sinh thái sẵn sàng giao thương.
           </Text>
 
           <TouchableOpacity
@@ -151,7 +151,7 @@ export const ExecutiveCenterSection: React.FC<ExecutiveCenterSectionProps> = ({
           </TouchableOpacity>
         </View>
 
-        {/* 5. Khối ĐIỀU HÀNH & GIÁM SÁT DOANH NGHIỆP (Trung Tâm Điều Hành C-Level) */}
+        {/* 5. Khối ĐIỀU HÀNH & GIÁM SÁT DOANH NGHIỆP (Trung Tâm Điều Hành Doanh Nghiệp) */}
         <View
           style={[
             styles.opsSection,
@@ -173,7 +173,7 @@ export const ExecutiveCenterSection: React.FC<ExecutiveCenterSectionProps> = ({
           </View>
 
           <Text style={[styles.opsHeadline, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-            Trung Tâm Điều Hành C-Level
+            Trung Tâm Điều Hành Doanh Nghiệp
           </Text>
           <Text style={[styles.opsSubtitle, { color: isDark ? "#94A3B8" : "#64748B" }]}>
             Tổng quan điều hành, chấm công GPS và phê duyệt ngân sách 3 cấp.

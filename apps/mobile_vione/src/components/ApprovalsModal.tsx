@@ -120,7 +120,7 @@ export const ApprovalsModal: React.FC<ApprovalsModalProps> = ({ visible, onClose
                     <ShieldCheck size={20} color="#3C240E" strokeWidth={2.2} />
                   </View>
                   <View>
-                    <Text style={styles.title}>Trung Tâm Phê Duyệt C-Level</Text>
+                    <Text style={styles.title}>Trung Tâm Phê Duyệt Ngân Sách</Text>
                     <Text style={styles.subtitle}>Nguyên tắc 3 cấp (Maker - Checker - Approver)</Text>
                   </View>
                 </View>

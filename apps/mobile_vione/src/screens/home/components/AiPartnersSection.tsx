@@ -63,7 +63,7 @@ export const AiPartnersSection: React.FC<AiPartnersSectionProps> = ({
 
           <Text style={styles.aiHeadline}>GỢI Ý KẾT NỐI TỪ TRÍ TUỆ NHÂN TẠO</Text>
           <Text style={styles.aiSubtitle}>
-            Hệ sinh thái AI tự động tính toán dữ liệu năng lực, chuỗi giá trị và đề xuất đối tác C-Level tương thích cao nhất.
+            Hệ sinh thái AI tự động tính toán dữ liệu năng lực, chuỗi giá trị và đề xuất đối tác tiềm năng tương thích cao nhất.
           </Text>
 
           {/* Lọc theo phạm vi */}

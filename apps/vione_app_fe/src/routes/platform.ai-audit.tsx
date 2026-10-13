@@ -224,7 +224,7 @@ function AiAuditPage() {
     <PlatformShell>
       <PageHeader
         title="Nhật Ký Hoạt Động & Kiểm Toán Trí Tuệ Nhân Tạo AI"
-        subtitle="Giám sát minh bạch mọi tác vụ xử lý thông minh của 6 phân hệ AI ViOne Platform theo thời gian thực"
+        subtitle="Giám sát minh bạch mọi tác vụ xử lý thông minh của 6 phân hệ AI ViOne Platform"
       />
 
       {/* KPI Cards */}

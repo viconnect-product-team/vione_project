@@ -608,7 +608,7 @@ export function ExecutiveHome() {
     <>
       {/* Sticky Header thương hiệu chung */}
       <header
-        className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)]/95 backdrop-blur-md px-5 -mx-4"
+        className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] shadow-xs px-5 -mx-4"
         style={{
           paddingTop: "var(--bc-mobile-safe-top-compact)",
           minHeight: "calc(var(--bc-mobile-safe-top-compact) + var(--bc-mobile-header-h))",
@@ -1890,7 +1890,7 @@ function EnterpriseOperationsCard({
               {hasCompanyWithStaff ? "GIÁM SÁT VẬN HÀNH & NHÂN SỰ" : "ĐIỀU HÀNH & TIẾN ĐỘ CÔNG VIỆC"}
             </h2>
             <p className="text-[13px] font-bold text-zinc-950 dark:text-white leading-tight">
-              Trung Tâm Điều Hành C-Level
+              Trung Tâm Điều Hành Doanh Nghiệp
             </p>
           </div>
         </div>
@@ -2075,39 +2075,39 @@ function CommunityPackageTrialCta({ onOpenTrialModal }: { onOpenTrialModal: () =
   return (
     <section
       aria-label="Gói Cộng Đồng Doanh Nghiệp ViOne"
-      className="relative mt-5 overflow-hidden rounded-3xl border border-[#DFB76C]/40 bg-gradient-to-b from-[#121824] via-[#0B0F17] to-[#121824] p-5 shadow-2xl transition-all"
+      className="relative mt-5 overflow-hidden rounded-3xl border border-[#DFB76C]/40 bg-gradient-to-b from-[#FFFDF9] via-white to-[#FDF9F0] dark:from-[#121824] dark:via-[#0B0F17] dark:to-[#121824] p-5 shadow-sm dark:shadow-2xl transition-all"
     >
       <div className="absolute top-0 right-0 -mr-6 -mt-6 h-32 w-32 rounded-full bg-[#DFB76C]/10 blur-2xl pointer-events-none" />
       
       <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-extrabold uppercase bg-[#DFB76C]/20 border border-[#DFB76C]/40 text-[#DFB76C]">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-extrabold uppercase bg-[#DFB76C]/15 dark:bg-[#DFB76C]/20 border border-[#DFB76C]/40 text-[#9E6D18] dark:text-[#DFB76C]">
           <Sparkles className="h-3 w-3 fill-[#DFB76C]" />
           <span>Dùng thử 30 ngày miễn phí</span>
         </span>
-        <span className="text-[11px] font-bold text-amber-400/90">
+        <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
           Chỉ 1 cộng đồng / tài khoản
         </span>
       </div>
 
       <div className="mt-3.5">
-        <h2 className="text-[16px] font-black tracking-tight text-white leading-snug">
+        <h2 className="text-[16px] font-black tracking-tight text-slate-900 dark:text-white leading-snug">
           Mở Khóa Phân Hệ Giao Việc & Điều Hành
         </h2>
-        <p className="mt-1 text-[12px] text-zinc-400 leading-relaxed">
+        <p className="mt-1 text-[12px] text-slate-600 dark:text-zinc-400 leading-relaxed">
           Chỉ tài khoản đăng ký gói cộng đồng mới có quyền sở hữu 1 cộng đồng riêng và kích hoạt trung tâm điều hành giao việc, chấm công GPS, ký duyệt chi và quản trị CRM.
         </p>
       </div>
 
-      <div className="mt-3.5 space-y-2 rounded-2xl bg-white/[0.04] p-3 border border-white/5">
-        <div className="flex items-center gap-2 text-[11.5px] text-zinc-300 font-medium">
+      <div className="mt-3.5 space-y-2 rounded-2xl bg-amber-50/70 dark:bg-white/[0.04] p-3 border border-[#DFB76C]/20 dark:border-white/5">
+        <div className="flex items-center gap-2 text-[11.5px] text-slate-700 dark:text-zinc-300 font-medium">
           <CircleCheck className="h-4 w-4 text-[#DFB76C] shrink-0" />
-          <span>Giao việc & kiểm soát tiến độ nhân viên theo thời gian thực</span>
+          <span>Giao việc & kiểm soát tiến độ phòng ban, nhân viên</span>
         </div>
-        <div className="flex items-center gap-2 text-[11.5px] text-zinc-300 font-medium">
+        <div className="flex items-center gap-2 text-[11.5px] text-slate-700 dark:text-zinc-300 font-medium">
           <CircleCheck className="h-4 w-4 text-[#DFB76C] shrink-0" />
           <span>Giám sát chuyên cần, chấm công GPS & duyệt chi ngân sách</span>
         </div>
-        <div className="flex items-center gap-2 text-[11.5px] text-zinc-300 font-medium">
+        <div className="flex items-center gap-2 text-[11.5px] text-slate-700 dark:text-zinc-300 font-medium">
           <CircleCheck className="h-4 w-4 text-[#DFB76C] shrink-0" />
           <span>Kết nối mạng lưới B2B & đăng cơ hội kinh doanh đa ngành</span>
         </div>
@@ -2116,7 +2116,7 @@ function CommunityPackageTrialCta({ onOpenTrialModal }: { onOpenTrialModal: () =
       <button
         type="button"
         onClick={onOpenTrialModal}
-        className="mt-4 w-full py-3 px-4 rounded-2xl font-black text-xs bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/60 shadow-lg hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+        className="mt-4 w-full py-3 px-4 rounded-2xl font-black text-xs bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] text-slate-950 border border-[#DFB76C]/60 shadow-md hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
         <Sparkles className="h-4 w-4 text-slate-950" />
         <span>⚡ Tạo cộng đồng dùng thử 30 ngày free</span>

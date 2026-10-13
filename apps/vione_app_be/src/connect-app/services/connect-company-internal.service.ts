@@ -36,7 +36,25 @@ export class ConnectCompanyInternalService {
       }
 
       if (!memberList || memberList.length === 0) {
-        memberList = await this.repo.findFallbackUsers();
+        const stored = this.companyEmployeesStore.get(communityId);
+        if (stored && stored.length > 0) {
+          memberList = stored;
+        } else if (userId) {
+          const callerName = await this.repo.findCallerName(userId);
+          memberList = [{
+            id: userId,
+            userId,
+            fullName: callerName || 'Quản trị viên',
+            email: '',
+            phone: '',
+            role: 'admin',
+            roleTitle: 'Ban Giám Đốc',
+            department: 'Ban Giám Đốc',
+            avatarUrl: '',
+            status: 'active',
+            joinedAt: new Date().toISOString(),
+          }];
+        }
       }
 
       const taskCountMap = await this.repo.findActiveTaskCounts();

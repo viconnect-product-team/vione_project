@@ -135,7 +135,7 @@ function RenewalAuditLogScreen() {
 
       <main className="mx-auto max-w-2xl px-4 pt-4">
         <p aria-live="polite" className="sr-only">
-          {liveCount > 0 ? `Đã nhận ${liveCount} sự kiện gia hạn mới theo thời gian thực.` : ""}
+          {liveCount > 0 ? `Đã nhận ${liveCount} sự kiện gia hạn mới.` : ""}
         </p>
         {liveCount > 0 && (
           <div className="mb-3 flex items-center gap-2 rounded-xl border border-success/25 bg-success/10 px-3 py-2 text-xs text-success">

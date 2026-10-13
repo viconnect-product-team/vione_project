@@ -877,7 +877,7 @@ function OmnichannelMessagesPage() {
               </div>
 
               <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-700 dark:text-amber-300">
-                💡 Nhóm nội bộ cho phép toàn bộ nhân viên trong công ty trao đổi bảo mật, giao việc và theo dõi hiệu suất làm việc theo thời gian thực.
+                💡 Nhóm nội bộ cho phép toàn bộ nhân viên trong công ty trao đổi bảo mật, giao việc và theo dõi hiệu suất làm việc hiệu quả.
               </div>
             </div>
 

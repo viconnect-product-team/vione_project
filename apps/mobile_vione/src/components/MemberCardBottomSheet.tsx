@@ -450,7 +450,7 @@ export const MemberCardBottomSheet: React.FC<MemberCardBottomSheetProps> = ({
                       { color: isDark ? "#94A3B8" : "#64748B" },
                     ]}
                   >
-                    Thuật toán phân tích ngành nghề và ghép cặp cơ hội B2B theo thời gian thực.
+                    Thuật toán phân tích ngành nghề và ghép cặp cơ hội B2B chính xác.
                   </Text>
                 </View>
               </View>

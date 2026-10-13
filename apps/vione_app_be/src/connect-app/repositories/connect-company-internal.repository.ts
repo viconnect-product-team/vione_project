@@ -20,47 +20,92 @@ export class ConnectCompanyInternalRepository {
 
   async findMembershipsByAssociationId(assocId: string): Promise<any[]> {
     return this.prisma.$queryRaw<any[]>`
-      SELECT DISTINCT ON (vu.id)
-        vu.id as id,
-        vu.id as "userId",
-        COALESCE(vu.name, m.name, up.display_name, SPLIT_PART(vu.email, '@', 1), 'Thành viên')::text as "fullName",
-        COALESCE(vu.email, m.email, '')::text as email,
-        COALESCE(m.phone, '')::text as phone,
-        COALESCE(m.role, 'member')::text as role,
-        COALESCE(up.professional_title, m.title, 'Lãnh đạo Doanh nghiệp')::text as "roleTitle",
-        COALESCE(up.company_name, m.company, 'Gia Đình ViOne')::text as department,
-        COALESCE(up.avatar_url, vu.avatar_url, m.avatar_url, '')::text as "avatarUrl",
+      SELECT DISTINCT ON (m_all."userId")
+        m_all."userId" as id,
+        m_all."userId" as "userId",
+        COALESCE(m_all.full_name, up.display_name, vu.name, SPLIT_PART(vu.email, '@', 1), 'Thành viên')::text as "fullName",
+        COALESCE(vu.email, m_all.email, '')::text as email,
+        COALESCE(vu.phone, m_all.phone, '')::text as phone,
+        COALESCE(m_all.role, 'member')::text as role,
+        COALESCE(up.professional_title, m_all.role_title, 'Thành viên cộng đồng')::text as "roleTitle",
+        COALESCE(up.company_name, m_all.department, 'Cộng đồng ViOne')::text as department,
+        COALESCE(up.avatar_url, vu.avatar_url, m_all.avatar_url, '')::text as "avatarUrl",
         'active'::text as status,
-        ms.joined_at as "joinedAt"
-      FROM public.memberships ms
-      JOIN public.members m ON m.id = ms.member_id
-      LEFT JOIN public.vione_users vu ON vu.id = m.user_id
-      LEFT JOIN public.user_profiles up ON up.user_id = vu.id
-      WHERE ms.association_id = ${assocId}::uuid
-      ORDER BY vu.id, "fullName" ASC
-      LIMIT 50
+        COALESCE(m_all.joined_at, now()) as "joinedAt"
+      FROM (
+        -- 1. memberships in this association
+        SELECT 
+          ms.user_id::text as "userId",
+          null::text as full_name,
+          null::text as email,
+          null::text as phone,
+          ms.role::text as role,
+          null::text as role_title,
+          null::text as department,
+          null::text as avatar_url,
+          ms.created_at as joined_at
+        FROM public.memberships ms
+        WHERE ms.association_id = ${assocId}::uuid AND ms.user_id IS NOT NULL
+
+        UNION ALL
+
+        -- 2. members in this association
+        SELECT 
+          COALESCE(m.user_id::text, m.id::text) as "userId",
+          m.name::text as full_name,
+          m.email::text as email,
+          m.phone::text as phone,
+          m.role::text as role,
+          m.title::text as role_title,
+          m.company::text as department,
+          m.avatar_url::text as avatar_url,
+          COALESCE(m.joined_at, m.created_at) as joined_at
+        FROM public.members m
+        WHERE m.association_id = ${assocId}::uuid AND m.status = 'active'
+
+        UNION ALL
+
+        -- 3. company_employees in this community
+        SELECT 
+          ce.user_id::text as "userId",
+          ce.full_name::text as full_name,
+          ce.email::text as email,
+          ce.phone::text as phone,
+          ce.role::text as role,
+          ce.role_title::text as role_title,
+          ce.department::text as department,
+          ce.avatar_url::text as avatar_url,
+          ce.joined_at as joined_at
+        FROM public.company_employees ce
+        WHERE (ce.community_id = ${assocId} OR ce.community_id = ${assocId}::text)
+
+        UNION ALL
+
+        -- 4. association creator / owner
+        SELECT 
+          a.created_by_id::text as "userId",
+          'Chủ quản cộng đồng'::text as full_name,
+          null::text as email,
+          null::text as phone,
+          'admin'::text as role,
+          'Ban Quản Trị'::text as role_title,
+          'Ban Giám Đốc'::text as department,
+          null::text as avatar_url,
+          a.created_at as joined_at
+        FROM public.associations a
+        WHERE a.id = ${assocId}::uuid AND a.created_by_id IS NOT NULL
+      ) m_all
+      LEFT JOIN public.vione_users vu ON (vu.id::text = m_all."userId")
+      LEFT JOIN public.user_profiles up ON (up.user_id::text = m_all."userId" OR (vu.id IS NOT NULL AND up.user_id = vu.id))
+      WHERE m_all."userId" IS NOT NULL
+      ORDER BY m_all."userId", "fullName" ASC
+      LIMIT 100
     `.catch(() => [] as any[]);
   }
 
   async findFallbackUsers(): Promise<any[]> {
-    return this.prisma.$queryRaw<any[]>`
-      SELECT 
-        u.id as id,
-        u.id as "userId",
-        COALESCE(u.name, up.display_name, SPLIT_PART(u.email, '@', 1), 'Thành viên')::text as "fullName",
-        COALESCE(u.email, '')::text as email,
-        ''::text as phone,
-        'member'::text as role,
-        COALESCE(up.professional_title, 'Lãnh đạo Doanh nghiệp')::text as "roleTitle",
-        COALESCE(up.company_name, 'ViOne Member')::text as department,
-        COALESCE(up.avatar_url, u.avatar_url, '')::text as "avatarUrl",
-        'active'::text as status,
-        u.created_at as "joinedAt"
-      FROM public.vione_users u
-      LEFT JOIN public.user_profiles up ON up.user_id = u.id
-      ORDER BY "fullName" ASC
-      LIMIT 50
-    `.catch(() => [] as any[]);
+    // Không dùng fallback users toàn hệ thống để tránh rò rỉ thành viên giữa các cộng đồng khác nhau
+    return [];
   }
 
   async findActiveTaskCounts(): Promise<Map<string, number>> {

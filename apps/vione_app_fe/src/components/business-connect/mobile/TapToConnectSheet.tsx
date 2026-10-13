@@ -731,7 +731,7 @@ function ZaloProfilePreview({
           {/* Verified C-Level Badge */}
           <div className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-300">
             <ShieldCheck className="h-3.5 w-3.5 text-amber-400 fill-amber-400/20" />
-            <span>{profile?.verifiedBadge || "Hội viên Doanh nhân C-Level đã xác thực"}</span>
+            <span>{profile?.verifiedBadge || "Hội viên Doanh nhân đã xác thực"}</span>
           </div>
 
           {/* Bio Headline */}

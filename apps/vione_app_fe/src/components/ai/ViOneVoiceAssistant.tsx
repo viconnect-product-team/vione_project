@@ -72,6 +72,16 @@ export function ViOneVoiceAssistant() {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<any>(null);
+  const sessionsRef = useRef<AiSession[]>([]);
+  const currentSessionIdRef = useRef<string>("");
+
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
+
+  useEffect(() => {
+    currentSessionIdRef.current = currentSessionId;
+  }, [currentSessionId]);
 
   // Text to speech hỗ trợ tiếng Việt
   const speakVietnamese = useCallback((rawText: string) => {
@@ -119,6 +129,8 @@ export function ViOneVoiceAssistant() {
       if (stored) {
         const parsed: AiSession[] = JSON.parse(stored);
         if (parsed.length > 0) {
+          sessionsRef.current = parsed;
+          currentSessionIdRef.current = parsed[0].id;
           setSessions(parsed);
           setCurrentSessionId(parsed[0].id);
           return;
@@ -132,6 +144,7 @@ export function ViOneVoiceAssistant() {
 
   const saveSessions = (newSessions: AiSession[]) => {
     try {
+      sessionsRef.current = newSessions;
       setSessions(newSessions);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newSessions));
     } catch (e) {
@@ -153,7 +166,9 @@ export function ViOneVoiceAssistant() {
       createdAt: new Date().toISOString(),
       messages: [initialMsg],
     };
-    const updated = [newSession, ...sessions.filter((s) => s.id !== newId)];
+    const all = sessionsRef.current.length > 0 ? sessionsRef.current : sessions;
+    const updated = [newSession, ...all.filter((s) => s.id !== newId)];
+    currentSessionIdRef.current = newId;
     saveSessions(updated);
     setCurrentSessionId(newId);
     setShowHistoryDrawer(false);
@@ -162,35 +177,63 @@ export function ViOneVoiceAssistant() {
   const clearAllHistory = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử các cuộc trò chuyện AI?")) {
       localStorage.removeItem(STORAGE_KEY);
+      sessionsRef.current = [];
       setSessions([]);
       createNewSession();
       toast.success("✓ Đã xóa sạch lịch sử trò chuyện AI!");
     }
   };
 
-  const currentSession = sessions.find((s) => s.id === currentSessionId) || sessions[0];
+  const currentSession =
+    sessions.find((s) => s.id === currentSessionId) ||
+    sessionsRef.current.find((s) => s.id === currentSessionIdRef.current) ||
+    sessions[0] ||
+    sessionsRef.current[0];
 
-  // Web Speech API Setup
-  useEffect(() => {
-    if (typeof window !== "undefined") {
+  const toggleListening = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {}
+      }
+      setIsListening(false);
+    } else {
       const SpeechRecognition =
         (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
+      if (!SpeechRecognition) {
+        toast.info("Trình duyệt không hỗ trợ nhận diện giọng nói trực tiếp. Quý khách vui lòng nhập câu hỏi bằng văn bản.");
+        return;
+      }
+
+      try {
         const r = new SpeechRecognition();
         r.continuous = false;
         r.interimResults = false;
         r.lang = "vi-VN";
 
+        r.onstart = () => {
+          setIsListening(true);
+          toast.info("Đang lắng nghe giọng nói tiếng Việt...");
+        };
+
         r.onresult = (e: any) => {
-          const text = e.results[0][0].transcript;
           setIsListening(false);
-          if (text) {
-            handleSend(text);
+          const transcript = e.results?.[0]?.[0]?.transcript;
+          if (transcript && transcript.trim()) {
+            toast.success(`Đã nhận diện: "${transcript.trim()}"`);
+            handleSend(transcript.trim());
           }
         };
 
-        r.onerror = () => {
+        r.onerror = (e: any) => {
           setIsListening(false);
+          console.warn("Speech error:", e.error);
+          if (e.error === "not-allowed") {
+            toast.error("Vui lòng cấp quyền truy cập Micro cho trình duyệt!");
+          } else if (e.error === "no-speech") {
+            toast.info("Không phát hiện âm thanh. Vui lòng nói lại hoặc gõ văn bản.");
+          }
         };
 
         r.onend = () => {
@@ -198,31 +241,11 @@ export function ViOneVoiceAssistant() {
         };
 
         recognitionRef.current = r;
-      }
-    }
-  }, []);
-
-  const toggleListening = () => {
-    if (isListening) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      setIsListening(false);
-    } else {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-          setIsListening(true);
-        } catch {
-          setIsListening(false);
-        }
-      } else {
-        toast.info("Trình duyệt không hỗ trợ nhận diện giọng nói trực tiếp, đang mô phỏng...");
-        setIsListening(true);
-        setTimeout(() => {
-          setIsListening(false);
-          handleSend("Xem tiến độ công việc");
-        }, 2800);
+        r.start();
+      } catch (err) {
+        console.warn("SpeechRecognition start error:", err);
+        setIsListening(false);
+        toast.error("Không thể khởi động micro. Vui lòng kiểm tra quyền truy cập micro của trình duyệt.");
       }
     }
   };
@@ -378,7 +401,11 @@ export function ViOneVoiceAssistant() {
     text: string,
     suggestedAction?: { label: string; command?: string; route?: string }
   ) => {
-    if (!currentSession) return;
+    const allSessions = sessionsRef.current.length > 0 ? sessionsRef.current : sessions;
+    const currId = currentSessionIdRef.current || currentSessionId;
+    const targetSession = allSessions.find((s) => s.id === currId) || allSessions[0];
+    if (!targetSession) return;
+
     const newMsg: AiChatMessage = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       sender,
@@ -386,16 +413,16 @@ export function ViOneVoiceAssistant() {
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       suggestedAction,
     };
-    const updatedMessages = [...currentSession.messages, newMsg];
+    const updatedMessages = [...targetSession.messages, newMsg];
     const updatedSession: AiSession = {
-      ...currentSession,
+      ...targetSession,
       title:
-        currentSession.messages.length <= 1 && sender === "user"
+        targetSession.messages.length <= 1 && sender === "user"
           ? text.slice(0, 32)
-          : currentSession.title,
+          : targetSession.title,
       messages: updatedMessages,
     };
-    const newSessions = sessions.map((s) => (s.id === currentSession.id ? updatedSession : s));
+    const newSessions = allSessions.map((s) => (s.id === targetSession.id ? updatedSession : s));
     saveSessions(newSessions);
 
     setTimeout(() => {

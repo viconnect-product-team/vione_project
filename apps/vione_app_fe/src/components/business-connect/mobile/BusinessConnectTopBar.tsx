@@ -28,7 +28,7 @@ export function BusinessConnectTopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-[rgba(216,178,130,0.15)] bg-[var(--bc-mobile-surface)]/80 backdrop-blur-lg -mx-5 w-[calc(100%+2.5rem)]",
+        "sticky top-0 z-50 border-b border-[rgba(216,178,130,0.2)] bg-[var(--bc-mobile-surface)] shadow-xs -mx-5 w-[calc(100%+2.5rem)]",
         className,
       )}
       style={{ paddingTop: "var(--bc-mobile-safe-top-compact)" }}

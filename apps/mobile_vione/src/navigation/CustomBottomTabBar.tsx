@@ -7,6 +7,7 @@ import {
   Platform,
 } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../context/ThemeContext";
 import { VIconMark } from "../components/VIconMark";
@@ -28,12 +29,16 @@ export const CustomBottomTabBar: React.FC<CustomBottomTabBarProps> = ({
   onVPress,
 }) => {
   const { isDark, colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const activeColor = isDark ? "#D8B282" : "#A3703C";
   const activeLabelColor = isDark ? "#D8B282" : "#A3703C";
   const inactiveColor = isDark ? "#94A3B8" : "#64748B";
   const barBg = isDark ? "#0B0F17" : "#FFFFFF";
   const borderTopColor = isDark ? "rgba(216, 178, 130, 0.18)" : "#E2E8F0";
+
+  const bottomInset = Math.max(insets.bottom, Platform.OS === "ios" ? 20 : 8);
+  const barHeight = 58 + bottomInset;
 
   const getTabIcon = (routeName: string, isFocused: boolean) => {
     const color = isFocused ? activeColor : inactiveColor;
@@ -76,6 +81,8 @@ export const CustomBottomTabBar: React.FC<CustomBottomTabBarProps> = ({
           {
             backgroundColor: barBg,
             borderTopColor: borderTopColor,
+            height: barHeight,
+            paddingBottom: bottomInset,
             shadowColor: isDark ? "#000000" : "#64748B",
             shadowOpacity: isDark ? 0.5 : 0.08,
           },
@@ -149,7 +156,7 @@ export const CustomBottomTabBar: React.FC<CustomBottomTabBarProps> = ({
                   />
                 )}
 
-                <View style={styles.iconWrap}>
+                <View style={[styles.iconWrap, isFocused && { backgroundColor: isDark ? "rgba(216, 178, 130, 0.12)" : "rgba(216, 178, 130, 0.16)" }]}>
                   {getTabIcon(route.name, isFocused)}
                 </View>
 
@@ -159,6 +166,7 @@ export const CustomBottomTabBar: React.FC<CustomBottomTabBarProps> = ({
                     { color: isFocused ? activeLabelColor : inactiveColor },
                     isFocused && styles.tabLabelActive,
                   ]}
+                  numberOfLines={1}
                 >
                   {getTabLabel(route.name)}
                 </Text>
@@ -181,8 +189,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0B0F17",
     borderTopWidth: 1,
     borderTopColor: "rgba(216, 178, 130, 0.18)",
-    height: Platform.OS === "ios" ? 84 : 66,
-    paddingBottom: Platform.OS === "ios" ? 22 : 6,
     paddingHorizontal: 8,
     position: "relative",
     shadowColor: "#000000",
@@ -195,7 +201,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 3,
+    paddingVertical: 2,
     position: "relative",
   },
   activeIndicator: {
@@ -211,7 +217,7 @@ const styles = StyleSheet.create({
   },
   iconWrap: {
     paddingHorizontal: 12,
-    paddingVertical: 3.5,
+    paddingVertical: 3,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
@@ -222,6 +228,8 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     fontWeight: "500",
     marginTop: 2,
+    letterSpacing: 0.1,
+    textAlign: "center",
   },
   tabLabelActive: {
     fontWeight: "700",

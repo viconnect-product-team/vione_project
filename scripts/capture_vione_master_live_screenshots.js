@@ -80,11 +80,20 @@ async function run() {
     return;
   }
 
-  const browser = await chromium.launch({
-    channel: 'chrome',
-    headless: true,
-    args: ['--ignore-certificate-errors', '--no-sandbox']
-  });
+  let browser;
+  try {
+    browser = await chromium.launch({
+      channel: 'chrome',
+      headless: true,
+      args: ['--ignore-certificate-errors', '--no-sandbox']
+    });
+  } catch (e) {
+    console.log('  -> Fallback sang Playwright bundled chromium...');
+    browser = await chromium.launch({
+      headless: true,
+      args: ['--ignore-certificate-errors', '--no-sandbox']
+    });
+  }
 
   const context = await browser.newContext({
     ignoreHTTPSErrors: true,
@@ -93,6 +102,7 @@ async function run() {
 
   // ==========================================
   // PHAN 1: WEB CRM VIONE (DESKTOP 1440x900)
+
   // ==========================================
   console.log('\n--- [PHAN 1] CHUP CAC MAN HINH WEB CRM VIONE ---');
   const crmPage = await context.newPage();
@@ -268,8 +278,29 @@ async function run() {
 
   await browser.close();
   console.log('\n>>> [HOAN TAT] DA CHUP XONG FULL BO ANH MOI CUA HE SINH THAI VIONE!');
-  const files = fs.readdirSync(OUT_DIR);
+  const files = fs.readdirSync(OUT_DIR).filter(f => f.endsWith('.png') || f.endsWith('.jpg'));
   console.log(`>>> Tong so anh chup thanh cong: ${files.length} anh trong ${OUT_DIR}`);
+
+  // Dong bo sang tat ca cac cap thu muc public de chong triet de loi anh 404
+  const publicTargets = [
+    path.join(rootDir, 'apps', 'vione_app_fe', 'public', 'docs', 'images', 'evidence_live_2026'),
+    path.join(rootDir, 'apps', 'vione_app_fe', 'public', 'images', 'evidence_live_2026'),
+    path.join(rootDir, 'apps', 'vione_app_fe', 'public', 'evidence_live_2026')
+  ];
+
+  publicTargets.forEach(dir => {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  });
+
+  console.log(`>>> Dong bo ${files.length} anh chup moi nhat sang cac thu muc public...`);
+  files.forEach(f => {
+    const src = path.join(OUT_DIR, f);
+    publicTargets.forEach(destDir => {
+      fs.copyFileSync(src, path.join(destDir, f));
+    });
+  });
+  console.log('>>> [DONG BO HOAN TAT] Da sao chep 100% anh live vao ca 3 thu muc public thanh cong!');
 }
 
 run().catch(err => console.error('Loi toan cuc:', err));
+

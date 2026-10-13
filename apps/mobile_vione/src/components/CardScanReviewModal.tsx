@@ -347,7 +347,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                   <View style={styles.tierSelectorRow}>
                     {[
                       { id: "hot", label: "⭐ Hot Lead", icon: Flame, color: "#EF4444" },
-                      { id: "vip", label: "💎 VIP C-Level", icon: Crown, color: "#F59E0B" },
+                      { id: "vip", label: "💎 VIP Doanh Nhân", icon: Crown, color: "#F59E0B" },
                       { id: "featured", label: "🌟 Nổi bật", icon: Star, color: "#38BDF8" },
                       { id: "care24h", label: "🎯 Cần care 24h", icon: Clock, color: "#10B981" },
                     ].map((t) => {

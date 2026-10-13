@@ -783,7 +783,7 @@ function VoteModal({ vote, onClose }: { vote?: Vote; onClose: () => void }) {
               <option value="non_members">🎯 Người ngoài hiệp hội (Khách mời sự kiện)</option>
             </select>
             <p className="mt-1 text-[11px] text-muted-foreground">
-              * Hệ thống sẽ tự động phát thông báo thời gian thực tới ViOne App và Hiệp hội App cho các đối tượng liên quan đã chọn.
+              * Hệ thống sẽ tự động phát thông báo tới ViOne App và Hiệp hội App cho các đối tượng liên quan đã chọn.
             </p>
           </div>
 

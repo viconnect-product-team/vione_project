@@ -820,7 +820,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
                   marginBottom: 6,
                 }}
               >
-                Mở Khóa Phân Hệ Giao Việc & Điều Hành C-Level
+                Mở Khóa Phân Hệ Giao Việc & Điều Hành
               </Text>
 
               <Text

@@ -56,7 +56,7 @@ export const MyQrModal: React.FC<MyQrModalProps> = ({ visible, onClose }) => {
           {/* User Info */}
           <View style={styles.userSection}>
             <Avatar url={user?.avatarUrl} name={user?.displayName} size={64} showGoldBorder />
-            <Text style={styles.userName}>{user?.displayName || "Doanh Nhân C-Level"}</Text>
+            <Text style={styles.userName}>{user?.displayName || "Doanh Nhân ViOne"}</Text>
             <Text style={styles.userTitle}>{user?.title || "Tổng Giám Đốc"}</Text>
             <Text style={styles.userCompany}>{user?.company || "ViOne Business Network"}</Text>
             <View style={styles.codeBadge}>

@@ -254,7 +254,7 @@ export const AI_KNOWLEDGE_ACCOUNTS: CandidateAccount[] = [
     jobTitle: "Tổng Quản Trị Hệ Thống",
     industry: "Nền tảng số & Quản trị dữ liệu",
     skills: ["Quản trị hệ thống toàn quyền", "Phân quyền RBAC", "Kiểm soát an ninh mạng", "Điều phối dữ liệu đa hiệp hội"],
-    talents: ["Bảo mật cấp enterprise", "Giám sát thời gian thực"],
+    talents: ["Bảo mật cấp enterprise", "Giám sát hệ thống tự động"],
     headline: "Tài khoản Quản trị toàn quyền nền tảng ViConnect & ViOne.",
     dealSize: ">1.000 Tỷ VNĐ",
     phone: "0901 000 001",

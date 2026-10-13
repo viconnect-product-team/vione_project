@@ -298,7 +298,7 @@ function CrmAdminAuthPage() {
                     Tối ưu hóa đến 45% chi phí &amp; 3x tốc độ phê duyệt
                   </h3>
                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-normal">
-                    Đồng bộ thời gian thực giữa Web CRM, App Mobile Native và Kế toán tài chính PostgreSQL.
+                    Đồng bộ tự động giữa Web CRM, App Mobile Native và Kế toán tài chính PostgreSQL.
                   </p>
                 </div>
               </div>

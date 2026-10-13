@@ -295,7 +295,7 @@ export const AssignTaskModal: React.FC<AssignTaskModalProps> = ({
                   {isEdit ? "Chỉnh sửa công việc" : "Giao việc nhân sự"}
                 </Text>
                 <Text style={styles.headerSub}>
-                  {isEdit ? "Cập nhật thông tin phân công & tiến độ" : "Phân quyền & theo dõi tiến độ thời gian thực"}
+                  {isEdit ? "Cập nhật thông tin phân công & tiến độ" : "Phân công nhiệm vụ & theo dõi tiến độ"}
                 </Text>
               </View>
             </View>

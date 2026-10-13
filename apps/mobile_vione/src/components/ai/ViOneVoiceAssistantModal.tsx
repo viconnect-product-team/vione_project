@@ -116,7 +116,16 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
 
   const scrollViewRef = useRef<ScrollView>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const voiceTimeoutRef = useRef<any>(null);
+  const sessionsRef = useRef<AiSession[]>([]);
+  const currentSessionIdRef = useRef<string>("");
+
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
+
+  useEffect(() => {
+    currentSessionIdRef.current = currentSessionId;
+  }, [currentSessionId]);
 
   // Equalizer animation
   useEffect(() => {
@@ -158,6 +167,8 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
       if (stored) {
         const parsed: AiSession[] = JSON.parse(stored);
         if (parsed.length > 0) {
+          sessionsRef.current = parsed;
+          currentSessionIdRef.current = parsed[0].id;
           setSessions(parsed);
           setCurrentSessionId(parsed[0].id);
           return;
@@ -173,6 +184,7 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
 
   const saveSessions = async (newSessions: AiSession[]) => {
     try {
+      sessionsRef.current = newSessions;
       setSessions(newSessions);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSessions));
     } catch (e) {
@@ -196,7 +208,9 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
       createdAt: new Date().toISOString(),
       messages: [initialMsg],
     };
-    const updated = [newSession, ...sessions.filter((s) => s.id !== newId)];
+    const all = sessionsRef.current.length > 0 ? sessionsRef.current : sessions;
+    const updated = [newSession, ...all.filter((s) => s.id !== newId)];
+    currentSessionIdRef.current = newId;
     saveSessions(updated);
     setCurrentSessionId(newId);
     setShowHistoryDrawer(false);
@@ -213,6 +227,7 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
           style: "destructive",
           onPress: async () => {
             await AsyncStorage.removeItem(STORAGE_KEY);
+            sessionsRef.current = [];
             setSessions([]);
             createNewSession();
           },
@@ -221,20 +236,18 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
     );
   };
 
-  const currentSession = sessions.find((s) => s.id === currentSessionId) || sessions[0];
+  const currentSession =
+    sessions.find((s) => s.id === currentSessionId) ||
+    sessionsRef.current.find((s) => s.id === currentSessionIdRef.current) ||
+    sessions[0] ||
+    sessionsRef.current[0];
 
-  // Voice Listening Simulation & Execution
+  // Voice Listening Control
   const toggleListening = () => {
     if (isListening) {
-      if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
       setIsListening(false);
     } else {
       setIsListening(true);
-      // Auto-trigger voice query after 3.2s
-      voiceTimeoutRef.current = setTimeout(() => {
-        setIsListening(false);
-        handleSend("Mở bảng kiểm tra tiến độ công việc");
-      }, 3200);
     }
   };
 
@@ -388,7 +401,11 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
     text: string,
     suggestedAction?: { label: string; command: string }
   ) => {
-    if (!currentSession) return;
+    const allSessions = sessionsRef.current.length > 0 ? sessionsRef.current : sessions;
+    const currId = currentSessionIdRef.current || currentSessionId;
+    const targetSession = allSessions.find((s) => s.id === currId) || allSessions[0];
+    if (!targetSession) return;
+
     const newMsg: AiChatMessage = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       sender,
@@ -396,16 +413,16 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       suggestedAction,
     };
-    const updatedMessages = [...currentSession.messages, newMsg];
+    const updatedMessages = [...targetSession.messages, newMsg];
     const updatedSession: AiSession = {
-      ...currentSession,
+      ...targetSession,
       title:
-        currentSession.messages.length <= 1 && sender === "user"
+        targetSession.messages.length <= 1 && sender === "user"
           ? text.slice(0, 32)
-          : currentSession.title,
+          : targetSession.title,
       messages: updatedMessages,
     };
-    const newSessions = sessions.map((s) => (s.id === currentSession.id ? updatedSession : s));
+    const newSessions = allSessions.map((s) => (s.id === targetSession.id ? updatedSession : s));
     saveSessions(newSessions);
 
     setTimeout(() => {

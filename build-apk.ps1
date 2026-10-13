@@ -127,4 +127,13 @@ if ($apks) {
     $destLatestPath = Join-Path $RELEASE_DIR "ViOne-Connect-latest.apk"
     Copy-Item -Path $latestBuiltApk.FullName -Destination $destLatestPath -Force
     Write-Host ">>> XUAT FILE APK THANH CONG: $destLatestPath" -ForegroundColor Green
+
+    # Dong bo sang web public de nguoi dung tai truc tiep tu web (/install)
+    $fePublic = Join-Path $ROOT_DIR "apps\vione_app_fe\public"
+    if (Test-Path $fePublic) {
+        Copy-Item -Path $destLatestPath -Destination (Join-Path $fePublic "ViOne-Connect-latest.apk") -Force
+        Copy-Item -Path $destLatestPath -Destination (Join-Path $fePublic "vione.apk") -Force
+        Write-Host "  -> Da dong bo vao apps\vione_app_fe\public\ViOne-Connect-latest.apk & vione.apk" -ForegroundColor Green
+    }
 }
+

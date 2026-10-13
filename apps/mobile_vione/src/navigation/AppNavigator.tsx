@@ -31,6 +31,7 @@ import { AssignTaskModal } from "../components/AssignTaskModal";
 import { StaffDailyActivityModal } from "../components/StaffDailyActivityModal";
 import { ViOneVoiceAssistantModal } from "../components/ai/ViOneVoiceAssistantModal";
 import { CardScanReviewModal } from "../components/CardScanReviewModal";
+import { PostMomentModal } from "../components/PostMomentModal";
 import {
   IncomingQrConnectionModal,
   QrRequesterProfile,
@@ -85,6 +86,7 @@ export const AppNavigator: React.FC = () => {
   const [assignTaskVisible, setAssignTaskVisible] = useState(false);
   const [staffActivityVisible, setStaffActivityVisible] = useState(false);
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
+  const [postMomentVisible, setPostMomentVisible] = useState(false);
   const [incomingRequester, setIncomingRequester] = useState<QrRequesterProfile | null>(null);
 
   if (isLoading) {
@@ -114,6 +116,7 @@ export const AppNavigator: React.FC = () => {
         onOpenMyQr={() => setMyQrVisible(true)}
         onOpenScanQr={() => setScanQrVisible(true)}
         onOpenCardScan={() => setCardScanVisible(true)}
+        onPostMoment={() => setPostMomentVisible(true)}
         onOpenAttendance={() => setAttendanceVisible(true)}
         onOpenWorkflow={() => setWorkflowVisible(true)}
         onOpenApprovals={() => setApprovalsVisible(true)}
@@ -128,6 +131,11 @@ export const AppNavigator: React.FC = () => {
         visible={cardScanVisible}
         onClose={() => setCardScanVisible(false)}
         onSaveContact={() => setCardScanVisible(false)}
+      />
+      <PostMomentModal
+        visible={postMomentVisible}
+        onClose={() => setPostMomentVisible(false)}
+        onPostSuccess={() => setPostMomentVisible(false)}
       />
       <AttendanceModal visible={attendanceVisible} onClose={() => setAttendanceVisible(false)} />
       <WorkflowModal visible={workflowVisible} onClose={() => setWorkflowVisible(false)} />

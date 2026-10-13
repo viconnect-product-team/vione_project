@@ -248,7 +248,7 @@ function MeetingsPage() {
       })
     );
     setPipelineLogs([...DataPipelineService.getLogs()]);
-    toast.success("Đã bắn gói tin đồng bộ thời gian thực qua Redis Pub/Sub xuống 2 ứng dụng Vione!");
+    toast.success("Đã đồng bộ thông tin cuộc họp thành công!");
   };
 
   // --- Handlers for TAB 1 (Meetings) ---

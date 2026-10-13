@@ -333,7 +333,7 @@ export function CompanySupervisionView({ communityId }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* 1. Header Khối Giám Sát C-Level & Nút Thêm Nhân Viên */}
+      {/* 1. Header Khối Giám Sát Doanh Nghiệp & Nút Thêm Nhân Viên */}
       <div className="rounded-3xl border border-[#DFB76C]/30 bg-gradient-to-b from-white via-white to-zinc-50 dark:from-[#0B0F17] dark:via-[#121824] dark:to-[#0B0F17] p-5 shadow-xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -345,7 +345,7 @@ export function CompanySupervisionView({ communityId }: Props) {
                 Giám Sát Vận Hành & Khách Hàng
               </h3>
               <p className="text-[11px] text-[#8C653B] dark:text-[#DFB76C]">
-                Kiểm soát thời gian thực hoạt động đội ngũ & đường ống CRM
+                Kiểm soát hoạt động đội ngũ & đường ống CRM
               </p>
             </div>
           </div>
@@ -494,10 +494,10 @@ export function CompanySupervisionView({ communityId }: Props) {
         </div>
       </div>
 
-      {/* 3. Dòng Thời Gian Hoạt Động Realtime Của Nhân Viên */}
+      {/* 3. Dòng Thời Gian Hoạt Động Của Nhân Viên */}
       <div className="rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121824] p-5 shadow-md">
         <h4 className="text-xs font-bold uppercase tracking-wider text-[#8C653B] dark:text-[#DFB76C] mb-3 flex items-center gap-1.5">
-          <Activity className="h-4 w-4" /> Nhật ký hoạt động nhân sự theo thời gian thực
+          <Activity className="h-4 w-4" /> Nhật ký hoạt động nhân sự
         </h4>
         <div className="space-y-3">
           {data.recentActivities.map((act) => (

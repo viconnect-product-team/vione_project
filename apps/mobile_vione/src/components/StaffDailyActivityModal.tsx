@@ -254,7 +254,7 @@ export const StaffDailyActivityModal: React.FC<StaffDailyActivityModalProps> = (
               <View style={{ paddingVertical: 40, alignItems: "center" }}>
                 <ActivityIndicator size="large" color={colors.gold} />
                 <Text style={{ marginTop: 10, color: colors.textMuted, fontSize: 12 }}>
-                  Đang đồng bộ hoạt động đội ngũ thời gian thực...
+                  Đang tải dữ liệu hoạt động đội ngũ...
                 </Text>
               </View>
             ) : filteredStaff.length === 0 ? (

@@ -124,7 +124,7 @@ export function getCommunityVisuals(name: string, logoUrl?: string | null, banne
   if (lower.includes("vione") || lower.includes("gia đình") || lower.includes("ceo") || lower.includes("lãnh đạo")) {
     defaultBanner = "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80";
     defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
-    category = "Gia Đình ViOne • C-Level";
+    category = "Gia Đình ViOne • Doanh Nghiệp";
     attendees = [
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
@@ -158,7 +158,7 @@ export const INITIAL_COMMUNITIES: CommunityDetailModel[] = [
     id: "c-vione-internal",
     name: "Tập Đoàn Đầu Tư & Công Nghệ ViOne",
     shortDescription: "Không gian làm việc & giao việc nội bộ Ban Điều Hành và toàn thể cán bộ nhân viên ViOne.",
-    description: "Cộng đồng nội bộ chính thức của Tập đoàn ViOne. Phân hệ điều hành công việc, báo cáo CRM, giao nhiệm vụ và kiểm soát mục tiêu chiến lược thời gian thực.",
+    description: "Cộng đồng nội bộ chính thức của Tập đoàn ViOne. Phân hệ điều hành công việc, báo cáo CRM, giao nhiệm vụ và kiểm soát mục tiêu chiến lược.",
     logoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
     bannerUrl: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80",
     communityType: "company_internal",

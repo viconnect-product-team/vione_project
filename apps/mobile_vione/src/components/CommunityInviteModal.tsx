@@ -73,7 +73,7 @@ export const CommunityInviteModal: React.FC<CommunityInviteModalProps> = ({
     try {
       await Share.share({
         title: `Gia nhập cộng đồng ${community.name}`,
-        message: `Kính mời bạn tham gia cộng đồng "${community.name}" trên hệ sinh thái ViOne Connect:\n\n${inviteUrl}\n\nKết nối doanh nhân C-Level & mở ra cơ hội hợp tác kinh doanh!`,
+        message: `Kính mời bạn tham gia cộng đồng "${community.name}" trên hệ sinh thái ViOne Connect:\n\n${inviteUrl}\n\nKết nối doanh nhân & mở ra cơ hội hợp tác kinh doanh!`,
       });
     } catch {
       Alert.alert("Chia sẻ", "Không thể kích hoạt chia sẻ.");
@@ -136,7 +136,7 @@ export const CommunityInviteModal: React.FC<CommunityInviteModalProps> = ({
                   {community.name}
                 </Text>
                 <Text style={styles.communitySub} numberOfLines={2}>
-                  {community.shortDescription || "Mạng lưới kết nối doanh nghiệp C-Level."}
+                  {community.shortDescription || "Mạng lưới kết nối doanh nghiệp."}
                 </Text>
                 <View style={styles.metaRow}>
                   <View style={styles.typeBadge}>
@@ -220,7 +220,7 @@ export const CommunityInviteModal: React.FC<CommunityInviteModalProps> = ({
               <Text style={styles.policyText}>
                 {isCompany
                   ? "Cộng đồng nội bộ: Người được mời sẽ gửi yêu cầu gia nhập và cần được Giám đốc / Quản trị viên duyệt để kích hoạt phân quyền giao việc."
-                  : "Mạng lưới B2B: Mọi doanh nhân C-Level quét mã hoặc mở liên kết sẽ tham gia ngay để kết nối cơ hội kinh doanh và lịch họp 1-1."}
+                  : "Mạng lưới B2B: Mọi doanh nhân quét mã hoặc mở liên kết sẽ tham gia ngay để kết nối cơ hội kinh doanh và lịch họp 1-1."}
               </Text>
             </View>
 

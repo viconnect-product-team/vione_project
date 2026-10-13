@@ -72,7 +72,7 @@ export interface TaskItem {
   createdById?: string;
   creatorId?: string;
   priority: "urgent" | "high" | "medium" | "low";
-  status: "assigned" | "in_progress" | "completed" | "cancelled";
+  status: "assigned" | "in_progress" | "in_review" | "completed" | "cancelled";
   progress?: number;
   progressNote?: string;
   department?: string;
@@ -198,7 +198,7 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
 
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "assigned" | "in_progress" | "completed">("all");
+  const [filter, setFilter] = useState<"all" | "assigned" | "in_progress" | "in_review" | "completed">("all");
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>("all");
 
   // Danh sách phòng ban
@@ -207,8 +207,13 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
   const [newDeptName, setNewDeptName] = useState("");
   const [newDeptDesc, setNewDeptDesc] = useState("");
   const [newDeptManagerName, setNewDeptManagerName] = useState("");
+  const [newDeptManagerUserId, setNewDeptManagerUserId] = useState("");
+  const [newDeptSelectedMemberUserIds, setNewDeptSelectedMemberUserIds] = useState<string[]>([]);
   const [newDeptColor, setNewDeptColor] = useState("#DFB76C");
   const [savingDept, setSavingDept] = useState(false);
+
+  // Jira-Style Kanban vs List view mode
+  const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
 
   // Danh sách nhân sự
   const [employees, setEmployees] = useState<any[]>([]);
@@ -548,12 +553,13 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
     const total = tasks.length;
     const assigned = tasks.filter((t) => t.status === "assigned").length;
     const inProgress = tasks.filter((t) => t.status === "in_progress").length;
+    const inReview = tasks.filter((t) => t.status === "in_review").length;
     const completed = tasks.filter((t) => t.status === "completed").length;
-    return { total, assigned, inProgress, completed };
+    return { total, assigned, inProgress, inReview, completed };
   }, [tasks]);
 
   // ==========================================
-  // --- TẠO PHÒNG BAN MỚI ---
+  // --- TẠO PHÒNG BAN MỚI & GÁN THÀNH VIÊN ---
   // ==========================================
   const handleCreateDepartment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -570,33 +576,124 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
           description: newDeptDesc.trim(),
           managerName: newDeptManagerName.trim(),
           color: newDeptColor,
-          membersCount: 1,
+          membersCount: 1 + newDeptSelectedMemberUserIds.length,
         }),
       });
+
+      const createdDeptId =
+        res?.department?.id ||
+        res?.departments?.find((d: any) => d.name === newDeptName.trim())?.id ||
+        `dept-${Date.now()}`;
+
+      // 1. Nếu có chọn Trưởng ban, gán quyền lead vào phòng ban
+      if (newDeptManagerUserId) {
+        const mgr = employees.find(
+          (emp) => emp.id === newDeptManagerUserId || emp.userId === newDeptManagerUserId
+        );
+        await fetchNestApi(`/connect-app/community/${communityId}/department-members/assign`, {
+          method: "POST",
+          body: JSON.stringify({
+            departmentId: createdDeptId,
+            departmentName: newDeptName.trim(),
+            userId: newDeptManagerUserId,
+            userName: mgr?.fullName || newDeptManagerName,
+            userEmail: mgr?.email || "",
+            userPhone: mgr?.phone || "",
+            role: "lead",
+            canAssign: true,
+            canAccept: true,
+            canReport: true,
+            canHandover: true,
+            canMeet: true,
+          }),
+        }).catch(() => {});
+      }
+
+      // 2. Gán các thành viên cộng đồng đã chọn vào phòng ban mới
+      for (const mId of newDeptSelectedMemberUserIds) {
+        if (mId === newDeptManagerUserId) continue;
+        const memberEmp = employees.find((emp) => emp.id === mId || emp.userId === mId);
+        await fetchNestApi(`/connect-app/community/${communityId}/department-members/assign`, {
+          method: "POST",
+          body: JSON.stringify({
+            departmentId: createdDeptId,
+            departmentName: newDeptName.trim(),
+            userId: mId,
+            userName: memberEmp?.fullName || "Thành viên",
+            userEmail: memberEmp?.email || "",
+            userPhone: memberEmp?.phone || "",
+            role: "member",
+            canAssign: false,
+            canAccept: true,
+            canReport: true,
+            canHandover: true,
+            canMeet: true,
+          }),
+        }).catch(() => {});
+      }
+
       if (res?.departments) {
         setDepartments(res.departments);
       } else {
-        setDepartments((prev) => [
-          ...prev,
-          {
-            id: `dept-${Date.now()}`,
-            name: newDeptName.trim(),
-            description: newDeptDesc.trim(),
-            managerName: newDeptManagerName.trim(),
-            color: newDeptColor,
-            membersCount: 1,
-          },
-        ]);
+        loadDepartments();
       }
-      toast.success(`✓ Đã tạo phòng ban "${newDeptName}" thành công!`);
+      loadDepartmentMembers();
+      loadMyDepartmentPermissions();
+      toast.success(`✓ Đã tạo phòng ban "${newDeptName}" và gán thành viên thành công!`);
       setNewDeptName("");
       setNewDeptDesc("");
       setNewDeptManagerName("");
+      setNewDeptManagerUserId("");
+      setNewDeptSelectedMemberUserIds([]);
       setDeptModalOpen(false);
     } catch {
       toast.error("Không thể tạo phòng ban. Vui lòng kiểm tra quyền hạn!");
     } finally {
       setSavingDept(false);
+    }
+  };
+
+  // Cập nhật trạng thái tiến độ công việc chuẩn Jira
+  const handleUpdateTaskStatus = async (
+    taskId: string,
+    newStatus: "assigned" | "in_progress" | "in_review" | "completed"
+  ) => {
+    try {
+      const target = tasks.find((t) => t.id === taskId);
+      if (!target) return;
+
+      const payload: any = {
+        status: newStatus,
+        progress:
+          newStatus === "completed"
+            ? 100
+            : newStatus === "in_review"
+            ? 85
+            : newStatus === "in_progress" && (target.progress || 0) < 30
+            ? 30
+            : target.progress || 0,
+        completedAt: newStatus === "completed" ? new Date().toISOString() : target.completedAt,
+      };
+
+      await fetchNestApi(`/connect-app/community/${communityId}/tasks/${taskId}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, ...payload } : t))
+      );
+
+      const statusLabels: Record<string, string> = {
+        assigned: "Chờ thực hiện",
+        in_progress: "Đang thực hiện",
+        in_review: "Chờ nghiệm thu",
+        completed: "Đã hoàn thành",
+      };
+
+      toast.success(`✓ Đã cập nhật sang: ${statusLabels[newStatus] || newStatus}`);
+    } catch {
+      toast.error("Không thể cập nhật trạng thái công việc. Vui lòng thử lại!");
     }
   };
 
@@ -1134,30 +1231,27 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
   };
 
   return (
-    <div className="w-full space-y-4 pb-12" style={{ fontFamily: "'Be Vietnam Pro', system-ui, sans-serif" }}>
+    <div className="w-full space-y-4 pb-28" style={{ fontFamily: "'Be Vietnam Pro', system-ui, sans-serif" }}>
       {/* ── HEADER EXECUTIVE VI ONE ── */}
-      <div className="rounded-3xl border border-[#DFB76C]/40 bg-gradient-to-br from-white via-[#FAF8F5] to-[#F5EEDC] p-4.5 shadow-sm text-slate-900">
+      <div className="rounded-3xl border border-[#DFB76C]/30 bg-white dark:bg-[#121824] p-4.5 shadow-xs text-slate-900 dark:text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[#F6E1C3] via-[#DFB76C] to-[#B8860B] text-slate-950 shadow-md border border-[#F6E1C3]">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[#DFB76C] to-[#B8860B] text-slate-950 shadow-sm">
               <Briefcase className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-extrabold tracking-tight text-slate-900">
+                <h2 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
                   Điều Hành & Giao Việc Doanh Nghiệp
                 </h2>
-                <span className="rounded-full bg-[#DFB76C]/25 border border-[#DFB76C]/50 px-2 py-0.5 text-[10px] font-extrabold text-[#8C653B]">
-                  ViOne C-Level
-                </span>
               </div>
-              <p className="text-xs text-slate-600 font-medium">
-                Gói gọn toàn bộ vận hành công ty: Phân quyền phòng ban, nạp tệp Word/Excel, chuyển giao việc & họp trực tuyến
+              <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium">
+                Quản lý phòng ban, phân công nhiệm vụ, nộp báo cáo và cập nhật tiến độ công việc
               </p>
             </div>
           </div>
 
-          {/* Nhóm nút Hành Động Cấp Cao (Giao việc mới, Import Excel, Import Word, Họp trực tuyến) */}
+          {/* Nhóm nút Hành Động (Giao việc mới, Import Excel, Import Word, Họp trực tuyến) */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Nút Họp ban trực tuyến 1-chạm */}
             <button
@@ -1171,10 +1265,10 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                 setMeetingDept(targetDept);
                 setMeetingModalOpen(true);
               }}
-              className="flex items-center gap-1.5 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 px-3.5 py-2 text-xs font-bold border border-amber-300 shadow-xs cursor-pointer transition-all active:scale-95"
+              className="flex items-center gap-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-900 dark:text-amber-300 px-3 py-1.5 text-xs font-bold border border-amber-300/60 shadow-xs cursor-pointer transition-all active:scale-95"
             >
-              <Video className="h-3.5 w-3.5 text-amber-700" />
-              <span>Họp ban 1-chạm</span>
+              <Video className="h-3.5 w-3.5 text-amber-600" />
+              <span>Họp ban</span>
             </button>
 
             {userCanAssign && (
@@ -1190,10 +1284,10 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                     setWordTaskDept(selectedDeptFilter !== "all" ? selectedDeptFilter : (departments[0]?.name || "Ban Giám Đốc"));
                     setWordImportModalOpen(true);
                   }}
-                  className="flex items-center gap-1.5 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-900 px-3 py-2 text-xs font-bold border border-blue-300 shadow-xs cursor-pointer transition-all active:scale-95"
+                  className="flex items-center gap-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 text-blue-900 dark:text-blue-300 px-3 py-1.5 text-xs font-bold border border-blue-300/60 shadow-xs cursor-pointer transition-all active:scale-95"
                   title="Import đề án nhiệm vụ từ file Word (.docx)"
                 >
-                  <FileText className="h-3.5 w-3.5 text-blue-700" />
+                  <FileText className="h-3.5 w-3.5 text-blue-600" />
                   <span>Word</span>
                 </button>
 
@@ -1207,10 +1301,10 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                     }
                     setExcelImportModalOpen(true);
                   }}
-                  className="flex items-center gap-1.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 px-3 py-2 text-xs font-bold border border-emerald-300 shadow-xs cursor-pointer transition-all active:scale-95"
+                  className="flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-900 dark:text-emerald-300 px-3 py-1.5 text-xs font-bold border border-emerald-300/60 shadow-xs cursor-pointer transition-all active:scale-95"
                   title="Nạp việc hàng loạt từ file Excel (.xlsx / .csv)"
                 >
-                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-700" />
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
                   <span>Excel</span>
                 </button>
 
@@ -1224,48 +1318,73 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                     }
                     handleOpenCreateModal();
                   }}
-                  className="flex items-center gap-1.5 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-4 py-2 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-[#D8B282]/50"
+                  className="flex items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-[#DFB76C]/60"
                 >
                   <Plus className="h-4 w-4 stroke-[3]" />
-                  <span>Giao việc mới</span>
+                  <span>+ Giao việc</span>
                 </button>
               </>
             )}
           </div>
         </div>
 
-        {/* Chuyển đổi 2 chế độ: GIAO VIỆC vs NHẬN VIỆC */}
-        <div className="mt-4 flex items-center justify-between border-t border-[#DFB76C]/30 pt-3">
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white border border-[#DFB76C]/30 shadow-xs">
+        {/* Thanh điều khiển kép: [Giao việc | Nhận việc] + [📊 Kanban | 📋 Danh sách] */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
             {userCanAssign && (
               <button
                 type="button"
                 onClick={() => setActiveMode("assign")}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   activeMode === "assign"
-                    ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-xs"
-                    : "text-slate-600 hover:text-slate-950"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-extrabold"
+                    : "text-slate-600 dark:text-zinc-400 hover:text-slate-950"
                 }`}
               >
-                Giao việc điều hành ({tasks.length})
+                Giao việc ({tasks.length})
               </button>
             )}
             <button
               type="button"
               onClick={() => setActiveMode("receive")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeMode === "receive"
-                  ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-xs"
-                  : "text-slate-600 hover:text-slate-950"
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-extrabold"
+                  : "text-slate-600 dark:text-zinc-400 hover:text-slate-950"
               }`}
             >
-              Việc của tôi nhận ({filteredTasks.length})
+              Việc của tôi ({filteredTasks.length})
             </button>
           </div>
 
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
-            <Clock className="h-3.5 w-3.5 text-[#B8860B]" />
-            <span>Thời gian thực ViOne</span>
+          {/* Nút chuyển chế độ xem: Bảng Kanban kiểu Jira vs Danh sách */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+            <button
+              type="button"
+              onClick={() => setViewMode("kanban")}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === "kanban"
+                  ? "bg-white dark:bg-slate-900 text-[#8C653B] dark:text-[#DFB76C] shadow-xs font-extrabold"
+                  : "text-slate-600 dark:text-zinc-400 hover:text-slate-950"
+              }`}
+              title="Xem theo bảng cột trạng thái tiến độ Kanban chuẩn Jira"
+            >
+              <Layers className="h-3.5 w-3.5" />
+              <span>Bảng Kanban</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === "list"
+                  ? "bg-white dark:bg-slate-900 text-[#8C653B] dark:text-[#DFB76C] shadow-xs font-extrabold"
+                  : "text-slate-600 dark:text-zinc-400 hover:text-slate-950"
+              }`}
+              title="Xem theo danh sách chi tiết"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span>Danh sách</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1366,23 +1485,27 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
         )}
       </div>
 
-      {/* ── 4 THẺ THỐNG KÊ NHANH ── */}
-      <div className="grid grid-cols-4 gap-2">
-        <div className="rounded-2xl border border-[#DFB76C]/30 bg-white p-2.5 text-center shadow-xs">
-          <p className="text-[11px] font-bold text-slate-500">Tổng việc</p>
-          <p className="text-lg font-black text-slate-900 mt-0.5">{stats.total}</p>
+      {/* ── 5 THẺ THỐNG KÊ TIẾN ĐỘ CHUẨN JIRA ── */}
+      <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
+        <div className="rounded-2xl border border-[#DFB76C]/30 bg-white p-2 text-center shadow-xs">
+          <p className="text-[10px] sm:text-[11px] font-bold text-slate-500">Tổng việc</p>
+          <p className="text-base sm:text-lg font-black text-slate-900 mt-0.5">{stats.total}</p>
         </div>
-        <div className="rounded-2xl border border-amber-300/50 bg-amber-50/60 p-2.5 text-center shadow-xs">
-          <p className="text-[11px] font-bold text-amber-800">Chờ nhận</p>
-          <p className="text-lg font-black text-amber-700 mt-0.5">{stats.assigned}</p>
+        <div className="rounded-2xl border border-amber-300/50 bg-amber-50/60 p-2 text-center shadow-xs">
+          <p className="text-[10px] sm:text-[11px] font-bold text-amber-800">Chờ nhận</p>
+          <p className="text-base sm:text-lg font-black text-amber-700 mt-0.5">{stats.assigned}</p>
         </div>
-        <div className="rounded-2xl border border-blue-300/50 bg-blue-50/60 p-2.5 text-center shadow-xs">
-          <p className="text-[11px] font-bold text-blue-800">Đang làm</p>
-          <p className="text-lg font-black text-blue-700 mt-0.5">{stats.inProgress}</p>
+        <div className="rounded-2xl border border-blue-300/50 bg-blue-50/60 p-2 text-center shadow-xs">
+          <p className="text-[10px] sm:text-[11px] font-bold text-blue-800">Đang làm</p>
+          <p className="text-base sm:text-lg font-black text-blue-700 mt-0.5">{stats.inProgress}</p>
         </div>
-        <div className="rounded-2xl border border-emerald-300/50 bg-emerald-50/60 p-2.5 text-center shadow-xs">
-          <p className="text-[11px] font-bold text-emerald-800">Hoàn thành</p>
-          <p className="text-lg font-black text-emerald-700 mt-0.5">{stats.completed}</p>
+        <div className="rounded-2xl border border-purple-300/50 bg-purple-50/60 p-2 text-center shadow-xs">
+          <p className="text-[10px] sm:text-[11px] font-bold text-purple-800">Chờ duyệt</p>
+          <p className="text-base sm:text-lg font-black text-purple-700 mt-0.5">{stats.inReview}</p>
+        </div>
+        <div className="rounded-2xl border border-emerald-300/50 bg-emerald-50/60 p-2 text-center shadow-xs">
+          <p className="text-[10px] sm:text-[11px] font-bold text-emerald-800">Hoàn thành</p>
+          <p className="text-base sm:text-lg font-black text-emerald-700 mt-0.5">{stats.completed}</p>
         </div>
       </div>
 
@@ -1392,6 +1515,7 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
           { key: "all", label: "Tất cả trạng thái" },
           { key: "assigned", label: "Chờ nhận việc" },
           { key: "in_progress", label: "Đang tiến hành" },
+          { key: "in_review", label: "Chờ duyệt / Nghiệm thu" },
           { key: "completed", label: "Đã hoàn thành" },
         ].map((item) => (
           <button
@@ -1409,7 +1533,7 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
         ))}
       </div>
 
-      {/* ── DANH SÁCH CÔNG VIỆC ── */}
+      {/* ── DANH SÁCH & BẢNG KANBAN CÔNG VIỆC ── */}
       {loading ? (
         <div className="flex flex-col items-center justify-center p-12 rounded-3xl bg-white border border-[#DFB76C]/20 shadow-xs">
           <Loader2 className="h-8 w-8 text-[#DFB76C] animate-spin" />
@@ -1429,11 +1553,236 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
               : "Bấm 'Giao việc mới', nạp Excel hoặc Word để phân bổ nhiệm vụ và KPI cho nhân sự công ty."}
           </p>
         </div>
+      ) : viewMode === "kanban" ? (
+        /* ── CHẾ ĐỘ XEM BẢNG KANBAN CHUẨN JIRA ── */
+        <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory pt-1">
+          {[
+            {
+              status: "assigned" as const,
+              label: "Chờ nhận việc",
+              icon: Clock,
+              badgeBg: "bg-amber-100 text-amber-800 border-amber-300",
+              headerBg: "bg-amber-50/70 border-amber-200/80",
+            },
+            {
+              status: "in_progress" as const,
+              label: "Đang tiến hành",
+              icon: TrendingUp,
+              badgeBg: "bg-blue-100 text-blue-800 border-blue-300",
+              headerBg: "bg-blue-50/70 border-blue-200/80",
+            },
+            {
+              status: "in_review" as const,
+              label: "Chờ nghiệm thu",
+              icon: FileCheck,
+              badgeBg: "bg-purple-100 text-purple-800 border-purple-300",
+              headerBg: "bg-purple-50/70 border-purple-200/80",
+            },
+            {
+              status: "completed" as const,
+              label: "Đã hoàn thành",
+              icon: CheckCircle2,
+              badgeBg: "bg-emerald-100 text-emerald-800 border-emerald-300",
+              headerBg: "bg-emerald-50/70 border-emerald-200/80",
+            },
+          ].map((col) => {
+            const colTasks = filteredTasks.filter((t) => t.status === col.status);
+            const ColIcon = col.icon;
+            return (
+              <div
+                key={col.status}
+                className="w-[290px] shrink-0 snap-center flex flex-col gap-3 rounded-2xl bg-slate-50/90 dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 p-3"
+              >
+                {/* Header Cột Kanban */}
+                <div className={`flex items-center justify-between p-2.5 rounded-xl border ${col.headerBg}`}>
+                  <div className="flex items-center gap-1.5">
+                    <ColIcon className="h-4 w-4" />
+                    <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider">
+                      {col.label}
+                    </span>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded-full text-[11px] font-black border ${col.badgeBg}`}>
+                    {colTasks.length}
+                  </span>
+                </div>
+
+                {/* Danh sách thẻ trong cột */}
+                <div className="space-y-2.5 overflow-y-auto max-h-[70vh] pr-0.5">
+                  {colTasks.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                      Không có công việc
+                    </div>
+                  ) : (
+                    colTasks.map((task) => {
+                      const progress = task.progress || 0;
+                      const canHandoverThis = checkCanOperate(task.department, "handover");
+                      const canEditThis =
+                        (canEditRecord(task.createdById || task.creatorId) || userCanAssign) &&
+                        checkCanOperate(task.department, "assign");
+                      const canAcceptThis = checkCanOperate(task.department, "accept");
+                      const canReportThis = checkCanOperate(task.department, "report");
+
+                      return (
+                        <div
+                          key={task.id}
+                          className="rounded-2xl border border-[#DFB76C]/40 bg-white p-3 shadow-xs hover:border-[#DFB76C] transition-all flex flex-col gap-2.5"
+                        >
+                          {/* Priority & Quick Actions */}
+                          <div className="flex items-center justify-between gap-1">
+                            <span
+                              className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                                task.priority === "urgent"
+                                  ? "bg-rose-100 text-rose-700 border border-rose-300"
+                                  : task.priority === "high"
+                                  ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                  : "bg-slate-100 text-slate-700 border border-slate-200"
+                              }`}
+                            >
+                              {task.priority === "urgent" ? "Khẩn cấp" : task.priority === "high" ? "Ưu tiên cao" : "Bình thường"}
+                            </span>
+
+                            <div className="flex items-center gap-1">
+                              {canHandoverThis && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenHandoverModal(task)}
+                                  className="h-6 w-6 rounded-md grid place-items-center bg-purple-50 text-purple-700 hover:bg-purple-100 cursor-pointer"
+                                  title="Chuyển việc"
+                                >
+                                  <ArrowRightLeft className="h-3 w-3" />
+                                </button>
+                              )}
+                              {canEditThis && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenEditModal(task)}
+                                    className="h-6 w-6 rounded-md grid place-items-center bg-slate-100 text-slate-600 hover:bg-[#DFB76C]/25 cursor-pointer"
+                                    title="Sửa"
+                                  >
+                                    <Pencil className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setTaskToDelete(task)}
+                                    className="h-6 w-6 rounded-md grid place-items-center bg-rose-50 text-rose-600 hover:bg-rose-100 cursor-pointer"
+                                    title="Xóa"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Tiêu đề & Phòng ban */}
+                          <div>
+                            <h4 className="text-xs font-black text-slate-900 leading-snug line-clamp-2">
+                              {task.title}
+                            </h4>
+                            {task.department && (
+                              <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[9.5px] font-semibold bg-slate-100 text-slate-700">
+                                {task.department}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Thanh tiến độ */}
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-[10.5px]">
+                              <span className="text-slate-500 font-semibold">Tiến độ:</span>
+                              <span className="font-extrabold text-[#8C653B]">{progress}%</span>
+                            </div>
+                            <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-gradient-to-r from-[#DFB76C] to-[#B8860B]"
+                                style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Người nhận & Hạn chót */}
+                          <div className="space-y-1 text-[11px] text-slate-600 border-t border-slate-100 pt-2">
+                            <div className="flex items-center gap-1 truncate">
+                              <User className="h-3 w-3 text-slate-400 shrink-0" />
+                              <span className="truncate">Giao: <strong className="text-slate-900">{task.assigneeName}</strong></span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3 text-[#B8860B] shrink-0" />
+                              <span>Hạn: <strong className="text-slate-900">{formatDisplayDate(task.deadline)}</strong></span>
+                            </div>
+                          </div>
+
+                          {/* Bộ chuyển trạng thái nhanh 1-chạm (Chuẩn Jira Workflow) */}
+                          <div className="border-t border-slate-100 pt-2 flex items-center justify-between gap-1">
+                            <label className="text-[10px] font-bold text-slate-500">Chuyển:</label>
+                            <select
+                              value={task.status}
+                              onChange={(e) => handleUpdateTaskStatus(task.id, e.target.value as any)}
+                              className="text-[10.5px] font-bold rounded-lg border border-slate-200 bg-slate-50 py-1 px-1.5 text-slate-800 focus:outline-none focus:border-[#DFB76C] cursor-pointer"
+                            >
+                              <option value="assigned">⏳ Chờ nhận việc</option>
+                              <option value="in_progress">⚡ Đang xử lý</option>
+                              <option value="in_review">🔍 Chờ nghiệm thu</option>
+                              <option value="completed">✓ Đã xong</option>
+                            </select>
+                          </div>
+
+                          {/* Nút hành động chính */}
+                          {task.status === "assigned" && canAcceptThis ? (
+                            <button
+                              type="button"
+                              disabled={acceptingId === task.id}
+                              onClick={() => handleAcceptTask(task.id)}
+                              className="w-full py-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-[11px] shadow-xs hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1"
+                            >
+                              {acceptingId === task.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3 stroke-[3]" />}
+                              <span>Nhận việc ngay</span>
+                            </button>
+                          ) : task.status === "in_progress" && canReportThis ? (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenReportModal(task)}
+                              className="w-full py-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-[11px] shadow-xs hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1"
+                            >
+                              <FileCheck className="h-3 w-3" />
+                              <span>Báo cáo tiến độ</span>
+                            </button>
+                          ) : task.status === "in_review" && canReportThis ? (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenReportModal(task)}
+                              className="w-full py-1.5 rounded-xl bg-purple-50 text-purple-800 font-bold text-[11px] border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer flex items-center justify-center gap-1"
+                            >
+                              <FileCheck className="h-3 w-3" />
+                              <span>Cập nhật nghiệm thu</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenReportModal(task)}
+                              className="w-full py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] hover:bg-slate-200 transition-colors cursor-pointer flex items-center justify-center gap-1"
+                            >
+                              <Eye className="h-3 w-3 text-slate-500" />
+                              <span>Xem chi tiết hồ sơ</span>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       ) : (
+        /* ── CHẾ ĐỘ XEM DANH SÁCH CHI TIẾT ── */
         <div className="space-y-3">
           {filteredTasks.map((task) => {
             const isAssigned = task.status === "assigned";
             const isInProgress = task.status === "in_progress";
+            const isInReview = task.status === "in_review";
             const isCompleted = task.status === "completed";
             const progress = task.progress || 0;
             const canHandoverThis = checkCanOperate(task.department, "handover");
@@ -1468,12 +1817,14 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                       className={`px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
                         isCompleted
                           ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                          : isInReview
+                          ? "bg-purple-100 text-purple-800 border border-purple-300"
                           : isInProgress
                           ? "bg-blue-100 text-blue-800 border border-blue-300"
                           : "bg-amber-100 text-amber-800 border border-amber-300"
                       }`}
                     >
-                      {isCompleted ? "✓ Đã hoàn thành" : isInProgress ? "⚡ Đang xử lý" : "⏳ Chờ nhận việc"}
+                      {isCompleted ? "✓ Đã hoàn thành" : isInReview ? "🔍 Chờ nghiệm thu" : isInProgress ? "⚡ Đang xử lý" : "⏳ Chờ nhận việc"}
                     </span>
 
                     {/* Department */}
@@ -1586,7 +1937,6 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                 {/* Huy hiệu Tệp Word & Excel Báo cáo nghiệm thu */}
                 {(task.reportFileName || task.attachments || task.reportUrl) && (
                   <div className="flex flex-wrap items-center gap-2 text-xs">
-                    {/* Báo cáo tệp Word */}
                     {(task.reportFileType === "word" || (task.reportFileName && task.reportFileName.includes(".doc"))) && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-bold">
                         <FileText className="h-3.5 w-3.5 text-blue-600" />
@@ -1594,7 +1944,6 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                       </span>
                     )}
 
-                    {/* Báo cáo tệp Excel */}
                     {(task.reportFileType === "excel" || (task.reportFileName && (task.reportFileName.includes(".xls") || task.reportFileName.includes(".csv")))) && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold">
                         <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
@@ -1602,7 +1951,6 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                       </span>
                     )}
 
-                    {/* Tệp đính kèm */}
                     {task.attachments ? (
                       <a
                         href={task.attachments}
@@ -1615,7 +1963,6 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                       </a>
                     ) : null}
 
-                    {/* Link Báo cáo nghiệm thu */}
                     {task.reportUrl ? (
                       <a
                         href={task.reportUrl}
@@ -1646,53 +1993,84 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                   </div>
                 )}
 
-                {/* Footer action buttons: Nhận việc hoặc Nộp báo cáo */}
-                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2.5">
-                  {isAssigned ? (
-                    canAcceptThis ? (
-                      <button
-                        type="button"
-                        disabled={acceptingId === task.id}
-                        onClick={() => handleAcceptTask(task.id)}
-                        className="px-4 py-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-[#D8B282]/50"
-                      >
-                        {acceptingId === task.id ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Check className="h-3.5 w-3.5 stroke-[3]" />
-                        )}
-                        <span>Tiến hành nhận việc</span>
-                      </button>
+                {/* Footer: Bộ chuyển trạng thái nhanh + action buttons */}
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-[11px] font-bold text-slate-500">Chuyển trạng thái:</label>
+                    <select
+                      value={task.status}
+                      onChange={(e) => handleUpdateTaskStatus(task.id, e.target.value as any)}
+                      className="text-[11px] font-bold rounded-lg border border-slate-200 bg-white py-1 px-2 text-slate-800 focus:outline-none focus:border-[#DFB76C] cursor-pointer"
+                    >
+                      <option value="assigned">⏳ Chờ nhận việc</option>
+                      <option value="in_progress">⚡ Đang xử lý</option>
+                      <option value="in_review">🔍 Chờ nghiệm thu</option>
+                      <option value="completed">✓ Hoàn thành</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {isAssigned ? (
+                      canAcceptThis ? (
+                        <button
+                          type="button"
+                          disabled={acceptingId === task.id}
+                          onClick={() => handleAcceptTask(task.id)}
+                          className="px-4 py-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-[#D8B282]/50"
+                        >
+                          {acceptingId === task.id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Check className="h-3.5 w-3.5 stroke-[3]" />
+                          )}
+                          <span>Tiến hành nhận việc</span>
+                        </button>
+                      ) : (
+                        <span className="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 text-[11px] font-bold border border-amber-200/80">
+                          ⏳ Chờ nhân sự ban nhận việc
+                        </span>
+                      )
+                    ) : isInProgress ? (
+                      canReportThis ? (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenReportModal(task)}
+                          className="px-4 py-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-[#D8B282]/50"
+                        >
+                          <FileCheck className="h-3.5 w-3.5" />
+                          <span>Báo cáo tiến độ & nộp File</span>
+                        </button>
+                      ) : (
+                        <span className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-800 text-[11px] font-bold border border-blue-200/80">
+                          ⚡ Đang thực hiện trong ban
+                        </span>
+                      )
+                    ) : isInReview ? (
+                      canReportThis ? (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenReportModal(task)}
+                          className="px-4 py-2 rounded-xl bg-purple-50 text-purple-800 font-bold text-xs border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          <FileCheck className="h-3.5 w-3.5" />
+                          <span>Hồ sơ nghiệm thu</span>
+                        </button>
+                      ) : (
+                        <span className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-800 text-[11px] font-bold border border-purple-200/80">
+                          🔍 Chờ cấp quản lý nghiệm thu
+                        </span>
+                      )
                     ) : (
-                      <span className="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 text-[11px] font-bold border border-amber-200/80">
-                        ⏳ Chờ nhân sự ban nhận việc
-                      </span>
-                    )
-                  ) : isInProgress ? (
-                    canReportThis ? (
                       <button
                         type="button"
                         onClick={() => handleOpenReportModal(task)}
-                        className="px-4 py-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-[#D8B282]/50"
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors cursor-pointer flex items-center gap-1"
                       >
-                        <FileCheck className="h-3.5 w-3.5" />
-                        <span>Báo cáo tiến độ & nộp File</span>
+                        <Eye className="h-3.5 w-3.5 text-slate-500" />
+                        <span>Xem hồ sơ nghiệm thu</span>
                       </button>
-                    ) : (
-                      <span className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-800 text-[11px] font-bold border border-blue-200/80">
-                        ⚡ Đang thực hiện trong ban
-                      </span>
-                    )
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleOpenReportModal(task)}
-                      className="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors cursor-pointer flex items-center gap-1"
-                    >
-                      <Eye className="h-3.5 w-3.5 text-slate-500" />
-                      <span>Xem hồ sơ nghiệm thu</span>
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -1747,17 +2125,78 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Trưởng bộ phận phụ trách</label>
                 <select
-                  value={newDeptManagerName}
-                  onChange={(e) => setNewDeptManagerName(e.target.value)}
+                  value={newDeptManagerUserId}
+                  onChange={(e) => {
+                    const selId = e.target.value;
+                    setNewDeptManagerUserId(selId);
+                    const found = employees.find((emp) => (emp.id || emp.userId) === selId);
+                    setNewDeptManagerName(found?.fullName || "");
+                  }}
                   className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
                 >
-                  <option value="">-- Chọn trưởng bộ phận --</option>
+                  <option value="">-- Chọn trưởng bộ phận (từ cộng đồng này) --</option>
                   {employees.map((emp) => (
-                    <option key={emp.id || emp.userId} value={emp.fullName}>
+                    <option key={emp.id || emp.userId} value={emp.id || emp.userId}>
                       {emp.fullName} ({emp.roleTitle || "Thành viên"})
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Thêm thành viên vào phòng ban */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700">
+                    Thêm thành viên vào ban ({newDeptSelectedMemberUserIds.length})
+                  </label>
+                  <span className="text-[10.5px] text-slate-500">Chỉ thành viên thuộc cộng đồng này</span>
+                </div>
+                <div className="max-h-40 overflow-y-auto space-y-1.5 p-2 rounded-xl border border-slate-200 bg-slate-50/70">
+                  {employees.length === 0 ? (
+                    <p className="text-[11px] text-slate-400 py-2 text-center">Chưa có thành viên nào trong cộng đồng</p>
+                  ) : (
+                    employees.map((emp) => {
+                      const empId = emp.id || emp.userId;
+                      const isManager = empId === newDeptManagerUserId;
+                      const isChecked = newDeptSelectedMemberUserIds.includes(empId) || isManager;
+                      return (
+                        <label
+                          key={empId}
+                          className={`flex items-center justify-between p-2 rounded-lg border text-xs cursor-pointer transition-colors ${
+                            isChecked
+                              ? "bg-amber-50/80 border-[#DFB76C]/60 text-slate-900"
+                              : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <input
+                              type="checkbox"
+                              disabled={isManager}
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setNewDeptSelectedMemberUserIds((prev) => [...prev, empId]);
+                                } else {
+                                  setNewDeptSelectedMemberUserIds((prev) => prev.filter((id) => id !== empId));
+                                }
+                              }}
+                              className="rounded border-slate-300 text-[#DFB76C] focus:ring-[#DFB76C]"
+                            />
+                            <div className="truncate">
+                              <p className="font-bold truncate">{emp.fullName}</p>
+                              <p className="text-[10px] text-slate-500 truncate">{emp.roleTitle || emp.email || "Thành viên"}</p>
+                            </div>
+                          </div>
+                          {isManager && (
+                            <span className="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-[#DFB76C]/30 text-[#8C653B]">
+                              Trưởng ban
+                            </span>
+                          )}
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
               </div>
 
               <div>
@@ -1822,7 +2261,7 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
 
             <div className="py-3.5 space-y-3">
               <p className="text-xs text-slate-600 font-medium">
-                Tối ưu hóa quy trình: Tự động khởi tạo phòng họp video C-Level và gửi thông báo triệu tập khẩn cấp cho nhân sự, không cần gọi điện thoại riêng.
+                Tối ưu hóa quy trình: Tự động khởi tạo phòng họp video trực tuyến và gửi thông báo triệu tập khẩn cấp cho nhân sự, không cần gọi điện thoại riêng.
               </p>
 
               <div>

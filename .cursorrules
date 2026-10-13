@@ -56,6 +56,23 @@
   * **Firewall & Nginx Proxy Persistence Discipline (`deploy/ssl/`)**:
     - **Permanent Firewall Mandate**: Mọi kịch bản mở port Linux (`setup-ssl.sh`) BẮT BUỘC phải mở trên cả 2 chuỗi `INPUT` và `DOCKER-USER` (để tránh Docker/UFW drop gói chuyển tiếp), đồng thời phải gọi `netfilter-persistent save` hoặc `iptables-save > /etc/iptables/rules.v4` để chống mất luật tường lửa khi hệ thống cloud VPS tự động reload mạng/renew DHCP lease.
     - **Nginx HTTP-to-HTTPS Redirection Standard**: Cú pháp chuyển hướng chuẩn khi người dùng truy cập HTTP vào cổng SSL là `error_page 497 =301 https://$host:$server_port$request_uri;` (tuyệt đối không viết `error_page 497 301 = ...` vì sẽ khiến Nginx trả lỗi 400 Bad Request).
+  * **Mobile Light Theme & Non-bleeding Surface Standards (`ExecutiveHome.tsx`, `BusinessConnectTopBar.tsx`)**:
+    - **Adaptive Theme Background**: Thẻ CTA gói cộng đồng (`CommunityPackageTrialCta`) và các thẻ chức năng di động bắt buộc sử dụng màu nền thích ứng theo theme: sáng ngà sang trọng (`#FFFDF8` với viền `#E5D5BA` và chữ sẫm độ tương phản cao trong Light theme) và đen bóng đêm (`#141416` trong Dark theme). Tuyệt đối không dùng nền tối cứng nhắc cho theme sáng.
+    - **Solid Opaque Header Mandate**: Các thanh tiêu đề dính (`sticky top-0`) bao gồm `BusinessConnectTopBar` và các thanh bar trôi nổi phải phủ nền đặc `bg-[var(--bc-mobile-surface)]` (không dùng trong suốt hoặc blur thiếu màu nền) để triệt tiêu hiện tượng xuyên thấu chữ, đè nút và lộ nội dung khi cuộn.
+  * **Community Department Member Scoping Rule (`connect-company-internal.repository.ts`)**:
+    - Mọi truy vấn lấy danh sách nhân sự cho phòng ban (chọn Trưởng ban, gán thành viên ban đầu, phân quyền) BẮT BUỘC chỉ được lọc trong phạm vi hội viên đã tham gia vào chính cộng đồng đó (`association_id = :communityId`).
+    - Tuyệt đối nghiêm cấm fallback query toàn cục (`SELECT * FROM users LIMIT 50`) làm rò rỉ tài khoản từ các cộng đồng khác hoặc tài khoản toàn hệ thống.
+  * **AI Voice & Conversation State Persistence Discipline (`ViOneVoiceAssistant`)**:
+    - Để triệt tiêu bug React stale closure khi gọi API bất đồng bộ, các modal trợ lý AI (cả PWA lẫn Native Mobile) BẮT BUỘC dùng ref đồng bộ (`sessionsRef`, `currentSessionIdRef`) để ghi nhận tức thì câu hỏi của người dùng và câu trả lời của AI vào `localStorage` / `AsyncStorage`.
+    - Tính năng Voice BẮT BUỘC sử dụng Web Speech API / native listener chuẩn, có kiểm tra quyền Microphone rõ ràng và xử lý lỗi lịch sự. Tuyệt đối không dùng `setTimeout` giả lập tự động phát câu hỏi cứng nhắc.
+  * **Zero Unprofessional Buzzwords Policy Across Project**:
+    - Nghiêm cấm triệt để việc hiển thị các cụm từ quảng bá tiếp thị lỗi thời như: "thời gian thực", "dữ liệu thật", "2 chiều", "C-Level" trên giao diện người dùng, thông báo và tài liệu HDSD.
+    - Quy chuẩn sang ngôn ngữ doanh nghiệp chuyên nghiệp: "Doanh nhân ViOne", "Doanh nghiệp", "Tự động cập nhật", "Hệ thống quản trị".
+  * **Community Task Management Jira Kanban Standards (`CompanyTaskManagement.tsx`)**:
+    - Bảng tiến độ công việc trong cộng đồng chuẩn hóa theo mô hình Jira Kanban:
+      + Thanh thống kê 5 chỉ số: Tổng việc, Chờ nhận, Đang làm, Chờ duyệt, Hoàn thành.
+      + 2 chế độ hiển thị: [📊 Bảng Kanban] (4 cột trạng thái lướt ngang) và [📋 Danh sách].
+      + Thao tác chuyển trạng thái 1-chạm: Dropdown chuyển nhanh trạng thái trên từng thẻ task (`assigned`, `in_progress`, `in_review`, `completed`) kèm thông báo toast phản hồi tức thì.
 - **Environment**: Node.js >= 22 (Node 22 is required for native globalThis.WebSocket support on both local and server runtime environments).
 
 ## Folder Structure
@@ -1432,5 +1449,17 @@ The project is deployed to a remote server (`14.225.217.232`) with 2 primary pro
      - **4) Đồng Bộ Hoàn Hảo Tiện Ích Trang Chủ Giữa PWA & Native**:
        * PWA: Bổ sung 2 phím tắt điều hành nhanh "Khách hàng CRM" và "Cộng đồng Doanh nghiệp" ở khu vực tiện ích trang chủ.
        * Native: Bổ sung dải "Khoảnh khắc doanh nhân 24h" (Stories strip) có nút tạo tin mới và các story đại diện, khối gợi ý kết nối chuẩn xác; đảm bảo cấu trúc thẻ cuộn `<ScrollView>` chuẩn mực, không lặp thẻ.
+
+221. **Quy Chuẩn Đồng Bộ 100% PWA vs Native App, Cân Đối Tuyệt Đối UI/UX Native & Hệ Thống Tài Liệu Master 7.0 (STRICT MOBILE UI/UX SYMMETRY, SAFE AREA INSETS, FULL PARITY & MASTER SPECIFICATION DISCIPLINE)**:
+     - **1) Bố Trí Cân Đối Tuyệt Đối UI/UX Trên ViOne Native App (`apps/mobile_vione`)**:
+       * **Xử lý Dynamic Safe Area Insets (`CustomBottomTabBar.tsx`)**: BẮT BUỘC sử dụng hook `useSafeAreaInsets()` từ `react-native-safe-area-context` để tính toán khoảng đệm đáy `bottomInset = Math.max(insets.bottom, Platform.OS === 'ios' ? 20 : 8)` và tổng chiều cao thanh điều hướng `barHeight = 58 + bottomInset`. TUYỆT ĐỐI KHÔNG fix cứng chiều cao thanh bottom tab khiến vạch điều hướng cử chỉ (Android Gesture Bar / iOS Home Indicator) đè lên nhãn chữ của các tabs.
+       * **Cân Đối Typography & Icon**: Tỷ lệ nhãn tab chuẩn xác `fontSize: 10.5`, `letterSpacing: 0.1`, `lineHeight: 14`, dải chỉ báo mạ vàng Champagne Gold đặt ở đỉnh tab (`top: 0`, `height: 2.5`), nút tròn trung tâm `V` chuẩn kích thước `58x58` với tâm đối xứng hoàn hảo.
+       * **Đồng Bộ Luồng Thao Tác Nút V Trung Tâm**: Nút "Ghi chú cuộc gặp" (`onPostMoment`) trong `VActionSheet` BẮT BUỘC kết nối trực tiếp với modal đăng bài/khoảnh khắc `PostMomentModal.tsx` trên `AppNavigator.tsx`, đảm bảo người dùng ghi chú cuộc gặp tức thời 1-chạm mà không bị miss action.
+     - **2) Hệ Thống Tài Liệu Kỹ Thuật Master 7.0 Toàn Diện**:
+       * Thư mục `document/` duy trì duy nhất 2 tài liệu kỹ thuật chuẩn mực Master 7.0: `BRD_VIONE_YEU_CAU_NGHIEP_VU_TOAN_DIEN.md` (Business Requirements Document) và `SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.md` (System Requirements Specification chuẩn IEEE 830-1998).
+       * Toàn bộ tài liệu cũ/phân mảnh đã được dọn dẹp sạch sẽ, chỉ bảo lưu nguyên vẹn 100% các file Trình chiếu (Slide) và Hướng dẫn sử dụng (HDSD).
+     - **3) Nâng Cấp Bảng Tiến Độ Công Việc WBS ViOne**:
+       * Toàn bộ 3 file Excel tiến độ (`docs/TIEN_DO_CONG_VIEC_HE_THONG_VA_APP_VIONE.xlsx`, `apps/vione_app_fe/public/docs/TIEN_DO_CONG_VIEC_HE_THONG_VA_APP_VIONE.xlsx`, `apps/vione_app_fe/public/docs/TIEN_DO_CONG_VIEC_VIONE.xlsx`) được mở rộng thêm phân hệ WBS 5.0 đến 5.6 bao quát toàn bộ các chức năng mới (Phân quyền phòng ban RBAC, Bàn giao việc tự động, Báo cáo & Giao việc bằng Word/Excel, Họp ban WebRTC 1-chạm, Cân đối UI/UX Native và Master BRD/SRS 7.0).
+
 
 
