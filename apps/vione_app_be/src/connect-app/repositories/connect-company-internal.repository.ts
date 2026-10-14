@@ -24,12 +24,12 @@ export class ConnectCompanyInternalRepository {
         m_all."userId" as id,
         m_all."userId" as "userId",
         COALESCE(m_all.full_name, up.display_name, vu.name, SPLIT_PART(vu.email, '@', 1), 'Thành viên')::text as "fullName",
-        COALESCE(vu.email, m_all.email, '')::text as email,
-        COALESCE(vu.phone, m_all.phone, '')::text as phone,
+        COALESCE(m_all.email, vu.email, '')::text as email,
+        COALESCE(m_all.phone, '')::text as phone,
         COALESCE(m_all.role, 'member')::text as role,
-        COALESCE(up.professional_title, m_all.role_title, 'Thành viên cộng đồng')::text as "roleTitle",
-        COALESCE(up.company_name, m_all.department, 'Cộng đồng ViOne')::text as department,
-        COALESCE(up.avatar_url, vu.avatar_url, m_all.avatar_url, '')::text as "avatarUrl",
+        COALESCE(m_all.role_title, up.professional_title, 'Thành viên cộng đồng')::text as "roleTitle",
+        COALESCE(m_all.department, up.company_name, 'Khối Doanh Nghiệp B2B')::text as department,
+        COALESCE(m_all.avatar_url, up.avatar_url, vu.avatar_url, '')::text as "avatarUrl",
         'active'::text as status,
         COALESCE(m_all.joined_at, now()) as "joinedAt"
       FROM (
@@ -40,8 +40,8 @@ export class ConnectCompanyInternalRepository {
           null::text as email,
           null::text as phone,
           ms.role::text as role,
-          null::text as role_title,
-          null::text as department,
+          ms.executive_role::text as role_title,
+          ms.department::text as department,
           null::text as avatar_url,
           ms.created_at as joined_at
         FROM public.memberships ms
@@ -55,10 +55,10 @@ export class ConnectCompanyInternalRepository {
           m.name::text as full_name,
           m.email::text as email,
           m.phone::text as phone,
-          m.role::text as role,
-          m.title::text as role_title,
-          m.company::text as department,
-          m.avatar_url::text as avatar_url,
+          COALESCE(m.executive_role, 'member')::text as role,
+          COALESCE(m.executive_role, 'Thành viên')::text as role_title,
+          COALESCE(m.department, 'Khối Doanh Nghiệp B2B')::text as department,
+          COALESCE(m.avatar, '')::text as avatar_url,
           COALESCE(m.joined_at, m.created_at) as joined_at
         FROM public.members m
         WHERE m.association_id = ${assocId}::uuid AND m.status = 'active'
@@ -78,22 +78,6 @@ export class ConnectCompanyInternalRepository {
           ce.joined_at as joined_at
         FROM public.company_employees ce
         WHERE (ce.community_id = ${assocId} OR ce.community_id = ${assocId}::text)
-
-        UNION ALL
-
-        -- 4. association creator / owner
-        SELECT 
-          a.created_by_id::text as "userId",
-          'Chủ quản cộng đồng'::text as full_name,
-          null::text as email,
-          null::text as phone,
-          'admin'::text as role,
-          'Ban Quản Trị'::text as role_title,
-          'Ban Giám Đốc'::text as department,
-          null::text as avatar_url,
-          a.created_at as joined_at
-        FROM public.associations a
-        WHERE a.id = ${assocId}::uuid AND a.created_by_id IS NOT NULL
       ) m_all
       LEFT JOIN public.vione_users vu ON (vu.id::text = m_all."userId")
       LEFT JOIN public.user_profiles up ON (up.user_id::text = m_all."userId" OR (vu.id IS NOT NULL AND up.user_id = vu.id))

@@ -96,6 +96,7 @@ export interface CommunityDetailViewProps {
   onSelectEvent: (event: B2BEvent) => void;
   onRegisterEvent: (event: B2BEvent) => void;
   onSelectMember: (member: MemberCardData) => void;
+  members?: any[];
   departments?: any[];
   myDeptPermissions?: any | null;
   selectedDeptFilter?: string;
@@ -141,6 +142,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
   onSelectEvent,
   onRegisterEvent,
   onSelectMember,
+  members = [],
   departments = [],
   myDeptPermissions = null,
   selectedDeptFilter = "all",
@@ -329,7 +331,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   onPress={() => onOpenEdit()}
                 >
                   <Settings size={14} color="#DFB76C" />
-                  <Text style={styles.editCommunityText}>⚙️ Chỉnh sửa cộng đồng</Text>
+                  <Text style={styles.editCommunityText}>Chỉnh sửa cộng đồng</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -345,7 +347,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   style={styles.actionBtnGrad}
                 >
                   <Target size={14} color="#050C15" />
-                  <Text style={styles.actionBtnText}>+ Đăng cơ hội</Text>
+                  <Text style={styles.actionBtnText}>Đăng cơ hội</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -361,7 +363,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   style={styles.actionBtnGrad}
                 >
                   <Newspaper size={14} color="#050C15" />
-                  <Text style={styles.actionBtnText}>+ Đăng bài</Text>
+                  <Text style={styles.actionBtnText}>Đăng bài</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -374,7 +376,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   style={styles.actionBtnGrad}
                 >
                   <Calendar size={14} color="#050C15" />
-                  <Text style={styles.actionBtnText}>+ Chia sẻ SK</Text>
+                  <Text style={styles.actionBtnText}>Chia sẻ SK</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -1323,67 +1325,74 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
             {/* ================================================================= */}
             {detailTab === "members" && (
               <View style={styles.membersSection}>
-                {INITIAL_MEMBERS.map((m) => (
-                  <TouchableOpacity
-                    key={m.id}
-                    style={[
-                      styles.memberCard,
-                      {
-                        backgroundColor: isDark ? "#121824" : "#FFFFFF",
-                        borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
-                      },
-                    ]}
-                    onPress={() => {
-                      onSelectMember({
-                        id: m.id,
-                        name: m.name,
-                        title: m.title,
-                        company: m.company,
-                        phone: m.phone,
-                        email: m.email,
-                        avatarUrl: m.avatarUrl,
-                        role: m.role,
-                      });
-                    }}
-                    activeOpacity={0.85}
-                  >
-                    <Image source={{ uri: resolveMediaUrl(m.avatarUrl) || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" }} style={styles.memberAvatar} />
-                    <View style={{ flex: 1, marginLeft: 12 }}>
-                      <View style={styles.memberNameRow}>
-                        <Text style={[styles.memberName, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                          {m.name}
-                        </Text>
-                        {m.role === "admin" && (
-                          <View style={styles.adminRolePill}>
-                            <Text style={styles.adminRoleText}>Admin</Text>
-                          </View>
-                        )}
-                      </View>
-                      <Text style={styles.memberTitle}>{m.title}</Text>
-                      <Text numberOfLines={1} style={styles.memberCompany}>
-                        {m.company}
-                      </Text>
-                    </View>
-
+                {(members && members.length > 0 ? members : INITIAL_MEMBERS).map((m: any) => {
+                  const mName = m.name || m.fullName || m.displayName || "Hội viên ViOne";
+                  const mTitle = m.title || m.jobTitle || m.role || m.department || "Thành viên";
+                  const mCompany = m.company || m.companyName || m.department || "Hệ sinh thái ViOne";
+                  const mAvatar = m.avatarUrl || m.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
+                  const isAdmin = m.role === "admin" || m.role === "Ban Giám Đốc" || m.title?.includes("Giám Đốc") || m.title?.includes("Admin");
+                  return (
                     <TouchableOpacity
-                      style={styles.contactBtn}
+                      key={m.id || m.memberRef || Math.random().toString()}
+                      style={[
+                        styles.memberCard,
+                        {
+                          backgroundColor: isDark ? "#121824" : "#FFFFFF",
+                          borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
+                        },
+                      ]}
                       onPress={() => {
                         onSelectMember({
-                          id: m.id,
-                          name: m.name,
-                          title: m.title,
-                          company: m.company,
-                          phone: m.phone,
-                          email: m.email,
-                          avatarUrl: m.avatarUrl,
-                          role: m.role,
+                          id: m.id || m.memberRef || "",
+                          name: mName,
+                          title: mTitle,
+                          company: mCompany,
+                          phone: m.phone || "",
+                          email: m.email || "",
+                          avatarUrl: mAvatar,
+                          role: isAdmin ? "admin" : "member",
                         });
                       }}
+                      activeOpacity={0.85}
                     >
-                      <MessageSquare size={16} color="#D8B282" />
+                      <Image source={{ uri: resolveMediaUrl(mAvatar) || mAvatar }} style={styles.memberAvatar} />
+                      <View style={{ flex: 1, marginLeft: 12 }}>
+                        <View style={styles.memberNameRow}>
+                          <Text style={[styles.memberName, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
+                            {mName}
+                          </Text>
+                          {isAdmin && (
+                            <View style={styles.adminRolePill}>
+                              <Text style={styles.adminRoleText}>Admin</Text>
+                            </View>
+                          )}
+                        </View>
+                        <Text style={styles.memberTitle}>{mTitle}</Text>
+                        <Text numberOfLines={1} style={styles.memberCompany}>
+                          {mCompany}
+                        </Text>
+                      </View>
+
+                      <TouchableOpacity
+                        style={styles.contactBtn}
+                        onPress={() => {
+                          onSelectMember({
+                            id: m.id || m.memberRef || "",
+                            name: mName,
+                            title: mTitle,
+                            company: mCompany,
+                            phone: m.phone || "",
+                            email: m.email || "",
+                            avatarUrl: mAvatar,
+                            role: isAdmin ? "admin" : "member",
+                          });
+                        }}
+                      >
+                        <MessageSquare size={16} color="#D8B282" />
+                      </TouchableOpacity>
                     </TouchableOpacity>
-                  </TouchableOpacity>
-                ))}
+                  );
+                })}
               </View>
             )}
 

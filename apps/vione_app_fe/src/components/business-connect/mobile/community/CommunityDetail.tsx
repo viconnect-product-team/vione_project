@@ -184,7 +184,7 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DFB76C] bg-[#DFB76C]/15 text-[#DFB76C] text-[12px] font-bold hover:bg-[#DFB76C]/25 active:scale-95 transition-all shadow-xs cursor-pointer"
                 >
                   <Settings className="w-3.5 h-3.5" />
-                  <span>⚙️ Chỉnh sửa cộng đồng</span>
+                  <span>Chỉnh sửa cộng đồng</span>
                 </button>
               ) : null}
             </section>
@@ -197,7 +197,7 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                 className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
               >
                 <PlusCircle className="w-3.5 h-3.5 text-slate-950" />
-                <span>+ Đăng cơ hội</span>
+                <span>Đăng cơ hội</span>
               </button>
               <button
                 type="button"
@@ -205,7 +205,7 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                 className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
               >
                 <Newspaper className="w-3.5 h-3.5 text-slate-950" />
-                <span>+ Đăng bài</span>
+                <span>Đăng bài</span>
               </button>
               <button
                 type="button"
@@ -213,7 +213,7 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                 className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5 text-slate-950" />
-                <span>+ Chia sẻ SK</span>
+                <span>Chia sẻ SK</span>
               </button>
             </div>
 
@@ -352,7 +352,7 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                 retry={activity.retry}
               />
             ) : (
-              <MembersPreview communityId={communityId} />
+              <FullMembersSection communityId={communityId} />
             )}
 
             {/* Modals for Create Opportunity, News, Edit Community & Share Event */}
@@ -836,81 +836,106 @@ function StatTile({ value, label }: { value: number | null; label: string }) {
   );
 }
 
-function MembersPreview({ communityId }: { communityId: string }) {
+function FullMembersSection({ communityId }: { communityId: string }) {
   const t = useT();
-  const { members, initialLoading } = useCommunityMembers(communityId, "");
-  const rows = members.slice(0, 4);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { members, initialLoading } = useCommunityMembers(communityId, searchTerm);
 
   return (
-    <section className="mt-7">
-      <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[var(--bc-mobile-muted)]">
-        {t("bc.mobile.community.members")}
-      </h2>
+    <section className="mt-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-[var(--bc-mobile-text)]">
+            Hội Viên Trong Cộng Đồng ({members.length})
+          </h2>
+          <p className="text-xs text-[var(--bc-mobile-muted)]">
+            Dữ liệu thành viên xác thực thời gian thực từ cơ sở dữ liệu
+          </p>
+        </div>
+      </div>
+
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Tìm kiếm theo tên, chức vụ hoặc phòng ban..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-4 py-2.5 text-xs text-[var(--bc-mobile-text)] outline-none focus:border-[#DFB76C]"
+        />
+      </div>
+
       {initialLoading ? (
-        <div aria-hidden="true" className="mt-2 space-y-3">
-          {[0, 1].map((i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="h-9 w-9 animate-pulse rounded-full bg-[var(--bc-mobile-surface-2)]" />
-              <div className="h-3.5 w-1/2 animate-pulse rounded-full bg-[var(--bc-mobile-surface-2)]" />
+        <div className="space-y-2.5">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3 p-3 rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] animate-pulse">
+              <div className="h-11 w-11 rounded-full bg-slate-300 dark:bg-slate-700" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-3 w-1/3 rounded bg-slate-300 dark:bg-slate-700" />
+                <div className="h-2.5 w-1/2 rounded bg-slate-200 dark:bg-slate-800" />
+              </div>
             </div>
           ))}
         </div>
-      ) : rows.length === 0 ? (
-        <p className="mt-2 text-[14px] text-[var(--bc-mobile-muted)]">
+      ) : members.length === 0 ? (
+        <p className="p-8 text-center rounded-2xl border border-dashed border-[var(--bc-mobile-border)] text-xs text-[var(--bc-mobile-muted)]">
           {t("bc.mobile.community.members.empty")}
         </p>
       ) : (
-        <ul className="mt-2 divide-y divide-[var(--bc-mobile-border)]">
-          {rows.map((m) => {
-            const meta = [m.jobTitle, m.companyName].filter(Boolean).join(" · ");
+        <div className="space-y-2.5">
+          {members.map((m) => {
+            const roleIsAdmin = m.role === "admin" || (m.jobTitle || "").toLowerCase().includes("chủ tịch") || (m.jobTitle || "").toLowerCase().includes("giám đốc");
             return (
-              <li key={m.memberRef}>
+              <div
+                key={m.memberRef}
+                className="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] hover:border-[#DFB76C]/60 shadow-xs transition-all"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative shrink-0">
+                    {m.avatarUrl ? (
+                      <img src={m.avatarUrl} alt={m.displayName} className="h-11 w-11 rounded-full object-cover border border-[#DFB76C]/30" />
+                    ) : (
+                      <div className="h-11 w-11 rounded-full bg-gradient-to-br from-[#F6E1C3] to-[#DFB76C] text-slate-950 font-bold grid place-items-center text-sm shadow-xs">
+                        {m.displayName.trim().charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    {roleIsAdmin && (
+                      <span className="absolute -bottom-1 -right-1 px-1 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[9px] font-black border border-white dark:border-slate-900">
+                        ADMIN
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-extrabold text-[13.5px] text-[var(--bc-mobile-text)] truncate">
+                        {m.displayName}
+                      </p>
+                      {m.isSelf && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold">
+                          Bạn
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-semibold text-[#8C653B] dark:text-[#DFB76C] truncate">
+                      {m.jobTitle || "Thành viên doanh nghiệp"}
+                    </p>
+                    <p className="text-[11px] text-[var(--bc-mobile-muted)] truncate">
+                      {m.companyName || "Khối Doanh Nghiệp B2B"}
+                    </p>
+                  </div>
+                </div>
+
                 <Link
                   to="/connect-app/community/$communityId/members/$memberRef"
                   params={{ communityId, memberRef: m.memberRef }}
-                  aria-label={`${t("bc.mobile.community.openMember")}: ${m.displayName}`}
-                  className="flex min-h-[56px] items-center gap-3 py-2.5 transition-colors duration-150 hover:bg-[var(--bc-mobile-surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bc-mobile-navy)] motion-reduce:transition-none"
+                  className="px-3 py-1.5 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] text-[11px] font-bold text-[var(--bc-mobile-text)] hover:border-[#DFB76C] hover:text-[#8C653B] shrink-0 transition-colors"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] text-[13px] font-semibold text-[var(--bc-mobile-muted)]"
-                  >
-                    {m.avatarUrl ? (
-                      <img src={m.avatarUrl} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      m.displayName.trim().charAt(0).toUpperCase()
-                    )}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-medium text-[var(--bc-mobile-text)]">
-                      {m.displayName}
-                      {m.isSelf ? ` · ${t("bc.mobile.community.thisIsYou")}` : ""}
-                    </span>
-                    {meta ? (
-                      <span className="mt-0.5 block truncate text-[12px] text-[var(--bc-mobile-muted)]">
-                        {meta}
-                      </span>
-                    ) : null}
-                  </span>
-                  <ChevronRight
-                    aria-hidden="true"
-                    className="h-4 w-4 shrink-0 text-[var(--bc-mobile-muted)]"
-                    strokeWidth={1.8}
-                  />
+                  Hồ sơ
                 </Link>
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )}
-      <Link
-        to="/connect-app/community/$communityId/members"
-        params={{ communityId }}
-        className="mt-1 inline-flex min-h-[44px] items-center gap-2 text-[13px] font-medium text-[var(--bc-mobile-navy)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bc-mobile-navy)]"
-      >
-        <Users aria-hidden="true" className="h-4 w-4" strokeWidth={1.7} />
-        {t("bc.mobile.community.members.viewAll")}
-      </Link>
     </section>
   );
 }

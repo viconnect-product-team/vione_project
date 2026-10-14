@@ -299,9 +299,13 @@ Theo định hướng kiến trúc bản quyền ViOne mới:
 6. **Họp Ban Trực Tuyến 1-Chạm (Instant Department Meeting - C-Level Room):**
    - Nút **`[📹 Họp ban 1-chạm]`** mạ vàng trên thanh điều hành công việc.
    - Khởi tạo phòng họp video WebRTC bảo mật cao, tự động gửi thông báo triệu tập khẩn cấp (Push Notification & In-app) đến toàn thể nhân sự trong phòng ban.
-7. **Import & Export Đa Định Dạng (Excel & Word):**
-   - Người giao việc: Nút `[📊 Excel]` nạp danh sách việc hàng loạt từ tệp `.xlsx`, `.csv`; Nút `[📄 Word]` nạp đề án nhiệm vụ từ `.docx`.
-   - Người nhận việc: Khi bấm `[Nộp báo cáo]`, cho phép đính kèm song song cả tệp thuyết minh Word (`.docx`) và tệp bảng tính số liệu Excel (`.xlsx`).
+7. **Import & Bóc Tách Tự Động Đa Định Dạng (Word, Excel & PDF):**
+   - **Tích Hợp Bên Trong Popup Giao Việc:** Tính năng Import file Word, Excel, PDF được tích hợp trực tiếp bên trong Popup Giao Việc (`createModalOpen` trên PWA và `AssignTaskModal` trên Native), không để lộ ra ngoài thanh công cụ nhằm bảo đảm giao diện gọn gàng, tinh tế.
+   - **Bóc Tách Tự Động & Nhận Diện Phòng Ban:** Người giao việc nạp hoặc dán nội dung từ các file `.docx`, `.xlsx`, `.csv`, `.pdf`, hệ thống tự động bóc tách từng đầu việc, nhận diện phòng ban theo từ khóa nghiệp vụ (Sales, IT, Marketing, Kế toán, Nhân sự, Ban Giám Đốc) và tự động tìm kiếm, phân công thành viên phù hợp từ danh sách nhân sự thực tế trong CSDL.
+   - **Thẻ Nhiệm Vụ Tự Động Sinh Ra:** Tự động sinh ra giao diện các thẻ công việc trực quan cho phép xem trước, tinh chỉnh tiêu đề, phòng ban, người phụ trách, mức độ ưu tiên và hạn chót trước khi thực hiện giao việc hàng loạt qua API `POST /connect-app/community/:communityId/tasks/import-excel`.
+   - **Quy Chuẩn Nút Chức Năng Gọn Gàng:** Tuyệt đối không thêm tiền tố `+` thừa vào nhãn các nút chức năng (`Đăng cơ hội`, `Đăng bài`, `Chia sẻ SK`, `Giao việc`, `Tạo phòng ban`) và không lặp icon/emoji (`⚙️ Chỉnh sửa cộng đồng`).
+   - **Dữ Liệu Hội Viên Thật:** Danh bạ thành viên trong cộng đồng được đồng bộ 100% từ bảng `public.members` của CSDL PostgreSQL (12 hội viên chính thức).
+   - **Người nhận việc:** Khi bấm `[Nộp báo cáo]`, cho phép đính kèm song song cả tệp thuyết minh Word (`.docx`) và tệp bảng tính số liệu Excel (`.xlsx`).
 
 ---
 

@@ -9,8 +9,11 @@ const config = getDefaultConfig(projectRoot);
 // Gioi han so worker Metro de tranh OOM / crash jest-worker tren Windows
 config.maxWorkers = 2;
 
-// 1. Watch all files within the monorepo
-config.watchFolders = [monorepoRoot];
+// 1. Only watch mobile project and hoisted node_modules to avoid OOM
+config.watchFolders = [
+  projectRoot,
+  path.resolve(monorepoRoot, 'node_modules'),
+];
 
 // 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [

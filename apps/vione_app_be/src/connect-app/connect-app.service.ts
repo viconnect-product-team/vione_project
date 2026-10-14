@@ -1171,9 +1171,9 @@ export class ConnectAppService implements OnModuleInit {
             WHEN u.email ILIKE '%admin%' OR u.username ILIKE '%admin%' THEN 'admin'
             ELSE COALESCE(ms.role, 'member')
           END::text as role,
-          COALESCE(card.avatar_url, bi.avatar_url, u.avatar_url)::text as avatar_url,
-          COALESCE(card.professional_title, bi.job_title)::text as job_title,
-          COALESCE(card.company_name, bi.company_name)::text as company_name,
+          COALESCE(card.avatar_url, bi.avatar_url, u.avatar_url, m.avatar)::text as avatar_url,
+          COALESCE(card.professional_title, bi.job_title, m.executive_role, 'Thành viên')::text as job_title,
+          COALESCE(card.company_name, bi.company_name, m.department, 'Khối Doanh Nghiệp B2B')::text as company_name,
           bi.headline::text as headline
         FROM public.members m
         LEFT JOIN public.vione_users u ON (m.user_id IS NOT NULL AND u.id = m.user_id)
@@ -1201,8 +1201,8 @@ export class ConnectAppService implements OnModuleInit {
             ELSE COALESCE(ms.role::text, 'member')
           END::text as role,
           COALESCE(bi.avatar_url, card.avatar_url, u.avatar_url)::text as avatar_url,
-          COALESCE(bi.job_title, card.professional_title)::text as job_title,
-          COALESCE(bi.company_name, card.company_name)::text as company_name,
+          COALESCE(bi.job_title, card.professional_title, ms.executive_role, 'Thành viên')::text as job_title,
+          COALESCE(bi.company_name, card.company_name, ms.department, 'Khối Doanh Nghiệp B2B')::text as company_name,
           bi.headline::text as headline
         FROM public.memberships ms
         LEFT JOIN public.vione_users u ON u.id = ms.user_id

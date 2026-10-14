@@ -89,6 +89,9 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   const [taskFilter, setTaskFilter] = useState<TaskFilterType>(route?.params?.filter || "all");
   const [acceptingTaskId, setAcceptingTaskId] = useState<string | null>(null);
 
+  // Members state (authentic database members)
+  const [members, setMembers] = useState<any[]>([]);
+
   // Department-based RBAC states
   const [departments, setDepartments] = useState<any[]>([]);
   const [myDeptPermissions, setMyDeptPermissions] = useState<any | null>(null);
@@ -275,11 +278,57 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     }
   };
 
+  const loadMembers = async (commId: string) => {
+    try {
+      // 1. Fetch real employees with full phone, email, and department
+      const empRes = await communityApi.getCommunityEmployees(commId);
+      const empList = (empRes as any)?.employees || (Array.isArray((empRes as any)?.data?.employees) ? (empRes as any).data.employees : []);
+      if (Array.isArray(empList) && empList.length > 0) {
+        setMembers(
+          empList.map((m: any) => ({
+            id: m.id || m.userId,
+            name: m.fullName || m.name || "Hội viên ViOne",
+            title: m.role || m.department || "Thành viên",
+            department: m.department || "Thành viên",
+            company: "Hệ sinh thái ViOne",
+            phone: m.phone || "",
+            email: m.email || "",
+            avatarUrl: m.avatarUrl || m.avatar || "",
+            role: m.role === "Admin" || m.role === "Ban Giám Đốc" ? "admin" : "member",
+          }))
+        );
+        return;
+      }
+
+      // 2. Fallback to getCommunityMembers
+      const memRes = await communityApi.getCommunityMembers(commId);
+      const memList = (memRes as any)?.items || (Array.isArray(memRes) ? memRes : (memRes as any)?.data?.items || (memRes as any)?.data || []);
+      if (Array.isArray(memList) && memList.length > 0) {
+        setMembers(
+          memList.map((m: any) => ({
+            id: m.memberRef || m.id || m.userId,
+            name: m.displayName || m.name || "Hội viên ViOne",
+            title: m.jobTitle || m.role || "Thành viên",
+            department: m.companyName || "Thành viên",
+            company: m.companyName || "Hệ sinh thái ViOne",
+            phone: m.phone || "",
+            email: m.email || "",
+            avatarUrl: m.avatarUrl || "",
+            role: m.role || "member",
+          }))
+        );
+      }
+    } catch (e) {
+      console.warn("Failed to load community members:", e);
+    }
+  };
+
   useEffect(() => {
     if (selectedCommunityId) {
       loadTasks(selectedCommunityId);
       loadDepartments(selectedCommunityId);
       loadMyDeptPermissions(selectedCommunityId);
+      loadMembers(selectedCommunityId);
     }
   }, [selectedCommunityId]);
 
@@ -294,6 +343,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       await loadTasks(selectedCommunityId);
       await loadDepartments(selectedCommunityId);
       await loadMyDeptPermissions(selectedCommunityId);
+      await loadMembers(selectedCommunityId);
     }
     setRefreshing(false);
   };
@@ -570,6 +620,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             setSelectedMember(m);
             setMemberSheetVisible(true);
           }}
+          members={members}
           departments={departments}
           myDeptPermissions={myDeptPermissions}
           selectedDeptFilter={selectedDeptFilter}

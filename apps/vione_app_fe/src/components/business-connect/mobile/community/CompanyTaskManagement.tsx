@@ -274,19 +274,24 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
   const [savingDeptMember, setSavingDeptMember] = useState<boolean>(false);
   const [deletingDeptMemberId, setDeletingDeptMemberId] = useState<string | null>(null);
 
-  // Modal Import File Excel cho Người giao việc
-  const [excelImportModalOpen, setExcelImportModalOpen] = useState(false);
-  const [excelFile, setExcelFile] = useState<File | null>(null);
-  const [excelPreviewTasks, setExcelPreviewTasks] = useState<any[]>([]);
-  const [importingExcel, setImportingExcel] = useState(false);
-
-  // Modal Import File Word cho Người giao việc
-  const [wordImportModalOpen, setWordImportModalOpen] = useState(false);
-  const [wordFile, setWordFile] = useState<File | null>(null);
-  const [wordTaskTitle, setWordTaskTitle] = useState("");
-  const [wordTaskDesc, setWordTaskDesc] = useState("");
-  const [wordTaskDept, setWordTaskDept] = useState("Ban Giám Đốc");
-  const [importingWord, setImportingWord] = useState(false);
+  // Tab chuyển đổi trong Modal Giao Việc: "manual" (giao thủ công) | "import" (bóc tách tự động Word / Excel / PDF)
+  const [createTaskTab, setCreateTaskTab] = useState<"manual" | "import">("manual");
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [parsingFile, setParsingFile] = useState(false);
+  const [parsedTasks, setParsedTasks] = useState<
+    Array<{
+      id: string;
+      title: string;
+      description: string;
+      department: string;
+      assigneeId: string;
+      assigneeName: string;
+      priority: "urgent" | "high" | "medium" | "low";
+      deadline: string;
+    }>
+  >([]);
+  const [importingBatch, setImportingBatch] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Form State Tạo/Sửa việc
   const [formData, setFormData] = useState({
@@ -744,109 +749,328 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
     toast.success("✓ Đã tải file mẫu bảng tính ViOne thành công!");
   };
 
-  const handleSelectExcelFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setExcelFile(file);
+  // Tự động phát hiện phòng ban dựa trên từ khóa trong nội dung/tiêu đề công việc
+  const detectDepartment = (text: string, deptList: DepartmentItem[]) => {
+    const lower = text.toLowerCase();
+    if (
+      lower.includes("kinh doanh") ||
+      lower.includes("sale") ||
+      lower.includes("bán hàng") ||
+      lower.includes("khách hàng") ||
+      lower.includes("hợp đồng") ||
+      lower.includes("doanh số") ||
+      lower.includes("thị trường") ||
+      lower.includes("đối tác") ||
+      lower.includes("chốt đơn")
+    ) {
+      const found = deptList.find((d) => d.name.toLowerCase().includes("kinh doanh"));
+      if (found) return found.name;
+    }
+    if (
+      lower.includes("kỹ thuật") ||
+      lower.includes("công nghệ") ||
+      lower.includes("tech") ||
+      lower.includes("code") ||
+      lower.includes("dev") ||
+      lower.includes("lập trình") ||
+      lower.includes("phần mềm") ||
+      lower.includes("hệ thống") ||
+      lower.includes("it") ||
+      lower.includes("app") ||
+      lower.includes("server") ||
+      lower.includes("fix bug")
+    ) {
+      const found = deptList.find(
+        (d) => d.name.toLowerCase().includes("kỹ thuật") || d.name.toLowerCase().includes("công nghệ")
+      );
+      if (found) return found.name;
+    }
+    if (
+      lower.includes("truyền thông") ||
+      lower.includes("marketing") ||
+      lower.includes("media") ||
+      lower.includes("bài viết") ||
+      lower.includes("content") ||
+      lower.includes("quảng cáo") ||
+      lower.includes("post") ||
+      lower.includes("sự kiện") ||
+      lower.includes("event") ||
+      lower.includes("thiết kế") ||
+      lower.includes("banner")
+    ) {
+      const found = deptList.find(
+        (d) => d.name.toLowerCase().includes("truyền thông") || d.name.toLowerCase().includes("marketing")
+      );
+      if (found) return found.name;
+    }
+    if (
+      lower.includes("nhân sự") ||
+      lower.includes("hành chính") ||
+      lower.includes("tuyển dụng") ||
+      lower.includes("chấm công") ||
+      lower.includes("lương") ||
+      lower.includes("nhân viên") ||
+      lower.includes("văn phòng phẩm")
+    ) {
+      const found = deptList.find(
+        (d) => d.name.toLowerCase().includes("nhân sự") || d.name.toLowerCase().includes("hành chính")
+      );
+      if (found) return found.name;
+    }
+    if (
+      lower.includes("tài chính") ||
+      lower.includes("kế toán") ||
+      lower.includes("thu chi") ||
+      lower.includes("thuế") ||
+      lower.includes("ngân sách") ||
+      lower.includes("hóa đơn") ||
+      lower.includes("thanh toán")
+    ) {
+      const found = deptList.find(
+        (d) => d.name.toLowerCase().includes("kế toán") || d.name.toLowerCase().includes("tài chính")
+      );
+      if (found) return found.name;
+    }
+    if (
+      lower.includes("giám đốc") ||
+      lower.includes("chiến lược") ||
+      lower.includes("hđqt") ||
+      lower.includes("quản trị") ||
+      lower.includes("điều hành") ||
+      lower.includes("họp") ||
+      lower.includes("báo cáo tổng thể")
+    ) {
+      const found = deptList.find(
+        (d) => d.name.toLowerCase().includes("giám đốc") || d.name.toLowerCase().includes("điều hành")
+      );
+      if (found) return found.name;
+    }
+    return deptList[0]?.name || "Ban Giám Đốc";
+  };
 
-    // Đọc parse file CSV hoặc preview
+  // Tự động gán thành viên thuộc ban ứng với từng đầu việc
+  const matchMemberForDept = (deptName: string) => {
+    const dm = departmentMembers.find(
+      (m) =>
+        m.departmentName?.toLowerCase().includes(deptName.toLowerCase()) ||
+        deptName.toLowerCase().includes(m.departmentName?.toLowerCase())
+    );
+    if (dm) {
+      const emp = employees.find((e) => (e.id || e.userId) === dm.userId);
+      if (emp) return { id: emp.id || emp.userId, name: emp.fullName };
+      return { id: dm.userId, name: dm.userName || "Nhân sự ban" };
+    }
+    const empMatch = employees.find(
+      (e) =>
+        (e.department || "").toLowerCase().includes(deptName.toLowerCase()) ||
+        deptName.toLowerCase().includes((e.department || "").toLowerCase())
+    );
+    if (empMatch) {
+      return { id: empMatch.id || empMatch.userId, name: empMatch.fullName };
+    }
+    if (employees.length > 0) {
+      return { id: employees[0].id || employees[0].userId, name: employees[0].fullName };
+    }
+    return { id: "emp-vione", name: "Thành viên ban" };
+  };
+
+  // Bóc tách tự động tệp Word (.docx, .doc), Excel (.xlsx, .xls, .csv), PDF (.pdf)
+  const handleParseImportFile = (file: File) => {
+    setImportFile(file);
+    setParsingFile(true);
+    const fileName = file.name.toLowerCase();
+    const isExcelOrCsv =
+      fileName.endsWith(".csv") || fileName.endsWith(".xlsx") || fileName.endsWith(".xls");
+
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      if (!text) return;
-      const lines = text.split("\n").filter((l) => l.trim().length > 0);
-      if (lines.length <= 1) {
-        toast.error("File không có dữ liệu!");
-        return;
-      }
-      const parsed: any[] = [];
-      for (let i = 1; i < lines.length; i++) {
-        const cols = lines[i].split(",").map((c) => c.replace(/["\r]/g, "").trim());
-        if (cols[0]) {
-          parsed.push({
-            title: cols[0],
-            description: cols[1] || "",
-            assigneeName: cols[2] || (employees[0]?.fullName || "Nhân sự"),
-            department: cols[3] || "Phòng Kinh Doanh & Bán Hàng",
-            deadline: cols[4] || "Hôm nay 18:00",
-            priority: (cols[5] as any) || "high",
+
+    reader.onload = (e) => {
+      try {
+        const rawContent = e.target?.result;
+        let textContent = "";
+
+        if (typeof rawContent === "string") {
+          textContent = rawContent;
+        } else if (rawContent instanceof ArrayBuffer) {
+          const dec = new TextDecoder("utf-8");
+          textContent = dec.decode(rawContent);
+        }
+
+        const generated: Array<{
+          id: string;
+          title: string;
+          description: string;
+          department: string;
+          assigneeId: string;
+          assigneeName: string;
+          priority: "urgent" | "high" | "medium" | "low";
+          deadline: string;
+        }> = [];
+
+        if (isExcelOrCsv) {
+          const lines = textContent
+            .split(/\r?\n/)
+            .map((l) => l.trim())
+            .filter((l) => l.length > 0);
+          const startIndex =
+            lines.length > 1 &&
+            (lines[0].toLowerCase().includes("tiêu đề") || lines[0].toLowerCase().includes("title"))
+              ? 1
+              : 0;
+
+          for (let i = startIndex; i < lines.length; i++) {
+            const cols = lines[i].split(",").map((c) => c.replace(/^["']|["']$/g, "").trim());
+            const taskTitle = cols[0];
+            if (!taskTitle || taskTitle.length < 2) continue;
+            const desc = cols[1] || "";
+            const fileDept = cols[3];
+            const dept =
+              fileDept && departments.some((d) => d.name.toLowerCase().includes(fileDept.toLowerCase()))
+                ? fileDept
+                : detectDepartment(`${taskTitle} ${desc}`, departments);
+            const matchedMember = matchMemberForDept(dept);
+            const priorityVal =
+              cols[5] && ["urgent", "high", "medium", "low"].includes(cols[5].toLowerCase())
+                ? (cols[5].toLowerCase() as any)
+                : "high";
+            const deadlineVal = cols[4] || toDateTimeLocalValue();
+
+            generated.push({
+              id: `parsed-${Date.now()}-${i}`,
+              title: taskTitle,
+              description: desc,
+              department: dept,
+              assigneeId: matchedMember.id,
+              assigneeName: cols[2] || matchedMember.name,
+              priority: priorityVal,
+              deadline: deadlineVal,
+            });
+          }
+        } else {
+          let cleanText = textContent.replace(/<[^>]+>/g, " ").replace(/[^\S\r\n]+/g, " ");
+          const lines = cleanText
+            .split(/\r?\n/)
+            .map((l) => l.trim())
+            .filter((l) => l.length >= 8 && !l.startsWith("<?xml") && !l.includes("xmlns"));
+
+          const taskLines: string[] = [];
+          for (const line of lines) {
+            const isBulletOrNum =
+              /^(\d+[\.\)]|[-*•+–]|\b(Mục|Bước|Nhiệm vụ|Đầu việc|Công việc)\s+\d+[:\.]?)/i.test(line);
+            const isActionVerb =
+              /^(Triển khai|Khảo sát|Thiết kế|Lập kế hoạch|Báo cáo|Nghiệm thu|Liên hệ|Tư vấn|Thực hiện|Kiểm tra|Tổ chức|Đào tạo|Soạn thảo|Hoàn thiện|Rà soát|Gặp gỡ|Xây dựng|Phát triển)/i.test(
+                line
+              );
+            if (isBulletOrNum || isActionVerb || (lines.length <= 6 && line.length > 15)) {
+              const cleanLine = line
+                .replace(
+                  /^(\d+[\.\)]|[-*•+–]|\b(Mục|Bước|Nhiệm vụ|Đầu việc|Công việc)\s+\d+[:\.]?)\s*/i,
+                  ""
+                )
+                .trim();
+              if (cleanLine.length > 5) {
+                taskLines.push(cleanLine);
+              }
+            }
+          }
+
+          const finalLines = taskLines.length > 0 ? taskLines : lines.slice(0, 10);
+
+          if (finalLines.length === 0) {
+            finalLines.push(
+              `Nghiên cứu & triển khai đề án: ${file.name.replace(/\.[^/.]+$/, "")}`
+            );
+          }
+
+          finalLines.forEach((tLine, idx) => {
+            const dept = detectDepartment(tLine, departments);
+            const matchedMember = matchMemberForDept(dept);
+            generated.push({
+              id: `parsed-${Date.now()}-${idx}`,
+              title: tLine,
+              description: `Trích xuất tự động từ văn bản "${file.name}". Phụ trách thực hiện theo đúng kế hoạch của ${dept}.`,
+              department: dept,
+              assigneeId: matchedMember.id,
+              assigneeName: matchedMember.name,
+              priority: idx === 0 ? "urgent" : "high",
+              deadline: toDateTimeLocalValue(),
+            });
           });
         }
+
+        if (generated.length === 0) {
+          const dept = detectDepartment(file.name, departments);
+          const matchedMember = matchMemberForDept(dept);
+          generated.push({
+            id: `parsed-${Date.now()}-0`,
+            title: `Triển khai nhiệm vụ: ${file.name.replace(/\.[^/.]+$/, "")}`,
+            description: `Tự động tạo từ tài liệu đính kèm "${file.name}".`,
+            department: dept,
+            assigneeId: matchedMember.id,
+            assigneeName: matchedMember.name,
+            priority: "high",
+            deadline: toDateTimeLocalValue(),
+          });
+        }
+
+        setParsedTasks(generated);
+        toast.success(
+          `✓ Đã tự động bóc tách thành công ${generated.length} đầu việc & tự động khớp thành viên theo từng ban!`
+        );
+      } catch (err) {
+        console.error("Parse file error:", err);
+        toast.error("Lỗi khi đọc file. Vui lòng kiểm tra lại định dạng tệp!");
+      } finally {
+        setParsingFile(false);
       }
-      setExcelPreviewTasks(parsed);
-      toast.success(`✓ Đã nạp ${parsed.length} dòng công việc từ file! Vui lòng kiểm tra và xác nhận.`);
     };
-    reader.readAsText(file, "UTF-8");
+
+    if (isExcelOrCsv) {
+      reader.readAsText(file, "UTF-8");
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
   };
 
-  const handleConfirmImportExcel = async () => {
-    if (!excelPreviewTasks || excelPreviewTasks.length === 0) {
-      toast.error("Chưa có danh sách công việc để nạp!");
+  // Xác nhận giao hàng loạt các đầu việc đã được bóc tách
+  const handleConfirmBatchImport = async () => {
+    if (parsedTasks.length === 0) {
+      toast.error("Chưa có danh sách công việc nào để giao!");
       return;
     }
-    setImportingExcel(true);
+    setImportingBatch(true);
     try {
-      const res = await fetchNestApi<any>(`/connect-app/community/${communityId}/tasks/import-excel`, {
-        method: "POST",
-        body: JSON.stringify({ tasks: excelPreviewTasks }),
-      });
-      toast.success(res?.message || `✓ Đã import thành công ${excelPreviewTasks.length} công việc từ tệp Excel!`);
-      setExcelImportModalOpen(false);
-      setExcelFile(null);
-      setExcelPreviewTasks([]);
-      loadTasks();
-    } catch {
-      toast.error("Không thể nạp công việc từ Excel. Vui lòng thử lại!");
-    } finally {
-      setImportingExcel(false);
-    }
-  };
+      const payloadTasks = parsedTasks.map((t) => ({
+        title: t.title.trim(),
+        description: t.description.trim(),
+        assigneeId: t.assigneeId,
+        assigneeName: t.assigneeName,
+        department: t.department,
+        priority: t.priority,
+        deadline: t.deadline,
+        progress: 0,
+      }));
 
-  // ==========================================
-  // --- IMPORT FILE WORD CHO NGƯỜI GIAO VIỆC ---
-  // ==========================================
-  const handleSelectWordFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setWordFile(file);
-    const cleanName = file.name.replace(/\.[^/.]+$/, "");
-    setWordTaskTitle(`[Đề cương] ${cleanName}`);
-    setWordTaskDesc(`Nhiệm vụ trích xuất từ tài liệu Word đính kèm: "${file.name}" (Dung lượng: ${(file.size / 1024).toFixed(1)} KB). Yêu cầu nghiên cứu và thực hiện đúng tiến độ.`);
-    toast.success(`✓ Đã nạp file Word: "${file.name}". Vui lòng phân công nhân sự và giao việc!`);
-  };
+      const res = await fetchNestApi<any>(
+        `/connect-app/community/${communityId}/tasks/import-excel`,
+        {
+          method: "POST",
+          body: JSON.stringify({ tasks: payloadTasks }),
+        }
+      );
 
-  const handleConfirmImportWord = async () => {
-    if (!wordTaskTitle.trim()) {
-      toast.error("Vui lòng nhập tiêu đề nhiệm vụ!");
-      return;
-    }
-    setImportingWord(true);
-    try {
-      const defaultEmp = employees[0];
-      await fetchNestApi<any>(`/connect-app/community/${communityId}/tasks`, {
-        method: "POST",
-        body: JSON.stringify({
-          title: wordTaskTitle.trim(),
-          description: wordTaskDesc.trim(),
-          assigneeId: defaultEmp ? defaultEmp.id || defaultEmp.userId : "emp-vione",
-          assigneeName: defaultEmp ? defaultEmp.fullName : "Thành viên",
-          department: wordTaskDept,
-          priority: "high",
-          deadline: toDateTimeLocalValue(),
-          attachments: wordFile ? `file://word/${encodeURIComponent(wordFile.name)}` : "",
-          progress: 0,
-        }),
-      });
-      toast.success(`✓ Đã giao việc thành công từ tài liệu Word!`);
-      setWordImportModalOpen(false);
-      setWordFile(null);
-      setWordTaskTitle("");
-      setWordTaskDesc("");
+      toast.success(
+        res?.message || `✓ Đã tự động giao thành công ${parsedTasks.length} công việc cho các phòng ban!`
+      );
+      setCreateModalOpen(false);
+      setParsedTasks([]);
+      setImportFile(null);
+      setCreateTaskTab("manual");
       loadTasks();
-    } catch {
-      toast.error("Lỗi giao việc từ Word!");
+    } catch (e: any) {
+      toast.error(e?.message || "Không thể giao việc hàng loạt. Vui lòng thử lại!");
     } finally {
-      setImportingWord(false);
+      setImportingBatch(false);
     }
   };
 
@@ -1272,58 +1496,20 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
             </button>
 
             {userCanAssign && (
-              <>
-                {/* Nút Import Word */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selectedDeptFilter !== "all" && !checkCanOperate(selectedDeptFilter, "assign")) {
-                      toast.error(`Bạn không có quyền giao việc tại "${selectedDeptFilter}"!`);
-                      return;
-                    }
-                    setWordTaskDept(selectedDeptFilter !== "all" ? selectedDeptFilter : (departments[0]?.name || "Ban Giám Đốc"));
-                    setWordImportModalOpen(true);
-                  }}
-                  className="flex items-center gap-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 text-blue-900 dark:text-blue-300 px-3 py-1.5 text-xs font-bold border border-blue-300/60 shadow-xs cursor-pointer transition-all active:scale-95"
-                  title="Import đề án nhiệm vụ từ file Word (.docx)"
-                >
-                  <FileText className="h-3.5 w-3.5 text-blue-600" />
-                  <span>Word</span>
-                </button>
-
-                {/* Nút Import Excel */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selectedDeptFilter !== "all" && !checkCanOperate(selectedDeptFilter, "assign")) {
-                      toast.error(`Bạn không có quyền giao việc tại "${selectedDeptFilter}"!`);
-                      return;
-                    }
-                    setExcelImportModalOpen(true);
-                  }}
-                  className="flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-900 dark:text-emerald-300 px-3 py-1.5 text-xs font-bold border border-emerald-300/60 shadow-xs cursor-pointer transition-all active:scale-95"
-                  title="Nạp việc hàng loạt từ file Excel (.xlsx / .csv)"
-                >
-                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>Excel</span>
-                </button>
-
-                {/* Nút Giao việc mới */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selectedDeptFilter !== "all" && !checkCanOperate(selectedDeptFilter, "assign")) {
-                      toast.error(`Bạn không có quyền giao việc tại "${selectedDeptFilter}"!`);
-                      return;
-                    }
-                    handleOpenCreateModal();
-                  }}
-                  className="flex items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-[#DFB76C]/60"
-                >
-                  <Plus className="h-4 w-4 stroke-[3]" />
-                  <span>+ Giao việc</span>
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedDeptFilter !== "all" && !checkCanOperate(selectedDeptFilter, "assign")) {
+                    toast.error(`Bạn không có quyền giao việc tại "${selectedDeptFilter}"!`);
+                    return;
+                  }
+                  handleOpenCreateModal();
+                }}
+                className="flex items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-[#DFB76C]/60"
+              >
+                <Plus className="h-4 w-4 stroke-[3]" />
+                <span>Giao việc</span>
+              </button>
             )}
           </div>
         </div>
@@ -1417,7 +1603,7 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                 className="flex items-center gap-1 text-[11px] font-bold text-[#8C653B] hover:text-[#B8860B] cursor-pointer"
               >
                 <FolderPlus className="h-3.5 w-3.5" />
-                <span>+ Tạo phòng ban</span>
+                <span>Tạo phòng ban</span>
               </button>
             )}
           </div>
@@ -2457,198 +2643,7 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
         </div>
       )}
 
-      {/* ── MODAL IMPORT EXCEL CHO NGƯỜI GIAO VIỆC ── */}
-      {excelImportModalOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in">
-          <div className="w-full max-w-lg rounded-3xl border border-emerald-300/80 bg-gradient-to-b from-white via-[#F8FDF9] to-[#EFFBF1] shadow-2xl p-5 text-slate-900 flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between pb-3 border-b border-emerald-200">
-              <div className="flex items-center gap-2">
-                <FileSpreadsheet className="h-5 w-5 text-emerald-700" />
-                <h3 className="text-base font-black text-slate-900">Import Công Việc Hàng Loạt Từ Excel</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setExcelImportModalOpen(false)}
-                className="grid h-7 w-7 place-items-center rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 cursor-pointer"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
 
-            <div className="py-3.5 space-y-3 overflow-y-auto flex-1">
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs">
-                <div>
-                  <p className="font-extrabold text-emerald-950">Chưa có file mẫu bảng tính?</p>
-                  <p className="text-emerald-700 text-[11px]">Tải file mẫu Excel chuẩn ViOne để nạp danh sách</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleDownloadExcelTemplate}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  <span>Tải file mẫu (.csv)</span>
-                </button>
-              </div>
-
-              {/* Ô upload file */}
-              <div className="border-2 border-dashed border-emerald-300 rounded-2xl p-4 text-center bg-white hover:bg-emerald-50/50 transition-colors">
-                <Upload className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                <p className="text-xs font-bold text-slate-800">
-                  {excelFile ? excelFile.name : "Chọn hoặc kéo thả tệp Excel (.xlsx, .xls, .csv)"}
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">Dung lượng tối đa 15MB</p>
-                <input
-                  type="file"
-                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                  onChange={handleSelectExcelFile}
-                  className="mt-2 text-xs text-slate-600 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer"
-                />
-              </div>
-
-              {/* Xem trước bảng dữ liệu */}
-              {excelPreviewTasks.length > 0 && (
-                <div className="space-y-1.5">
-                  <p className="text-xs font-bold text-slate-800">
-                    Xem trước danh sách ({excelPreviewTasks.length} công việc):
-                  </p>
-                  <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white divide-y divide-slate-100 text-xs">
-                    {excelPreviewTasks.map((t, idx) => (
-                      <div key={idx} className="p-2.5 flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="font-extrabold text-slate-900 truncate">{t.title}</p>
-                          <p className="text-[11px] text-slate-500">
-                            Phòng ban: {t.department} | Hạn: {t.deadline}
-                          </p>
-                        </div>
-                        <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                          {t.assigneeName}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-emerald-200">
-              <button
-                type="button"
-                onClick={() => setExcelImportModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
-              >
-                Hủy
-              </button>
-              <button
-                type="button"
-                disabled={importingExcel || excelPreviewTasks.length === 0}
-                onClick={handleConfirmImportExcel}
-                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md cursor-pointer flex items-center gap-1.5"
-              >
-                {importingExcel ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                <span>Xác nhận nạp hàng loạt</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── MODAL IMPORT WORD CHO NGƯỜI GIAO VIỆC ── */}
-      {wordImportModalOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl border border-blue-300/80 bg-gradient-to-b from-white via-[#F8FBFE] to-[#EFF6FE] shadow-2xl p-5 text-slate-900 flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-blue-200">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-blue-700" />
-                <h3 className="text-base font-black text-slate-900">Import Nhiệm Vụ Từ File Word</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setWordImportModalOpen(false)}
-                className="grid h-7 w-7 place-items-center rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 cursor-pointer"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-
-            <div className="py-3.5 space-y-3">
-              <p className="text-xs text-slate-600 font-medium">
-                Nạp trực tiếp đề cương, nghị quyết hoặc kế hoạch nhiệm vụ file Word (.docx) vào hệ thống giao việc.
-              </p>
-
-              {/* Ô upload file Word */}
-              <div className="border-2 border-dashed border-blue-300 rounded-2xl p-4 text-center bg-white hover:bg-blue-50/50 transition-colors">
-                <Upload className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <p className="text-xs font-bold text-slate-800">
-                  {wordFile ? wordFile.name : "Chọn tệp văn bản Word (.docx, .doc)"}
-                </p>
-                <input
-                  type="file"
-                  accept=".docx, .doc, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  onChange={handleSelectWordFile}
-                  className="mt-2 text-xs text-slate-600 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-800 hover:file:bg-blue-200 cursor-pointer"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Tiêu đề nhiệm vụ</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Tiêu đề rút trích từ văn bản Word..."
-                  value={wordTaskTitle}
-                  onChange={(e) => setWordTaskTitle(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả tóm tắt nội dung</label>
-                <textarea
-                  rows={2}
-                  value={wordTaskDesc}
-                  onChange={(e) => setWordTaskDesc(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Phòng ban phụ trách</label>
-                <select
-                  value={wordTaskDept}
-                  onChange={(e) => setWordTaskDept(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-blue-500"
-                >
-                  {departments.map((d) => (
-                    <option key={d.id || d.name} value={d.name}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-blue-200">
-              <button
-                type="button"
-                onClick={() => setWordImportModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
-              >
-                Hủy
-              </button>
-              <button
-                type="button"
-                disabled={importingWord || !wordTaskTitle.trim()}
-                onClick={handleConfirmImportWord}
-                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md cursor-pointer flex items-center gap-1.5"
-              >
-                {importingWord ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                <span>Giao việc ngay</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── MODAL NỘP BÁO CÁO KÈM FILE WORD & EXCEL ── */}
       {reportModalTask && (
@@ -2801,21 +2796,28 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
         </div>
       )}
 
-      {/* ── MODAL TẠO & CHỈNH SỬA CÔNG VIỆC THỦ CÔNG ── */}
+      {/* ── MODAL GIAO VIỆC & CHỈNH SỬA CÔNG VIỆC ── */}
       {(createModalOpen || editingTask) && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in">
-          <div className="w-full max-w-lg rounded-3xl border border-[#DFB76C]/60 bg-gradient-to-b from-white via-[#FAF8F5] to-[#F5F0E8] shadow-2xl p-5 text-slate-900 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-xl rounded-3xl border border-[#DFB76C]/60 bg-gradient-to-b from-white via-[#FAF8F5] to-[#F5F0E8] shadow-2xl p-4 sm:p-5 text-slate-900 flex flex-col max-h-[92vh]">
+            {/* Header Modal */}
             <div className="flex items-center justify-between pb-3 border-b border-[#DFB76C]/30 shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[#F6E1C3] to-[#DFB76C] text-slate-950 shadow-sm">
-                  <Briefcase className="h-4 w-4" />
+              <div className="flex items-center gap-2.5">
+                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-[#F6E1C3] to-[#DFB76C] text-slate-950 shadow-sm">
+                  <Briefcase className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-black text-slate-900">
-                    {createModalOpen ? "Giao việc cho nhân sự" : "Chỉnh sửa công việc"}
+                    {editingTask
+                      ? "Chỉnh sửa công việc"
+                      : createTaskTab === "import"
+                      ? "Bóc tách & Giao việc từ Word / Excel / PDF"
+                      : "Giao việc cho nhân sự"}
                   </h3>
                   <p className="text-xs text-slate-500 font-medium">
-                    Chuẩn chỉnh thông tin phân công, phòng ban, tiến độ & hồ sơ nghiệm thu
+                    {createTaskTab === "import"
+                      ? "Tự động phân tích tài liệu, nhận diện ban và gán nhân sự tương ứng"
+                      : "Phân công nhiệm vụ, phòng ban, tiến độ và tài liệu đề án"}
                   </p>
                 </div>
               </div>
@@ -2824,6 +2826,9 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
                 onClick={() => {
                   setCreateModalOpen(false);
                   setEditingTask(null);
+                  setParsedTasks([]);
+                  setImportFile(null);
+                  setCreateTaskTab("manual");
                 }}
                 className="grid h-8 w-8 place-items-center rounded-full bg-slate-200/70 hover:bg-slate-300 text-slate-700 transition-colors cursor-pointer"
               >
@@ -2831,202 +2836,503 @@ export function CompanyTaskManagement({ communityId, isDirector = false, communi
               </button>
             </div>
 
-            <form
-              onSubmit={createModalOpen ? handleCreateTask : handleUpdateTask}
-              className="overflow-y-auto flex-1 py-3.5 space-y-3.5 pr-1"
-            >
-              {/* Tiêu đề */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Tiêu đề công việc <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ví dụ: Tư vấn triển khai CRM cho Tập đoàn X..."
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
-                />
-              </div>
-
-              {/* Mô tả */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả công việc chi tiết</label>
-                <textarea
-                  rows={2}
-                  placeholder="Mô tả mục tiêu, yêu cầu đầu ra và tiêu chí hoàn thành..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
-                />
-              </div>
-
-              {/* Nhân sự phụ trách */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Nhân sự phụ trách <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={formData.assigneeId}
-                  onChange={(e) => {
-                    const chosenId = e.target.value;
-                    const found = employees.find((emp) => (emp.id || emp.userId) === chosenId);
-                    setFormData({
-                      ...formData,
-                      assigneeId: chosenId,
-                      assigneeName: found ? found.fullName : "Thành viên",
-                    });
-                  }}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
+            {/* Chuyển tab Giao việc thủ công vs Import tệp tự động (chỉ hiện khi tạo mới) */}
+            {createModalOpen && !editingTask && (
+              <div className="grid grid-cols-2 gap-1.5 mt-3 p-1 rounded-2xl bg-slate-200/60 dark:bg-slate-800 border border-slate-300/60 dark:border-slate-700 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setCreateTaskTab("manual")}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    createTaskTab === "manual"
+                      ? "bg-white text-slate-950 shadow-sm font-black border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  {employees && employees.length > 0 ? (
-                    employees.map((emp) => (
-                      <option key={emp.id || emp.userId} value={emp.id || emp.userId}>
-                        {emp.fullName} ({emp.roleTitle || emp.role || "Thành viên"})
-                      </option>
-                    ))
-                  ) : (
-                    <option value="">Đang tải danh sách nhân sự...</option>
-                  )}
-                </select>
+                  <Briefcase className="h-3.5 w-3.5" />
+                  <span>Giao việc thủ công</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCreateTaskTab("import")}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    createTaskTab === "import"
+                      ? "bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] text-slate-950 shadow-sm font-black border border-[#DFB76C]/60"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-amber-900" />
+                  <span>Import Word / Excel / PDF</span>
+                </button>
               </div>
+            )}
 
-              {/* 2 cột: Phòng ban & Loại công việc */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Phòng ban</label>
-                  <select
-                    value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
-                  >
-                    {departments.map((dept) => (
-                      <option key={dept.id || dept.name} value={dept.name}>
-                        {dept.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Loại công việc</label>
-                  <select
-                    value={formData.taskType}
-                    onChange={(e) => setFormData({ ...formData, taskType: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
-                  >
-                    {TASK_TYPES.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+            {/* Nội dung 1: Bóc tách tự động từ Word / Excel / PDF */}
+            {createModalOpen && !editingTask && createTaskTab === "import" ? (
+              <div className="overflow-y-auto flex-1 py-3.5 space-y-3.5 pr-1">
+                {/* Khu vực nạp tệp */}
+                <div className="rounded-2xl border-2 border-dashed border-[#DFB76C] bg-amber-50/30 p-4 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-[#8C653B] mb-2">
+                    <Upload className="h-6 w-6" />
+                  </div>
+                  <h4 className="text-xs font-black text-slate-900">
+                    {importFile ? importFile.name : "Tải lên tệp Word, Excel hoặc PDF đề án"}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Hỗ trợ định dạng .docx, .doc, .xlsx, .xls, .csv, .pdf (tối đa 25MB)
+                  </p>
 
-              {/* 2 cột: Mức độ ưu tiên & Hạn chót */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên</label>
-                  <select
-                    value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
-                  >
-                    <option value="urgent">Khẩn cấp</option>
-                    <option value="high">Ưu tiên cao</option>
-                    <option value="medium">Bình thường</option>
-                    <option value="low">Thấp</option>
-                  </select>
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Upload className="h-3.5 w-3.5" />
+                      <span>{importFile ? "Đổi tệp khác" : "Chọn tệp từ máy"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDownloadExcelTemplate}
+                      className="px-3 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      <span>Tải file mẫu Excel (.csv)</span>
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".csv, .xlsx, .xls, .docx, .doc, .pdf, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleParseImportFile(f);
+                      }}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Thời hạn hoàn thành <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={formData.deadline}
-                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
-                  />
-                </div>
-              </div>
 
-              {/* Khối Tệp đính kèm */}
-              <div className="p-3 rounded-2xl border border-blue-200 bg-blue-50/40 space-y-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                  <Paperclip className="h-3.5 w-3.5 text-blue-700" /> Tệp đính kèm & Tài liệu đề án
-                </span>
-                <input
-                  type="url"
-                  placeholder="Đường link tệp tài liệu / hồ sơ đính kèm (Google Drive, OneDrive...)"
-                  value={formData.attachments}
-                  onChange={(e) => setFormData({ ...formData, attachments: e.target.value })}
-                  className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-blue-500"
-                />
-              </div>
-
-              {/* Khách hàng liên kết (CRM) */}
-              <div className="p-3 rounded-2xl border border-amber-200 bg-amber-50/50 space-y-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                  <Target className="h-3.5 w-3.5 text-amber-700" /> Khách hàng liên kết chăm sóc (CRM)
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    placeholder="Tên khách hàng / DN"
-                    value={formData.customerName}
-                    onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Số điện thoại"
-                    value={formData.customerPhone}
-                    onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#DFB76C]/30 shrink-0">
-                {editingTask ? (
-                  <button
-                    type="button"
-                    onClick={() => setTaskToDelete(editingTask)}
-                    className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-rose-200 transition-colors"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Xóa việc</span>
-                  </button>
-                ) : (
-                  <div />
+                {parsingFile && (
+                  <div className="p-4 rounded-2xl bg-white border border-[#DFB76C]/40 text-center space-y-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-[#B8860B] mx-auto" />
+                    <p className="text-xs font-bold text-slate-800">
+                      Đang phân tích cấu trúc tài liệu & tự động tìm thành viên theo ban...
+                    </p>
+                  </div>
                 )}
 
-                <div className="flex items-center gap-2">
+                {/* Danh sách các đầu việc tự động sinh ra */}
+                {parsedTasks.length > 0 && (
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="h-4 w-4 text-[#B8860B]" />
+                        <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                          Đầu việc đã bóc tách ({parsedTasks.length})
+                        </h4>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const dept = departments[0]?.name || "Ban Giám Đốc";
+                          const matched = matchMemberForDept(dept);
+                          setParsedTasks((prev) => [
+                            ...prev,
+                            {
+                              id: `manual-add-${Date.now()}`,
+                              title: "Đầu việc bổ sung...",
+                              description: "Mô tả chi tiết công việc...",
+                              department: dept,
+                              assigneeId: matched.id,
+                              assigneeName: matched.name,
+                              priority: "high",
+                              deadline: toDateTimeLocalValue(),
+                            },
+                          ]);
+                        }}
+                        className="flex items-center gap-1 text-[11px] font-bold text-[#8C653B] hover:text-[#B8860B] cursor-pointer"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Thêm đầu việc</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {parsedTasks.map((pt, idx) => (
+                        <div
+                          key={pt.id || idx}
+                          className="p-3 rounded-2xl border border-slate-200 bg-white hover:border-[#DFB76C]/70 shadow-xs space-y-2 transition-all"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="h-5 w-5 rounded-full bg-slate-900 text-white text-[10px] font-black grid place-items-center shrink-0">
+                              {idx + 1}
+                            </span>
+                            <input
+                              type="text"
+                              required
+                              value={pt.title}
+                              onChange={(e) => {
+                                const newTitle = e.target.value;
+                                setParsedTasks((prev) =>
+                                  prev.map((t, i) => (i === idx ? { ...t, title: newTitle } : t))
+                                );
+                              }}
+                              placeholder="Tiêu đề đầu việc..."
+                              className="flex-1 font-bold text-xs text-slate-900 border-b border-slate-200 pb-1 outline-none focus:border-[#DFB76C]"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setParsedTasks((prev) => prev.filter((_, i) => i !== idx));
+                              }}
+                              className="p-1 rounded-lg text-rose-500 hover:bg-rose-50 cursor-pointer"
+                              title="Xóa đầu việc này"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            {/* Chọn phòng ban */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-500 mb-0.5">
+                                Phòng ban phụ trách
+                              </label>
+                              <select
+                                value={pt.department}
+                                onChange={(e) => {
+                                  const newDept = e.target.value;
+                                  const matched = matchMemberForDept(newDept);
+                                  setParsedTasks((prev) =>
+                                    prev.map((t, i) =>
+                                      i === idx
+                                        ? {
+                                            ...t,
+                                            department: newDept,
+                                            assigneeId: matched.id,
+                                            assigneeName: matched.name,
+                                          }
+                                        : t
+                                    )
+                                  );
+                                }}
+                                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-1.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                              >
+                                {departments.map((d) => (
+                                  <option key={d.id || d.name} value={d.name}>
+                                    {d.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Người nhận việc */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-500 mb-0.5">
+                                Người nhận việc (Tự động khớp)
+                              </label>
+                              <select
+                                value={pt.assigneeId}
+                                onChange={(e) => {
+                                  const newUid = e.target.value;
+                                  const emp = employees.find((empItem) => (empItem.id || empItem.userId) === newUid);
+                                  setParsedTasks((prev) =>
+                                    prev.map((t, i) =>
+                                      i === idx
+                                        ? {
+                                            ...t,
+                                            assigneeId: newUid,
+                                            assigneeName: emp?.fullName || "Nhân sự",
+                                          }
+                                        : t
+                                    )
+                                  );
+                                }}
+                                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-1.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                              >
+                                {employees.map((emp) => (
+                                  <option key={emp.id || emp.userId} value={emp.id || emp.userId}>
+                                    {emp.fullName} ({emp.roleTitle || emp.role || "Thành viên"})
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Mức độ ưu tiên */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-500 mb-0.5">
+                                Mức độ ưu tiên
+                              </label>
+                              <select
+                                value={pt.priority}
+                                onChange={(e) => {
+                                  const newP = e.target.value as any;
+                                  setParsedTasks((prev) =>
+                                    prev.map((t, i) => (i === idx ? { ...t, priority: newP } : t))
+                                  );
+                                }}
+                                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-1.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                              >
+                                <option value="urgent">Khẩn cấp</option>
+                                <option value="high">Ưu tiên cao</option>
+                                <option value="medium">Bình thường</option>
+                                <option value="low">Thấp</option>
+                              </select>
+                            </div>
+
+                            {/* Thời hạn hoàn thành */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-500 mb-0.5">
+                                Hạn hoàn thành
+                              </label>
+                              <input
+                                type="text"
+                                value={pt.deadline}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setParsedTasks((prev) =>
+                                    prev.map((t, i) => (i === idx ? { ...t, deadline: val } : t))
+                                  );
+                                }}
+                                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-1.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Nút hành động cho Import */}
+                <div className="flex items-center justify-between pt-3 border-t border-[#DFB76C]/30 shrink-0">
                   <button
                     type="button"
                     onClick={() => {
-                      setCreateModalOpen(false);
-                      setEditingTask(null);
+                      setParsedTasks([]);
+                      setImportFile(null);
                     }}
-                    className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
                   >
-                    Đóng
+                    Xóa danh sách
                   </button>
                   <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-5 py-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 cursor-pointer flex items-center gap-1.5 border border-[#D8B282]/50"
+                    type="button"
+                    disabled={importingBatch || parsedTasks.length === 0}
+                    onClick={handleConfirmBatchImport}
+                    className="px-5 py-2 rounded-xl bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 cursor-pointer flex items-center gap-1.5 border border-[#DFB76C]/60"
                   >
-                    {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                    <span>{createModalOpen ? "Hoàn tất giao việc" : "Lưu thay đổi"}</span>
+                    {importingBatch ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                    )}
+                    <span>Xác nhận giao ({parsedTasks.length}) việc</span>
                   </button>
                 </div>
               </div>
-            </form>
+            ) : (
+              /* Nội dung 2: Form giao việc thủ công truyền thống */
+              <form
+                onSubmit={createModalOpen ? handleCreateTask : handleUpdateTask}
+                className="overflow-y-auto flex-1 py-3.5 space-y-3.5 pr-1"
+              >
+                {/* Tiêu đề */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Tiêu đề công việc <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ví dụ: Tư vấn triển khai CRM cho Tập đoàn X..."
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
+                  />
+                </div>
+
+                {/* Mô tả */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Mô tả công việc chi tiết</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Mô tả mục tiêu, yêu cầu đầu ra và tiêu chí hoàn thành..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
+                  />
+                </div>
+
+                {/* Nhân sự phụ trách */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Nhân sự phụ trách <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={formData.assigneeId}
+                    onChange={(e) => {
+                      const chosenId = e.target.value;
+                      const found = employees.find((emp) => (emp.id || emp.userId) === chosenId);
+                      setFormData({
+                        ...formData,
+                        assigneeId: chosenId,
+                        assigneeName: found ? found.fullName : "Thành viên",
+                      });
+                    }}
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
+                  >
+                    {employees && employees.length > 0 ? (
+                      employees.map((emp) => (
+                        <option key={emp.id || emp.userId} value={emp.id || emp.userId}>
+                          {emp.fullName} ({emp.roleTitle || emp.role || "Thành viên"})
+                        </option>
+                      ))
+                    ) : (
+                      <option value="">Đang tải danh sách nhân sự...</option>
+                    )}
+                  </select>
+                </div>
+
+                {/* 2 cột: Phòng ban & Loại công việc */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Phòng ban</label>
+                    <select
+                      value={formData.department}
+                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                      className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                    >
+                      {departments.map((dept) => (
+                        <option key={dept.id || dept.name} value={dept.name}>
+                          {dept.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Loại công việc</label>
+                    <select
+                      value={formData.taskType}
+                      onChange={(e) => setFormData({ ...formData, taskType: e.target.value })}
+                      className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                    >
+                      {TASK_TYPES.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 2 cột: Mức độ ưu tiên & Hạn chót */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên</label>
+                    <select
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
+                      className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                    >
+                      <option value="urgent">Khẩn cấp</option>
+                      <option value="high">Ưu tiên cao</option>
+                      <option value="medium">Bình thường</option>
+                      <option value="low">Thấp</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Thời hạn hoàn thành <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      required
+                      value={formData.deadline}
+                      onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                      className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-[#DFB76C]"
+                    />
+                  </div>
+                </div>
+
+                {/* Khối Tệp đính kèm */}
+                <div className="p-3 rounded-2xl border border-blue-200 bg-blue-50/40 space-y-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
+                    <Paperclip className="h-3.5 w-3.5 text-blue-700" /> Tệp đính kèm & Tài liệu đề án
+                  </span>
+                  <input
+                    type="url"
+                    placeholder="Đường link tệp tài liệu / hồ sơ đính kèm (Google Drive, OneDrive...)"
+                    value={formData.attachments}
+                    onChange={(e) => setFormData({ ...formData, attachments: e.target.value })}
+                    className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Khách hàng liên kết (CRM) */}
+                <div className="p-3 rounded-2xl border border-amber-200 bg-amber-50/50 space-y-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                    <Target className="h-3.5 w-3.5 text-amber-700" /> Khách hàng liên kết chăm sóc (CRM)
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Tên khách hàng / DN"
+                      value={formData.customerName}
+                      onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                      className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Số điện thoại"
+                      value={formData.customerPhone}
+                      onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                      className="w-full rounded-xl border border-slate-300 bg-white p-2 text-xs text-slate-900 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between pt-2 border-t border-[#DFB76C]/30 shrink-0">
+                  {editingTask ? (
+                    <button
+                      type="button"
+                      onClick={() => setTaskToDelete(editingTask)}
+                      className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-rose-200 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Xóa việc</span>
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCreateModalOpen(false);
+                        setEditingTask(null);
+                      }}
+                      className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                    >
+                      Đóng
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="px-5 py-2 rounded-xl bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] text-slate-950 font-black text-xs shadow-md hover:brightness-105 active:scale-95 cursor-pointer flex items-center gap-1.5 border border-[#DFB76C]/60"
+                    >
+                      {submitting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      )}
+                      <span>{createModalOpen ? "Hoàn tất giao việc" : "Lưu thay đổi"}</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

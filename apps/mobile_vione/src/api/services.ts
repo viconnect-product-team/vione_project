@@ -396,6 +396,9 @@ export const communityApi = {
   createCommunityTask: async (communityId: string, data: any) => {
     return api.post<{ ok: boolean; task: any; message: string }>(API_ENDPOINTS.COMMUNITIES.TASKS(communityId), data);
   },
+  importCommunityTasks: async (communityId: string, tasks: any[]) => {
+    return api.post<{ ok: boolean; count: number; tasks: any[] }>(`/communities/${communityId}/tasks/import-excel`, { tasks });
+  },
   updateCommunityTask: async (communityId: string, taskId: string, data: any) => {
     return api.patch<{ ok: boolean; task: any; message: string }>(API_ENDPOINTS.COMMUNITIES.TASK_BY_ID(communityId, taskId), data);
   },
