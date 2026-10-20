@@ -190,7 +190,7 @@ Hệ thống Web CRM ViOne bao gồm 25 modules hoàn chỉnh, liên kết chặ
   - 5 Tabs phân đoạn mượt mà:
     1. `Tất cả`: Tổng hợp mọi sự kiện, cuộc hẹn, cơ hội và công việc trong ngày.
     2. `Hôm nay (N)`: Lọc các đầu việc và lịch hẹn diễn ra đúng ngày hiện tại.
-    3. `Sắp tới (N)`: Lịch trình đối tác và sự kiện hiệp hội trong 7 ngày tới.
+    3. `Sắp tới (N)`: Lịch trình đối tác và sự kiện hiệp hội trong 7 ngày tới. **Quy tắc toàn vẹn dữ liệu**: Khi không có sự kiện sắp tới, hệ thống hiển thị Empty State sang trọng ("Chưa có sự kiện nào sắp diễn ra"), TUYỆT ĐỐI KHÔNG fallback lấy sự kiện cũ trong quá khứ.
     4. `Nhắc lịch (N)`: Các cảnh báo quan trọng, gia hạn hội viên, hẹn gặp khách VIP.
     5. `🎙️ Ghi âm (N)`: Danh sách ghi âm giọng nói khoảnh khắc kèm trình phát sóng âm inline wave player (`handleTogglePlayVoice`).
   - Modal Tùy chỉnh Briefing Hôm Nay (`TodayCustomizeSheet`): Đồng bộ 100% với PWA, cho phép lãnh đạo bật/tắt hiển thị từng nhóm thông tin, sắp xếp thứ tự và giới hạn số mục hiển thị.
@@ -215,10 +215,10 @@ Hệ thống Web CRM ViOne bao gồm 25 modules hoàn chỉnh, liên kết chặ
 ---
 
 ### 5.2. Tab 2: Mạng Lưới Giao Thương B2B & Hộp Thư Messenger
-- **Dải Khoảnh Khắc 24h (Stories Strip):**
-  - Cuộn ngang mượt mà, thẻ đầu tiên `Tạo tin 24h` với avatar thật của tài khoản và nút dấu cộng mạ vàng.
-  - Danh sách tin 24h của mạng lưới đối tác với viền vàng gradient, hiển thị Họ tên, Tiêu đề thương vụ.
-  - Chạm vào mở trình xem story toàn màn hình `StoryViewerModal` tự động chuyển cảnh sau 5 giây.
+- **Dải Khoảnh Khắc 24h (Stories Strip) & Mạng Khoảnh Khắc Doanh Nhân (Moments Feed):**
+  - **Phân định độc lập 100%**: Hệ thống phân tách rạch ròi giữa Tin 24h (Stories 24h) và Mạng Khoảnh khắc Doanh nhân (Moments Feed). Nút "Đăng story" mở luồng tạo story 24h. Nút "Chia sẻ khoảnh khắc" / `PostMomentModal` đăng bài viết vào Moments Feed với đầy đủ tương tác xã hội (Thả tim, Bình luận qua `MomentCommentModal`, Chia sẻ), tuyệt đối không bị đưa nhầm vào Story.
+  - **Dải Story 24h**: Cuộn ngang mượt mà, thẻ đầu tiên `Tạo tin 24h` với avatar thật của tài khoản và nút dấu cộng mạ vàng. Danh sách tin 24h của mạng lưới đối tác với viền vàng gradient, hiển thị Họ tên, Tiêu đề thương vụ. Chạm vào mở trình xem story toàn màn hình `StoryViewerModal` tự động chuyển cảnh sau 5 giây.
+  - **Bảo toàn ảnh chụp trực tiếp từ Camera**: Hàm chuẩn hóa URL hình ảnh (`resolveMediaUrl`) giữ nguyên các giao thức local/data/blob (`file://`, `content://`, `ph://`, `blob:`, `data:`). Không nối base URL máy chủ vào ảnh chụp camera, đảm bảo hiển thị đúng ảnh vừa chụp 100%, không bị lỗi 404 hay nhảy sang ảnh mẫu khác.
 - **Bộ Chuyển Đổi 5 Tabs Mạng Lưới Cân Đối:**
   1. `Mạng lưới`: Danh bạ đối tác B2B đã kết nối, phân loại: Tất cả, Đã kết nối, Chờ duyệt, Gợi ý. Ô tìm kiếm thời gian thực theo tên, công ty, ngành nghề.
   2. `Khách hàng (CRM B2B)`:
@@ -252,8 +252,8 @@ Hệ thống Web CRM ViOne bao gồm 25 modules hoàn chỉnh, liên kết chặ
     1. *Đưa mã QR của bạn:* Mở thẻ QR cá nhân mạ vàng mờ để đối tác quét (`MyQrModal`).
     2. *Chạm thẻ NFC:* Kích hoạt radar đọc/ghi chip NFC danh thiếp thông minh.
     3. *Quét mã QR:* Mở máy ảnh quét mã kết nối của đối tác (`ScanQrModal`).
-    4. *Quét danh thiếp:* Chụp ảnh danh thiếp giấy để AI OCR trích xuất thông tin tự động (`CardScanReviewModal`).
-    5. *Ghi chú cuộc gặp:* Chụp ảnh ký kết, ghi nhận thỏa thuận hợp tác và lưu vào dòng thời gian (`PostMomentModal`).
+    4. *Quét danh thiếp:* Chụp ảnh danh thiếp giấy để AI OCR đa nhà cung cấp (Gemini Vision / OpenAI / Lovable) trích xuất tối thiểu: Họ tên, Số điện thoại và Chức danh (`CardScanReviewModal` / `CardScanFlow`). Tự động làm sạch số điện thoại và gắn liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`) kèm nút "Mở Zalo" ngay trong bước Review và sau khi lưu thành công danh bạ ViOne / CRM Lead. Tích hợp máy quét mã QR vCard trực tiếp trên camera để nhận diện và bóc tách ngay tức thì.
+    5. *Ghi chú cuộc gặp / Đăng khoảnh khắc:* Chụp ảnh thực tế bằng Camera trực tiếp (Native CameraView / PWA WebRTC), tự động upload ảnh thật lên máy chủ ViOne (MinIO) qua multipart/form-data, ghi nhận thỏa thuận hợp tác và đăng vào dòng thời gian Moments Feed (`PostMomentModal`) hoặc Tin 24h (`CreateStoryModal`). Lưu trữ bài đăng bền vững vào `AsyncStorage` / `localStorage` để bài viết với ảnh thật của người dùng luôn đứng đầu bảng tin, tuyệt đối không bị ảnh mẫu từ code thay thế.
   - **3 Ô Lối Tắt Nhanh (Quick Tiles):** `Danh thiếp số`, `Ví thẻ`, `Bảo mật riêng tư`.
   - **Bàn Làm Việc Lãnh Đạo (CEO Executive Suite):**
     - `Giao việc nhân sự`: Mở modal phân công nhiệm vụ (`AssignTaskModal`).

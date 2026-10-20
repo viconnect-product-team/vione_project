@@ -175,7 +175,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
   - 5 Tabs phân đoạn:
     1. `Tất cả`: Tổng hợp mọi sự kiện, cuộc hẹn, cơ hội và công việc trong ngày.
     2. `Hôm nay (N)`: Lọc các đầu việc và lịch hẹn diễn ra đúng ngày hiện tại.
-    3. `Sắp tới (N)`: Lịch trình đối tác và sự kiện hiệp hội trong 7 ngày tới.
+    3. `Sắp tới (N)`: Lịch trình đối tác và sự kiện hiệp hội trong 7 ngày tới. Khi không có sự kiện sắp tới, hệ thống hiển thị Empty State sang trọng ("Chưa có sự kiện nào sắp diễn ra"), tuyệt đối không fallback lấy sự kiện cũ trong quá khứ.
     4. `Nhắc lịch (N)`: Các cảnh báo quan trọng, gia hạn hội viên, hẹn gặp khách VIP.
     5. `🎙️ Ghi âm (N)`: Danh sách ghi âm giọng nói khoảnh khắc kèm trình phát sóng âm inline wave player (`handleTogglePlayVoice`).
   - Modal Tùy chỉnh Briefing Hôm Nay (`TodayCustomizeSheet`): Đồng bộ 100% với PWA, cho phép lãnh đạo bật/tắt hiển thị từng nhóm thông tin, sắp xếp thứ tự và giới hạn số mục hiển thị.
@@ -196,17 +196,19 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
   - 2 Dải Filter Chips ngang: Lọc theo không gian (Tất cả, Gần tôi, Cùng TP, Toàn quốc) & Lọc theo ngành nghề (Công nghệ, BĐS, Tài chính, Y tế...).
   - Thẻ đối tác: Avatar thật, Họ tên, Chức danh, Tên công ty, Điểm tương thích `Match Score: 98%`, Lý do kết nối AI phân tích, nút `[Đặt lịch]` và `[Kết nối ngay]`.
 
-##### FR-APP-06: Mạng Lưới Đối Tác & Khách Hàng CRM B2B 5 Tabs
-- **Mô tả:** Quản trị toàn bộ quan hệ thương mại và phễu khách hàng của doanh nghiệp.
+##### FR-APP-06: Mạng Lưới Đối Tác, Moments Feed & Khách Hàng CRM B2B 5 Tabs
+- **Mô tả:** Quản trị toàn bộ quan hệ thương mại, mạng xã hội khoảnh khắc và phễu khách hàng của doanh nghiệp.
 - **Thành phần:**
+  - Nút hành động nổi bật `+ Đăng khoảnh khắc` (Vàng Champagne Gold `.bc-cta-gold`) trên đầu màn Mạng lưới mở modal đăng bài tức thì.
   - Dải khoảnh khắc 24h (Stories Strip) cuộn ngang với nút `+ Tạo tin 24h` và danh sách stories của đối tác, mở trình xem `StoryViewerModal`.
+  - Mạng khoảnh khắc B2B (Moments Feed): Độc lập hoàn toàn với Stories 24h, có thanh soạn thảo "Bạn đang nghĩ gì? Chia sẻ khoảnh khắc...", danh sách bài viết hỗ trợ tương tác Thả tim, Bình luận (`MomentCommentModal`), Chia sẻ. Ảnh chụp trực tiếp từ camera được bảo toàn nguyên vẹn URI gốc (`file://`, `data:`, `blob:`), không revoke blob URL sớm trong quá trình chọn/xem trước để chống lỗi rơi vào placeholder hoặc bị ghi đè bởi ảnh khác.
   - 5 Tabs danh mục chuẩn:
-    1. `Mạng lưới`: Danh bạ đối tác B2B đã kết nối, phân loại: Tất cả, Đã kết nối, Chờ duyệt, Gợi ý. Ô tìm kiếm thời gian thực theo tên, công ty, ngành nghề.
+    1. `Mạng lưới`: Danh bạ đối tác B2B đã kết nối, phân loại: Tất cả, Đã kết nối, Chờ duyệt, Gợi ý. Ô tìm kiếm thời gian thực theo tên, công ty, ngành nghề. Hỗ trợ thao tác 1-chạm: Chọn 1 người đã kết nối đánh dấu chuyển thành Khách hàng CRM (`POST /connect-app/customer` tự động map UUID và liên kết thông tin).
     2. `Khách hàng (CRM B2B)`: Pipeline khách hàng 4 bước (Tiếp cận $\rightarrow$ Tư vấn $\rightarrow$ Đàm phán $\rightarrow$ Ký kết), thẻ chỉ số doanh thu, stepper chuyển giai đoạn 1-chạm, chỉ báo sức khỏe deal, touchpoint logs.
     3. `Gợi ý AI`: Danh sách đối tác cần giữ kết nối (Nurture List) kèm phân tích lý do cần chăm sóc.
     4. `Tin nhắn (Messenger)`: Danh mục chat thời gian thực.
     5. `Lời mời`: Quản lý lời mời kết nối đến và đi.
-  - Máy quét danh thiếp OCR AI (`CardScanReviewModal`): Chụp ảnh danh thiếp giấy, AI bóc tách tự động 7 trường thông tin và lưu vào CRM.
+  - Máy quét danh thiếp OCR AI (`CardScanReviewModal` trên Native & `CardScanFlow` trên PWA): Chụp ảnh danh thiếp visit card, AI bóc tách đầy đủ: Họ tên, Số điện thoại, Chức danh, Tên công ty và Địa chỉ; tự động làm sạch số điện thoại và cung cấp liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`) với nút Zalo vàng Champagne Gold (`#D8B282`) chữ đen đậm (`text-slate-950 font-bold`); Lưu vào danh bạ ứng dụng ở mục Danh thiếp đã quét; Xuất file vCard `.vcf` lưu trực tiếp xuống danh bạ điện thoại thu gọn strictly chỉ gồm: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại (`TEL;TYPE=CELL,VOICE`); Trang bị nút điều khiển camera và chip trạng thái phủ màu Obsidian Quartz (`#141C2B` / `#1A2234`) phối hợp viền và chữ vàng Champagne Gold, loại bỏ hoàn toàn nút trạng thái màu đen và lỗi chữ trắng trên nền sáng.
   - Banner quét danh bạ điện thoại tìm bạn bè kiểu Zalo (`ContactsDiscoveryModal`).
 
 ##### FR-APP-07: Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1 Ghim Lịch
@@ -224,14 +226,17 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
   - Nút V dập nổi 3D vector `VIconMark.tsx` đường kính 58px, viền kim loại kép mạ vàng champagne, bóng đổ phát quang.
   - Bảng điều khiển nổi (`VActionSheet`) chiếm 85% chiều cao màn hình:
     * Thẻ danh tính doanh nhân thượng lưu với chữ ký chìm V.
-    * 5 Hành động cốt lõi: Đưa mã QR, Chạm thẻ NFC, Quét mã QR, Quét danh thiếp OCR, Ghi chú cuộc gặp (`PostMomentModal`).
+    * 5 Hành động cốt lõi: Đưa mã QR, Chạm thẻ NFC, Quét mã QR, Quét danh thiếp OCR (bóc tách tối thiểu: Họ tên, Số điện thoại, Chức danh & liên kết Zalo), Ghi chú cuộc gặp đăng bài Moments Feed (`PostMomentModal`).
     * 3 Ô lối tắt: Danh thiếp số, Ví thẻ, Bảo mật riêng tư.
     * Bàn làm việc lãnh đạo: Giao việc nhân sự (`AssignTaskModal`), Tiến độ nhân viên (`StaffDailyActivityModal`), Điểm danh chấm công (`AttendanceModal`), Quy trình doanh nghiệp (`WorkflowModal`), Ký duyệt văn bản (`ApprovalsModal`).
 
-##### FR-APP-09: Mô Hình Cộng Đồng Hợp Nhất All-in-One & Gói Dùng Thử 30 Ngày
-- **Mô tả:** Mô hình hợp nhất toàn diện quản trị nội bộ và giao thương B2B.
+##### FR-APP-09: Mô Hình Cộng Đồng Hợp Nhất All-in-One & Mời Thành Viên Kết Nối Chuẩn API
+- **Mô tả:** Mô hình hợp nhất toàn diện quản trị nội bộ và giao thương B2B với chính sách bảo mật thành viên chặt chẽ.
 - **Thành phần:**
   - Hợp nhất 2 mô hình cũ thành 1 mô hình toàn năng duy nhất với 6 phân hệ: Công việc, Giám sát, Cơ hội B2B, Bản tin, Sự kiện, Thành viên.
+  - Xóa sạch cộng đồng cũ, nghiêm cấm tuyệt đối hardcode tự động thêm thành viên khi tạo mới cộng đồng.
+  - Quy chuẩn mời thành viên (`CommunityInviteSheet` trên PWA & `CommunityInviteModal` trên Native): Chỉ cho phép mời những người đã kết nối trong mạng lưới thông qua API `POST /connect-app/community/:communityId/invites`.
+  - Thông báo phê duyệt thời gian thực: Tài khoản được mời nhận thông báo chuông (`business_notifications`) kèm quyền lựa chọn "Đồng ý tham gia" (`POST /connect-app/community/invites/:inviteRef/accept`) hoặc "Từ chối" (`POST /connect-app/community/invites/:inviteRef/decline`).
   - Gói bản quyền cộng đồng: Người dùng đăng ký gói hoặc dùng thử 30 ngày free được quyền tạo 1 cộng đồng của riêng mình.
   - Gating phân hệ giao việc tại Trang chủ: Chỉ hiển thị khi có gói cộng đồng hoặc dùng thử 30 ngày.
   - Quy trình nhận việc 1-chạm: Nút vàng nổi bật **`[⚡ TIẾN HÀNH NHẬN VIỆC]`** chuyển trạng thái từ `assigned` sang `in_progress`, gửi thông báo đến Giám đốc.

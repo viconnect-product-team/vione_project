@@ -3,9 +3,11 @@
 // không tạo backend mời song song và không báo thành công khi thao tác thất bại.
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Copy, Mail, Share2, UserPlus, X } from "lucide-react";
+import { ArrowLeft, Check, Copy, Loader2, Mail, Share2, UserPlus, X } from "lucide-react";
+import { toast } from "sonner";
 import { useLang, useT } from "@/lib/i18n";
 import { copyToClipboard } from "@/lib/clipboard";
+import { fetchNestApi } from "@/lib/api-client";
 import {
   useCommunityInvites,
   useCommunityInviteTemplates,
@@ -68,7 +70,7 @@ function CommunityInviteSheet({
   const t = useT();
   const [state, setState] = useState<InviteState>("idle");
   const [note, setNote] = useState("");
-  const [tab, setTab] = useState<"link" | "email" | "template">("link");
+  const [tab, setTab] = useState<"friends" | "link" | "email" | "template">("friends");
   const closeRef = useRef<HTMLButtonElement>(null);
   const link = buildInviteLink(communityId);
 
@@ -76,7 +78,7 @@ function CommunityInviteSheet({
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && state !== "sending") {
-        if (tab !== "link") setTab("link");
+        if (tab !== "friends") setTab("friends");
         else onClose();
       }
     };
@@ -120,10 +122,10 @@ function CommunityInviteSheet({
       <div className="w-full max-w-[520px] max-h-[90dvh] overflow-y-auto rounded-t-3xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] text-[var(--bc-mobile-text)] shadow-2xl p-5 pb-8">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            {tab !== "link" ? (
+            {tab !== "friends" ? (
               <button
                 type="button"
-                onClick={() => setTab("link")}
+                onClick={() => setTab("friends")}
                 aria-label="Quay lại"
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--bc-mobile-border)] text-[var(--bc-mobile-text)] hover:bg-[var(--bc-mobile-surface-2)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8B282] cursor-pointer"
               >
@@ -135,11 +137,13 @@ function CommunityInviteSheet({
                 id="bc-invite-title"
                 className="text-[18px] font-semibold text-[var(--bc-mobile-text)]"
               >
-                {tab === "template"
+                {tab === "friends"
+                  ? "Mời bạn bè đã kết nối"
+                  : tab === "template"
                   ? "Mẫu email lời mời"
                   : tab === "email"
-                    ? "Gửi lời mời qua Email"
-                    : t("bc.mobile.community.invite.title")}
+                  ? "Gửi lời mời qua Email"
+                  : t("bc.mobile.community.invite.title")}
               </h2>
               <p className="mt-1 text-[13px] leading-snug text-[var(--bc-mobile-muted)]">
                 {t("bc.mobile.community.invite.desc", { community: communityName })}
@@ -175,27 +179,39 @@ function CommunityInviteSheet({
         <div
           role="tablist"
           aria-label={t("bc.mobile.community.invite.title")}
-          className="mt-4 flex gap-1.5 rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] p-1"
+          className="mt-4 flex gap-1 rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] p-1 overflow-x-auto"
         >
-          {(["link", "email", "template"] as const).map((key) => (
+          {(["friends", "link", "email", "template"] as const).map((key) => (
             <button
               key={key}
               type="button"
               role="tab"
               aria-selected={tab === key}
               onClick={() => setTab(key)}
-              className={`min-h-[38px] flex-1 rounded-full text-[13px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8B282] motion-reduce:transition-none cursor-pointer ${
+              className={`min-h-[36px] flex-1 min-w-[70px] whitespace-nowrap px-2 rounded-full text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8B282] motion-reduce:transition-none cursor-pointer ${
                 tab === key
                   ? "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-[#050c15] font-bold shadow-md shadow-[#D8B282]/25"
                   : "text-[var(--bc-mobile-muted)] hover:text-[var(--bc-mobile-text)]"
               }`}
             >
-              {t(`bc.mobile.community.invite.tab.${key}` as never)}
+              {key === "friends"
+                ? "Bạn bè"
+                : key === "link"
+                ? "Liên kết"
+                : key === "email"
+                ? "Email"
+                : "Mẫu thư"}
             </button>
           ))}
         </div>
 
-        {tab === "template" ? (
+        {tab === "friends" ? (
+          <CommunityInviteFriendsPanel
+            communityId={communityId}
+            communityName={communityName}
+            note={note}
+          />
+        ) : tab === "template" ? (
           <CommunityInviteTemplatePanel
             communityId={communityId}
             communityName={communityName}
@@ -808,6 +824,156 @@ function InviteRoleHistory({ inviteRef }: { inviteRef: string }) {
           </ul>
         )
       ) : null}
+    </div>
+  );
+}
+
+function CommunityInviteFriendsPanel({
+  communityId,
+  communityName,
+  note,
+}: {
+  communityId: string;
+  communityName: string;
+  note: string;
+}) {
+  const [connections, setConnections] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [invitingId, setInvitingId] = useState<string | null>(null);
+  const [invitedMap, setInvitedMap] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await fetchNestApi<any[]>("/connect-app/network/connections");
+        if (active && Array.isArray(res)) {
+          setConnections(res);
+        }
+      } catch (e) {
+        console.error("Failed to load connections:", e);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleInvite = async (friend: any) => {
+    const targetUserId = friend.peerId || friend.counterpartUserId || friend.userId;
+    if (!targetUserId) return;
+    try {
+      setInvitingId(targetUserId);
+      await fetchNestApi(`/connect-app/community/${communityId}/invites`, {
+        method: "POST",
+        body: JSON.stringify({
+          targetUserId,
+          note: note.trim() || undefined,
+        }),
+      });
+      setInvitedMap((prev) => ({ ...prev, [targetUserId]: true }));
+      toast.success(`Đã gửi lời mời tham gia "${communityName}" tới ${friend.fullName || "bạn bè"}!`);
+    } catch (err: any) {
+      toast.error(err?.message || "Không thể gửi lời mời. Vui lòng thử lại sau.");
+    } finally {
+      setInvitingId(null);
+    }
+  };
+
+  const filtered = connections.filter((c) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    const name = (c.fullName || c.name || "").toLowerCase();
+    const title = (c.professionalTitle || c.companyName || "").toLowerCase();
+    return name.includes(q) || title.includes(q);
+  });
+
+  return (
+    <div className="mt-4 space-y-3">
+      {/* Search friend */}
+      <div className="relative">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Tìm theo tên bạn bè đã kết nối..."
+          className="w-full rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-3.5 py-2 text-xs text-[var(--bc-mobile-text)] placeholder:text-[var(--bc-mobile-muted)] focus:outline-none focus:ring-1 focus:ring-[#D8B282]"
+        />
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-[#D8B282]" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] p-6 text-center">
+          <p className="text-xs text-[var(--bc-mobile-muted)]">
+            {search.trim()
+              ? "Không tìm thấy bạn bè phù hợp."
+              : "Chưa có bạn bè nào trong danh sách kết nối. Hãy kết nối thêm ở mục Mạng Lưới để mời vào cộng đồng."}
+          </p>
+        </div>
+      ) : (
+        <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
+          {filtered.map((friend) => {
+            const fid = friend.peerId || friend.counterpartUserId || friend.userId;
+            const isInvited = invitedMap[fid];
+            const isBusy = invitingId === fid;
+
+            return (
+              <div
+                key={fid}
+                className="flex items-center justify-between gap-3 p-3 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)]"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="h-10 w-10 shrink-0 rounded-full overflow-hidden bg-slate-800 border border-[var(--bc-mobile-border)] flex items-center justify-center text-xs font-bold text-[#F6E1C3]">
+                    {friend.avatarUrl ? (
+                      <img
+                        src={friend.avatarUrl}
+                        alt={friend.fullName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      (friend.fullName || "U").slice(0, 2).toUpperCase()
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-[var(--bc-mobile-text)] truncate">
+                      {friend.fullName || "Thành viên"}
+                    </p>
+                    <p className="text-[11px] text-[var(--bc-mobile-muted)] truncate">
+                      {friend.professionalTitle || friend.companyName || "Chưa cập nhật chức danh"}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isInvited || isBusy}
+                  onClick={() => handleInvite(friend)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                    isInvited
+                      ? "bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 cursor-default"
+                      : "bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-[#050c15] shadow-xs hover:brightness-105 active:scale-95"
+                  }`}
+                >
+                  {isBusy ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : isInvited ? (
+                    "Đã mời ✓"
+                  ) : (
+                    "Mời vào nhóm"
+                  )}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -251,7 +251,24 @@ export const BusinessCardReviewForm = forwardRef<
           />
         </Field>
 
-        {draft.phones.length > 0 ? (
+        {draft.phones.length === 0 ? (
+          <fieldset className="grid gap-2">
+            <legend className="text-[12px] font-medium text-[var(--bc-mobile-muted)]">
+              {t("bc.mobile.cardScan.review.phone")} (Bắt buộc tối thiểu)
+            </legend>
+            <div className="flex items-center gap-2">
+              <input
+                type="tel"
+                placeholder={t("bc.mobile.cardScan.review.placeholder.phone")}
+                value=""
+                onChange={(e) => {
+                  onChange({ phones: [{ value: e.target.value, label: "mobile" }], primaryPhone: 0 });
+                }}
+                className={INPUT_CLASS}
+              />
+            </div>
+          </fieldset>
+        ) : (
           <fieldset className="grid gap-2">
             <legend className="text-[12px] font-medium text-[var(--bc-mobile-muted)]">
               {t("bc.mobile.cardScan.review.phone")}
@@ -294,7 +311,30 @@ export const BusinessCardReviewForm = forwardRef<
               {t("bc.mobile.cardScan.review.phoneHint")}
             </p>
           </fieldset>
-        ) : null}
+        )}
+
+        {/* Zalo Direct Chat Link */}
+        {(() => {
+          const rawP = draft.phones[draft.primaryPhone]?.value || draft.phones[0]?.value || "";
+          const cleanP = rawP.replace(/\D/g, "");
+          if (!cleanP) return null;
+          return (
+            <div className="flex items-center justify-between rounded-xl bg-blue-500/10 border border-blue-500/30 p-2.5 px-3">
+              <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 font-semibold truncate">
+                <span className="font-bold">Zalo:</span>
+                <span className="truncate">https://zalo.me/{cleanP}</span>
+              </div>
+              <a
+                href={`https://zalo.me/${cleanP}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-white bg-[#0068FF] px-3 py-1 rounded-lg hover:bg-blue-600 transition shrink-0 ml-2"
+              >
+                Mở Zalo
+              </a>
+            </div>
+          );
+        })()}
 
         {draft.emails.length > 0 ? (
           <fieldset className="grid gap-2">
@@ -386,7 +426,7 @@ export const BusinessCardReviewForm = forwardRef<
             type="button"
             onClick={onExportVcf}
             disabled={saving || exportVcfDisabled === true}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--bc-mobile-navy)] bg-[var(--bc-mobile-surface)] px-6 text-[15px] font-medium text-[var(--bc-mobile-navy)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] disabled:opacity-50 motion-reduce:transition-none"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#D8B282] bg-[var(--bc-mobile-surface)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-accent-strong)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] disabled:opacity-50 motion-reduce:transition-none cursor-pointer"
           >
             <Share2 className="h-4 w-4" strokeWidth={1.8} aria-hidden />
             {t("bc.mobile.cardScan.review.exportVcf")}
@@ -396,16 +436,16 @@ export const BusinessCardReviewForm = forwardRef<
           type="button"
           onClick={onContinue}
           disabled={saving}
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--bc-mobile-text)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-surface)] transition-opacity hover:opacity-90 disabled:opacity-50 motion-reduce:transition-none"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bc-cta-gold px-6 text-[15px] font-bold shadow-md shadow-[#D8B282]/25 hover:opacity-95 active:scale-[0.99] disabled:opacity-50 motion-reduce:transition-none cursor-pointer"
         >
-          <Save className="h-4 w-4" strokeWidth={1.8} aria-hidden />
-          {t("bc.mobile.cardScan.save")}
+          <Save className="h-4.5 w-4.5 text-slate-950" strokeWidth={2} aria-hidden />
+          <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.save")}</span>
         </button>
         <button
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] px-6 text-[15px] font-medium text-[var(--bc-mobile-text)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] motion-reduce:transition-none"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] px-6 text-[15px] font-medium text-[var(--bc-mobile-text)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] motion-reduce:transition-none cursor-pointer"
         >
           <X className="h-4 w-4" strokeWidth={1.8} aria-hidden />
           {t("bc.mobile.cardScan.cancel")}

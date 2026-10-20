@@ -125,6 +125,63 @@ export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripPr
   const [selectedTag, setSelectedTag] = useState(STORY_TAGS[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [isLiveCameraOpen, setIsLiveCameraOpen] = useState(false);
+
+  // Live Camera WebRTC
+  const startLiveCamera = async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        cameraInputRef.current?.click();
+        return;
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
+      });
+      setCameraStream(stream);
+      setIsLiveCameraOpen(true);
+    } catch {
+      cameraInputRef.current?.click();
+    }
+  };
+
+  const stopLiveCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => track.stop());
+      setCameraStream(null);
+    }
+    setIsLiveCameraOpen(false);
+  };
+
+  const capturePhotoFromLive = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], `story-cam-${Date.now()}.jpg`, { type: "image/jpeg" });
+      setSelectedFile(file);
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+      toast.success("Đã chụp ảnh khoảnh khắc 24h!");
+      stopLiveCamera();
+    }, "image/jpeg", 0.92);
+  };
+
+  useEffect(() => {
+    if (isLiveCameraOpen && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isLiveCameraOpen, cameraStream]);
 
   const activeStory = activeStoryIndex !== null ? stories[activeStoryIndex] : null;
 
@@ -432,7 +489,7 @@ export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripPr
 
             {/* Body */}
             <div className="mt-4 space-y-4">
-              {/* Photo Upload Area */}
+              {/* Photo Upload & Live Camera Area */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -440,8 +497,45 @@ export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripPr
                 className="hidden"
                 onChange={handleFileChange}
               />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+              />
 
-              {previewUrl ? (
+              {isLiveCameraOpen ? (
+                <div className="relative w-full h-56 rounded-2xl overflow-hidden bg-black flex flex-col justify-between border-2 border-[#D8B282]">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="relative z-10 p-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={stopLiveCamera}
+                      className="px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-semibold hover:bg-black"
+                    >
+                      Đóng
+                    </button>
+                  </div>
+                  <div className="relative z-10 p-3 bg-gradient-to-t from-black/80 to-transparent flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={capturePhotoFromLive}
+                      className="px-5 py-2 rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 text-xs font-bold shadow-lg active:scale-95 flex items-center gap-1.5"
+                    >
+                      <Camera className="w-4 h-4" />
+                      <span>Bấm chụp khoảnh khắc</span>
+                    </button>
+                  </div>
+                </div>
+              ) : previewUrl ? (
                 <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-[var(--bc-mobile-border)] bg-slate-900 group">
                   <img
                     src={previewUrl}
@@ -449,6 +543,13 @@ export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripPr
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={startLiveCamera}
+                      className="px-3 py-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 text-xs font-bold shadow hover:opacity-95"
+                    >
+                      Chụp lại
+                    </button>
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -469,17 +570,30 @@ export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripPr
                   </div>
                 </div>
               ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-36 rounded-2xl border-2 border-dashed border-[#D8B282]/40 hover:border-[#D8B282] bg-amber-50/30 dark:bg-amber-950/20 flex flex-col items-center justify-center gap-2 cursor-pointer transition"
-                >
-                  <div className="w-10 h-10 rounded-full bg-[#D8B282]/15 text-[#D8B282] flex items-center justify-center">
-                    <ImageIcon className="w-5 h-5" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs font-bold text-amber-800 dark:text-[#F6E1C3]">Chọn ảnh từ thiết bị hoặc chụp ảnh</p>
-                    <p className="text-[10px] text-[var(--bc-mobile-muted)] mt-0.5">Hỗ trợ JPG, PNG, WEBP</p>
-                  </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={startLiveCamera}
+                    className="h-32 rounded-2xl border-2 border-dashed border-[#D8B282] hover:border-[#F6E1C3] bg-[#D8B282]/10 hover:bg-[#D8B282]/15 flex flex-col items-center justify-center gap-2 cursor-pointer transition p-3 text-center"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-[#D8B282]/20 text-[#D8B282] flex items-center justify-center">
+                      <Camera className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs font-bold text-amber-900 dark:text-[#F6E1C3]">Chụp ảnh ngay</span>
+                    <span className="text-[10px] text-[var(--bc-mobile-muted)]">Camera trực tiếp</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="h-32 rounded-2xl border-2 border-dashed border-[var(--bc-mobile-border)] hover:border-[#D8B282]/60 bg-slate-50 dark:bg-slate-900/40 flex flex-col items-center justify-center gap-2 cursor-pointer transition p-3 text-center"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 text-[var(--bc-mobile-muted)] flex items-center justify-center">
+                      <ImageIcon className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs font-bold text-[var(--bc-mobile-text)]">Thư viện ảnh</span>
+                    <span className="text-[10px] text-[var(--bc-mobile-muted)]">Chọn file từ máy</span>
+                  </button>
                 </div>
               )}
 

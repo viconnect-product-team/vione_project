@@ -179,6 +179,42 @@ function ConnectAppNotificationsPage() {
     }
   };
 
+  const handleAcceptCommunityInvite = async (notifId: string, inviteRef: string) => {
+    setActionStates((prev) => ({
+      ...prev,
+      [notifId]: "accepted",
+      [inviteRef]: "accepted",
+    }));
+    try {
+      await fetchNestApi(`/connect-app/community/invites/${encodeURIComponent(inviteRef)}/accept`, {
+        method: "POST",
+      });
+      markRead.mutate({ id: notifId });
+      void query.refetch();
+      toast.success("Đã đồng ý tham gia cộng đồng thành công!");
+    } catch (e: any) {
+      toast.error(e?.message || "Có lỗi xảy ra khi tham gia cộng đồng.");
+    }
+  };
+
+  const handleDeclineCommunityInvite = async (notifId: string, inviteRef: string) => {
+    setActionStates((prev) => ({
+      ...prev,
+      [notifId]: "declined",
+      [inviteRef]: "declined",
+    }));
+    try {
+      await fetchNestApi(`/connect-app/community/invites/${encodeURIComponent(inviteRef)}/decline`, {
+        method: "POST",
+      });
+      markRead.mutate({ id: notifId });
+      void query.refetch();
+      toast.info("Đã từ chối lời mời tham gia cộng đồng.");
+    } catch {
+      // ignore
+    }
+  };
+
   const handleDeleteNotification = async (notifId: string) => {
     try {
       await deleteNotif.mutateAsync({ id: notifId });
@@ -305,6 +341,10 @@ function ConnectAppNotificationsPage() {
                 n.notificationKind === "connection_request_accepted" ||
                 n.sourceDomain === "connection" ||
                 n.titleKey === "connection_request_received";
+              const isCommunityInviteNotification =
+                n.sourceDomain === "community" ||
+                n.notificationKind?.startsWith("community_invite") ||
+                Boolean(n.safeDisplayData?.inviteId || n.safeDisplayData?.inviteRef);
               const isOpportunityNotification =
                 n.sourceDomain === "opportunity" ||
                 n.notificationKind?.startsWith("opportunity") ||
@@ -325,8 +365,14 @@ function ConnectAppNotificationsPage() {
                 n.eventKind === "invoice_reminder" ||
                 Boolean(n.safeDisplayData?.invoiceId);
               const connectionId = n.sourceRecordId || n.safeDisplayData?.connectionId;
+              const inviteRef = n.safeDisplayData?.inviteId || n.safeDisplayData?.inviteRef || n.sourceRecordId;
+              const communityInviteStatus =
+                actionStates[n.id] ||
+                (inviteRef ? actionStates[inviteRef] : null) ||
+                n.safeDisplayData?.status ||
+                (n.notificationKind === "community_invite_accepted" ? "accepted" : "pending");
               const opportunityId = n.safeDisplayData?.opportunityId || (n.sourceDomain === "opportunity" ? n.sourceRecordId : null);
-              const communityId = n.safeDisplayData?.communityId || n.associationId || "clb-ceo-1983";
+              const communityId = n.safeDisplayData?.communityId || n.associationId || "c-vione-internal";
               const opportunityRoute = opportunityId
                 ? `/connect-app/community/${communityId}/opportunities/${opportunityId}`
                 : null;
@@ -371,7 +417,9 @@ function ConnectAppNotificationsPage() {
                         }`}
                       />
                       <span className="px-2 py-0.5 rounded-md text-[10.5px] font-bold bg-amber-500/10 dark:bg-[#D8B282]/15 text-amber-700 dark:text-[#D8B282] border border-amber-500/20 dark:border-[#D8B282]/30 uppercase tracking-wider">
-                        {isOpportunityNotification
+                        {isCommunityInviteNotification
+                          ? "Cộng đồng"
+                          : isOpportunityNotification
                           ? "Cơ hội B2B"
                           : isConnectionNotification
                           ? "Kết nối B2B"
@@ -548,7 +596,60 @@ function ConnectAppNotificationsPage() {
 
                     {/* Hàng nút hành động */}
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      {isConnectionNotification && connectionId ? (
+                      {isCommunityInviteNotification ? (
+                        <>
+                          {communityInviteStatus === "accepted" ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11.5px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                                <CheckCircle2 className="size-3.5 text-emerald-500 dark:text-emerald-400" />
+                                <span>Đã tham gia cộng đồng</span>
+                              </span>
+                              <Link
+                                to="/connect-app/community/$communityId"
+                                params={{ communityId }}
+                                className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-3.5 text-[12px] font-bold text-slate-950 shadow-xs hover:brightness-105 active:scale-95 transition-all"
+                              >
+                                <span>Vào cộng đồng</span>
+                                <ArrowRight className="size-3" />
+                              </Link>
+                            </div>
+                          ) : communityInviteStatus === "declined" ? (
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11.5px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                <X className="size-3.5" />
+                                <span>Đã từ chối lời mời</span>
+                              </span>
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleAcceptCommunityInvite(n.id, inviteRef)}
+                                className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-3.5 text-[12px] font-bold text-slate-950 shadow-xs hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+                              >
+                                <Check className="size-3.5" strokeWidth={2.5} />
+                                <span>Đồng ý tham gia</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeclineCommunityInvite(n.id, inviteRef)}
+                                className="inline-flex min-h-8 items-center rounded-full border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 px-3 text-[11.5px] font-medium transition-colors cursor-pointer"
+                              >
+                                Từ chối
+                              </button>
+
+                              <Link
+                                to="/connect-app/community/$communityId"
+                                params={{ communityId }}
+                                className="inline-flex min-h-8 items-center rounded-full border border-slate-300 dark:border-[#334155] bg-slate-50 dark:bg-[#1e293b] px-3 text-[12px] font-semibold text-slate-700 dark:text-slate-200 hover:border-amber-400 dark:hover:border-[#D8B282] transition-colors"
+                              >
+                                Xem cộng đồng
+                              </Link>
+                            </>
+                          )}
+                        </>
+                      ) : isConnectionNotification && connectionId ? (
                         <>
                           {resolvedStatus === "accepted" ? (
                             <div className="flex flex-wrap items-center gap-2">

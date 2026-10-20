@@ -50,6 +50,7 @@ export interface ConnectionPerson {
   connectedAt?: string;
   matchScore?: number;
   status?: "connected" | "pending" | "suggested";
+  zaloUrl?: string | null;
 }
 
 export interface B2BEvent {

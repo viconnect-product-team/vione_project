@@ -16,3 +16,10 @@
   - Trước khi thông báo hoàn thành bất kỳ nhiệm vụ nào, Agent BẮT BUỘC phải chạy kiểm tra type check (`tsc --noEmit`), linter hoặc AST validation trên toàn bộ các tệp vừa chỉnh sửa.
   - Tuyệt đối không để sót biến chưa khai báo, lỗi cú pháp (syntax errors), gạch chân đỏ trong IDE, hoặc kiểu dữ liệu không khớp.
   - Phải xác nhận lệnh kiểm tra trả về exit code 0 (0 errors) trước khi bàn giao cho người dùng.
+
+## 4. Đồng Bộ Hai Bản App: Native ViOne & PWA ViOne (STRICT DUAL-APP PARITY)
+- **BẮT BUỘC SỬA ĐỒNG BỘ CẢ 2 BẢN KHI CHỈNH SỬA APP**:
+  - Khi có bất kỳ yêu cầu sửa lỗi, nâng cấp tính năng, chỉnh sửa giao diện hay luồng nghiệp vụ trên ứng dụng ViOne, BẮT BUỘC phải thực hiện đồng thời trên **CẢ 2 BẢN**: Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).
+  - Hai bản phải đồng bộ đồng nhất 100% với nhau từ chức năng, luồng nghiệp vụ đến giao diện, hình ảnh, văn bản (text) và màu sắc thương hiệu (Vàng Champagne Gold / Đen Thạch Anh Obsidian).
+  - Tuyệt đối không được chỉ sửa 1 bản mà bỏ quên bản còn lại.
+

@@ -77,10 +77,10 @@ export const BusinessCardCandidatePreview = forwardRef<
             disabled
             aria-disabled="true"
             aria-describedby="card-scan-continue-note"
-            className="flex min-h-12 w-full cursor-default items-center justify-center gap-2 rounded-full bg-[var(--bc-mobile-text)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-surface)] opacity-45"
+            className="bc-cta-gold flex min-h-12 w-full cursor-default items-center justify-center gap-2 rounded-full px-6 text-[15px] font-bold text-slate-950 opacity-60"
           >
-            {t("bc.mobile.cardScan.continue")}
-            <ArrowRight className="h-4 w-4" strokeWidth={1.8} aria-hidden />
+            <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.continue")}</span>
+            <ArrowRight className="h-4 w-4 text-slate-950" strokeWidth={2} aria-hidden />
           </button>
           <p
             id="card-scan-continue-note"

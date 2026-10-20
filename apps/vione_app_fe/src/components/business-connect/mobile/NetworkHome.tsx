@@ -55,6 +55,8 @@ import { DynamicAiMatcherPanel } from "./ai/DynamicAiMatcherPanel";
 import { NetworkStoriesStrip } from "./NetworkStoriesStrip";
 import { NetworkPartnerSuggestionsStrip } from "./NetworkPartnerSuggestionsStrip";
 import { PersonalProfileBottomSheet } from "@/components/common/PersonalProfileBottomSheet";
+import { NetworkSocialComposer } from "./NetworkSocialComposer";
+import { PostMomentModal } from "./moments/PostMomentModal";
 
 type NetworkSort = "recent" | "name" | "company";
 type NetworkFilter = "all" | "connected" | "saved_card" | "card_scanned" | "contact_shared";
@@ -89,6 +91,7 @@ export function NetworkHome({
   const viewerUserId = useViewerUserId();
   const incomingRequests = useIncomingConnectionRequests();
   const [profileSheetOpen, setProfileSheetOpen] = useState(false);
+  const [postMomentOpen, setPostMomentOpen] = useState(false);
 
   // Lấy thông tin tài khoản thật của người dùng để hiển thị avatar ở Header
   const currentProfile = useMemo(() => {
@@ -499,15 +502,28 @@ export function NetworkHome({
                 {/* Khoảnh khắc mạng lưới (Feed cuộc gặp) */}
                 {!narrowed ? (
                   <section className="mt-5">
+                    {/* Thanh đăng bài / chia sẻ khoảnh khắc mạng lưới */}
+                    <NetworkSocialComposer />
+
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <h2 className="min-w-0 truncate text-[10px] font-medium tracking-[1px] uppercase text-[var(--bc-mobile-muted)]">
-                        {t("bc.mobile.network.moments.title")}
-                      </h2>
-                      {feed.items.length > 0 && (
-                        <span className="text-[11px] text-[var(--bc-mobile-muted)]">
-                          {feed.items.length} cuộc gặp
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2 min-w-0">
+                        <h2 className="min-w-0 truncate text-[11px] font-bold tracking-[1px] uppercase text-[var(--bc-mobile-muted)]">
+                          {t("bc.mobile.network.moments.title")}
+                        </h2>
+                        {feed.items.length > 0 && (
+                          <span className="text-[11px] text-[var(--bc-mobile-muted)] font-medium">
+                            ({feed.items.length})
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPostMomentOpen(true)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 text-xs font-bold shadow-xs hover:opacity-95 active:scale-95 transition-all cursor-pointer shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Đăng khoảnh khắc</span>
+                      </button>
                     </div>
                     {feed.items.length > 0 ? (
                       <ul
@@ -615,6 +631,11 @@ export function NetworkHome({
           website: currentProfile.website,
           isOwner: true,
         }}
+      />
+
+      <PostMomentModal
+        open={postMomentOpen}
+        onOpenChange={setPostMomentOpen}
       />
     </>
   );

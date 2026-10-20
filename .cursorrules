@@ -1,5 +1,32 @@
 # Vibe App Monorepo - Cursor Rules
 
+## 0. Quy Tắc Bắt Buộc: Đồng Bộ Hai Bản App Native ViOne & PWA ViOne (STRICT DUAL-APP PARITY)
+- **BẮT BUỘC SỬA ĐỒNG BỘ CẢ 2 BẢN KHI CHỈNH SỬA APP (Giống như quy tắc cấm tự động push git)**:
+  - Khi có bất kỳ yêu cầu sửa lỗi, nâng cấp tính năng, chỉnh sửa giao diện hay luồng nghiệp vụ trên ứng dụng ViOne, BẮT BUỘC phải thực hiện đồng thời trên **CẢ 2 BẢN**: Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).
+  - Hai bản phải đồng bộ đồng nhất 100% với nhau từ chức năng, luồng nghiệp vụ đến giao diện, hình ảnh, văn bản (text) và màu sắc thương hiệu (Vàng Champagne Gold / Đen Thạch Anh Obsidian).
+  - Tuyệt đối không được chỉ sửa 1 bản mà bỏ quên bản còn lại.
+- **Quy Chuẩn Quét Danh Thiếp AI OCR & vCard (Card Visit Scanner Rule)**:
+  - Backend `runCardOcrVision` bắt buộc hỗ trợ đa nhà cung cấp AI Vision (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `LOVABLE_API_KEY`) kèm bộ giải thuật heuristic regex trích xuất vCard/QR và draft dự phòng, không bao giờ trả về lỗi unhandled hay mock cứng.
+  - Phía Mobile Native (`CardScanReviewModal`) và Web PWA (`CardScanFlow`): Bắt buộc parse đúng cấu trúc payload `{ candidate: { fields } }`, trích xuất chuỗi an toàn `.text`, đọc đúng mảng số điện thoại `phones[0]` và email `emails[0]`. Tuyệt đối không khởi tạo form bằng dữ liệu mock tĩnh ("Nguyễn Văn Hùng").
+- **Quy Chuẩn Độ Tương Phản Nút Bấm & Triệt Tiêu Chữ Đen Trên Nền Tối Khi Theme Sáng (Light Theme Contrast Rule)**:
+  - Tất cả các nút chính dùng gradient vàng Champagne Gold (`.bc-cta-gold` trên PWA hoặc `goldGradient` trên Native) bắt buộc phải có chữ màu đen thạch anh `#050C15 !important` và `font-weight: 700 / 800` ở MỌI trạng thái (bình thường, hover, active) trên cả 2 theme sáng và tối.
+  - TUYỆT ĐỐI KHÔNG để xảy ra tình trạng chữ màu đen trên nền tối (black text on dark background):
+    * Trên PWA: Không dùng `bg-[var(--bc-mobile-text)] text-[var(--bc-mobile-surface)]` cho các nút bấm vì trong Light mode `--bc-mobile-text` là màu đen và khi hover dễ bị biến thành chữ tối trên nền đen.
+    * Trên Native: Mọi modal, sheet, và màn hình bắt buộc dùng `useTheme()` (`colors.surface`, `colors.surface2`, `colors.textPrimary`, `colors.textMuted`, `colors.gold`, `colors.goldSoft`), tuyệt đối không hardcode nền tối `#0B0F17` / `#0E1522` / `#181D2A` vì khi hệ thống chuyển sang theme sáng, các trường TextInput và nhãn sẽ render chữ đen trên nền tối gây mất tương phản.
+  - Trên camera viewfinder: Trang bị đầy đủ nút bật/tắt đèn Flash và nút Đổi camera trước/sau đồng bộ ở cả 2 bản Native và PWA.
+- **Quy Chuẩn Quản Lý Vùng Nhớ Ảnh Chụp Camera (Camera Object URL Revocation Rule)**:
+  - Khi xử lý ảnh chụp trực tiếp từ Camera (PWA hoặc Native), TUYỆT ĐỐI KHÔNG gọi `URL.revokeObjectURL(url)` bên trong các hàm lọc / chọn media trước khi component unmount. Việc revoke sớm khiến browser giải phóng vùng nhớ blob ngay lập tức, làm thẻ `<Image>` / `<img>` rơi vào sự kiện `onError` và tự động fallback sang ảnh placeholder hoặc ảnh khác.
+- **Quy Chuẩn Mời Thành Viên Cộng Đồng & Cấm Tự Động Thêm Người (Community Invitation & Zero Auto-Add Rule)**:
+  - Nghiêm cấm tuyệt đối việc hardcode hoặc tự động thêm thành viên tùy tiện khi tạo mới cộng đồng.
+  - Cộng đồng CHỈ ĐƯỢC PHÉP mời những người đã kết nối (`public.connections` / `public.user_connections`) thông qua API `POST /connect-app/community/:communityId/invites`.
+  - Người được mời BẮT BUỘC phải nhận được thông báo thời gian thực (`public.business_notifications`) kèm WebSocket và có 2 nút hành động rõ ràng: "Đồng ý tham gia" (`POST /connect-app/community/invites/:inviteRef/accept`) hoặc "Từ chối" (`POST /connect-app/community/invites/:inviteRef/decline`).
+- **Quy Chuẩn Xuất Danh Bạ Điện Thoại Từ Danh Thiếp & Nút Zalo (Card Visit Contacts Export Rule)**:
+  - Tệp vCard `.vcf` tải xuống danh bạ điện thoại từ danh thiếp đã quét BẮT BUỘC chỉ lưu đúng 3 thông tin: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại di động (`TEL;TYPE=CELL,VOICE`).
+  - Nút liên kết Zalo BẮT BUỘC phải là nền vàng Champagne Gold (`#D8B282`), chữ đen đậm (`#000000` / `text-slate-950 font-bold`) đạt chuẩn WCAG.
+- **Quy Chuẩn Phân Giải Gradle Plugin Android Trên Windows (Gradle Resolution Rule)**:
+  - Các file `settings.gradle` và `build.gradle` trong thư mục `android/` bắt buộc phải có bước kiểm tra trực tiếp qua Java File I/O (`new File(rootDir, "../node_modules/@react-native/gradle-plugin").exists()`, `expo/scripts/autolinking.gradle`, `react-native/gradle/libs.versions.toml`) trước khi gọi lệnh Node.js qua process builder. Điều này đảm bảo VS Code Java Language Server và Gradle daemon trên Windows không bị lỗi `Error resolving plugin [id: 'com.facebook.react.settings']` khi môi trường Java thiếu PATH chứa Node.js.
+
+
 ## Tech Stack
 - **Monorepo**: Turborepo, npm workspaces.
 - **Frontend (@vibe/web)**: TanStack React Start, Vite, React 19, TailwindCSS 4, Radix UI, Lucide React, Zod, React Query.
@@ -78,7 +105,16 @@
     - Bảng tiến độ công việc trong cộng đồng chuẩn hóa theo mô hình Jira Kanban:
       + Thanh thống kê 5 chỉ số: Tổng việc, Chờ nhận, Đang làm, Chờ duyệt, Hoàn thành.
       + 2 chế độ hiển thị: [📊 Bảng Kanban] (4 cột trạng thái lướt ngang) và [📋 Danh sách].
-      + Thao tác chuyển trạng thái 1-chạm: Dropdown chuyển nhanh trạng thái trên từng thẻ task (`assigned`, `in_progress`, `in_review`, `completed`) kèm thông báo toast phản hồi tức thì.
+  * **Business Card AI OCR & Zalo Direct Link Rule (`CardScanReviewModal.tsx`, `BusinessCardReviewForm.tsx`)**:
+    - Khi chụp ảnh danh thiếp (visit card), hệ thống OCR BẮT BUỘC trích xuất tối thiểu 3 trường thông tin: Họ tên, Số điện thoại và Chức danh.
+    - Phải tự động format số điện thoại sạch (`cleanPhone = phone.replace(/\D/g, "")`) và tạo đường dẫn liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`).
+    - Bắt buộc cung cấp nút "Mở Zalo" ngay trong bước Review danh thiếp và hộp thoại thông báo / nút "Nhắn tin Zalo ngay" sau khi lưu thành công danh bạ hoặc CRM Lead.
+  * **Home Screen Upcoming Events Data Integrity Rule (`HomeScreen.tsx`, `ExecutiveHome.tsx`, `TodayEditorialSection.tsx`)**:
+    - Trong section "Sắp tới" (Upcoming Events) ở tab Tất cả / Lịch trình trang chủ, TUYỆT ĐỐI NGHIÊM CẤM việc fallback lấy sự kiện cũ / sự kiện trong quá khứ khi danh sách sự kiện sắp tới rỗng.
+    - Khi không có sự kiện sắp tới, BẮT BUỘC hiển thị Empty State sang trọng ("Chưa có sự kiện nào sắp diễn ra").
+  * **Moments Feed vs Story 24h & Camera Media URI Preservation Rule (`media.ts`, `api-client.ts`, `NetworkScreen.tsx`, `PostMomentModal.tsx`)**:
+    - Phân định rạch ròi 100% giữa **Tin 24h Doanh nhân (Story 24h)** và **Mạng Khoảnh khắc Doanh nhân (Moments Feed)**. Bài đăng khoảnh khắc bắt buộc đưa vào `momentsFeed`, có đầy đủ tương tác xã hội (Thả tim, Bình luận, Chia sẻ), tuyệt đối không gộp chung vào Story 24h.
+    - Hàm chuẩn hóa URL hình ảnh (`resolveMediaUrl`) BẮT BUỘC nhận diện và giữ nguyên các giao thức local/data/blob (`file://`, `content://`, `ph://`, `blob:`, `data:`, `assets-library://`). Tuyệt đối không tự ý nối base URL máy chủ vào URI local của camera, tránh gây lỗi 404 và nhảy sang ảnh mẫu khác khi đăng ảnh vừa chụp.
 - **Environment**: Node.js >= 22 (Node 22 is required for native globalThis.WebSocket support on both local and server runtime environments).
 
 ## Folder Structure

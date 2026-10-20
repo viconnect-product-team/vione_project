@@ -209,9 +209,9 @@ export function CardScanDuplicateSheet({
             type="button"
             disabled={busy || selectedTargetId === null}
             onClick={onUpdateExisting}
-            className="flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--bc-mobile-text)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-surface)] transition-opacity hover:opacity-90 disabled:opacity-40 motion-reduce:transition-none"
+            className="flex min-h-12 w-full items-center justify-center rounded-full bc-cta-gold px-6 text-[15px] font-bold text-slate-950 shadow-md shadow-[#D8B282]/25 hover:opacity-95 active:scale-[0.99] disabled:opacity-40 motion-reduce:transition-none cursor-pointer"
           >
-            {t("bc.mobile.cardScan.duplicate.updateExisting")}
+            <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.duplicate.updateExisting")}</span>
           </button>
           <button
             type="button"

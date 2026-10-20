@@ -144,6 +144,18 @@ export class CommunityController {
     return this.connectAppService.acceptCommunityInvite(req.user.id, body.token, body.email);
   }
 
+  @Post('invites/:inviteRef/accept')
+  @UseGuards(JwtAuthGuard)
+  async acceptCommunityInviteByRef(@Request() req, @Param('inviteRef') inviteRef: string) {
+    return this.connectAppService.acceptCommunityInviteByRef(req.user.id, inviteRef);
+  }
+
+  @Post('invites/:inviteRef/decline')
+  @UseGuards(JwtAuthGuard)
+  async declineCommunityInviteByRef(@Request() req, @Param('inviteRef') inviteRef: string) {
+    return this.connectAppService.declineCommunityInviteByRef(req.user.id, inviteRef);
+  }
+
   @Patch('invites/:inviteRef/role')
   @UseGuards(JwtAuthGuard)
   async updateAcceptedInviteRole(

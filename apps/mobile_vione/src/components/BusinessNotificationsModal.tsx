@@ -7,6 +7,8 @@ import {
   ScrollView,
   StyleSheet,
   Pressable,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import {
   X,
@@ -20,13 +22,16 @@ import {
   ChevronRight,
   Clock,
   Briefcase,
+  Users,
+  Check,
 } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../context/ThemeContext";
-import { meApi } from "../api/services";
+import { meApi, communityApi } from "../api/services";
 
 export interface BusinessNotificationItem {
   id: string;
-  type: "connection" | "meeting" | "opportunity" | "event" | "approval" | "task";
+  type: "connection" | "meeting" | "opportunity" | "event" | "approval" | "task" | "community";
   title: string;
   description: string;
   timeAgo: string;
@@ -35,52 +40,8 @@ export interface BusinessNotificationItem {
   metadata?: any;
 }
 
-const INITIAL_NOTIFICATIONS: BusinessNotificationItem[] = [
-  {
-    id: "notif-1",
-    type: "opportunity",
-    title: "Cơ hội kinh doanh mới",
-    description: "Tập đoàn VTech vừa đăng đề xuất hợp tác cung ứng giải pháp chuyển đổi số & AI Doanh nghiệp.",
-    timeAgo: "15 phút trước",
-    isRead: false,
-    actionText: "Xem chi tiết cơ hội",
-  },
-  {
-    id: "notif-2",
-    type: "meeting",
-    title: "Lịch hẹn gặp 1-1",
-    description: "Ông Trần Đức Nam (CEO Logistics Nam Phát) đã xác nhận cuộc hẹn lúc 14:30 chiều nay.",
-    timeAgo: "1 giờ trước",
-    isRead: false,
-    actionText: "Mở lịch trình",
-  },
-  {
-    id: "notif-3",
-    type: "connection",
-    title: "Yêu cầu kết nối danh thiếp",
-    description: "Bà Hoàng Mai Anh (Giám đốc Tài chính VNPay) đã gửi yêu cầu kết nối đối tác với bạn.",
-    timeAgo: "3 giờ trước",
-    isRead: false,
-    actionText: "Chấp nhận kết nối",
-  },
-  {
-    id: "notif-4",
-    type: "event",
-    title: "Điểm danh sự kiện thành công",
-    description: "Vé NFC điện tử của bạn đã được xác thực tại Diễn đàn Doanh nghiệp ViOne Global 2026.",
-    timeAgo: "Hôm qua",
-    isRead: true,
-  },
-  {
-    id: "notif-5",
-    type: "approval",
-    title: "Hồ sơ cần phê duyệt",
-    description: "Ban điều hành hiệp hội có 2 hồ sơ đăng ký thành viên VIP mới cần phê duyệt xét duyệt.",
-    timeAgo: "2 ngày trước",
-    isRead: true,
-    actionText: "Xử lý phê duyệt",
-  },
-];
+// Không hardcode dữ liệu giả - khởi tạo rỗng để luôn lấy dữ liệu thực tế từ server
+const INITIAL_NOTIFICATIONS: BusinessNotificationItem[] = [];
 
 interface BusinessNotificationsModalProps {
   visible: boolean;
@@ -98,6 +59,7 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
   const { isDark } = useTheme();
   const [notifications, setNotifications] = useState<BusinessNotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [activeFilter, setActiveFilter] = useState<"all" | "unread">("all");
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible) {
@@ -108,19 +70,45 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
   const loadNotifications = async () => {
     try {
       const res = await meApi.getNotifications(30);
-      const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      const list = Array.isArray((res as any)?.data)
+        ? (res as any).data
+        : Array.isArray(res)
+        ? res
+        : [];
+
       if (list.length > 0) {
         const mappedList: BusinessNotificationItem[] = list.map((item: any) => {
           let itemType: BusinessNotificationItem["type"] = "event";
-          if (item.sourceDomain === "company_task" || item.notificationKind === "company_task_assigned") {
+          if (
+            item.sourceDomain === "company_task" ||
+            item.notificationKind === "company_task_assigned"
+          ) {
             itemType = "task";
-          } else if (item.sourceDomain === "connection" || item.notificationKind?.includes("connection")) {
+          } else if (
+            item.sourceDomain === "community" ||
+            item.notificationKind?.includes("community") ||
+            item.safeDisplayData?.inviteRef
+          ) {
+            itemType = "community";
+          } else if (
+            item.sourceDomain === "connection" ||
+            item.notificationKind?.includes("connection")
+          ) {
             itemType = "connection";
-          } else if (item.sourceDomain === "meeting" || item.notificationKind?.includes("meeting")) {
+          } else if (
+            item.sourceDomain === "meeting" ||
+            item.notificationKind?.includes("meeting")
+          ) {
             itemType = "meeting";
-          } else if (item.sourceDomain === "opportunity" || item.notificationKind?.includes("opportunity")) {
+          } else if (
+            item.sourceDomain === "opportunity" ||
+            item.notificationKind?.includes("opportunity")
+          ) {
             itemType = "opportunity";
-          } else if (item.sourceDomain === "approval" || item.notificationKind?.includes("approval")) {
+          } else if (
+            item.sourceDomain === "approval" ||
+            item.notificationKind?.includes("approval")
+          ) {
             itemType = "approval";
           }
 
@@ -133,13 +121,32 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
             type: itemType,
             title,
             description: desc,
-            timeAgo: item.createdAt ? new Date(item.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : "Gần đây",
+            timeAgo: item.createdAt
+              ? new Date(item.createdAt).toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "Gần đây",
             isRead,
-            actionText: itemType === "task" ? "Xem việc của tôi" : undefined,
-            metadata: item.safeDisplayData || item.action?.targetParams,
+            actionText:
+              itemType === "task"
+                ? "Xem việc của tôi"
+                : itemType === "community"
+                ? undefined
+                : undefined,
+            metadata: {
+              ...(item.safeDisplayData || {}),
+              ...(item.action?.targetParams || {}),
+              inviteRef:
+                item.safeDisplayData?.inviteRef ||
+                item.action?.targetParams?.inviteRef ||
+                (item.sourceDomain === "community" ? item.sourceRecordId : undefined),
+            },
           };
         });
         setNotifications(mappedList);
+      } else {
+        setNotifications([]);
       }
     } catch {
       // Giữ danh sách ban đầu nếu offline
@@ -164,6 +171,72 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
     } catch {}
   };
 
+  const handleAcceptInvite = async (item: BusinessNotificationItem) => {
+    const inviteRef = item.metadata?.inviteRef;
+    if (!inviteRef) {
+      Alert.alert("Lỗi", "Không tìm thấy mã lời mời cộng đồng.");
+      return;
+    }
+    try {
+      setActionLoadingId(item.id);
+      await communityApi.acceptCommunityInvite(inviteRef);
+      markItemAsRead(item.id);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === item.id
+            ? {
+                ...n,
+                isRead: true,
+                metadata: { ...n.metadata, inviteStatus: "accepted" },
+              }
+            : n
+        )
+      );
+      Alert.alert("Thành công", "Bạn đã đồng ý tham gia cộng đồng!");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Không thể tham gia cộng đồng vào lúc này.";
+      Alert.alert("Thông báo", msg);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleDeclineInvite = async (item: BusinessNotificationItem) => {
+    const inviteRef = item.metadata?.inviteRef;
+    if (!inviteRef) {
+      Alert.alert("Lỗi", "Không tìm thấy mã lời mời cộng đồng.");
+      return;
+    }
+    try {
+      setActionLoadingId(item.id);
+      await communityApi.declineCommunityInvite(inviteRef);
+      markItemAsRead(item.id);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === item.id
+            ? {
+                ...n,
+                isRead: true,
+                metadata: { ...n.metadata, inviteStatus: "declined" },
+              }
+            : n
+        )
+      );
+      Alert.alert("Đã từ chối", "Đã từ chối lời mời tham gia cộng đồng.");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Không thể thao tác vào lúc này.";
+      Alert.alert("Thông báo", msg);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
   const handleItemPress = (item: BusinessNotificationItem) => {
     markItemAsRead(item.id);
     if (item.type === "task") {
@@ -182,6 +255,16 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
           filter: "my_tasks",
         });
       }
+    } else if (item.type === "community" && item.metadata?.inviteStatus === "accepted") {
+      onClose();
+      const communityId = item.metadata?.communityId;
+      if (communityId) {
+        if (navigation?.navigate) {
+          navigation.navigate("Community", { communityId });
+        } else if (onNavigateToTab) {
+          onNavigateToTab("Community", { communityId });
+        }
+      }
     }
   };
 
@@ -194,6 +277,8 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
     switch (type) {
       case "task":
         return <Briefcase size={18} color="#DFB76C" strokeWidth={2} />;
+      case "community":
+        return <Users size={18} color="#DFB76C" strokeWidth={2} />;
       case "opportunity":
         return <TrendingUp size={18} color="#D8B282" strokeWidth={2} />;
       case "meeting":
@@ -344,100 +429,169 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
                 <Text style={styles.emptyDesc}>
                   {activeFilter === "unread"
                     ? "Bạn đã đọc hết mọi thông báo và cập nhật mới."
-                    : "Các hoạt động đối tác, cơ hội hợp tác và lịch gặp sẽ hiển thị tại đây."}
+                    : "Các hoạt động đối tác, lời mời cộng đồng và lịch gặp sẽ hiển thị tại đây."}
                 </Text>
               </View>
             ) : (
-              filteredList.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.itemCard,
-                    {
-                      backgroundColor: isDark
-                        ? item.isRead
-                          ? "#12151F"
-                          : "rgba(22, 32, 50, 0.75)"
-                        : item.isRead
+              filteredList.map((item) => {
+                const isCommunityInvite =
+                  item.type === "community" && !!item.metadata?.inviteRef;
+                const inviteStatus = item.metadata?.inviteStatus;
+                const isBusy = actionLoadingId === item.id;
+
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[
+                      styles.itemCard,
+                      {
+                        backgroundColor: isDark
+                          ? item.isRead
+                            ? "#12151F"
+                            : "rgba(22, 32, 50, 0.75)"
+                          : item.isRead
                           ? "#F8FAFC"
                           : "#FFFFFF",
-                      borderColor: !item.isRead
-                        ? isDark
-                          ? "rgba(216, 178, 130, 0.4)"
-                          : "rgba(216, 178, 130, 0.6)"
-                        : isDark
+                        borderColor: !item.isRead
+                          ? isDark
+                            ? "rgba(216, 178, 130, 0.4)"
+                            : "rgba(216, 178, 130, 0.6)"
+                          : isDark
                           ? "rgba(255, 255, 255, 0.06)"
                           : "#E2E8F0",
-                    },
-                  ]}
-                  onPress={() => handleItemPress(item)}
-                  activeOpacity={0.75}
-                >
-                  <View style={styles.itemIconCol}>
-                    <View
-                      style={[
-                        styles.iconCircle,
-                        {
-                          backgroundColor: isDark
-                            ? "rgba(255, 255, 255, 0.05)"
-                            : "#F1F5F9",
-                        },
-                      ]}
-                    >
-                      {getIcon(item.type)}
-                    </View>
-                    {!item.isRead && <View style={styles.unreadDot} />}
-                  </View>
-
-                  <View style={styles.itemBody}>
-                    <View style={styles.itemTitleRow}>
-                      <Text
+                      },
+                    ]}
+                    onPress={() => handleItemPress(item)}
+                    activeOpacity={0.75}
+                  >
+                    <View style={styles.itemIconCol}>
+                      <View
                         style={[
-                          styles.itemTitle,
+                          styles.iconCircle,
                           {
-                            color: isDark ? "#FFFFFF" : "#0F172A",
-                            fontWeight: item.isRead ? "600" : "800",
+                            backgroundColor: isDark
+                              ? "rgba(255, 255, 255, 0.05)"
+                              : "#F1F5F9",
                           },
                         ]}
-                        numberOfLines={1}
                       >
-                        {item.title}
-                      </Text>
-                      <View style={styles.timeRow}>
-                        <Clock size={11} color={isDark ? "#94A3B8" : "#94A3B8"} />
-                        <Text style={styles.itemTime}>{item.timeAgo}</Text>
+                        {getIcon(item.type)}
                       </View>
+                      {!item.isRead && <View style={styles.unreadDot} />}
                     </View>
 
-                    <Text
-                      style={[
-                        styles.itemDesc,
-                        { color: isDark ? "#94A3B8" : "#475569" },
-                      ]}
-                      numberOfLines={3}
-                    >
-                      {item.description}
-                    </Text>
-
-                    {item.actionText && (
-                      <View style={styles.actionBtnRow}>
+                    <View style={styles.itemBody}>
+                      <View style={styles.itemTitleRow}>
                         <Text
                           style={[
-                            styles.actionLinkText,
-                            { color: isDark ? "#D8B282" : "#A3703C" },
+                            styles.itemTitle,
+                            {
+                              color: isDark ? "#FFFFFF" : "#0F172A",
+                              fontWeight: item.isRead ? "600" : "800",
+                            },
                           ]}
+                          numberOfLines={1}
                         >
-                          {item.actionText}
+                          {item.title}
                         </Text>
-                        <ChevronRight
-                          size={13}
-                          color={isDark ? "#D8B282" : "#A3703C"}
-                        />
+                        <View style={styles.timeRow}>
+                          <Clock size={11} color={isDark ? "#94A3B8" : "#94A3B8"} />
+                          <Text style={styles.itemTime}>{item.timeAgo}</Text>
+                        </View>
                       </View>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ))
+
+                      <Text
+                        style={[
+                          styles.itemDesc,
+                          { color: isDark ? "#94A3B8" : "#475569" },
+                        ]}
+                        numberOfLines={3}
+                      >
+                        {item.description}
+                      </Text>
+
+                      {/* Community Invite Interactive Actions */}
+                      {isCommunityInvite ? (
+                        inviteStatus === "accepted" ? (
+                          <View style={styles.statusBadgeAccepted}>
+                            <Check size={12} color="#10B981" />
+                            <Text style={styles.statusBadgeAcceptedText}>
+                              Đã đồng ý gia nhập
+                            </Text>
+                          </View>
+                        ) : inviteStatus === "declined" ? (
+                          <View style={styles.statusBadgeDeclined}>
+                            <Text style={styles.statusBadgeDeclinedText}>
+                              Đã từ chối lời mời
+                            </Text>
+                          </View>
+                        ) : (
+                          <View style={styles.inviteActionRow}>
+                            <TouchableOpacity
+                              disabled={isBusy}
+                              onPress={() => handleAcceptInvite(item)}
+                              style={styles.acceptInviteBtn}
+                            >
+                              <LinearGradient
+                                colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
+                                style={styles.acceptInviteGrad}
+                              >
+                                {isBusy ? (
+                                  <ActivityIndicator size="small" color="#050C15" />
+                                ) : (
+                                  <>
+                                    <Check size={12} color="#050C15" style={{ marginRight: 4 }} />
+                                    <Text style={styles.acceptInviteText}>Đồng ý tham gia</Text>
+                                  </>
+                                )}
+                              </LinearGradient>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              disabled={isBusy}
+                              onPress={() => handleDeclineInvite(item)}
+                              style={[
+                                styles.declineInviteBtn,
+                                {
+                                  borderColor: isDark
+                                    ? "rgba(255, 255, 255, 0.15)"
+                                    : "#CBD5E1",
+                                },
+                              ]}
+                            >
+                              <Text
+                                style={[
+                                  styles.declineInviteText,
+                                  { color: isDark ? "#94A3B8" : "#64748B" },
+                                ]}
+                              >
+                                Từ chối
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        )
+                      ) : null}
+
+                      {item.actionText && (
+                        <View style={styles.actionBtnRow}>
+                          <Text
+                            style={[
+                              styles.actionLinkText,
+                              { color: isDark ? "#D8B282" : "#A3703C" },
+                            ]}
+                          >
+                            {item.actionText}
+                          </Text>
+                          <ChevronRight
+                            size={13}
+                            color={isDark ? "#D8B282" : "#A3703C"}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
             )}
           </ScrollView>
         </View>
@@ -449,26 +603,24 @@ export const BusinessNotificationsModal: React.FC<BusinessNotificationsModalProp
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "flex-end",
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.72)",
   },
   container: {
+    height: "85%",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    borderTopWidth: 1,
-    maxHeight: "85%",
-    minHeight: 480,
-    paddingBottom: 24,
+    borderWidth: 1,
+    paddingTop: 16,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 18,
-    paddingTop: 16,
+    paddingHorizontal: 20,
     paddingBottom: 14,
     borderBottomWidth: 1,
   },
@@ -478,33 +630,33 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   titleText: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "800",
   },
   badgeCount: {
     backgroundColor: "#EF4444",
     paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 10,
+    minWidth: 18,
+    alignItems: "center",
+    justifyContent: "center",
   },
   badgeCountText: {
     color: "#FFFFFF",
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: "800",
   },
   closeBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 6,
+    borderRadius: 20,
   },
   filterRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   filterTabs: {
     flexDirection: "row",
@@ -512,13 +664,14 @@ const styles = StyleSheet.create({
   },
   filterPill: {
     paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 20,
+    paddingVertical: 6,
+    borderRadius: 16,
     backgroundColor: "transparent",
   },
   filterPillActive: {},
   filterPillText: {
-    fontSize: 12,
+    fontSize: 12.5,
+    fontWeight: "600",
   },
   markAllBtn: {
     flexDirection: "row",
@@ -529,53 +682,69 @@ const styles = StyleSheet.create({
   },
   markAllText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   scrollList: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
     gap: 10,
+  },
+  emptyState: {
+    paddingVertical: 60,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 30,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginTop: 14,
+    marginBottom: 6,
+  },
+  emptyDesc: {
+    fontSize: 13,
+    color: "#94A3B8",
+    textAlign: "center",
+    lineHeight: 18,
   },
   itemCard: {
     flexDirection: "row",
-    padding: 12,
+    padding: 14,
     borderRadius: 16,
     borderWidth: 1,
+    gap: 12,
   },
   itemIconCol: {
-    position: "relative",
-    marginRight: 12,
+    alignItems: "center",
   },
   iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: "center",
     justifyContent: "center",
   },
   unreadDot: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    width: 9,
-    height: 9,
-    borderRadius: 4.5,
-    backgroundColor: "#EF4444",
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: "#D8B282",
+    marginTop: 6,
   },
   itemBody: {
     flex: 1,
   },
   itemTitleRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 4,
   },
   itemTitle: {
-    fontSize: 13.5,
+    fontSize: 14,
     flex: 1,
     marginRight: 8,
   },
@@ -589,35 +758,81 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
   },
   itemDesc: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 12.5,
+    lineHeight: 18,
   },
   actionBtnRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6,
     gap: 2,
+    marginTop: 8,
   },
   actionLinkText: {
     fontSize: 12,
     fontWeight: "700",
   },
-  emptyState: {
+  inviteActionRow: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 24,
+    gap: 8,
+    marginTop: 10,
   },
-  emptyTitle: {
-    fontSize: 15,
+  acceptInviteBtn: {
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  acceptInviteGrad: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  acceptInviteText: {
+    color: "#050C15",
+    fontSize: 11.5,
+    fontWeight: "800",
+  },
+  declineInviteBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  declineInviteText: {
+    fontSize: 11.5,
+    fontWeight: "600",
+  },
+  statusBadgeAccepted: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: "rgba(16, 185, 129, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.3)",
+    marginTop: 8,
+  },
+  statusBadgeAcceptedText: {
+    color: "#10B981",
+    fontSize: 11,
     fontWeight: "700",
-    marginTop: 14,
-    marginBottom: 6,
   },
-  emptyDesc: {
-    fontSize: 12.5,
+  statusBadgeDeclined: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: "rgba(148, 163, 184, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(148, 163, 184, 0.3)",
+    marginTop: 8,
+  },
+  statusBadgeDeclinedText: {
     color: "#94A3B8",
-    textAlign: "center",
-    lineHeight: 18,
+    fontSize: 11,
+    fontWeight: "600",
   },
 });

@@ -25,8 +25,15 @@ export function resolveMediaUrl(url: string | null | undefined): string | null {
   const trimmed = url.trim();
   if (!trimmed || isDeadAvatarUrl(trimmed)) return null;
 
-  // Base64 data image
-  if (trimmed.startsWith("data:")) {
+  // Local URIs from Camera / Gallery / Filesystem or Base64 data image or Blob
+  if (
+    trimmed.startsWith("data:") ||
+    trimmed.startsWith("file://") ||
+    trimmed.startsWith("content://") ||
+    trimmed.startsWith("ph://") ||
+    trimmed.startsWith("blob:") ||
+    trimmed.startsWith("assets-library://")
+  ) {
     return trimmed;
   }
 

@@ -799,54 +799,74 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
                   </View>
                 </View>
 
-                {upcomingEvents.map((ev) => (
+                {upcomingEvents.length === 0 ? (
                   <View
-                    key={ev.id}
-                    style={[
-                      styles.eventCard,
-                      { borderColor: "#8C653B", borderWidth: 1, backgroundColor: isDark ? "#181410" : "#FFFDF9" },
-                    ]}
+                    style={{
+                      paddingVertical: 18,
+                      paddingHorizontal: 16,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderStyle: "dashed",
+                      borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "#E2E8F0",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "#FAFAFA",
+                    }}
                   >
-                    <View style={styles.cardHeaderRow}>
-                      <View style={[styles.cardTag, { backgroundColor: "#F6E1C3", borderColor: "#8C653B", borderWidth: 1 }]}>
-                        <Text style={[styles.cardTagText, { color: "#050C15", fontWeight: "700" }]}>
-                          {ev.community}
+                    <Text style={{ fontSize: 13, color: isDark ? "#A0AEC0" : "#718096", fontStyle: "italic" }}>
+                      Chưa có sự kiện nào sắp diễn ra
+                    </Text>
+                  </View>
+                ) : (
+                  upcomingEvents.map((ev) => (
+                    <View
+                      key={ev.id}
+                      style={[
+                        styles.eventCard,
+                        { borderColor: "#8C653B", borderWidth: 1, backgroundColor: isDark ? "#181410" : "#FFFDF9" },
+                      ]}
+                    >
+                      <View style={styles.cardHeaderRow}>
+                        <View style={[styles.cardTag, { backgroundColor: "#F6E1C3", borderColor: "#8C653B", borderWidth: 1 }]}>
+                          <Text style={[styles.cardTagText, { color: "#050C15", fontWeight: "700" }]}>
+                            {ev.community}
+                          </Text>
+                        </View>
+                        <Text style={[styles.cardDate, { color: "#050C15", fontWeight: "600" }]}>
+                          {ev.time} · {ev.date}
                         </Text>
                       </View>
-                      <Text style={[styles.cardDate, { color: "#050C15", fontWeight: "600" }]}>
-                        {ev.time} · {ev.date}
-                      </Text>
-                    </View>
-                    <Text style={[styles.cardTitle, { color: "#050C15" }]}>{ev.title}</Text>
-                    <View style={{ marginTop: 4 }}>
-                      <Text style={{ fontSize: 12, color: "#050C15" }}>
-                        Địa điểm: <Text style={{ fontWeight: "700" }}>{ev.location}</Text>
-                      </Text>
-                    </View>
-                    <View style={{ marginTop: 10, borderTopWidth: 1, borderTopColor: "rgba(140, 101, 59, 0.2)", paddingTop: 8 }}>
-                      <TouchableOpacity
-                        style={[styles.meetPrimaryActionBtn, { backgroundColor: "#8C653B" }]}
-                        onPress={() => {
-                          setSelectedEventForDetail({
-                            id: ev.id,
-                            title: ev.title,
-                            startsAt: `${ev.time} · ${ev.date}`,
-                            location: ev.location,
-                            category: ev.community,
-                            isRegistered: true,
-                            registeredCount: 88,
-                          });
-                          setEventDetailModalVisible(true);
-                        }}
-                        activeOpacity={0.85}
-                      >
-                        <Text style={[styles.meetPrimaryActionText, { color: "#FFFFFF", fontWeight: "700" }]}>
-                          Xem chi tiết sự kiện
+                      <Text style={[styles.cardTitle, { color: "#050C15" }]}>{ev.title}</Text>
+                      <View style={{ marginTop: 4 }}>
+                        <Text style={{ fontSize: 12, color: "#050C15" }}>
+                          Địa điểm: <Text style={{ fontWeight: "700" }}>{ev.location}</Text>
                         </Text>
-                      </TouchableOpacity>
+                      </View>
+                      <View style={{ marginTop: 10, borderTopWidth: 1, borderTopColor: "rgba(140, 101, 59, 0.2)", paddingTop: 8 }}>
+                        <TouchableOpacity
+                          style={[styles.meetPrimaryActionBtn, { backgroundColor: "#8C653B" }]}
+                          onPress={() => {
+                            setSelectedEventForDetail({
+                              id: ev.id,
+                              title: ev.title,
+                              startsAt: `${ev.time} · ${ev.date}`,
+                              location: ev.location,
+                              category: ev.community,
+                              isRegistered: true,
+                              registeredCount: 88,
+                            });
+                            setEventDetailModalVisible(true);
+                          }}
+                          activeOpacity={0.85}
+                        >
+                          <Text style={[styles.meetPrimaryActionText, { color: "#FFFFFF", fontWeight: "700" }]}>
+                            Xem chi tiết sự kiện
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  ))
+                )}
               </View>
             </View>
           )}

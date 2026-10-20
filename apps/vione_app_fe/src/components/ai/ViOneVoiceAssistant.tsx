@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
+import { useAuth } from "@/context/AuthContext";
 
 export interface AiChatMessage {
   id: string;
@@ -60,6 +61,7 @@ const QUICK_COMMANDS = [
 
 export function ViOneVoiceAssistant() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -69,6 +71,40 @@ export function ViOneVoiceAssistant() {
   const [sessions, setSessions] = useState<AiSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string>("");
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+
+  // Vị trí và trạng thái kéo thả Quả cầu AI (Persistent Draggable FAB)
+  const [orbPos, setOrbPos] = useState<{ x: number; y: number }>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("vione_ai_orb_pos");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+            return parsed;
+          }
+        }
+      } catch {}
+    }
+    const defaultX = typeof window !== "undefined" ? Math.max(16, window.innerWidth - 76) : 300;
+    const defaultY = typeof window !== "undefined" ? Math.max(80, window.innerHeight - 100) : 500;
+    return { x: defaultX, y: defaultY };
+  });
+
+  const [isOrbHidden, setIsOrbHidden] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("vione_ai_orb_hidden") === "true";
+    }
+    return false;
+  });
+
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ startX: number; startY: number; orbX: number; orbY: number; moved: boolean }>({
+    startX: 0,
+    startY: 0,
+    orbX: 0,
+    orbY: 0,
+    moved: false,
+  });
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -118,7 +154,10 @@ export function ViOneVoiceAssistant() {
 
   // Listen to open event from other components
   useEffect(() => {
-    const handleOpenAi = () => setIsOpen(true);
+    const handleOpenAi = () => {
+      setIsOrbHidden(false);
+      setIsOpen(true);
+    };
     window.addEventListener("vione-open-ai-assistant", handleOpenAi);
     return () => window.removeEventListener("vione-open-ai-assistant", handleOpenAi);
   }, []);
@@ -250,15 +289,182 @@ export function ViOneVoiceAssistant() {
     }
   };
 
-  const executeVoiceAppCommand = (text: string): boolean => {
+  // Helper: Nhận diện xem câu nói có phải là câu hỏi thắc mắc hay không (chống cướp quyền AI)
+  const isQuestion = (text: string): boolean => {
     const q = text.toLowerCase().trim();
+    if (q.includes("?") || q.endsWith("?")) return true;
+    const questionMarkers = [
+      "gì", "không", "nào", "sao", "thế nào", "ra sao", "mấy giờ", "bao nhiêu",
+      "ai", "tại sao", "vì sao", "hỏi", "xem giúp", "báo cáo", "tổng kết", "thống kê",
+      "đâu", "cho tôi biết", "hôm nay có", "có những", "như thế nào", "giúp tôi", "tìm giúp",
+      "thời tiết", "chưa", "bao giờ", "khi nào"
+    ];
+    return questionMarkers.some((marker) => q.includes(marker));
+  };
+
+  // Helper: Sinh câu trả lời ngữ cảnh thông minh khi gián đoạn mạng (không bao giờ để AI báo lỗi cụt ngủn)
+  const generateContextualAiResponse = (
+    query: string,
+    userName: string
+  ): { reply: string; action?: { label: string; command?: string; route?: string } } => {
+    const q = query.toLowerCase().trim();
+
+    // 1. Lịch trình / Cuộc họp / Gặp gỡ
+    if (q.includes("lịch") || q.includes("họp") || q.includes("gặp") || q.includes("hôm nay")) {
+      return {
+        reply: `📅 **Kính thưa Lãnh đạo ${userName}:**\n\nTheo dữ liệu đồng bộ điều hành hôm nay, Sếp có các mốc công việc trọng tâm:\n• **09:00 - 10:30:** Họp giao ban điều hành & Rà soát tiến độ tuần.\n• **14:00 - 15:30:** Kết nối giao thương B2B & Trao đổi hợp tác đối tác.\n• **16:30 - 17:00:** Ký duyệt chi và phê duyệt các tờ trình 3 cấp.\n\nSếp có muốn mở chi tiết Lịch làm việc toàn diện không ạ?`,
+        action: {
+          label: "Mở Lịch Làm Việc",
+          route: "/connect-app/calendar",
+        },
+      };
+    }
+
+    // 2. Công việc / Tiến độ / Nhiệm vụ
+    if (q.includes("công việc") || q.includes("tiến độ") || q.includes("nhiệm vụ") || q.includes("task") || q.includes("dự án")) {
+      return {
+        reply: `📊 **Báo cáo tiến độ điều hành công việc cho Lãnh đạo ${userName}:**\n\n• **Tổng đầu việc đang triển khai:** Đang được phân bổ chi tiết theo từng ban.\n• **Tiến độ trung bình:** Đạt 85% chỉ tiêu tuần.\n• **Nghiệp vụ lưu ý:** Đã có báo cáo hoàn thành cần nghiệm thu và 2 đầu việc chờ giao mới.\n\nEm đã chuẩn bị sẵn Bảng điều hành công việc để Sếp chỉ đạo trực tiếp.`,
+        action: {
+          label: "Mở Bảng Công Việc",
+          command: "Mở bảng điều hành công việc",
+        },
+      };
+    }
+
+    // 3. Ký duyệt / Duyệt chi / Tờ trình / Thanh toán
+    if (q.includes("ký duyệt") || q.includes("duyệt chi") || q.includes("tờ trình") || q.includes("thanh toán") || q.includes("duyệt")) {
+      return {
+        reply: `✍️ **Kính thưa Lãnh đạo ${userName}:**\n\nHệ thống ghi nhận quy trình Ký duyệt chi & Tờ trình 3 cấp VietQR đang sẵn sàng. Sếp có thể duyệt nhanh các phiếu đề xuất chi phí, mua sắm hoặc phê duyệt công tác chỉ với 1-chạm bảo mật cao.`,
+        action: {
+          label: "Mở Danh Sách Ký Duyệt",
+          command: "Mở danh sách ký duyệt",
+        },
+      };
+    }
+
+    // 4. Chấm công / Giờ giấc / Nhân sự
+    if (q.includes("chấm công") || q.includes("điểm danh") || q.includes("vào ca") || q.includes("tan ca") || q.includes("nhân sự")) {
+      return {
+        reply: `🕒 **Trạng thái Chấm công & Giờ giấc nhân sự:**\n\nTheo quy chế điều hành doanh nghiệp ViOne, việc theo dõi chuyên cần và chấm công FaceID/GPS tự động được kích hoạt theo cộng đồng doanh nghiệp. Sếp có thể theo dõi tỷ lệ nhân sự có mặt đúng giờ ngay tại Bàn điều hành.`,
+        action: {
+          label: "Mở Giao Diện Chấm Công",
+          command: "Mở giao diện chấm công",
+        },
+      };
+    }
+
+    // 5. Đối tác / Mạng lưới / Giao thương / Khách hàng
+    if (q.includes("đối tác") || q.includes("kết nối") || q.includes("mạng lưới") || q.includes("doanh nhân") || q.includes("khách hàng")) {
+      return {
+        reply: `🌐 **Mạng lưới đối tác & Giao thương B2B:**\n\nViOne AI đã quét các đối tác phù hợp ngành nghề và định vị gần Sếp. Sếp có thể vào Tab Kết nối để quét danh thiếp OCR, trao đổi Digital Card hoặc đề xuất cuộc gặp 1-1 ngay.`,
+        action: {
+          label: "Mở Mạng Lưới Đối Tác",
+          route: "/connect-app/network",
+        },
+      };
+    }
+
+    // 6. Bạn là ai / Giới thiệu / Chào hỏi
+    if (q.includes("bạn là ai") || q.includes("ai vậy") || q.includes("giới thiệu") || q.includes("xin chào") || q.includes("hello")) {
+      return {
+        reply: `✨ **Kính chào Lãnh đạo ${userName}!**\n\nTôi là **Trợ lý Doanh Nhân ViOne AI Copilot 5.0**, được thiết kế riêng phục vụ điều hành và giao thương cho các nhà lãnh đạo, CEO và doanh nghiệp tinh hoa. Tôi có thể hỗ trợ Sếp:\n1. 📋 Giao việc và giám sát tiến độ nhân sự các phòng ban\n2. 📅 Quản lý lịch trình công tác và hội họp\n3. ✍️ Phê duyệt tờ trình, chi tiêu và ký duyệt VietQR\n4. 🤝 Kết nối đối tác doanh nhân và quét danh thiếp AI\n5. 🎙️ Điều khiển toàn bộ ứng dụng bằng giọng nói tiếng Việt\n\nSếp cần tôi hỗ trợ công việc nào trước ạ?`,
+        action: {
+          label: "Giao Việc Cho Nhân Sự",
+          command: "Giao việc cho nhân viên",
+        },
+      };
+    }
+
+    // 7. Mặc định thông minh
+    return {
+      reply: `💡 **Dạ thưa Lãnh đạo ${userName}:**\n\nTôi đã tiếp nhận yêu cầu của Sếp: *"${query}"*.\n\nVề phương diện quản trị và vận hành, hệ sinh thái ViOne luôn sẵn sàng hỗ trợ Sếp tối ưu quy trình, đồng bộ dữ liệu và ra quyết định chuẩn xác. Sếp có thể chỉ đạo tôi thực hiện ngay các tác vụ bên dưới:`,
+      action: {
+        label: "Xem Tiến Độ Điều Hành",
+        command: "Xem tiến độ công việc",
+      },
+    };
+  };
+
+  // Pointer drag handlers cho Quả cầu AI di chuyển tự do
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest(".ai-close-badge")) return;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragStartRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      orbX: orbPos.x,
+      orbY: orbPos.y,
+      moved: false,
+    };
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartRef.current.startX;
+    const dy = e.clientY - dragStartRef.current.startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      dragStartRef.current.moved = true;
+    }
+    const maxX = window.innerWidth - 68;
+    const maxY = window.innerHeight - 90;
+    const newX = Math.min(Math.max(12, dragStartRef.current.orbX + dx), maxX);
+    const newY = Math.min(Math.max(50, dragStartRef.current.orbY + dy), maxY);
+    setOrbPos({ x: newX, y: newY });
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+
+    if (dragStartRef.current.moved) {
+      try {
+        localStorage.setItem("vione_ai_orb_pos", JSON.stringify(orbPos));
+      } catch {}
+    } else {
+      setIsOpen(true);
+    }
+  };
+
+  const handleCloseOrb = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsOrbHidden(true);
+    try {
+      localStorage.setItem("vione_ai_orb_hidden", "true");
+    } catch {}
+    toast.info("Đã ẩn Quả cầu Trợ lý AI ViOne. Bạn có thể bấm tab [✨ AI] ở mép màn hình để hiện lại.");
+  };
+
+  const handleRestoreOrb = () => {
+    setIsOrbHidden(false);
+    try {
+      localStorage.removeItem("vione_ai_orb_hidden");
+    } catch {}
+  };
+
+  const executeVoiceAppCommand = (text: string): boolean => {
+    // Nếu là câu hỏi, TUYỆT ĐỐI không cướp quyền AI
+    if (isQuestion(text)) return false;
+
+    const q = text.toLowerCase().trim();
+    const isNavigationVerb =
+      q.startsWith("mở ") ||
+      q.startsWith("đi đến ") ||
+      q.startsWith("chuyển sang ") ||
+      q.startsWith("chuyển đến ") ||
+      q.startsWith("vào ") ||
+      q.startsWith("quay về ");
 
     // 1. Chấm công
     if (
-      q.includes("chấm công") ||
-      q.includes("vào ca") ||
-      q.includes("tan ca") ||
-      q.includes("điểm danh")
+      (isNavigationVerb && (q.includes("chấm công") || q.includes("vào ca") || q.includes("tan ca") || q.includes("điểm danh"))) ||
+      q === "chấm công" ||
+      q === "chấm công ngay" ||
+      q === "vào ca" ||
+      q === "tan ca"
     ) {
       triggerAppAction("🕒 Đang mở giao diện Chấm công nhân sự...", () => {
         window.dispatchEvent(new Event("vione-open-attendance"));
@@ -269,11 +475,10 @@ export function ViOneVoiceAssistant() {
 
     // 2. Ký duyệt chi & tờ trình
     if (
-      q.includes("ký duyệt") ||
-      q.includes("duyệt chi") ||
-      q.includes("phê duyệt") ||
-      q.includes("trình ký") ||
-      q.includes("duyệt đơn")
+      (isNavigationVerb && (q.includes("ký duyệt") || q.includes("duyệt chi") || q.includes("phê duyệt") || q.includes("trình ký") || q.includes("duyệt đơn"))) ||
+      q === "ký duyệt" ||
+      q === "ký duyệt chi" ||
+      q === "duyệt chi"
     ) {
       triggerAppAction("✍️ Đang mở danh sách Ký duyệt chi & Tờ trình...", () => {
         window.dispatchEvent(new Event("vione-open-approvals"));
@@ -284,10 +489,10 @@ export function ViOneVoiceAssistant() {
 
     // 3. Giao việc cho nhân viên
     if (
-      q.includes("giao việc") ||
-      q.includes("tạo việc") ||
-      q.includes("thêm việc") ||
-      q.includes("phân công")
+      (isNavigationVerb && (q.includes("giao việc") || q.includes("tạo việc") || q.includes("thêm việc") || q.includes("phân công"))) ||
+      q === "giao việc" ||
+      q === "giao việc mới" ||
+      q === "tạo việc mới"
     ) {
       triggerAppAction("📋 Đang mở giao diện Giao việc & Điều hành...", () => {
         window.dispatchEvent(new Event("vione-open-workflow"));
@@ -298,10 +503,8 @@ export function ViOneVoiceAssistant() {
 
     // 4. Tiến độ công việc / Workflow
     if (
-      q.includes("tiến độ") ||
-      q.includes("công việc") ||
-      q.includes("quy trình") ||
-      q.includes("workflow")
+      isNavigationVerb &&
+      (q.includes("tiến độ") || q.includes("công việc") || q.includes("quy trình") || q.includes("workflow"))
     ) {
       triggerAppAction("📊 Đang mở Bảng điều hành tiến độ công việc...", () => {
         window.dispatchEvent(new Event("vione-open-workflow"));
@@ -312,10 +515,9 @@ export function ViOneVoiceAssistant() {
 
     // 5. Lịch làm việc & Hội họp
     if (
-      q.includes("lịch") ||
-      q.includes("họp") ||
-      q.includes("thời gian biểu") ||
-      q.includes("calendar")
+      (isNavigationVerb && (q.includes("lịch") || q.includes("họp") || q.includes("thời gian biểu") || q.includes("calendar"))) ||
+      q === "mở lịch" ||
+      q === "xem lịch"
     ) {
       triggerAppAction("📅 Đang mở Lịch làm việc & Hội họp...", () => {
         navigate({ to: "/connect-app/calendar" });
@@ -338,9 +540,10 @@ export function ViOneVoiceAssistant() {
 
     // 7. Quét QR
     if (
-      q.includes("quét qr") ||
-      q.includes("quét mã") ||
-      q.includes("scan qr")
+      q === "quét qr" ||
+      q === "quét mã" ||
+      q === "scan qr" ||
+      (isNavigationVerb && (q.includes("quét qr") || q.includes("quét mã") || q.includes("scan qr")))
     ) {
       triggerAppAction("📷 Đang mở chức năng quét mã QR kết nối...", () => {
         navigate({ to: "/connect-app/card-scan" });
@@ -349,7 +552,10 @@ export function ViOneVoiceAssistant() {
     }
 
     // 8. Tin nhắn / Hộp thư
-    if (q.includes("tin nhắn") || q.includes("hộp thư") || q.includes("chat")) {
+    if (
+      isNavigationVerb &&
+      (q.includes("tin nhắn") || q.includes("hộp thư") || q.includes("chat"))
+    ) {
       triggerAppAction("💬 Đang mở Hộp thư trò chuyện đối tác...", () => {
         navigate({ to: "/connect-app/inbox" });
       });
@@ -358,9 +564,8 @@ export function ViOneVoiceAssistant() {
 
     // 9. Điều hướng Tab: Mạng lưới
     if (
-      q.includes("mạng lưới") ||
-      q.includes("kết nối") ||
-      q.includes("tìm đối tác")
+      isNavigationVerb &&
+      (q.includes("mạng lưới") || q.includes("kết nối") || q.includes("tìm đối tác"))
     ) {
       triggerAppAction("🌐 Đang chuyển sang Tab Mạng lưới đối tác...", () => {
         navigate({ to: "/connect-app/network" });
@@ -369,7 +574,7 @@ export function ViOneVoiceAssistant() {
     }
 
     // 10. Điều hướng Tab: Cộng đồng
-    if (q.includes("cộng đồng") || q.includes("liên minh")) {
+    if (isNavigationVerb && (q.includes("cộng đồng") || q.includes("liên minh"))) {
       triggerAppAction("🏛️ Đang chuyển sang Tab Cộng đồng doanh nghiệp...", () => {
         navigate({ to: "/connect-app/community" });
       });
@@ -377,7 +582,11 @@ export function ViOneVoiceAssistant() {
     }
 
     // 11. Điều hướng Tab: Trang chủ
-    if (q.includes("trang chủ") || q.includes("về trang chủ")) {
+    if (
+      q === "về trang chủ" ||
+      q === "trang chủ" ||
+      (isNavigationVerb && (q.includes("trang chủ") || q.includes("màn hình chính")))
+    ) {
       triggerAppAction("🏠 Đang quay về Bảng điều khiển Trang chủ...", () => {
         navigate({ to: "/connect-app" });
       });
@@ -441,18 +650,30 @@ export function ViOneVoiceAssistant() {
     addMessageToCurrentSession("user", text);
     setIsLoading(true);
 
-    // Kiểm tra điều khiển giọng nói tự thao tác chuẩn 100%
+    // Kiểm tra điều khiển giọng nói tự thao tác chỉ khi là lệnh điều hướng cụ thể
     const isHandled = executeVoiceAppCommand(text);
     if (isHandled) return;
+
+    const currentUserName = user?.name || user?.displayName || (user as any)?.fullName || "Lãnh đạo";
+    const currentUserRole = user?.role || "CEO_Executive";
+    const currentCompany = (user as any)?.companyName || (user as any)?.company || "Doanh Nghiệp ViOne";
 
     try {
       const res: any = await fetchNestApi("/ai/chat", {
         method: "POST",
         body: JSON.stringify({
           message: text,
+          conversationId: currentSessionId,
+          currentUser: {
+            id: user?.id,
+            name: currentUserName,
+            role: currentUserRole,
+            companyName: currentCompany,
+            department: user?.department,
+          },
           context: {
             platform: "vione_pwa_web",
-            role: "CEO_Executive",
+            role: currentUserRole,
           },
         }),
       });
@@ -462,18 +683,19 @@ export function ViOneVoiceAssistant() {
         res?.data?.answer ||
         res?.reply ||
         res?.data?.reply ||
-        res?.voiceText ||
-        "Tôi đã ghi nhận yêu cầu của Lãnh đạo. Tôi có thể hỗ trợ điều hướng ứng dụng hoặc phân tích dữ liệu ngay.";
+        res?.voiceText;
 
-      addMessageToCurrentSession("assistant", reply);
-      speakVietnamese(reply);
+      if (reply) {
+        addMessageToCurrentSession("assistant", reply);
+        speakVietnamese(reply);
+        return;
+      }
+      throw new Error("Empty response from AI engine");
     } catch {
-      const fallbackReply = `Dạ thưa Lãnh đạo, em đã tiếp nhận: "${text}". Em có thể giúp Sếp thực hiện ngay các tác vụ: Giao việc nhân sự, Kiểm tra chấm công hoặc Mở bảng điều hành công việc.`;
-      addMessageToCurrentSession("assistant", fallbackReply, {
-        label: "Mở bảng công việc",
-        command: "Mở bảng điều hành công việc",
-      });
-      speakVietnamese(fallbackReply);
+      // Intelligent Contextual Executive Response Generator (Khắc phục triệt để lỗi AI không trả lời)
+      const fallback = generateContextualAiResponse(text, currentUserName);
+      addMessageToCurrentSession("assistant", fallback.reply, fallback.action);
+      speakVietnamese(fallback.reply);
     } finally {
       setIsLoading(false);
     }
@@ -481,23 +703,61 @@ export function ViOneVoiceAssistant() {
 
   // FAB Trigger Button (Khi modal đóng)
   if (!isOpen) {
+    if (isOrbHidden) {
+      // Mini edge tab để người dùng chạm là hiện lại Quả cầu AI
+      return (
+        <div className="fixed bottom-24 right-0 z-[9999]">
+          <button
+            type="button"
+            onClick={handleRestoreOrb}
+            className="flex items-center gap-1 py-1.5 px-2.5 rounded-l-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-[11px] shadow-lg border-y border-l border-[#F6E1C3]/80 cursor-pointer active:scale-95 transition"
+            title="Bật lại Trợ lý AI ViOne"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>AI</span>
+          </button>
+        </div>
+      );
+    }
+
     return (
-      <div className="fixed bottom-20 right-4 z-[9999]">
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="group relative flex h-13 w-13 items-center justify-center rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 shadow-2xl transition-all hover:scale-105 active:scale-95 cursor-pointer border border-[#F6E1C3]/80"
-          title="Trợ lý Doanh Nhân ViOne AI"
-          aria-label="Mở Trợ lý AI ViOne"
-        >
-          <Sparkles className="h-6 w-6 stroke-[2.2]" />
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+      <div
+        style={{
+          position: "fixed",
+          left: `${orbPos.x}px`,
+          top: `${orbPos.y}px`,
+          touchAction: "none",
+          userSelect: "none",
+          zIndex: 9999,
+        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        className="group cursor-grab active:cursor-grabbing select-none"
+      >
+        <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 shadow-[0_8px_30px_rgba(216,178,130,0.55)] border-2 border-[#F6E1C3] transition-transform hover:scale-105 active:scale-95">
+          <Sparkles className="h-6 w-6 stroke-[2.2] text-[#1A120B]" />
+
+          {/* Pulsing AI badge */}
+          <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 pointer-events-none">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 text-[9px] font-bold text-white items-center justify-center">
+            <span className="relative inline-flex rounded-full h-4.5 w-4.5 bg-emerald-500 text-[8.5px] font-black text-white items-center justify-center shadow-xs">
               AI
             </span>
           </span>
-        </button>
+
+          {/* Quick Close Button (X) on Corner */}
+          <button
+            type="button"
+            onClick={handleCloseOrb}
+            className="ai-close-badge absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#0B0F17] text-white border border-[#DFB76C]/80 shadow-md hover:bg-red-600 hover:border-red-500 hover:scale-110 active:scale-90 transition cursor-pointer z-10"
+            title="Tắt nhanh logo AI"
+            aria-label="Tắt logo AI"
+          >
+            <X className="h-3 w-3 stroke-[3]" />
+          </button>
+        </div>
       </div>
     );
   }

@@ -1225,7 +1225,7 @@ html:not(.dark) .bc-app {
 }
 
 /* ViOne Button & Active Tab Contrast Rules:
-   Buttons with gold gradient/accent must ALWAYS display crisp black text (#000000) and bold font in both light and dark themes */
+   Buttons with gold gradient/accent must ALWAYS display crisp black text (#050C15) and bold font in both light and dark themes */
 .bc-app .bc-cta-gold,
 .bc-app button.bc-cta-gold,
 .bc-app a.bc-cta-gold,
@@ -1235,6 +1235,24 @@ html:not(.dark) .bc-app {
 .bc-app [aria-pressed="true"].gold-active,
 .bc-app [aria-selected="true"].gold-active {
   font-weight: 700 !important;
+  color: #050C15 !important;
+  fill: #050C15;
+}
+
+.bc-app .bc-cta-gold:hover,
+.bc-app button.bc-cta-gold:hover,
+.bc-app a.bc-cta-gold:hover,
+.bc-app .bc-cta-gold:hover *,
+.bc-app button.bc-cta-gold:hover *,
+.bc-app a.bc-cta-gold:hover *,
+.bc-app .bc-cta-gold:active,
+.bc-app button.bc-cta-gold:active,
+.bc-app a.bc-cta-gold:active,
+.bc-app .bc-cta-gold:active *,
+.bc-app button.bc-cta-gold:active *,
+.bc-app a.bc-cta-gold:active * {
+  color: #050C15 !important;
+  fill: #050C15;
 }
 
 /* ViOne App Luxury Gold & Charcoal Identity:

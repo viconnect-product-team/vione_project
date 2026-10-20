@@ -45,6 +45,21 @@ export class FinalizeMomentDto {
   momentId?: string;
 
   @IsOptional()
+  @IsString()
+  clientToken?: string;
+
+  @IsOptional()
+  @IsArray()
+  verifiedSlotOrders?: number[];
+
+  @IsOptional()
+  @IsArray()
+  uploadedMediaIds?: string[];
+
+  @IsOptional()
+  mediaPaths?: Record<string, string>;
+
+  @IsOptional()
   @IsArray()
   photos?: any[];
 

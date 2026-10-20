@@ -6,6 +6,7 @@ import {
   composePersonId,
   runCardOcrVision,
   candidateFromRawModelOutput,
+  parseCardHeuristicFallback,
   callSuggestCustomerTagsAi,
 } from './connect-helpers';
 
@@ -493,21 +494,8 @@ export class ConnectCustomerService {
     try {
       raw = await runCardOcrVision(imageDataUrl);
     } catch (err: any) {
-      this.logger.warn(`cardScanOcr vision error or no API key configured: ${err?.message || err}`);
-      raw = {
-        isBusinessCard: true,
-        unusableReason: null,
-        lines: [
-          { text: "Thông tin danh thiếp", confidence: 0.95 },
-          { text: "Đối tác liên hệ", confidence: 0.9 },
-          { text: "0900000000", confidence: 0.85 },
-        ],
-        displayNameLine: 0,
-        titleLine: 1,
-        companyNameLine: null,
-        addressLine: null,
-        qrPresent: false,
-      };
+      this.logger.warn(`cardScanOcr vision error: ${err?.message || err}`);
+      raw = parseCardHeuristicFallback(imageDataUrl);
     }
     const scanId = crypto.randomUUID();
     const result = candidateFromRawModelOutput(raw, scanId);

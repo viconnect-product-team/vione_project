@@ -142,6 +142,10 @@ export function resolveMediaUrl(url: string | null | undefined): string | null {
   const trimmed = url.trim();
   if (!trimmed || isDeadAvatarUrl(trimmed)) return null;
 
+  if (trimmed.startsWith("data:") || trimmed.startsWith("blob:")) {
+    return trimmed;
+  }
+
   if (trimmed.startsWith("/upload/")) {
     return `/api${trimmed}`;
   }

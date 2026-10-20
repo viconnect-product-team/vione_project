@@ -320,11 +320,7 @@ export function getCommunityVisuals(name: string, logoUrl?: string | null, banne
   let defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80";
   let category = "Hiệp Hội Doanh Nghiệp B2B";
   let categoryColor = "border-[#D8B282]/50 bg-[#D8B282]/15 text-[#8C653B] dark:text-[#F6E1C3]";
-  let attendees = [
-    "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80",
-  ];
+  let attendees: string[] = [];
   let descFallback = "Liên minh xúc tiến thương mại, kết nối cơ hội kinh doanh và đầu tư quy mô lớn.";
 
   if (lower.includes("vione") || lower.includes("gia đình") || lower.includes("ceo") || lower.includes("1983")) {
@@ -332,22 +328,14 @@ export function getCommunityVisuals(name: string, logoUrl?: string | null, banne
     defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
     category = "Gia Đình ViOne • Doanh Nghiệp";
     categoryColor = "border-[#D8B282]/50 bg-[#D8B282]/15 text-[#8C653B] dark:text-[#F6E1C3]";
-    attendees = [
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80",
-    ];
+    attendees = [];
     descFallback = "Mạng lưới kết nối Chủ tịch, CEO & Lãnh đạo doanh nghiệp thuộc Gia Đình ViOne.";
   } else if (lower.includes("ai") || lower.includes("vietnam") || lower.includes("tech")) {
     defaultBanner = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80";
     defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80";
     category = "AI & Chuyển Đổi Số";
     categoryColor = "border-slate-300/60 dark:border-slate-600 bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200";
-    attendees = [
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
-    ];
+    attendees = [];
     descFallback = "Cộng đồng chuyên gia, Founder & Kỹ sư AI tiên phong ứng dụng công nghệ thực chiến.";
   }
 
@@ -370,7 +358,7 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
   const cleanName = sanitizeVietnameseText(community.name);
   const visuals = getCommunityVisuals(cleanName, community.logoUrl, community.bannerUrl);
   const cleanDesc = sanitizeVietnameseText(community.shortDescription) || sanitizeVietnameseText(visuals.descFallback);
-  const memberCount = community.memberCount ?? 24;
+  const memberCount = community.memberCount ?? 1;
 
   return (
     <li className="overflow-hidden rounded-3xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] shadow-xs transition-all duration-300 hover:border-[var(--bc-mobile-border-active)] active:border-[var(--bc-mobile-border-active)] flex flex-col">
@@ -448,17 +436,10 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
         {/* Overlapping Members Pile & Activity Metrics */}
         <div className="mt-3.5 pt-3 border-t border-[var(--bc-mobile-border)] flex items-center justify-between gap-2 text-xs">
           
-          {/* Member Avatars Row */}
+          {/* Member Row */}
           <div className="flex items-center gap-2">
-            <div className="flex -space-x-2">
-              {visuals.attendees.map((attUrl, i) => (
-                <img
-                  key={i}
-                  src={attUrl}
-                  alt="Thành viên"
-                  className="h-6 w-6 rounded-full object-cover border border-[var(--bc-mobile-border)] shadow-xs"
-                />
-              ))}
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D8B282]/15 border border-[#D8B282]/30 text-[#8C653B] dark:text-[#F6E1C3]">
+              <Users className="h-3.5 w-3.5" />
             </div>
             <span className="font-semibold text-[var(--bc-mobile-accent)] text-[11.5px]">
               {memberCount} thành viên

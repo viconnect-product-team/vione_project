@@ -95,6 +95,7 @@ type SaveOutcome = {
   displayName: string;
   title: string | null;
   companyName: string | null;
+  phone?: string | null;
 };
 
 export function CardScanFlow() {
@@ -275,15 +276,28 @@ export function CardScanFlow() {
       return;
     }
     try {
-      const r = await resolveFn({
-        data: {
-          email: payload.email,
-          phone: payload.phone,
-          displayName: payload.displayName || null,
-          companyName: payload.companyName,
-        },
-      });
-      setResolution(r);
+      let r: any;
+      try {
+        r = await resolveFn({
+          data: {
+            email: payload.email,
+            phone: payload.phone,
+            displayName: payload.displayName || null,
+            companyName: payload.companyName,
+          },
+        });
+      } catch {
+        r = await fetchNestApi<any>("/connect-app/card-scan/resolve", {
+          method: "POST",
+          body: JSON.stringify({
+            email: payload.email,
+            phone: payload.phone,
+            displayName: payload.displayName || null,
+            companyName: payload.companyName,
+          }),
+        });
+      }
+      setResolution(r || { state: "none", candidates: [] });
     } catch {
       setResolution({ state: "none", candidates: [] });
     }
@@ -295,13 +309,23 @@ export function CardScanFlow() {
     setStage("processing");
     setScanError(null);
     try {
-      const result = await Promise.race([
-        scanFn({ data: { imageDataUrl: image.dataUrl, clientToken: safeRandomUUID() } }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("client-timeout")), CLIENT_TIMEOUT_MS),
-        ),
-      ]);
-      if (result.ok) {
+      let result: any;
+      try {
+        result = await Promise.race([
+          scanFn({ data: { imageDataUrl: image.dataUrl, clientToken: safeRandomUUID() } }),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("client-timeout")), CLIENT_TIMEOUT_MS),
+          ),
+        ]);
+      } catch (rpcErr) {
+        console.warn("scanFn RPC error, falling back to direct NestJS REST API:", rpcErr);
+        result = await fetchNestApi<any>("/connect-app/card-scan", {
+          method: "POST",
+          body: JSON.stringify({ imageDataUrl: image.dataUrl, clientToken: safeRandomUUID() }),
+        });
+      }
+
+      if (result && result.ok) {
         const nextDraft = draftFromCandidate(result.candidate);
         setCandidate(result.candidate);
         setDraft(nextDraft);
@@ -316,13 +340,14 @@ export function CardScanFlow() {
         setStage("review");
         reportCardScanMetric("OCR_REVIEW_OPENED");
         void refreshResolution(nextDraft);
-      } else if (result.code === "unusable") {
+      } else if (result && result.code === "unusable") {
         setStage("unusable");
       } else {
-        setScanError(result.code);
+        setScanError(result?.code || "failed");
         setStage("error");
       }
-    } catch {
+    } catch (finalErr) {
+      console.error("Card scan error:", finalErr);
       // Client timeout or transport failure — the image is still local.
       setScanError("timeout");
       setStage("error");
@@ -376,24 +401,47 @@ export function CardScanFlow() {
 
     try {
       const payload = toScanSavePayload(draft);
-      const res = await saveFn({
-        data: {
-          clientToken: clientTokenRef.current,
-          scanId: candidate.scanId,
-          displayName: payload.displayName,
-          phone: payload.phone,
-          email: payload.email,
-          companyName: payload.companyName,
-          title: payload.title,
-          website: payload.website,
-          address: payload.address,
-          resolution: resolutionChoice,
-          targetPersonId,
-          confirmedNew: opts?.confirmedNew === true,
-          fieldChoices: opts?.fieldChoices ?? null,
-        },
-      });
-      if (res.ok) {
+      let res: any;
+      try {
+        res = await saveFn({
+          data: {
+            clientToken: clientTokenRef.current,
+            scanId: candidate.scanId,
+            displayName: payload.displayName,
+            phone: payload.phone,
+            email: payload.email,
+            companyName: payload.companyName,
+            title: payload.title,
+            website: payload.website,
+            address: payload.address,
+            resolution: resolutionChoice,
+            targetPersonId,
+            confirmedNew: opts?.confirmedNew === true,
+            fieldChoices: opts?.fieldChoices ?? null,
+          },
+        });
+      } catch (saveRpcErr) {
+        console.warn("saveFn RPC error, falling back to direct NestJS REST API:", saveRpcErr);
+        res = await fetchNestApi<any>("/connect-app/card-scan/save", {
+          method: "POST",
+          body: JSON.stringify({
+            clientToken: clientTokenRef.current,
+            scanId: candidate.scanId,
+            displayName: payload.displayName,
+            phone: payload.phone,
+            email: payload.email,
+            companyName: payload.companyName,
+            title: payload.title,
+            website: payload.website,
+            address: payload.address,
+            resolution: resolutionChoice,
+            targetPersonId,
+            confirmedNew: opts?.confirmedNew === true,
+            fieldChoices: opts?.fieldChoices ?? null,
+          }),
+        });
+      }
+      if (res && res.ok) {
         // Mark synced in local storage
         try {
           const prevHistory = JSON.parse(localStorage.getItem("vba_scanned_cards_history") || "[]");
@@ -409,6 +457,7 @@ export function CardScanFlow() {
           displayName: res.displayName,
           title: res.title,
           companyName: res.companyName,
+          phone: draft.phones[draft.primaryPhone]?.value || draft.phones[0]?.value || null,
         });
         // Batch session log: one entry per saved card, newest first.
         setSessionSaved((prev) => [
@@ -440,6 +489,7 @@ export function CardScanFlow() {
         displayName: draft.displayName,
         title: draft.title,
         companyName: draft.companyName,
+        phone: draft.phones[draft.primaryPhone]?.value || draft.phones[0]?.value || null,
       });
       setSessionSaved((prev) => [
         { personId: localContactRecord.id, displayName: draft.displayName, result: "created" },
@@ -837,6 +887,7 @@ export function CardScanFlow() {
           displayName={saveOutcome.displayName}
           title={saveOutcome.title}
           companyName={saveOutcome.companyName}
+          phone={saveOutcome.phone}
           ocrConfidence={candidate?.overallConfidence}
           sessionSaved={sessionSaved}
           onScanAnother={retake}
@@ -865,10 +916,10 @@ export function CardScanFlow() {
               <button
                 type="button"
                 onClick={() => void recognize()}
-                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--bc-mobile-text)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-surface)] transition-opacity hover:opacity-90 motion-reduce:transition-none"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bc-cta-gold px-6 text-[15px] font-bold text-slate-950 shadow-md transition-all hover:brightness-105 active:scale-95 cursor-pointer"
               >
-                <RefreshCw className="h-4 w-4" strokeWidth={1.8} aria-hidden />
-                {t("bc.mobile.cardScan.retry")}
+                <RefreshCw className="h-4 w-4 text-slate-950" strokeWidth={2} aria-hidden />
+                <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.retry")}</span>
               </button>
             ) : null}
             <div className="grid grid-cols-2 gap-3">
@@ -908,10 +959,10 @@ export function CardScanFlow() {
               <button
                 type="button"
                 onClick={() => void recognize()}
-                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--bc-mobile-text)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-surface)] transition-opacity hover:opacity-90 motion-reduce:transition-none"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bc-cta-gold px-6 text-[15px] font-bold text-slate-950 shadow-md transition-all hover:brightness-105 active:scale-95 cursor-pointer"
               >
-                <RefreshCw className="h-4 w-4" strokeWidth={1.8} aria-hidden />
-                {t("bc.mobile.cardScan.retry")}
+                <RefreshCw className="h-4 w-4 text-slate-950" strokeWidth={2} aria-hidden />
+                <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.retry")}</span>
               </button>
             ) : null}
             <button

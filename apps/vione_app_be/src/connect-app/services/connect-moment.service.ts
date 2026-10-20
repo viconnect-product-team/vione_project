@@ -152,6 +152,13 @@ export class ConnectMomentService {
       for (const [mediaId, storagePath] of Object.entries(mediaPaths)) {
         await this.repo.updateMediaStoragePath(mediaId, userId, String(storagePath));
       }
+    } else if (Array.isArray(input.photoUrls) && input.photoUrls.length > 0) {
+      const slots = await this.repo.findMomentMediaSlots(momentId);
+      for (let i = 0; i < input.photoUrls.length; i++) {
+        if (slots[i] && input.photoUrls[i]) {
+          await this.repo.updateMediaStoragePath(slots[i].id, userId, String(input.photoUrls[i]));
+        }
+      }
     }
 
     const slots = await this.repo.findMomentMediaSlots(momentId);

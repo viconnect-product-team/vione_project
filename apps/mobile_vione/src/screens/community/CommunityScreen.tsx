@@ -152,33 +152,28 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     try {
       const commRes = await communityApi.getMyCommunities();
       const commList = Array.isArray(commRes) ? commRes : (commRes as any)?.data || [];
-      if (commList.length > 0) {
-        setCommunities((prev) => {
-          // Merge api items
-          const mapped = commList.map((c: any) => {
-            const isCompany =
-              c.communityType === "company_internal" ||
-              c.name?.toLowerCase().includes("công ty") ||
-              c.name?.toLowerCase().includes("tập đoàn");
-            return {
-              id: c.id || c.communityId,
-              name: c.name,
-              shortDescription: c.shortDescription || c.description,
-              description: c.description,
-              logoUrl: c.logoUrl,
-              bannerUrl: c.bannerUrl,
-              communityType: (isCompany ? "company_internal" : "b2b_networking") as CommunityType,
-              memberCount: c.memberCount || 24,
-              viewerRole: (c.viewerRole || (c.role === "Ban Điều Hành" ? "admin" : "member")) as any,
-              isMember: c.isMember ?? true,
-              upcomingEventsCount: 2,
-              openOpportunityCount: 3,
-              canEdit: c.viewerRole === "admin",
-            };
-          });
-          return mapped;
-        });
-      }
+      const mapped = commList.map((c: any) => {
+        const isCompany =
+          c.communityType === "company_internal" ||
+          c.name?.toLowerCase().includes("công ty") ||
+          c.name?.toLowerCase().includes("tập đoàn");
+        return {
+          id: c.id || c.communityId,
+          name: c.name,
+          shortDescription: c.shortDescription || c.description,
+          description: c.description,
+          logoUrl: c.logoUrl,
+          bannerUrl: c.bannerUrl,
+          communityType: (isCompany ? "company_internal" : "b2b_networking") as CommunityType,
+          memberCount: c.memberCount || 1,
+          viewerRole: (c.viewerRole || (c.role === "Ban Điều Hành" ? "admin" : "member")) as any,
+          isMember: c.isMember ?? true,
+          upcomingEventsCount: 0,
+          openOpportunityCount: 0,
+          canEdit: c.viewerRole === "admin",
+        };
+      });
+      setCommunities(mapped);
     } catch {
       // Keep initial
     }

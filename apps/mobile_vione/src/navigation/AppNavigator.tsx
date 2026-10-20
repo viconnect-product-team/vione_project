@@ -30,6 +30,7 @@ import { ApprovalsModal } from "../components/ApprovalsModal";
 import { AssignTaskModal } from "../components/AssignTaskModal";
 import { StaffDailyActivityModal } from "../components/StaffDailyActivityModal";
 import { ViOneVoiceAssistantModal } from "../components/ai/ViOneVoiceAssistantModal";
+import { DraggableFloatingAiOrb } from "../components/ai/DraggableFloatingAiOrb";
 import { CardScanReviewModal } from "../components/CardScanReviewModal";
 import { PostMomentModal } from "../components/PostMomentModal";
 import {
@@ -193,6 +194,12 @@ export const AppNavigator: React.FC = () => {
             `Đã từ chối kết nối với ${req.name}. Thông báo phản hồi đã được gửi tới đối tác.`
           );
         }}
+      />
+
+      {/* Global Persistent Draggable Floating AI Orb */}
+      <DraggableFloatingAiOrb
+        visible={isAuthenticated && !aiAssistantVisible}
+        onPress={() => setAiAssistantVisible(true)}
       />
     </NavigationContainer>
   );

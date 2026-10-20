@@ -358,6 +358,8 @@ export function CustomersPanel() {
               const res = await create.mutateAsync({
                 personId: person.personId,
                 displayName: person.displayName,
+                fullName: person.displayName,
+                name: person.displayName,
                 companyName: person.companyName,
               });
               setPicking(false);

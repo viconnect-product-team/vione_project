@@ -88,6 +88,14 @@ export function PostMomentModal({
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [isLiveCameraOpen, setIsLiveCameraOpen] = useState(false);
 
+  // Gắn stream vào video element khi modal camera mở
+  useEffect(() => {
+    if (isLiveCameraOpen && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isLiveCameraOpen, cameraStream]);
+
   // Khởi động Camera trực tiếp từ thiết bị hoặc trình duyệt
   const startLiveCamera = async () => {
     try {
@@ -101,9 +109,6 @@ export function PostMomentModal({
       });
       setCameraStream(stream);
       setIsLiveCameraOpen(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
     } catch {
       // Fallback mở trực tiếp app Camera gốc trên điện thoại
       cameraInputRef.current?.click();
@@ -118,6 +123,8 @@ export function PostMomentModal({
     setIsLiveCameraOpen(false);
   };
 
+  const activeObjectUrlsRef = useRef<Set<string>>(new Set());
+
   const capturePhotoFromLive = () => {
     if (!videoRef.current) return;
     const video = videoRef.current;
@@ -131,6 +138,7 @@ export function PostMomentModal({
       if (!blob) return;
       const file = new File([blob], `moment-cam-${Date.now()}.jpg`, { type: "image/jpeg" });
       const previewUrl = URL.createObjectURL(file);
+      activeObjectUrlsRef.current.add(previewUrl);
       setPhotos((prev) => [...prev.slice(0, 5), { file, previewUrl }]);
       toast.success("Đã chụp ảnh khoảnh khắc thành công!");
       stopLiveCamera();
@@ -147,15 +155,20 @@ export function PostMomentModal({
     }
   }, [initialTaggedPersonId, network.people]);
 
-  // Clean up object URLs and camera streams on unmount
+  // Clean up object URLs and camera streams strictly on component unmount
   useEffect(() => {
     return () => {
-      photos.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+      activeObjectUrlsRef.current.forEach((url) => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+      });
+      activeObjectUrlsRef.current.clear();
       if (cameraStream) {
         cameraStream.getTracks().forEach((t) => t.stop());
       }
     };
-  }, [photos, cameraStream]);
+  }, []);
 
   // Auto-resize textarea
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -170,7 +183,13 @@ export function PostMomentModal({
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const validFiles = files.filter((f) => f.type.startsWith("image/"));
+    // Chấp nhận ảnh cả khi camera thiết bị trả về mime rỗng hoặc file ảnh hợp lệ
+    const validFiles = files.filter(
+      (f) =>
+        f.type.startsWith("image/") ||
+        /\.(jpe?g|png|webp|heic|bmp|gif)$/i.test(f.name) ||
+        (!f.type && f.size > 0),
+    );
     if (validFiles.length + photos.length > 6) {
       toast.warning("Bạn có thể tải lên tối đa 6 ảnh cho mỗi khoảnh khắc.");
     }
@@ -178,19 +197,29 @@ export function PostMomentModal({
     const availableSlots = Math.max(0, 6 - photos.length);
     const filesToAdd = validFiles.slice(0, availableSlots);
 
-    const newPhotos = filesToAdd.map((file) => ({
-      file,
-      previewUrl: URL.createObjectURL(file),
-    }));
+    const newPhotos = filesToAdd.map((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      activeObjectUrlsRef.current.add(previewUrl);
+      return {
+        file,
+        previewUrl,
+      };
+    });
 
     setPhotos((prev) => [...prev, ...newPhotos]);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   const removePhoto = (index: number) => {
     setPhotos((prev) => {
       const target = prev[index];
-      if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
+      if (target?.previewUrl) {
+        try {
+          URL.revokeObjectURL(target.previewUrl);
+        } catch {}
+        activeObjectUrlsRef.current.delete(target.previewUrl);
+      }
       return prev.filter((_, i) => i !== index);
     });
   };
@@ -221,7 +250,8 @@ export function PostMomentModal({
       const uploadedUrls: string[] = [];
       for (const p of photos) {
         try {
-          const res = await uploadFileToNest(p.file, "relationship-moments");
+          const safeFilename = p.file.name && p.file.name.includes(".") ? p.file.name : `moment_${Date.now()}.jpg`;
+          const res = await uploadFileToNest(p.file, safeFilename);
           if (res) {
             uploadedUrls.push(res);
           }
@@ -241,40 +271,89 @@ export function PostMomentModal({
       const feelingObj = FEELINGS_LIST.find((f) => f.id === selectedFeeling);
       const eventName = feelingObj ? `${feelingObj.emoji} ${feelingObj.label}` : undefined;
 
-      // 2. Prepare & Finalize Moment via Nest API
-      const prepRes = await bcMobileMomentPrepareFn({
-        data: {
-          clientToken,
-          personId: primaryPersonId,
-          occurredAt: new Date().toISOString(),
-          eventName,
-          placeLabel: location.trim() || undefined,
-          note: cleanContent,
-          photoCount: uploadedUrls.length,
-          photoUrls: uploadedUrls,
-          visibility,
-        },
-      });
+      // 2. Prepare & Finalize Moment via Nest API (with direct client fallback)
+      let prepRes: any;
+      try {
+        prepRes = await bcMobileMomentPrepareFn({
+          data: {
+            clientToken,
+            personId: primaryPersonId,
+            occurredAt: new Date().toISOString(),
+            eventName,
+            placeLabel: location.trim() || undefined,
+            note: cleanContent,
+            photoCount: uploadedUrls.length,
+            photoUrls: uploadedUrls,
+            visibility,
+          },
+        });
+      } catch (prepRpcErr) {
+        console.warn("Prepare moment RPC error, falling back to direct NestJS REST API:", prepRpcErr);
+        prepRes = await fetchNestApi<any>("/connect-app/moment/", {
+          method: "POST",
+          body: JSON.stringify({
+            clientToken,
+            personId: primaryPersonId,
+            occurredAt: new Date().toISOString(),
+            eventName,
+            placeLabel: location.trim() || undefined,
+            note: cleanContent,
+            photoCount: uploadedUrls.length,
+            photoUrls: uploadedUrls,
+            visibility,
+          }),
+        });
+      }
 
-      if (prepRes.ok) {
+      if (prepRes && prepRes.ok) {
         const photoSlots = prepRes.photos || [];
         const mediaPaths: Record<string, string> = {};
-        photoSlots.forEach((s, idx) => {
+        photoSlots.forEach((s: any, idx: number) => {
           if (s.mediaId) {
             mediaPaths[s.mediaId] = uploadedUrls[idx] || s.storagePath;
           }
         });
 
-        await bcMobileMomentFinalizeFn({
-          data: {
-            clientToken,
-            momentId: prepRes.momentId,
-            verifiedSlotOrders: photoSlots.map((s) => s.sortOrder),
-            uploadedMediaIds: photoSlots.map((s) => s.mediaId),
-            mediaPaths,
-          },
-        });
+        try {
+          await bcMobileMomentFinalizeFn({
+            data: {
+              clientToken,
+              momentId: prepRes.momentId,
+              verifiedSlotOrders: photoSlots.map((s: any) => s.sortOrder),
+              uploadedMediaIds: photoSlots.map((s: any) => s.mediaId),
+              mediaPaths,
+            },
+          });
+        } catch {
+          await fetchNestApi<any>(`/connect-app/moment/${prepRes.momentId}/finalize`, {
+            method: "POST",
+            body: JSON.stringify({
+              clientToken,
+              verifiedSlotOrders: photoSlots.map((s: any) => s.sortOrder),
+              uploadedMediaIds: photoSlots.map((s: any) => s.mediaId),
+              mediaPaths,
+            }),
+          });
+        }
       }
+
+      // Lưu trữ ngay bài đăng vào local storage để đảm bảo hiển thị tức thì trên đầu bảng tin
+      try {
+        const savedMoments = JSON.parse(localStorage.getItem("vba_local_moments") || "[]");
+        const newLocalMoment = {
+          id: prepRes?.ok ? prepRes.momentId : `moment-${Date.now()}`,
+          authorName: "Tôi",
+          content: cleanContent,
+          photos: uploadedUrls,
+          photoUrls: uploadedUrls,
+          occurredAt: new Date().toISOString(),
+          visibility,
+          eventName,
+          placeLabel: location.trim() || undefined,
+        };
+        localStorage.setItem("vba_local_moments", JSON.stringify([newLocalMoment, ...savedMoments.slice(0, 30)]));
+      } catch {}
+
 
       // 3. Notify tagged connections via broadcast or API
       if (taggedPersons.length > 0) {
@@ -297,11 +376,19 @@ export function PostMomentModal({
       });
 
       // Refetch network and feeds
+      queryClient.invalidateQueries({ queryKey: ["bc-mobile", "network-feed"] });
       queryClient.invalidateQueries({ queryKey: ["bc-mobile"] });
       queryClient.invalidateQueries({ queryKey: ["network-feed"] });
       queryClient.invalidateQueries({ queryKey: ["bc-home"] });
 
-      // Reset and close
+      // Clean up object URLs and reset
+      activeObjectUrlsRef.current.forEach((url) => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+      });
+      activeObjectUrlsRef.current.clear();
+
       setContent("");
       setPhotos([]);
       setTaggedPersons([]);

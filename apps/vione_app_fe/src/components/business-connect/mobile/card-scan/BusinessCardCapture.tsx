@@ -351,19 +351,19 @@ export function BusinessCardCapture({
                   className={`flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md transition-colors cursor-pointer shadow-md ${
                     torch
                       ? "bg-[var(--bc-mobile-accent)] text-slate-950 ring-2 ring-[var(--bc-mobile-accent)]/50"
-                      : "bg-black/60 text-white hover:bg-black/80"
+                      : "bg-[#141C2B]/90 text-[#DFB76C] border border-[#D8B282]/30 hover:bg-[#1A2234]"
                   }`}
                 >
-                  {torch ? <Zap className="h-4 w-4 fill-current" /> : <ZapOff className="h-4 w-4" />}
+                  {torch ? <Zap className="h-4 w-4 fill-current text-slate-950" /> : <ZapOff className="h-4 w-4 text-[#DFB76C]" />}
                 </button>
               )}
               <button
                 type="button"
                 onClick={() => setFacingMode((m) => (m === "environment" ? "user" : "environment"))}
                 aria-label="Đổi camera"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md hover:bg-black/80 transition-colors cursor-pointer shadow-md"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#141C2B]/90 text-[#DFB76C] border border-[#D8B282]/30 backdrop-blur-md hover:bg-[#1A2234] transition-colors cursor-pointer shadow-md"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4 text-[#DFB76C]" />
               </button>
             </div>
           )}
@@ -403,17 +403,17 @@ export function BusinessCardCapture({
                     <button
                       type="button"
                       onClick={() => cameraInputRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#D97706] to-[#F59E0B] text-white shadow-md cursor-pointer hover:brightness-105 active:scale-95 transition-all"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold bc-cta-gold text-slate-950 shadow-md cursor-pointer hover:brightness-105 active:scale-95 transition-all"
                     >
-                      <Camera className="h-3.5 w-3.5" />
-                      <span>Mở Máy Ảnh Chụp Ngay</span>
+                      <Camera className="h-3.5 w-3.5 text-slate-950" />
+                      <span className="text-slate-950 font-bold">Mở Máy Ảnh Chụp Ngay</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => onLibrary()}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] text-[var(--bc-mobile-text)] hover:opacity-80 active:scale-95 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-[var(--bc-mobile-border-gold)] bg-[var(--bc-mobile-surface)] text-[var(--bc-mobile-text)] hover:opacity-80 active:scale-95 transition-all cursor-pointer"
                     >
-                      <ImagePlus className="h-3.5 w-3.5 text-amber-500" />
+                      <ImagePlus className="h-3.5 w-3.5 text-[var(--bc-mobile-accent-strong)]" />
                       <span>Chọn từ thư viện</span>
                     </button>
                   </div>
@@ -425,8 +425,8 @@ export function BusinessCardCapture({
           {/* Live Auto-capture hint chip */}
           {cameraStatus === "live" && autoCapture && (
             <div className="absolute bottom-2.5 inset-x-0 flex justify-center pointer-events-none z-20">
-              <span className="px-3 py-1 rounded-full bg-black/75 text-[11px] font-semibold text-white backdrop-blur-md shadow-lg border border-white/10 flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="px-3.5 py-1.5 rounded-full bg-[#141C2B]/90 text-[11.5px] font-semibold text-[#F6E1C3] backdrop-blur-md shadow-lg border border-[#D8B282]/40 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#DFB76C] animate-ping" />
                 <span>
                   {hintReason === "ok"
                     ? "Giữ yên máy để tự động chụp..."
@@ -528,25 +528,25 @@ export function BusinessCardCapture({
               type="button"
               onClick={captureFrame}
               disabled={shooting}
-              className="flex-1 flex h-13 items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-[15px] shadow-lg hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60"
+              className="flex-1 flex h-13 items-center justify-center gap-2 rounded-2xl bc-cta-gold text-slate-950 font-bold text-[15px] shadow-lg shadow-[#D8B282]/30 hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60"
             >
               {shooting ? (
                 <Loader2 className="h-5 w-5 animate-spin text-slate-950" />
               ) : (
                 <Camera className="h-5 w-5 text-slate-950" />
               )}
-              <span>{t("bc.mobile.cardScan.takePhoto")}</span>
+              <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.takePhoto")}</span>
             </button>
 
             {/* Choose from Library Button */}
             <button
               type="button"
               onClick={onLibrary}
-              className="flex h-13 w-13 items-center justify-center rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] text-[var(--bc-mobile-text)] hover:opacity-80 active:scale-[0.98] transition-all cursor-pointer shrink-0 shadow-sm"
+              className="flex h-13 w-13 items-center justify-center rounded-2xl border border-[var(--bc-mobile-border-gold)] bg-[var(--bc-mobile-surface)] text-[var(--bc-mobile-text)] hover:opacity-80 active:scale-[0.98] transition-all cursor-pointer shrink-0 shadow-sm"
               title={t("bc.mobile.cardScan.choosePhoto")}
               aria-label={t("bc.mobile.cardScan.choosePhoto")}
             >
-              <ImagePlus className="h-5 w-5" />
+              <ImagePlus className="h-5 w-5 text-[var(--bc-mobile-accent-strong)]" />
             </button>
           </div>
         </div>

@@ -1,5 +1,16 @@
 pluginManagement {
-    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().toString())
+    def directRnPlugin = [
+        new File(settingsDir, "../node_modules/@react-native/gradle-plugin"),
+        new File(rootDir, "../node_modules/@react-native/gradle-plugin"),
+        new File(rootDir, "apps/mobile_vione/node_modules/@react-native/gradle-plugin"),
+        new File(rootDir, "node_modules/@react-native/gradle-plugin")
+    ].find { it.exists() }
+
+    if (directRnPlugin) {
+        includeBuild(directRnPlugin.getCanonicalPath())
+    } else {
+        includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().toString())
+    }
 }
 plugins { id("com.facebook.react.settings") }
 
@@ -26,13 +37,43 @@ rootProject.name = 'Vione'
 dependencyResolutionManagement {
   versionCatalogs {
     reactAndroidLibs {
-      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
+      def directLibsToml = [
+          new File(settingsDir, "../node_modules/react-native/gradle/libs.versions.toml"),
+          new File(rootDir, "../node_modules/react-native/gradle/libs.versions.toml"),
+          new File(rootDir, "apps/mobile_vione/node_modules/react-native/gradle/libs.versions.toml"),
+          new File(rootDir, "node_modules/react-native/gradle/libs.versions.toml")
+      ].find { it.exists() }
+      if (directLibsToml) {
+        from(files(directLibsToml.getCanonicalFile()))
+      } else {
+        from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
+      }
     }
   }
 }
 
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
+def directAutolinking = [
+    new File(settingsDir, "../node_modules/expo/scripts/autolinking.gradle"),
+    new File(rootDir, "../node_modules/expo/scripts/autolinking.gradle"),
+    new File(rootDir, "apps/mobile_vione/node_modules/expo/scripts/autolinking.gradle"),
+    new File(rootDir, "node_modules/expo/scripts/autolinking.gradle")
+].find { it.exists() }
+if (directAutolinking) {
+  apply from: directAutolinking.getCanonicalFile()
+} else {
+  apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
+}
 useExpoModules()
 
 include ':app'
-includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
+def directRnPluginBottom = [
+    new File(settingsDir, "../node_modules/@react-native/gradle-plugin"),
+    new File(rootDir, "../node_modules/@react-native/gradle-plugin"),
+    new File(rootDir, "apps/mobile_vione/node_modules/@react-native/gradle-plugin"),
+    new File(rootDir, "node_modules/@react-native/gradle-plugin")
+].find { it.exists() }
+if (directRnPluginBottom) {
+  includeBuild(directRnPluginBottom.getCanonicalFile())
+} else {
+  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
+}

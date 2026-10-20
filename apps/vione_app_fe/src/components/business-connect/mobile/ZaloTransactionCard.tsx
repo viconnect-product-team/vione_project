@@ -167,11 +167,10 @@ export function ZaloTransactionCard({
           <button
             type="button"
             onClick={() => setShowQrModal(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-500 active:bg-amber-500 px-4 py-2.5 text-[12.5px] font-bold text-white shadow-md active:scale-[0.98] transition-all cursor-pointer"
-            style={{ color: "#ffffff" }}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bc-cta-gold px-4 py-2.5 text-[12.5px] font-bold text-slate-950 shadow-md active:scale-[0.98] transition-all cursor-pointer"
           >
-            <QrCode className="h-4 w-4 text-white" style={{ color: "#ffffff" }} />
-            <span style={{ color: "#ffffff" }}>Thanh toán ngay bằng VietQR</span>
+            <QrCode className="h-4 w-4 text-slate-950" />
+            <span className="text-slate-950 font-bold">Thanh toán ngay bằng VietQR</span>
           </button>
 
           <button
@@ -259,11 +258,10 @@ export function ZaloTransactionCard({
               <button
                 type="button"
                 onClick={handleDownloadQr}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-500 active:bg-amber-500 py-2.5 text-[12px] font-bold text-white shadow-xs hover:brightness-105 active:scale-95 transition-all cursor-pointer"
-                style={{ color: "#ffffff" }}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bc-cta-gold py-2.5 text-[12px] font-bold text-slate-950 shadow-xs hover:brightness-105 active:scale-95 transition-all cursor-pointer"
               >
-                <Download className="h-4 w-4 text-white" style={{ color: "#ffffff" }} />
-                <span style={{ color: "#ffffff" }}>Tải ảnh QR</span>
+                <Download className="h-4 w-4 text-slate-950" />
+                <span className="text-slate-950 font-bold">Tải ảnh QR</span>
               </button>
               <button
                 type="button"

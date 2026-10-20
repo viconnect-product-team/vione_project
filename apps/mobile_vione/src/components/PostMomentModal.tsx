@@ -28,8 +28,9 @@ import {
 } from "lucide-react-native";
 import { Colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { Avatar } from "./common/Avatar";
-import { momentApi } from "../api/services";
+import { momentApi, uploadFile } from "../api";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -60,19 +61,13 @@ const MOMENT_TAGS = [
   "Giao lưu 1-1",
 ];
 
-const SAMPLE_PHOTOS = [
-  "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&auto=format&fit=crop&q=80",
-];
-
 export const PostMomentModal: React.FC<PostMomentModalProps> = ({
   visible,
   onClose,
   onPostSuccess,
 }) => {
   const { user } = useAuth();
+  const { colors, isDark } = useTheme();
   const [content, setContent] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
@@ -116,12 +111,26 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
   };
 
   const handlePost = async () => {
-    if (!content.trim()) {
-      Alert.alert("Thiếu nội dung", "Vui lòng nhập nội dung chia sẻ khoảnh khắc doanh nhân.");
+    if (!content.trim() && !selectedPhoto) {
+      Alert.alert("Thiếu nội dung", "Vui lòng nhập nội dung hoặc đính kèm ảnh khoảnh khắc doanh nhân.");
       return;
     }
 
     setSubmitting(true);
+    let finalImageUrl = selectedPhoto;
+
+    // Tải ảnh chụp thực tế lên máy chủ ViOne backend (MinIO)
+    if (selectedPhoto && (selectedPhoto.startsWith("file://") || selectedPhoto.startsWith("content://"))) {
+      try {
+        const uploadRes = await uploadFile(selectedPhoto, `moment_${Date.now()}.jpg`, "image/jpeg");
+        if (uploadRes.url) {
+          finalImageUrl = uploadRes.url;
+        }
+      } catch (uploadErr) {
+        console.warn("Upload ảnh khoảnh khắc thất bại, dùng local uri:", uploadErr);
+      }
+    }
+
     const newMoment = {
       id: `moment-${Date.now()}`,
       authorName: displayName,
@@ -129,7 +138,7 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
       authorCompany: userCompany,
       authorAvatar: user?.avatarUrl ?? undefined,
       content: content.trim(),
-      imageUrl: selectedPhoto || undefined,
+      imageUrl: finalImageUrl || undefined,
       tag: selectedTag || "Khoảnh khắc",
       timeAgo: "Vừa xong",
       likesCount: 1,
@@ -139,7 +148,7 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
     try {
       await momentApi.createMoment({
         content: content.trim(),
-        photoUrls: selectedPhoto ? [selectedPhoto] : [],
+        photoUrls: finalImageUrl ? [finalImageUrl] : [],
         visibility: audience,
       });
     } catch (err) {
@@ -150,23 +159,24 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
     onPostSuccess(newMoment);
     Alert.alert("Thành công", "Khoảnh khắc giao thương đã được công bố trên bản tin ViOne.");
     setContent("");
+    setSelectedPhoto(null);
     onClose();
   };
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <View style={styles.sheetContainer}>
+        <View style={[styles.sheetContainer, { backgroundColor: colors.surface, borderColor: colors.surfaceBorderGold }]}>
           {/* Header */}
-          <View style={styles.headerBar}>
+          <View style={[styles.headerBar, { borderBottomColor: colors.surfaceBorder }]}>
             <View style={styles.headerLeft}>
-              <View style={styles.iconCircle}>
-                <Sparkles size={16} color="#D8B282" />
+              <View style={[styles.iconCircle, { backgroundColor: colors.goldSoft, borderColor: colors.gold }]}>
+                <Sparkles size={16} color={colors.gold} />
               </View>
-              <Text style={styles.headerTitle}>Đăng khoảnh khắc doanh nhân</Text>
+              <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Đăng khoảnh khắc doanh nhân</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
-              <X size={20} color="#94A3B8" />
+            <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: colors.surface2 }]} activeOpacity={0.7}>
+              <X size={20} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -179,25 +189,25 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
             <View style={styles.authorRow}>
               <Avatar url={user?.avatarUrl} name={displayName} size={44} showGoldBorder />
               <View style={styles.authorInfo}>
-                <Text style={styles.authorName}>{displayName}</Text>
-                <Text style={styles.authorRole}>{userTitle} · {userCompany}</Text>
+                <Text style={[styles.authorName, { color: colors.textPrimary }]}>{displayName}</Text>
+                <Text style={[styles.authorRole, { color: colors.textMuted }]}>{userTitle} · {userCompany}</Text>
               </View>
 
               {/* Audience Pill */}
               <TouchableOpacity
-                style={styles.audienceBtn}
+                style={[styles.audienceBtn, { backgroundColor: colors.goldSoft, borderColor: colors.gold }]}
                 onPress={() => setAudience(audience === "public" ? "community" : "public")}
                 activeOpacity={0.8}
               >
                 {audience === "public" ? (
                   <>
-                    <Globe size={11} color="#D8B282" style={{ marginRight: 4 }} />
-                    <Text style={styles.audienceText}>Mạng lưới ViOne</Text>
+                    <Globe size={11} color={colors.gold} style={{ marginRight: 4 }} />
+                    <Text style={[styles.audienceText, { color: isDark ? colors.textGold : "#92400E" }]}>Mạng lưới ViOne</Text>
                   </>
                 ) : (
                   <>
-                    <Users size={11} color="#D8B282" style={{ marginRight: 4 }} />
-                    <Text style={styles.audienceText}>Cộng đồng</Text>
+                    <Users size={11} color={colors.gold} style={{ marginRight: 4 }} />
+                    <Text style={[styles.audienceText, { color: isDark ? colors.textGold : "#92400E" }]}>Cộng đồng</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -206,35 +216,48 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
             {/* Tag Selector (Optional) */}
             <View style={styles.tagSection}>
               <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <Text style={styles.sectionLabel}>CHỦ ĐỀ KHOẢNH KHẮC (TÙY CHỌN)</Text>
+                <Text style={[styles.sectionLabel, { color: colors.gold }]}>CHỦ ĐỀ KHOẢNH KHẮC (TÙY CHỌN)</Text>
                 {selectedTag && (
                   <TouchableOpacity onPress={() => setSelectedTag(null)} activeOpacity={0.7}>
-                    <Text style={{ fontSize: 11, color: "#D8B282", fontWeight: "600" }}>Bỏ chọn chủ đề</Text>
+                    <Text style={{ fontSize: 11, color: colors.gold, fontWeight: "600" }}>Bỏ chọn chủ đề</Text>
                   </TouchableOpacity>
                 )}
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tagScroll}>
-                {MOMENT_TAGS.map((tag) => (
-                  <TouchableOpacity
-                    key={tag}
-                    style={[styles.tagPill, selectedTag === tag && styles.tagPillActive]}
-                    onPress={() => setSelectedTag((prev) => (prev === tag ? null : tag))}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.tagPillText, selectedTag === tag && styles.tagPillTextActive]}>
-                      #{tag}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {MOMENT_TAGS.map((tag) => {
+                  const isActive = selectedTag === tag;
+                  return (
+                    <TouchableOpacity
+                      key={tag}
+                      style={[
+                        styles.tagPill,
+                        { backgroundColor: colors.surface2, borderColor: colors.surfaceBorder },
+                        isActive && { backgroundColor: colors.goldSoft, borderColor: colors.gold },
+                      ]}
+                      onPress={() => setSelectedTag((prev) => (prev === tag ? null : tag))}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.tagPillText,
+                          { color: colors.textMuted },
+                          isActive && { color: isDark ? colors.textGold : "#92400E", fontWeight: "700" },
+                        ]}
+                      >
+                        #{tag}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             </View>
 
             {/* Content Input */}
-            <View style={styles.inputWrap}>
+            <View style={[styles.inputWrap, { backgroundColor: colors.surface2, borderColor: colors.surfaceBorder }]}>
               <TextInput
-                style={styles.textArea}
+                style={[styles.textArea, { color: colors.textPrimary }]}
                 placeholder="Chia sẻ bước tiến doanh nghiệp, hợp đồng ký kết mới hoặc cảm nghĩ sau buổi gặp giao thương..."
-                placeholderTextColor="#64748B"
+                placeholderTextColor={colors.textDisabled}
                 multiline
                 numberOfLines={5}
                 value={content}
@@ -245,28 +268,28 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
             {/* Photo Attachment Picker */}
             <View style={styles.photoSection}>
               <View style={styles.photoHeaderRow}>
-                <Text style={styles.sectionLabel}>ĐÍNH KÈM HÌNH ẢNH HOẠT ĐỘNG</Text>
+                <Text style={[styles.sectionLabel, { color: colors.gold }]}>ĐÍNH KÈM HÌNH ẢNH HOẠT ĐỘNG</Text>
                 <TouchableOpacity
-                  style={styles.cameraQuickBtn}
+                  style={[styles.cameraQuickBtn, { backgroundColor: colors.goldSoft, borderColor: colors.gold }]}
                   onPress={handleOpenLiveCamera}
                   activeOpacity={0.8}
                 >
-                  <Camera size={14} color="#D8B282" style={{ marginRight: 5 }} />
-                  <Text style={styles.cameraQuickBtnText}>Chụp ảnh trực tiếp</Text>
+                  <Camera size={14} color={colors.gold} style={{ marginRight: 5 }} />
+                  <Text style={[styles.cameraQuickBtnText, { color: isDark ? colors.textGold : "#92400E" }]}>Chụp ảnh trực tiếp</Text>
                 </TouchableOpacity>
               </View>
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photoScroll}>
                 {/* Camera Launch Card */}
                 <TouchableOpacity
-                  style={styles.cameraLaunchCard}
+                  style={[styles.cameraLaunchCard, { backgroundColor: colors.goldSoft, borderColor: colors.gold }]}
                   onPress={handleOpenLiveCamera}
                   activeOpacity={0.8}
                 >
-                  <View style={styles.cameraLaunchIconWrap}>
-                    <Camera size={22} color="#D8B282" />
+                  <View style={[styles.cameraLaunchIconWrap, { backgroundColor: colors.goldSoft }]}>
+                    <Camera size={22} color={colors.gold} />
                   </View>
-                  <Text style={styles.cameraLaunchText}>Mở Camera</Text>
+                  <Text style={[styles.cameraLaunchText, { color: isDark ? colors.textGold : "#92400E" }]}>Mở Camera</Text>
                 </TouchableOpacity>
 
                 {/* Captured Photos */}
@@ -279,7 +302,7 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
                   >
                     <Image source={{ uri: imgUri }} style={styles.photoImg} />
                     <View style={styles.capturedBadge}>
-                      <Text style={styles.capturedBadgeText}>Mới chụp</Text>
+                      <Text style={styles.capturedBadgeText}>Ảnh vừa chụp</Text>
                     </View>
                     {selectedPhoto === imgUri && (
                       <View style={styles.photoCheckOverlay}>
@@ -289,28 +312,19 @@ export const PostMomentModal: React.FC<PostMomentModalProps> = ({
                   </TouchableOpacity>
                 ))}
 
-                {/* Sample Photos */}
-                {SAMPLE_PHOTOS.map((imgUri, idx) => (
-                  <TouchableOpacity
-                    key={idx}
-                    style={[styles.photoThumb, selectedPhoto === imgUri && styles.photoThumbActive]}
-                    onPress={() => setSelectedPhoto(selectedPhoto === imgUri ? null : imgUri)}
-                    activeOpacity={0.8}
-                  >
-                    <Image source={{ uri: imgUri }} style={styles.photoImg} />
-                    {selectedPhoto === imgUri && (
-                      <View style={styles.photoCheckOverlay}>
-                        <Check size={14} color="#050C15" strokeWidth={3} />
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                ))}
+                {capturedPhotos.length === 0 && (
+                  <View style={{ justifyContent: "center", paddingHorizontal: 12 }}>
+                    <Text style={{ fontSize: 12, color: colors.textMuted, fontStyle: "italic" }}>
+                      Bấm "Mở Camera" để chụp ảnh hoạt động thực tế của bạn
+                    </Text>
+                  </View>
+                )}
               </ScrollView>
             </View>
           </ScrollView>
 
           {/* Bottom Submit */}
-          <View style={styles.bottomFooter}>
+          <View style={[styles.bottomFooter, { borderTopColor: colors.surfaceBorder, backgroundColor: colors.surface }]}>
             <TouchableOpacity
               style={styles.submitBtn}
               onPress={handlePost}

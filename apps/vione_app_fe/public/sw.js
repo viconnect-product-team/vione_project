@@ -1,10 +1,12 @@
-const CACHE_NAME = "ceo1983-pwa-v2";
+const CACHE_NAME = "vione-connect-pwa-v3";
 const STATIC_ASSETS = [
   "/manifest.webmanifest",
+  "/manifest.json",
   "/apple-touch-icon.png",
   "/favicon.png",
-  "/app-icon-192.png",
-  "/ceo1983-official-logo.png"
+  "/vione-gold-192.png",
+  "/vione-gold-512.png",
+  "/vione-wordmark.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -51,7 +53,7 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match(request) || caches.match("/association"))
+        .catch(() => caches.match(request) || caches.match("/connect-app"))
     );
     return;
   }

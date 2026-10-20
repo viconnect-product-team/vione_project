@@ -1,9 +1,21 @@
-import { IsNotEmpty, IsString, IsOptional, IsEmail, IsArray, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateCustomerDto {
-  @IsNotEmpty({ message: 'Tên khách hàng không được để trống' })
+  @IsOptional()
+  @IsString()
+  personId?: string;
+
+  @IsOptional()
   @IsString({ message: 'Tên khách hàng phải là chuỗi văn bản' })
-  fullName!: string;
+  fullName?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Tên hiển thị phải là chuỗi văn bản' })
+  displayName?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Tên phải là chuỗi văn bản' })
+  name?: string;
 
   @IsOptional()
   @IsString({ message: 'Công ty phải là chuỗi văn bản' })
@@ -18,7 +30,7 @@ export class CreateCustomerDto {
   phone?: string;
 
   @IsOptional()
-  @IsEmail({}, { message: 'Định dạng email không hợp lệ' })
+  @IsString({ message: 'Email phải là chuỗi' })
   email?: string;
 
   @IsOptional()
@@ -32,6 +44,10 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsString({ message: 'Quy mô giao dịch phải là chuỗi' })
   pipelineAmount?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Giá trị hợp đồng phải là chuỗi' })
+  dealValue?: string;
 
   @IsOptional()
   @IsString({ message: 'Giai đoạn phải là chuỗi' })

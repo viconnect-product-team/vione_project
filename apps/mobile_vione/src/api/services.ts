@@ -442,6 +442,12 @@ export const communityApi = {
   createCommunityInvite: async (communityId: string, data?: any) => {
     return api.post<any>(API_ENDPOINTS.COMMUNITIES.INVITES(communityId), data || {});
   },
+  acceptCommunityInvite: async (inviteRef: string) => {
+    return api.post<any>(`/connect-app/community/invites/${inviteRef}/accept`, {});
+  },
+  declineCommunityInvite: async (inviteRef: string) => {
+    return api.post<any>(`/connect-app/community/invites/${inviteRef}/decline`, {});
+  },
 };
 
 // =========================================================================
@@ -631,8 +637,8 @@ export const businessCardApi = {
 // 14. AI COPILOT ASSISTANT
 // =========================================================================
 export const aiApi = {
-  chat: async (message: string, conversationId?: string) => {
-    return api.post<any>(API_ENDPOINTS.AI.CHAT, { message, conversationId });
+  chat: async (message: string, conversationId?: string, currentUser?: any) => {
+    return api.post<any>(API_ENDPOINTS.AI.CHAT, { message, conversationId, currentUser });
   },
   sendMessage: async (recipientQuery: string, message: string, voiceTranscript?: string) => {
     return api.post<any>("/connect-app/ai/send-message", { recipientQuery, message, voiceTranscript });

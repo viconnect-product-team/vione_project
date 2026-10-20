@@ -158,3 +158,55 @@ export const api = {
   delete: <T = any>(endpoint: string, options?: Omit<ApiRequestOptions, "method">) =>
     apiRequest<T>(endpoint, { ...options, method: "DELETE" }),
 };
+
+/**
+ * Tải tệp (ảnh chụp / tài liệu) lên máy chủ ViOne backend thông qua multipart/form-data
+ */
+export async function uploadFile(
+  fileUri: string,
+  fileName?: string,
+  mimeType?: string
+): Promise<{ url: string | null; error: string | null }> {
+  const token = await getAuthToken();
+  const name = fileName || `file_${Date.now()}.jpg`;
+  const type = mimeType || "image/jpeg";
+
+  const formData = new FormData();
+  formData.append("file", {
+    uri: fileUri,
+    name,
+    type,
+  } as any);
+
+  const makeUpload = async (baseUrl: string) => {
+    const url = `${baseUrl}/upload/file`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error(`Upload thất bại với mã lỗi: ${response.status}`);
+    }
+    const json = await response.json();
+    const finalUrl = json?.url || json?.fileUrl || null;
+    return finalUrl;
+  };
+
+  try {
+    const primaryUrl = await makeUpload(DEFAULT_API_BASE_URL);
+    if (primaryUrl) return { url: primaryUrl, error: null };
+  } catch (err: any) {
+    try {
+      const fallbackUrl = await makeUpload(FALLBACK_API_BASE_URL);
+      if (fallbackUrl) return { url: fallbackUrl, error: null };
+    } catch (fallbackErr: any) {
+      return { url: null, error: fallbackErr?.message || "Không thể tải tệp lên máy chủ" };
+    }
+  }
+
+  return { url: null, error: "Upload không thành công" };
+}
+

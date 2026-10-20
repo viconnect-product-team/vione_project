@@ -17,6 +17,7 @@ export const CardScanSaveSuccess = forwardRef<
     displayName: string;
     title: string | null;
     companyName: string | null;
+    phone?: string | null;
     /** Overall OCR confidence 0..1 of the scan that produced this contact. */
     ocrConfidence?: number;
     /** Cards saved in the current scanning session (newest first). */
@@ -33,6 +34,7 @@ export const CardScanSaveSuccess = forwardRef<
     displayName,
     title,
     companyName,
+    phone,
     ocrConfidence,
     sessionSaved = [],
     onScanAnother,
@@ -45,6 +47,7 @@ export const CardScanSaveSuccess = forwardRef<
   const ocrPercent =
     ocrConfidence === undefined ? null : Math.round(Math.min(1, Math.max(0, ocrConfidence)) * 100);
   const titleCompany = [title, companyName].filter(Boolean).join(" · ");
+  const cleanPhone = phone ? phone.replace(/\D/g, "") : null;
   return (
     <div className="flex flex-1 flex-col px-6 pb-8">
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
@@ -90,6 +93,16 @@ export const CardScanSaveSuccess = forwardRef<
       ) : null}
 
       <div className="grid gap-3">
+        {cleanPhone ? (
+          <a
+            href={`https://zalo.me/${cleanPhone}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] px-6 text-[15px] font-bold text-slate-950 transition-all hover:opacity-95 active:scale-[0.99] motion-reduce:transition-none shadow-md shadow-[#D8B282]/30 cursor-pointer"
+          >
+            <span className="font-bold text-slate-950">Nhắn tin Zalo ngay (zalo.me/{cleanPhone})</span>
+          </a>
+        ) : null}
         {onScanNext ? (
           <button
             type="button"
@@ -103,7 +116,7 @@ export const CardScanSaveSuccess = forwardRef<
         <Link
           to="/connect-app/network/$personId"
           params={{ personId }}
-          className="flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--bc-mobile-text)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-surface)] transition-opacity hover:opacity-90 motion-reduce:transition-none"
+          className="flex min-h-12 w-full items-center justify-center rounded-full border border-[#D8B282] bg-[var(--bc-mobile-surface)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-accent-strong)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] motion-reduce:transition-none"
         >
           {t("bc.mobile.cardScan.success.viewContact")}
         </Link>

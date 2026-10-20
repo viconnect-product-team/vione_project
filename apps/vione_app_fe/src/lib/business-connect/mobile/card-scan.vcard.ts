@@ -37,40 +37,21 @@ export function buildScanDraftVCard(draft: ScanReviewDraft, origin?: string): st
   const lines: string[] = [
     "BEGIN:VCARD",
     "VERSION:3.0",
-    "PRODID:-//Business Connect//Card Scan Review//VI",
+    "PRODID:-//ViOne Business Connect//Card Scan//VI",
   ];
   const text = (prop: string, value: string | null | undefined) => {
     const v = value?.trim();
     if (v) lines.push(`${prop};CHARSET=UTF-8:${escapeVCardValue(v)}`);
   };
 
+  // Chỉ xuất họ tên, chức danh và số điện thoại khi lưu danh bạ điện thoại
   text("FN", name);
-  // Same safe N fallback as the public-card .vcf: full name in the family
-  // slot — never reorders Vietnamese names to a Western given/family split.
   lines.push(`N;CHARSET=UTF-8:${escapeVCardValue(name)};;;;`);
-  text("ORG", draft.companyName);
   text("TITLE", draft.title);
 
   const phoneRaw = draft.primaryPhone >= 0 ? (draft.phones[draft.primaryPhone]?.value ?? "") : "";
   const phone = safeVCardPhone(phoneRaw);
-  if (phone) lines.push(`TEL;TYPE=CELL:${escapeVCardValue(phone)}`);
-
-  const emailRaw = draft.primaryEmail >= 0 ? (draft.emails[draft.primaryEmail] ?? "") : "";
-  const email = safeVCardEmail(emailRaw);
-  if (email) lines.push(`EMAIL;TYPE=INTERNET,WORK:${escapeVCardValue(email)}`);
-
-  const website = safeVCardHttpUrl(draft.website);
-  if (website) lines.push(`URL;TYPE=WORK:${escapeVCardValue(website)}`);
-
-  const address = draft.address.trim();
-  if (address) {
-    // Free-form single-line address lands in the street slot of ADR.
-    lines.push(`ADR;TYPE=WORK;CHARSET=UTF-8:;;${escapeVCardValue(address)};;;;`);
-  }
-
-  // Provenance: platform origin root only (see the function docstring).
-  const source = vCardSourceUrl(origin);
-  if (source) lines.push(`SOURCE:${escapeVCardValue(source)}`);
+  if (phone) lines.push(`TEL;TYPE=CELL,VOICE:${escapeVCardValue(phone)}`);
 
   lines.push("END:VCARD");
   return lines.map((l: any) => foldVCardLine(l)).join("\r\n") + "\r\n";

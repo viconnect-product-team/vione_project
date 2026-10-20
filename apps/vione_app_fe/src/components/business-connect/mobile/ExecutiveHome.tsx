@@ -594,11 +594,8 @@ export function ExecutiveHome() {
     if (upcomingEvents && upcomingEvents.length > 0) {
       return upcomingEvents;
     }
-    if (crmList && crmList.length > 0) {
-      return crmList;
-    }
     return [];
-  }, [upcomingEvents, crmList]);
+  }, [upcomingEvents]);
 
   const allTotalCount = todayMeetings.length + allOpportunitiesList.length + allUpcomingList.length;
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -38,6 +39,9 @@ import {
   Sun,
   Moon,
   Calendar,
+  Heart,
+  Share2,
+  Camera,
 } from "lucide-react-native";
 import { Colors } from "../../theme/colors";
 import { useTheme } from "../../context/ThemeContext";
@@ -346,6 +350,38 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
 
+  // B2B Social Moments Feed state (Tách biệt hoàn toàn khỏi 24h stories)
+  const [momentsFeed, setMomentsFeed] = useState<any[]>([
+    {
+      id: "moment-seed-1",
+      authorName: "Nguyễn Tuấn Hải",
+      authorTitle: "Chủ tịch HĐQT",
+      authorCompany: "Alphanam Group",
+      authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
+      content: "Khai mạc Diễn đàn Xúc tiến Đầu tư Quốc tế 2026 cùng hơn 500 tập đoàn hàng đầu. Cơ hội bứt phá chuỗi cung ứng toàn cầu cho doanh nghiệp Việt!",
+      imageUrl: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&auto=format&fit=crop&q=80",
+      tag: "Xúc tiến đầu tư",
+      timeAgo: "1 giờ trước",
+      likesCount: 24,
+      commentsCount: 6,
+      isLiked: false,
+    },
+    {
+      id: "moment-seed-2",
+      authorName: "Trần Mai Phương",
+      authorTitle: "Tổng Giám Đốc",
+      authorCompany: "VinTech Innovation",
+      authorAvatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80",
+      content: "Chính thức ký kết hợp tác công nghệ AI Agent tự động hóa doanh nghiệp cùng đối tác Singapore. Bước chuyển mình quan trọng của hệ sinh thái ViOne!",
+      imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=900&auto=format&fit=crop&q=80",
+      tag: "Ký kết đối tác",
+      timeAgo: "3 giờ trước",
+      likesCount: 38,
+      commentsCount: 12,
+      isLiked: true,
+    },
+  ]);
+
   // Partner Profile Modal (Xem danh thiếp khi bấm vào avatar người chat)
   const [partnerProfileModalVisible, setPartnerProfileModalVisible] = useState(false);
   const [selectedMemberCard, setSelectedMemberCard] = useState<MemberCardData | null>(null);
@@ -400,6 +436,48 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  // Khôi phục bài đăng khoảnh khắc và stories cá nhân đã đăng từ AsyncStorage
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const savedMoments = await AsyncStorage.getItem("vione_saved_moments_feed");
+        if (savedMoments) {
+          const parsed = JSON.parse(savedMoments);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setMomentsFeed((prev) => {
+              const combined = [...parsed];
+              prev.forEach((item) => {
+                if (!combined.some((c) => c.id === item.id)) {
+                  combined.push(item);
+                }
+              });
+              return combined;
+            });
+          }
+        }
+
+        const savedStories = await AsyncStorage.getItem("vione_user_stories_24h");
+        if (savedStories) {
+          const parsed = JSON.parse(savedStories);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setStories((prev) => {
+              const combined = [...parsed];
+              prev.forEach((item) => {
+                if (!combined.some((c) => c.id === item.id)) {
+                  combined.push(item);
+                }
+              });
+              return combined;
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("Lỗi tải cache moments/stories:", err);
+      }
+    };
+    loadSavedData();
   }, []);
 
   // Lọc đối tác
@@ -804,17 +882,17 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               })}
             </View>
 
-            {/* Khoảnh khắc 24h Doanh nhân (Facebook/Instagram-grade Stories Strip) */}
+            {/* Tin 24h Doanh nhân (Story Strip) */}
             <View style={styles.storiesSection}>
               <View style={styles.storiesHeaderRow}>
-                <Text style={styles.sectionHeaderSmall}>KHOẢNH KHẮC DOANH NHÂN 24H</Text>
+                <Text style={styles.sectionHeaderSmall}>TIN 24H DOANH NHÂN (STORY)</Text>
                 <TouchableOpacity
-                  onPress={() => setPostMomentVisible(true)}
+                  onPress={() => setCreateStoryVisible(true)}
                   style={styles.addMomentBtn}
                   activeOpacity={0.8}
                 >
                   <Plus size={13} color="#D8B282" style={{ marginRight: 3 }} />
-                  <Text style={styles.addMomentText}>Đăng khoảnh khắc</Text>
+                  <Text style={styles.addMomentText}>Đăng story</Text>
                 </TouchableOpacity>
               </View>
 
@@ -823,7 +901,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.storiesScroll}
               >
-                {/* 1. Nút Thêm Khoảnh Khắc / Đăng Story */}
+                {/* 1. Nút Thêm Story */}
                 <TouchableOpacity
                   style={styles.myStoryCard}
                   onPress={() => setCreateStoryVisible(true)}
@@ -836,7 +914,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                     </View>
                   </View>
                   <Text style={styles.myStoryLabel}>Đăng story</Text>
-                  <Text style={styles.myStorySub}>Khoảnh khắc 24h</Text>
+                  <Text style={styles.myStorySub}>Tin 24h</Text>
                 </TouchableOpacity>
 
                 {/* 2. Danh sách Story các Doanh Nhân */}
@@ -876,6 +954,201 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
+            </View>
+
+            {/* Khối SOẠN KHOẢNH KHẮC DOANH NGHIỆP (B2B Social Composer) */}
+            <View
+              style={[
+                styles.nurtureSection,
+                {
+                  backgroundColor: isDark ? "#12151F" : "#FFFFFF",
+                  borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "rgba(216, 178, 130, 0.4)",
+                  marginTop: 10,
+                  marginBottom: 12,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: isDark ? "rgba(255,255,255,0.08)" : "#F1F5F9" }}>
+                <Avatar url={user?.avatarUrl} name={user?.displayName || "Doanh nhân"} size={36} showGoldBorder />
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    marginLeft: 10,
+                    paddingHorizontal: 14,
+                    paddingVertical: 9,
+                    borderRadius: 20,
+                    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F8FAFC",
+                    borderWidth: 1,
+                    borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
+                  }}
+                  onPress={() => setPostMomentVisible(true)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={{ fontSize: 13, color: isDark ? "#94A3B8" : "#64748B" }}>
+                    Bạn đang nghĩ gì? Chia sẻ khoảnh khắc...
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{ flexDirection: "row", justifyContent: "space-between", paddingTop: 10 }}>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => setPostMomentVisible(true)}
+                  activeOpacity={0.8}
+                >
+                  <Camera size={15} color="#10B981" style={{ marginRight: 5 }} />
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#E2E8F0" : "#334155" }}>
+                    Chụp ảnh
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => setPostMomentVisible(true)}
+                  activeOpacity={0.8}
+                >
+                  <Sparkles size={15} color="#D8B282" style={{ marginRight: 5 }} />
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#E2E8F0" : "#334155" }}>
+                    Chủ đề
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => setPostMomentVisible(true)}
+                  activeOpacity={0.8}
+                >
+                  <Plus size={15} color="#3B82F6" style={{ marginRight: 4 }} />
+                  <Text style={{ fontSize: 12, fontWeight: "700", color: "#3B82F6" }}>
+                    Đăng khoảnh khắc
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* BẢNG TIN KHOẢNH KHẮC DOANH NGHIỆP (Feed Cards) */}
+            <View style={{ marginBottom: 14 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10, paddingHorizontal: 4 }}>
+                <Text style={styles.sectionHeaderSmall}>BẢNG TIN KHOẢNH KHẮC DOANH NGHIỆP</Text>
+                <Text style={{ fontSize: 11, color: isDark ? "#D8B282" : "#8C653B", fontWeight: "700" }}>
+                  {momentsFeed.length} bài viết
+                </Text>
+              </View>
+
+              {momentsFeed.map((moment) => {
+                const photoUri = moment.imageUrl ? (resolveMediaUrl(moment.imageUrl) || moment.imageUrl) : null;
+                return (
+                  <View
+                    key={moment.id}
+                    style={{
+                      borderRadius: 16,
+                      backgroundColor: isDark ? "#12151F" : "#FFFFFF",
+                      borderWidth: 1,
+                      borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "rgba(216, 178, 130, 0.35)",
+                      padding: 14,
+                      marginBottom: 12,
+                      shadowColor: isDark ? "#000000" : "#64748B",
+                      shadowOpacity: isDark ? 0.3 : 0.05,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowRadius: 6,
+                      elevation: 2,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                      <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+                        <Avatar url={moment.authorAvatar} name={moment.authorName} size={40} showGoldBorder />
+                        <View style={{ marginLeft: 10, flex: 1 }}>
+                          <Text style={{ fontSize: 14, fontWeight: "700", color: isDark ? "#FFFFFF" : "#0F172A" }}>
+                            {moment.authorName}
+                          </Text>
+                          <Text style={{ fontSize: 11, color: isDark ? "#94A3B8" : "#64748B" }} numberOfLines={1}>
+                            {moment.authorTitle} · {moment.authorCompany}
+                          </Text>
+                        </View>
+                      </View>
+                      {moment.tag ? (
+                        <View style={{ backgroundColor: isDark ? "rgba(216, 178, 130, 0.15)" : "#F6E1C3", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: "#8C653B" }}>
+                          <Text style={{ fontSize: 10, fontWeight: "700", color: isDark ? "#F6E1C3" : "#8C653B" }}>
+                            #{moment.tag}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+
+                    <Text style={{ fontSize: 13.5, lineHeight: 20, color: isDark ? "#E2E8F0" : "#1E293B", marginBottom: photoUri ? 10 : 6 }}>
+                      {moment.content}
+                    </Text>
+
+                    {photoUri ? (
+                      <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 10, backgroundColor: isDark ? "#000" : "#F1F5F9" }}>
+                        <Image
+                          source={{ uri: photoUri }}
+                          style={{ width: "100%", height: 210 }}
+                          resizeMode="cover"
+                        />
+                      </View>
+                    ) : null}
+
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 8, borderTopWidth: 1, borderTopColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9" }}>
+                      <Text style={{ fontSize: 11, color: isDark ? "#64748B" : "#94A3B8" }}>
+                        {moment.timeAgo || "Vừa xong"}
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+                        <TouchableOpacity
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                          onPress={() => {
+                            setMomentsFeed((prev) =>
+                              prev.map((m) =>
+                                m.id === moment.id
+                                  ? {
+                                      ...m,
+                                      isLiked: !m.isLiked,
+                                      likesCount: m.isLiked ? Math.max(0, m.likesCount - 1) : m.likesCount + 1,
+                                    }
+                                  : m
+                              )
+                            );
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <Heart
+                            size={16}
+                            color={moment.isLiked ? "#EF4444" : (isDark ? "#94A3B8" : "#64748B")}
+                            fill={moment.isLiked ? "#EF4444" : "transparent"}
+                            style={{ marginRight: 4 }}
+                          />
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: moment.isLiked ? "#EF4444" : (isDark ? "#CBD5E1" : "#475569") }}>
+                            {moment.likesCount || 0}
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                          onPress={() => {
+                            setSelectedMomentForComment(moment);
+                            setMomentCommentVisible(true);
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <MessageSquare size={16} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#CBD5E1" : "#475569" }}>
+                            {moment.commentsCount || 0}
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                          onPress={() => Alert.alert("Chia sẻ", "Đã sao chép liên kết khoảnh khắc để chia sẻ!")}
+                          activeOpacity={0.7}
+                        >
+                          <Share2 size={16} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#CBD5E1" : "#475569" }}>
+                            Chia sẻ
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
             </View>
 
             {/* Khối CẦN GIỮ KẾT NỐI & CHĂM SÓC (Khớp 100% Nurture List) */}
@@ -1985,7 +2258,13 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       <CreateStoryModal
         visible={createStoryVisible}
         onClose={() => setCreateStoryVisible(false)}
-        onStoryCreated={(newStory) => setStories((prev) => [newStory, ...prev])}
+        onStoryCreated={(newStory) => {
+          setStories((prev) => {
+            const updated = [newStory, ...prev.filter((s) => s.id !== newStory.id)];
+            AsyncStorage.setItem("vione_user_stories_24h", JSON.stringify(updated.slice(0, 20))).catch(() => {});
+            return updated;
+          });
+        }}
       />
 
       {/* Parity Modals: Chi Tiết Khách Hàng CRM */}
@@ -2058,23 +2337,19 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         visible={postMomentVisible}
         onClose={() => setPostMomentVisible(false)}
         onPostSuccess={(newMoment) => {
-          const storyFromMoment: StoryItemData = {
-            id: newMoment.id,
-            authorName: newMoment.authorName,
-            authorTitle: newMoment.authorTitle,
-            authorCompany: newMoment.authorCompany,
-            authorAvatar:
-              newMoment.authorAvatar ||
-              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
-            storyImage:
-              newMoment.imageUrl ||
-              "https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&auto=format&fit=crop&q=80",
-            storyCaption: newMoment.content,
-            tag: newMoment.tag,
-            timeAgo: "Vừa xong",
-            viewsCount: 1,
-          };
-          setStories((prev) => [storyFromMoment, ...prev]);
+          setMomentsFeed((prev) => {
+            const updated = [
+              {
+                ...newMoment,
+                isLiked: false,
+                likesCount: newMoment.likesCount || 1,
+                commentsCount: newMoment.commentsCount || 0,
+              },
+              ...prev.filter((m) => m.id !== newMoment.id),
+            ];
+            AsyncStorage.setItem("vione_saved_moments_feed", JSON.stringify(updated.slice(0, 30))).catch(() => {});
+            return updated;
+          });
         }}
       />
 

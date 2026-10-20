@@ -20,16 +20,16 @@ export function isTenantHost(hostname: string): boolean {
 }
 
 /** Canonical published PWA install URL, used as SSR/fallback default. */
-export const CANONICAL_PWA_URL = "https://qlhh.lovable.app/m";
+export const CANONICAL_PWA_URL = "https://qlhh.demo.ubos.vn/connect-app";
 
 /**
  * Resolve the PWA install URL (QR/NFC target) for the current request.
- * Always points to `/m` on the active tenant/app hostname so members install
+ * Always points to `/connect-app` on the active tenant/app hostname so members install
  * the correctly-branded PWA from the domain they're visiting. Falls back to the
  * canonical published URL during SSR or when no window is available.
  */
 export function resolvePwaInstallUrl(origin?: string): string {
   const o = origin ?? (typeof window !== "undefined" ? window.location.origin : "");
   if (!o) return CANONICAL_PWA_URL;
-  return `${o.replace(/\/$/, "")}/m`;
+  return `${o.replace(/\/$/, "")}/connect-app`;
 }

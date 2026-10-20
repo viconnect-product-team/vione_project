@@ -31,6 +31,7 @@ import type {
   BcCustomerTagSuggestionRun,
 } from "@/lib/business-connect/mobile/customer.types";
 import { useViewerUserId } from "@/hooks/use-viewer-user-id";
+import { fetchNestApi } from "@/lib/api-client";
 
 export const customerKeys = {
   root: ["bc-mobile", "customers"] as const,
@@ -67,9 +68,11 @@ export function useCustomers() {
   };
 
   const create = useMutation({
-    mutationFn: (input: {
+    mutationFn: async (input: {
       personId: string;
       displayName?: string | null;
+      fullName?: string | null;
+      name?: string | null;
       companyName?: string | null;
       stage?: BcCustomer["stage"];
       expectedValue?: number | null;
@@ -77,7 +80,21 @@ export function useCustomers() {
       sourceLabel?: string | null;
       note?: string | null;
       nextActionAt?: string | null;
-    }) => bcMobileCustomerCreateFn({ data: input }),
+    }) => {
+      try {
+        return await bcMobileCustomerCreateFn({ data: input as any });
+      } catch (rpcErr) {
+        console.warn("bcMobileCustomerCreateFn failed, falling back to direct REST fetchNestApi:", rpcErr);
+        return await fetchNestApi<any>("/connect-app/customer", {
+          method: "POST",
+          body: JSON.stringify({
+            ...input,
+            fullName: input.fullName || input.displayName || input.name || "Khách hàng mới",
+            displayName: input.displayName || input.fullName || input.name || "Khách hàng mới",
+          }),
+        });
+      }
+    },
     onSuccess: async (res: any) => {
       const newCust = res?.customer || res;
       if (newCust && newCust.id) {

@@ -273,7 +273,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
 
         // Filter upcoming events (future dates)
         const upcoming = mapped.filter((ev: any) => ev.dt && ev.dt > todayEnd);
-        setUpcomingEvents(upcoming.length > 0 ? upcoming : mapped.slice(0, 5));
+        setUpcomingEvents(upcoming);
 
         // Filter today events
         const todayEvents = mapped.filter((ev: any) => {

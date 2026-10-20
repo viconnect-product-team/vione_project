@@ -35,7 +35,50 @@ export function useNetworkFeed() {
     getNextPageParam: (last) => last.nextCursor,
   });
 
-  const items: BcNetworkFeedItem[] = (query.data?.pages ?? []).flatMap((p) => p.items);
+  const serverItems: BcNetworkFeedItem[] = (query.data?.pages ?? []).flatMap((p) => p.items);
+
+  // Kết hợp bài viết vừa lưu cục bộ (Local Optimistic Feed)
+  const items: BcNetworkFeedItem[] = (() => {
+    let localItems: BcNetworkFeedItem[] = [];
+    try {
+      if (typeof window !== "undefined") {
+        const raw = localStorage.getItem("vba_local_moments");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            localItems = parsed.map((m: any) => ({
+              momentId: m.id || `local-${Date.now()}`,
+              ownerUserId: viewerId,
+              owner: {
+                userId: viewerId || "me",
+                displayName: m.authorName || "Tôi",
+                avatarUrl: null,
+                headline: "Thành viên ViOne",
+                companyName: null,
+              },
+              target: null,
+              personId: `u:${viewerId || "me"}`,
+              occurredAt: m.occurredAt || new Date().toISOString(),
+              createdAt: m.occurredAt || new Date().toISOString(),
+              eventName: m.eventName || null,
+              placeLabel: m.placeLabel || null,
+              note: m.content || m.note || null,
+              photoUrls: Array.isArray(m.photos) ? m.photos : (Array.isArray(m.photoUrls) ? m.photoUrls : []),
+              photoCount: (m.photos || m.photoUrls || []).length,
+              visibility: m.visibility || "friends",
+            }));
+          }
+        }
+      }
+    } catch {}
+
+    if (localItems.length === 0) return serverItems;
+
+    // Lọc bỏ trùng lặp id giữa local và server
+    const serverIds = new Set(serverItems.map((s) => s.momentId));
+    const uniqueLocal = localItems.filter((l) => !serverIds.has(l.momentId));
+    return [...uniqueLocal, ...serverItems];
+  })();
 
   return {
     items,

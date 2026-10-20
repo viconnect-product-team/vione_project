@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Modal,
   View,
@@ -10,8 +10,11 @@ import {
   Alert,
   ActivityIndicator,
   Switch,
+  Image,
+  Linking,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import {
   X,
   Camera,
@@ -33,6 +36,9 @@ import {
   DollarSign,
   UserCheck,
   FileText,
+  ExternalLink,
+  Zap,
+  RefreshCw,
 } from "lucide-react-native";
 import { ConnectionPerson } from "../types";
 import { cardScanApi, customerApi, B2BCustomerData } from "../api/services";
@@ -64,15 +70,20 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
 }) => {
   const { colors, isDark } = useTheme();
   const [step, setStep] = useState<"capture" | "scanning" | "review">("capture");
+  const [permission, requestPermission] = useCameraPermissions();
+  const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
+  const [facing, setFacing] = useState<"back" | "front">("back");
+  const [torch, setTorch] = useState(false);
+  const cameraRef = useRef<any>(null);
   
-  // OCR Extracted Fields
-  const [name, setName] = useState("Nguyễn Văn Hùng");
-  const [title, setTitle] = useState("Tổng Giám Đốc");
-  const [company, setCompany] = useState("Tập Đoàn Đầu Tư Hạ Tầng Hùng Cường");
-  const [phone, setPhone] = useState("0918 889 999");
-  const [email, setEmail] = useState("hung.nguyen@hungcuonggroup.vn");
-  const [address, setAddress] = useState("Tòa tháp Landmark 81, TP. Hồ Chí Minh");
-  const [website, setWebsite] = useState("https://hungcuonggroup.vn");
+  // OCR Extracted Fields (Khởi tạo rỗng, tự động điền từ ảnh quét OCR hoặc QR vCard)
+  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [website, setWebsite] = useState("");
 
   // CRM Lead Pipeline Fields
   const [isLeadCare, setIsLeadCare] = useState(true);
@@ -80,35 +91,168 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
   const [stage, setStage] = useState<"prospect" | "qualified" | "proposal" | "negotiation">("prospect");
   const [dealValue, setDealValue] = useState("500,000,000 VNĐ");
   const [assignedStaff, setAssignedStaff] = useState("Trần Minh Hoàng (Trưởng phòng Kinh Doanh)");
-  const [needsNote, setNeedsNote] = useState("Quan tâm phần mềm ERP đám mây & giải pháp số hóa chuỗi cung ứng");
-  const [nextAction, setNextAction] = useState("Gửi hồ sơ năng lực và đặt lịch hẹn 1-1 trong 24h");
+  const [needsNote, setNeedsNote] = useState("Quan tâm giải pháp số hóa doanh nghiệp & kết nối đối tác ViOne");
+  const [nextAction, setNextAction] = useState("Gửi hồ sơ năng lực và liên hệ Zalo 1-1 trong 24h");
   const [isSaving, setIsSaving] = useState(false);
+  const [qrDetected, setQrDetected] = useState(false);
 
-  const startScan = () => {
+  // Phân tích mã QR vCard trên danh thiếp (nếu có)
+  const parseVCard = (data: string) => {
+    let parsedName = "";
+    let parsedPhone = "";
+    let parsedEmail = "";
+    let parsedOrg = "";
+    let parsedTitle = "";
+    let parsedUrl = "";
+    let parsedAdr = "";
+
+    const lines = data.split(/\r?\n/);
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (line.startsWith("FN:")) parsedName = line.slice(3).trim();
+      else if (line.startsWith("N:") && !parsedName) {
+        const parts = line.slice(2).split(";").filter(Boolean);
+        parsedName = parts.reverse().join(" ").trim();
+      } else if (line.startsWith("ORG:")) parsedOrg = line.slice(4).trim();
+      else if (line.startsWith("TITLE:")) parsedTitle = line.slice(6).trim();
+      else if (line.startsWith("TEL") && !parsedPhone) {
+        parsedPhone = line.split(":")[1]?.trim() || "";
+      } else if (line.startsWith("EMAIL") && !parsedEmail) {
+        parsedEmail = line.split(":")[1]?.trim() || "";
+      } else if (line.startsWith("URL:") && !parsedUrl) {
+        parsedUrl = line.slice(4).trim();
+      } else if (line.startsWith("ADR") && !parsedAdr) {
+        parsedAdr = (line.split(":")[1] || "").replace(/;/g, " ").trim();
+      }
+    }
+
+    if (parsedName) setName(parsedName);
+    if (parsedPhone) setPhone(parsedPhone);
+    if (parsedEmail) setEmail(parsedEmail);
+    if (parsedOrg) setCompany(parsedOrg);
+    if (parsedTitle) setTitle(parsedTitle);
+    if (parsedUrl) setWebsite(parsedUrl);
+    if (parsedAdr) setAddress(parsedAdr);
+  };
+
+  const handleBarcodeScanned = ({ data }: { data: string }) => {
+    if (qrDetected || step !== "capture") return;
+    if (data.includes("BEGIN:VCARD") || data.includes("FN:") || data.includes("TEL:")) {
+      setQrDetected(true);
+      parseVCard(data);
+      Alert.alert(
+        "Đã nhận diện QR Danh thiếp (vCard)",
+        "Hệ thống đã tự động trích xuất thông tin đối tác từ mã QR trên danh thiếp!",
+        [{ text: "Xem & Lưu ngay", onPress: () => setStep("review") }]
+      );
+    }
+  };
+
+  const handleCaptureAndScan = async () => {
+    if (!permission?.granted) {
+      const res = await requestPermission();
+      if (!res.granted) {
+        Alert.alert("Quyền Camera", "Vui lòng cấp quyền truy cập máy ảnh để chụp và quét danh thiếp.");
+        return;
+      }
+    }
+
     setStep("scanning");
-    setTimeout(() => {
-      setStep("review");
-    }, 1800);
+    try {
+      let photoUri = "";
+      let base64Data = "";
+      if (cameraRef.current) {
+        const photo = await cameraRef.current.takePictureAsync({ quality: 0.85, base64: true });
+        photoUri = photo?.uri || "";
+        base64Data = photo?.base64 || "";
+      }
+      setCapturedPhotoUri(photoUri);
+
+      // Gọi OCR API của backend để trích xuất trường danh thiếp từ hình ảnh
+      if (base64Data) {
+        try {
+          const ocrRes = await cardScanApi.scanOcr(`data:image/jpeg;base64,${base64Data}`, `ocr-tok-${Date.now()}`);
+          const respData = ocrRes?.data as any;
+          const candidate = respData?.candidate || respData;
+          const fields = candidate?.fields || respData?.fields;
+
+          if (fields) {
+            const extractText = (val: any): string => {
+              if (!val) return "";
+              if (typeof val === "string") return val.trim();
+              if (typeof val === "object" && typeof val.text === "string") return val.text.trim();
+              if (typeof val === "object" && typeof val.value === "string") return val.value.trim();
+              return String(val || "").trim();
+            };
+
+            const extractedName = extractText(fields.displayName) || extractText(fields.name);
+            if (extractedName && extractedName !== "Đối tác mới") setName(extractedName);
+
+            const extractedTitle = extractText(fields.title) || extractText(fields.role);
+            if (extractedTitle) setTitle(extractedTitle);
+
+            const extractedCompany = extractText(fields.companyName) || extractText(fields.company);
+            if (extractedCompany) setCompany(extractedCompany);
+
+            let extractedPhone = "";
+            if (Array.isArray(fields.phones) && fields.phones.length > 0) {
+              extractedPhone = extractText(fields.phones[0]);
+            } else {
+              extractedPhone = extractText(fields.phone) || extractText(fields.mobile);
+            }
+            if (extractedPhone) setPhone(extractedPhone);
+
+            let extractedEmail = "";
+            if (Array.isArray(fields.emails) && fields.emails.length > 0) {
+              extractedEmail = extractText(fields.emails[0]);
+            } else {
+              extractedEmail = extractText(fields.email);
+            }
+            if (extractedEmail) setEmail(extractedEmail);
+
+            const extractedAddress = extractText(fields.address);
+            if (extractedAddress) setAddress(extractedAddress);
+
+            const extractedWebsite = extractText(fields.website);
+            if (extractedWebsite) setWebsite(extractedWebsite);
+          }
+        } catch (ocrErr) {
+          console.warn("OCR API error, keeping recognized values:", ocrErr);
+        }
+      }
+    } catch (err) {
+      console.warn("Lỗi chụp danh thiếp:", err);
+    }
+
+    setStep("review");
   };
 
   const handleSave = async () => {
-    if (!name.trim() || !company.trim()) {
-      Alert.alert("Thông báo", "Vui lòng nhập họ tên và tên doanh nghiệp.");
+    if (!name.trim()) {
+      Alert.alert("Thiếu thông tin", "Vui lòng nhập họ và tên trên danh thiếp.");
+      return;
+    }
+    if (!phone.trim()) {
+      Alert.alert("Thiếu thông tin", "Vui lòng nhập số điện thoại để lưu danh bạ và kết nối Zalo.");
       return;
     }
 
     setIsSaving(true);
 
+    const cleanPhone = phone.replace(/\D/g, "");
+    const zaloUrl = cleanPhone ? `https://zalo.me/${cleanPhone}` : undefined;
     const contactId = "ocr-" + Date.now();
+
     const newContact: ConnectionPerson = {
       id: contactId,
       name: name.trim(),
       title: title.trim(),
-      company: company.trim(),
+      company: company.trim() || "Doanh nghiệp đối tác",
       phone: phone.trim(),
       email: email.trim(),
       industry: "Đầu Tư & Xây Dựng",
       status: "connected",
+      zaloUrl,
     };
 
     let targetPersonId = `g:${contactId}`;
@@ -118,11 +262,12 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
       const saveCardRes = await cardScanApi.saveCard({
         displayName: name.trim(),
         title: title.trim(),
-        companyName: company.trim(),
+        companyName: company.trim() || "Doanh nghiệp đối tác",
         phone: phone.trim(),
         email: email.trim(),
         address: address.trim(),
         website: website.trim(),
+        zaloUrl,
         clientToken: `ocr-token-${Date.now()}`,
       });
 
@@ -147,14 +292,14 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
 
         const customerPayload: B2BCustomerData = {
           name: name.trim(),
-          company: company.trim(),
+          company: company.trim() || "Doanh nghiệp đối tác",
           phone: phone.trim(),
           email: email.trim(),
           dealValue: dealValue.trim(),
           stage: stage,
           contactPerson: name.trim(),
           tags: [tierTag, "Danh thiếp AI OCR", "Đang chăm sóc"],
-          notes: `${needsNote.trim()} | PIC: ${assignedStaff.trim()} | Hành động tiếp: ${nextAction.trim()}`,
+          notes: `${needsNote.trim()} | PIC: ${assignedStaff.trim()} | Hành động tiếp: ${nextAction.trim()} | Zalo: ${zaloUrl || "N/A"}`,
         };
 
         await customerApi.createCustomer(customerPayload);
@@ -174,13 +319,28 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
     setIsSaving(false);
     onSaveContact(newContact);
 
-    const successMsg = isLeadCare
-      ? `Đã lưu danh thiếp của ${name.trim()} và chuyển thành Khách hàng tiềm năng ưu tiên chăm sóc!`
-      : `Đã lưu danh thiếp của ${name.trim()} vào danh bạ đối tác ViOne.`;
-
-    Alert.alert("Thành công", successMsg);
-    setStep("capture");
-    onClose();
+    if (cleanPhone) {
+      Alert.alert(
+        "Lưu danh bạ thành công",
+        `Đã lưu danh thiếp của ${name.trim()} (SĐT: ${phone.trim()}) vào danh bạ ViOne.\nBạn có muốn mở Zalo để liên hệ ngay không?`,
+        [
+          {
+            text: "Nhắn tin Zalo ngay",
+            onPress: () => {
+              Linking.openURL(`https://zalo.me/${cleanPhone}`).catch(() => {});
+              resetAndClose();
+            },
+          },
+          {
+            text: "Hoàn tất",
+            onPress: () => resetAndClose(),
+          },
+        ]
+      );
+    } else {
+      Alert.alert("Thành công", `Đã lưu danh thiếp của ${name.trim()} vào danh bạ đối tác ViOne.`);
+      resetAndClose();
+    }
   };
 
   const resetAndClose = () => {
@@ -199,34 +359,73 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
               <View>
                 <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Quét Danh Thiếp & Lưu Khách Hàng</Text>
                 <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
-                  AI OCR Copilot số hóa danh bạ & chuyển thành Khách hàng tiềm năng CRM
+                  AI OCR Copilot số hóa danh bạ & kết nối Zalo
                 </Text>
               </View>
             </View>
-            <TouchableOpacity onPress={resetAndClose} style={[styles.closeBtn, { backgroundColor: colors.surface2 }]}>
-              <X size={18} color={colors.textMuted} />
+            <TouchableOpacity onPress={resetAndClose} style={styles.closeBtn}>
+              <X size={20} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
 
           {/* STEP 1: CAPTURE VIEW */}
           {step === "capture" && (
             <View style={styles.captureContainer}>
-              <View style={[styles.cardFrame, { backgroundColor: colors.surface2, borderColor: colors.surfaceBorder }]}>
-                <View style={[styles.cornerTL, { borderColor: colors.gold }]} />
-                <View style={[styles.cornerTR, { borderColor: colors.gold }]} />
-                <View style={[styles.cornerBL, { borderColor: colors.gold }]} />
-                <View style={[styles.cornerBR, { borderColor: colors.gold }]} />
+              <View style={[styles.cardFrame, { backgroundColor: colors.surface2, borderColor: colors.surfaceBorder, overflow: "hidden" }]}>
+                {permission?.granted ? (
+                  <>
+                    <CameraView
+                      ref={cameraRef}
+                      style={StyleSheet.absoluteFillObject}
+                      facing={facing}
+                      enableTorch={torch}
+                      onBarcodeScanned={qrDetected ? undefined : handleBarcodeScanned}
+                      barcodeScannerSettings={{
+                        barcodeTypes: ["qr"],
+                      }}
+                    />
+                    {/* Top camera controls */}
+                    <View style={styles.cameraOverlayControls}>
+                      <TouchableOpacity
+                        onPress={() => setTorch((t) => !t)}
+                        style={[styles.cameraMiniBtn, torch && styles.cameraMiniBtnActive]}
+                        activeOpacity={0.8}
+                      >
+                        <Zap size={16} color={torch ? "#050C15" : "#DFB76C"} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => setFacing((f) => (f === "back" ? "front" : "back"))}
+                        style={styles.cameraMiniBtn}
+                        activeOpacity={0.8}
+                      >
+                        <RefreshCw size={15} color="#DFB76C" />
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                ) : (
+                  <View style={styles.framePlaceholder}>
+                    <Camera size={44} color={colors.gold} strokeWidth={1.5} />
+                    <Text style={[styles.frameText, { color: colors.textPrimary }]}>Căn chỉnh danh thiếp nằm gọn trong khung</Text>
+                    <Text style={[styles.frameSubText, { color: colors.textMuted }]}>
+                      Hệ thống AI sẽ tự động đọc tên, SĐT và chức vụ từ visit card
+                    </Text>
+                    <TouchableOpacity
+                      onPress={requestPermission}
+                      style={{ marginTop: 10, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: colors.gold }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: "700", color: "#050C15" }}>Cấp quyền Camera</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
 
-                <View style={styles.framePlaceholder}>
-                  <Camera size={44} color={colors.gold} strokeWidth={1.5} />
-                  <Text style={[styles.frameText, { color: colors.textPrimary }]}>Căn chỉnh danh thiếp nằm gọn trong khung</Text>
-                  <Text style={[styles.frameSubText, { color: colors.textMuted }]}>
-                    Hệ thống AI sẽ tự động đọc toàn bộ chữ in, logo và phân tích đối tác
-                  </Text>
-                </View>
+                {/* 4 Gold Framing Corners */}
+                <View style={[styles.cornerTL, { borderColor: colors.gold, zIndex: 10 }]} />
+                <View style={[styles.cornerTR, { borderColor: colors.gold, zIndex: 10 }]} />
+                <View style={[styles.cornerBL, { borderColor: colors.gold, zIndex: 10 }]} />
+                <View style={[styles.cornerBR, { borderColor: colors.gold, zIndex: 10 }]} />
               </View>
 
-              <TouchableOpacity style={styles.captureBtn} onPress={startScan} activeOpacity={0.85}>
+              <TouchableOpacity style={styles.captureBtn} onPress={handleCaptureAndScan} activeOpacity={0.85}>
                 <LinearGradient
                   colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
                   start={{ x: 0, y: 0 }}
@@ -246,7 +445,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
               <ActivityIndicator size="large" color={colors.gold} style={{ marginBottom: 16 }} />
               <Text style={[styles.scanningTitle, { color: colors.textPrimary }]}>Đang phân tích danh thiếp...</Text>
               <Text style={[styles.scanningSubtitle, { color: colors.textMuted }]}>
-                AI OCR Copilot đang trích xuất họ tên, chức vụ, số điện thoại, công ty và khởi tạo hồ sơ chăm sóc
+                AI OCR Copilot đang trích xuất tối thiểu: Họ tên, Chức vụ, Số điện thoại và liên kết Zalo
               </Text>
             </View>
           )}
@@ -254,12 +453,66 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
           {/* STEP 3: REVIEW & EDIT FORM */}
           {step === "review" && (
             <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 560 }}>
+              {capturedPhotoUri ? (
+                <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 12, height: 120, borderWidth: 1, borderColor: colors.gold }}>
+                  <Image source={{ uri: capturedPhotoUri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+                </View>
+              ) : null}
+
               <View style={[styles.successBadgeRow, { backgroundColor: colors.goldSoft, borderColor: colors.surfaceBorderGold }]}>
                 <Sparkles size={16} color={colors.gold} style={{ marginRight: 6 }} />
                 <Text style={[styles.successBadgeText, { color: colors.textGold }]}>
-                  Đã trích xuất thông tin thành công từ danh thiếp giấy!
+                  Đã nhận diện tối thiểu: Tên, Chức danh & Số điện thoại
                 </Text>
               </View>
+
+              {/* ZALO DIRECT CHAT LINK */}
+              {phone.trim() ? (() => {
+                const cleanPhone = phone.replace(/\D/g, "");
+                return (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginVertical: 10,
+                      padding: 12,
+                      borderRadius: 12,
+                      backgroundColor: "rgba(216, 178, 130, 0.12)",
+                      borderWidth: 1,
+                      borderColor: "rgba(216, 178, 130, 0.4)",
+                    }}
+                  >
+                    <View style={{ flex: 1, marginRight: 8 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "800", color: "#D8B282" }}>
+                        LIÊN KẾT ZALO TRỰC TIẾP
+                      </Text>
+                      <Text style={{ fontSize: 12.5, fontWeight: "600", color: colors.textPrimary, marginTop: 2 }}>
+                        https://zalo.me/{cleanPhone}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "#D8B282",
+                        paddingHorizontal: 14,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                      }}
+                      onPress={() => {
+                        Linking.openURL(`https://zalo.me/${cleanPhone}`).catch(() => {
+                          Alert.alert("Zalo", `Mở liên kết: https://zalo.me/${cleanPhone}`);
+                        });
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={{ color: "#000000", fontSize: 12, fontWeight: "800" }}>
+                        Mở Zalo
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })() : null}
+
 
               {/* THÔNG TIN DANH BẠ CƠ BẢN */}
               <Text style={[styles.sectionHeading, { color: colors.gold }]}>THÔNG TIN DOANH NHÂN & DOANH NGHIỆP</Text>
@@ -269,6 +522,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                 style={[styles.inputField, { backgroundColor: colors.surface2, color: colors.textPrimary, borderColor: colors.surfaceBorder }]}
                 value={name}
                 onChangeText={setName}
+                placeholder="Nhập họ và tên đối tác trên danh thiếp..."
                 placeholderTextColor={colors.textDisabled}
               />
 
@@ -279,6 +533,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                     style={[styles.inputField, { backgroundColor: colors.surface2, color: colors.textPrimary, borderColor: colors.surfaceBorder }]}
                     value={title}
                     onChangeText={setTitle}
+                    placeholder="Chức danh (VD: Tổng Giám Đốc)..."
                     placeholderTextColor={colors.textDisabled}
                   />
                 </View>
@@ -289,6 +544,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                     value={phone}
                     onChangeText={setPhone}
                     keyboardType="phone-pad"
+                    placeholder="Số điện thoại di động..."
                     placeholderTextColor={colors.textDisabled}
                   />
                 </View>
@@ -299,6 +555,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                 style={[styles.inputField, { backgroundColor: colors.surface2, color: colors.textPrimary, borderColor: colors.surfaceBorder }]}
                 value={company}
                 onChangeText={setCompany}
+                placeholder="Tên công ty / Tập đoàn đối tác..."
                 placeholderTextColor={colors.textDisabled}
               />
 
@@ -308,6 +565,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
+                placeholder="email@doanhnghiep.vn..."
                 placeholderTextColor={colors.textDisabled}
               />
 
@@ -316,6 +574,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                 style={[styles.inputField, { backgroundColor: colors.surface2, color: colors.textPrimary, borderColor: colors.surfaceBorder }]}
                 value={address}
                 onChangeText={setAddress}
+                placeholder="Địa chỉ văn phòng / trụ sở..."
                 placeholderTextColor={colors.textDisabled}
               />
 
@@ -357,16 +616,22 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                           key={t.id}
                           style={[
                             styles.tierChip,
-                            { borderColor: colors.surfaceBorder },
-                            isSelected && { backgroundColor: isDark ? "rgba(216, 178, 130, 0.22)" : "#FEF3C7", borderColor: colors.gold },
+                            { borderColor: colors.surfaceBorder, backgroundColor: colors.surface },
+                            isSelected && {
+                              backgroundColor: isDark ? "rgba(216, 178, 130, 0.22)" : "#FEF3C7",
+                              borderColor: colors.gold,
+                            },
                           ]}
                           onPress={() => setLeadTier(t.id as CustomerLeadTier)}
                         >
                           <Text
                             style={[
                               styles.tierChipText,
-                              { color: colors.textMuted },
-                              isSelected && { color: colors.textGold, fontWeight: "800" },
+                              { color: colors.textSecondary },
+                              isSelected && {
+                                color: isDark ? colors.textGold : "#92400E",
+                                fontWeight: "800",
+                              },
                             ]}
                           >
                             {t.label}
@@ -432,11 +697,18 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
 
               <View style={[styles.reviewFooterRow, { borderTopColor: colors.surfaceBorder }]}>
                 <TouchableOpacity
-                  style={[styles.reScanBtn, { backgroundColor: colors.surface2 }]}
+                  style={[
+                    styles.reScanBtn,
+                    {
+                      backgroundColor: colors.surface2,
+                      borderColor: colors.surfaceBorderGold,
+                      borderWidth: 1,
+                    },
+                  ]}
                   onPress={() => setStep("capture")}
                   disabled={isSaving}
                 >
-                  <Text style={[styles.reScanBtnText, { color: colors.textMuted }]}>Quét lại</Text>
+                  <Text style={[styles.reScanBtnText, { color: colors.textPrimary }]}>Quét lại</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -554,6 +826,28 @@ const styles = StyleSheet.create({
     height: 22,
     borderBottomWidth: 2.5,
     borderRightWidth: 2.5,
+  },
+  cameraOverlayControls: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    flexDirection: "row",
+    gap: 8,
+    zIndex: 20,
+  },
+  cameraMiniBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(20, 28, 43, 0.9)",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cameraMiniBtnActive: {
+    backgroundColor: "#D8B282",
+    borderColor: "#D8B282",
   },
   framePlaceholder: {
     alignItems: "center",
