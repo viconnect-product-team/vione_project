@@ -16,25 +16,30 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 > $null
 
 # =========================================================================
-# LENH DOC LAP: TRIEN KHAI VIONE APP - MANG XA HOI DOANH NHAN VIONE CONNECT (PORT 5445)
-# TACH BIET HOAN TOAN KHOI HE THONG WEB CRM QUAN TRI
+# LỆNH ĐỘC LẬP: TRIỂN KHAI VIONE APP LÊN SERVER DEV (PORT 5445)
+# TÁCH BIỆT HOÀN TOÀN KHỎI HỆ THỐNG WEB CRM QUẢN TRỊ
 # =========================================================================
 
 Write-Host "=================================================================" -ForegroundColor Magenta
-Write-Host ">>> BAT DAU TRIEN KHAI DOC LAP: VIONE APP - MANG XA HOI VIONE CONNECT <<<" -ForegroundColor Magenta
+Write-Host ">>> BẮT ĐẦU TRIỂN KHAI VIONE APP LÊN SERVER DEV (PORT 5445) <<<" -ForegroundColor Magenta
 Write-Host "=================================================================" -ForegroundColor Magenta
 
 $bound = [System.Collections.Generic.Dictionary[string, object]]::new($PSBoundParameters)
 [void]$bound.Remove("NoHttps")
 $bound["EnableHttps"] = $EnableHttps
+$bound["TargetEnv"] = "dev"
 
-# 1. Goi truc tiep bo deploy cua ViOne App (da bao gom Nginx SSL Reverse Proxy khi bat EnableHttps)
+# 1. Gọi trực tiếp bộ deploy của ViOne App lên server dev
 & "$PSScriptRoot/deploy/vione/fast-deploy.ps1" @bound
 
 Write-Host "`n=================================================================" -ForegroundColor Green
-Write-Host "TRIEN KHAI VIONE APP - MANG XA HOI DOANH NHAN THANH CONG!" -ForegroundColor Green
-Write-Host "1. ViOne App Mang Xa Hoi (HTTPS) : https://vione.viconnect.vn (hoac https://14.225.217.232:5445)" -ForegroundColor Yellow
-Write-Host "   -> Mien sslip.io (PWA/SSL)    : https://dev-vione.14-225-217-232.sslip.io:5445" -ForegroundColor Yellow
-Write-Host "   -> Tuyen duong chinh          : /connect-app" -ForegroundColor Yellow
-Write-Host "(Luu y: He thong ViOne App hoat dong doc lap hoan toan voi CRM)" -ForegroundColor DarkGray
+Write-Host "TRIỂN KHAI VIONE APP LÊN SERVER DEV THÀNH CÔNG!" -ForegroundColor Green
+Write-Host "1. ViOne App Dev (HTTPS)      : https://dev-vione.14-225-217-232.sslip.io:5445 (hoặc https://14.225.217.232:5445)" -ForegroundColor Yellow
+Write-Host "   -> Tuyến đường chính       : /connect-app" -ForegroundColor Yellow
+Write-Host "2. ViOne App Dev (HTTP)       : http://14.225.217.232:5010" -ForegroundColor DarkGray
+Write-Host "3. ViOne Backend API Dev      : http://14.225.217.232:5011" -ForegroundColor Yellow
+Write-Host "-----------------------------------------------------------------" -ForegroundColor DarkGray
+Write-Host "GHI CHÚ QUY TRÌNH DEPLOY:" -ForegroundColor Cyan
+Write-Host "• Chạy .\deploy-vione.ps1    : Triển khai nhanh trực tiếp lên Server DEV (port 5445)." -ForegroundColor White
+Write-Host "• Push code lên Git (main)   : GitHub Actions tự động cập nhật giao diện mới cho PWA Subdomain (https://vione.viconnect.vn/)." -ForegroundColor White
 Write-Host "=================================================================" -ForegroundColor Green

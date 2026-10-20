@@ -1,4 +1,4 @@
-name: Deploy ViOne to Subdomain
+name: Auto Deploy PWA to Subdomain (vione.viconnect.vn)
 
 on:
   push:
@@ -43,7 +43,6 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
           username: ${{ secrets.REMOTE_USER || 'root' }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
@@ -54,7 +53,6 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
           username: ${{ secrets.REMOTE_USER || 'root' }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: "vione-frontend.tar.gz,deploy/vione/docker-compose.yml,deploy/vione/.env.production,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
           target: "~/vione_deploy_temp"
@@ -64,7 +62,6 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
           username: ${{ secrets.REMOTE_USER || 'root' }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e

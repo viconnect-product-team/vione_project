@@ -1,4 +1,5 @@
 param (
+    [string]$TargetEnv = "dev",
     [switch]$SkipBuild,
     [switch]$SkipWebBuild,
     [switch]$FrontendOnly,
@@ -65,8 +66,10 @@ try {
                 $env:NODE_OPTIONS = "--max-old-space-size=8192"
                 $env:VITE_APP_SCOPE = "vione_app"
                 $env:VITE_APP_NAME = "ViOne Connect"
-                if ($EnableHttps) {
+                if ($TargetEnv -eq "prod") {
                     $env:VITE_PUBLIC_APP_URL = "https://vione.viconnect.vn"
+                } elseif ($EnableHttps) {
+                    $env:VITE_PUBLIC_APP_URL = "https://dev-vione.14-225-217-232.sslip.io:5445"
                 } else {
                     $env:VITE_PUBLIC_APP_URL = "http://14.225.217.232:5000"
                 }
