@@ -18,7 +18,12 @@ export class PublicController {
 
   @Get('identity/:token')
   async getPublicIdentityByToken(@Param('token') token: string) {
-    return this.connectAppService.getPublicIdentityByToken(token);
+    return this.connectAppService.getPublicProfile(token);
+  }
+
+  @Get('profile/:identifier')
+  async getPublicProfile(@Param('identifier') identifier: string) {
+    return this.connectAppService.getPublicProfile(identifier);
   }
 
   /** Anonymous guest shares their contact back to the card owner. No auth required. */

@@ -65,57 +65,8 @@ import { MemberCardBottomSheet, MemberCardData } from "../../components/MemberCa
 import { resolveMediaUrl } from "../../utils/media";
 import { ContactsDiscoveryModal } from "../../components/ContactsDiscoveryModal";
 
-// Dữ liệu khoảnh khắc 24h doanh nhân
-const INITIAL_STORIES: StoryItemData[] = [
-  {
-    id: "story-1",
-    authorName: "Vũ Minh Tuấn",
-    authorTitle: "Chủ tịch HĐQT",
-    authorCompany: "VTech Group",
-    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-    storyImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600",
-    storyCaption: "Ký kết thỏa thuận hợp tác chuyển đổi số & bảo mật thông tin 2026.",
-    tag: "Ký kết đối tác",
-    timeAgo: "2h trước",
-    viewsCount: 24,
-  },
-  {
-    id: "story-2",
-    authorName: "Hoàng Mai Anh",
-    authorTitle: "Giám đốc Tài chính",
-    authorCompany: "VNPay FinTech",
-    authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
-    storyImage: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600",
-    storyCaption: "Hội thảo chuyên đề giải pháp thanh toán số doanh nghiệp B2B.",
-    tag: "FinTech B2B",
-    timeAgo: "4h trước",
-    viewsCount: 38,
-  },
-  {
-    id: "story-3",
-    authorName: "Trần Đức Nam",
-    authorTitle: "Tổng Giám đốc",
-    authorCompany: "Logistics Nam Phát",
-    authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-    storyImage: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600",
-    storyCaption: "Khánh thành trung tâm phân phối kho bãi thông minh tại Hải Phòng.",
-    tag: "Mở rộng kho",
-    timeAgo: "6h trước",
-    viewsCount: 52,
-  },
-  {
-    id: "story-4",
-    authorName: "Lê Thu Hương",
-    authorTitle: "Nhà sáng lập",
-    authorCompany: "EcoWear Global",
-    authorAvatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150",
-    storyImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600",
-    storyCaption: "Bộ sưu tập trang phục doanh nhân cao cấp từ vật liệu tái chế.",
-    tag: "Thời trang B2B",
-    timeAgo: "8h trước",
-    viewsCount: 19,
-  },
-];
+// Dữ liệu khoảnh khắc 24h doanh nhân (mặc định trống, chỉ hiện tin của chính mình hoặc đối tác đã kết nối)
+const INITIAL_STORIES: StoryItemData[] = [];
 
 // Danh sách đối tác cần giữ kết nối & chăm sóc
 const NURTURE_PARTNERS = [
@@ -264,45 +215,8 @@ const B2B_CUSTOMERS = [
   },
 ];
 
-// Danh sách hội thoại tin nhắn
-const INITIAL_THREADS: DmThreadSummary[] = [
-  {
-    threadId: "th-1",
-    counterpartUserId: "p-1",
-    displayName: "Vũ Minh Tuấn",
-    companyName: "Tập đoàn Công nghệ VTech",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-    lastMessagePreview: "Chào anh, thỏa thuận bảo mật WebRTC đã ký điện tử xong nhé.",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-    lastMessageFromMe: false,
-    unreadCount: 1,
-    isOnline: true,
-  },
-  {
-    threadId: "th-2",
-    counterpartUserId: "p-2",
-    displayName: "Hoàng Mai Anh",
-    companyName: "VNPay FinTech Solution",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
-    lastMessagePreview: "Chiều nay 15:00 gặp nhau tại phòng VIP 3 ViOne nhé anh.",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    lastMessageFromMe: false,
-    unreadCount: 0,
-    isOnline: true,
-  },
-  {
-    threadId: "th-3",
-    counterpartUserId: "group-1",
-    displayName: "Ban Điều Hành Hiệp Hội CEO",
-    companyName: "Liên minh Doanh nghiệp Toàn cầu",
-    avatarUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=150",
-    lastMessagePreview: "Đã cập nhật chương trình Hội nghị Xúc tiến Đầu tư Quý 4.",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    lastMessageFromMe: true,
-    unreadCount: 0,
-    isGroup: true,
-  },
-];
+// Danh sách hội thoại tin nhắn (mặc định trống, tải từ API)
+const INITIAL_THREADS: DmThreadSummary[] = [];
 
 
 type NetworkTab = "network" | "customers" | "suggestions" | "messages" | "requests";
@@ -413,26 +327,45 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     return "Chào buổi tối,";
   };
 
-  // Tải danh sách cuộc trò chuyện từ API
+  // Tải danh sách cuộc trò chuyện và đối tác kết nối từ API
   useEffect(() => {
     let isMounted = true;
-    const fetchThreads = async () => {
+    const fetchNetworkData = async () => {
       try {
         setIsLoadingThreads(true);
-        const res = await apiRequest<{ ok?: boolean; threads?: DmThreadSummary[] }>("connect-app/dm/threads");
+        const [threadsRes, connsRes] = await Promise.all([
+          apiRequest<{ ok?: boolean; threads?: DmThreadSummary[] }>("connect-app/dm/threads"),
+          apiRequest<any[]>("connect-app/network/connections"),
+        ]);
         if (!isMounted) return;
 
-        if (res.data?.threads && Array.isArray(res.data.threads) && res.data.threads.length > 0) {
-          setThreads(res.data.threads);
+        if (threadsRes.data?.threads && Array.isArray(threadsRes.data.threads)) {
+          setThreads(threadsRes.data.threads);
+        }
+
+        if (connsRes.data && Array.isArray(connsRes.data) && connsRes.data.length > 0) {
+          const mappedPartners: ConnectionPerson[] = connsRes.data.map((c: any) => ({
+            id: c.counterpartUserId || c.id,
+            name: c.fullName || c.name || "Doanh nhân đối tác",
+            title: c.professionalTitle || "Hội viên ViOne Connect",
+            company: c.companyName || c.company || "ViOne Network",
+            avatarUrl: c.avatarUrl,
+            phone: c.phone || "0988 888 888",
+            email: c.email || "",
+            industry: c.industry || "Doanh nghiệp",
+            status: "connected",
+            matchScore: 99,
+          }));
+          setPartners(mappedPartners);
         }
       } catch (err) {
-        console.warn("Lỗi tải threads từ API:", err);
+        console.warn("Lỗi tải dữ liệu network/threads:", err);
       } finally {
         if (isMounted) setIsLoadingThreads(false);
       }
     };
 
-    fetchThreads();
+    fetchNetworkData();
     return () => {
       isMounted = false;
     };
@@ -495,6 +428,17 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     });
   }, [partners, filterPartnerKind, partnerSearchQuery]);
 
+  // Khoảnh khắc 24h chỉ hiển thị cho chính mình hoặc những người đã kết nối
+  const displayStories = useMemo(() => {
+    return stories.filter((s) => {
+      if (s.authorName === user?.displayName || s.id.startsWith("story-my-") || s.id.startsWith("story-custom-")) return true;
+      const isConnected = partners.some(
+        (p) => p.status === "connected" && (p.name === s.authorName || p.id === s.id)
+      );
+      return isConnected;
+    });
+  }, [stories, partners, user?.displayName]);
+
   // Phân loại danh mục Hộp thư
   const allThreads = useMemo(() => {
     return threads.filter((t) => {
@@ -549,27 +493,58 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     });
   }, [activeMessageCategory, allThreads, unreadThreads, groupThreads, pendingThreads, messageSearchQuery]);
 
-  const handleOpenChatWithPartner = (partner: ConnectionPerson) => {
+  const handleOpenChatWithPartner = async (partner: ConnectionPerson) => {
     const existing = threads.find((t) => t.counterpartUserId === partner.id);
-    if (existing) {
+    if (existing && !existing.threadId.startsWith("th-")) {
       setSelectedThread(existing);
-    } else {
-      const newThread: DmThreadSummary = {
-        threadId: "th-" + partner.id,
-        counterpartUserId: partner.id,
-        displayName: partner.name,
-        companyName: partner.company,
-        avatarUrl: partner.avatarUrl,
-        lastMessagePreview: "Bắt đầu cuộc trò chuyện kinh doanh mới",
-        lastMessageAt: new Date().toISOString(),
-        lastMessageFromMe: true,
-        unreadCount: 0,
-        isConnected: partner.status === "connected",
-        isOnline: true,
-      };
-      setThreads((prev) => [newThread, ...prev]);
-      setSelectedThread(newThread);
+      setChatModalVisible(true);
+      return;
     }
+
+    try {
+      const res = await apiRequest<{ ok?: boolean; threadId?: string }>("connect-app/dm/threads", {
+        method: "POST",
+        data: { counterpartUserId: partner.id, personId: partner.id },
+      });
+
+      const realThreadId = res.data?.threadId;
+      if (realThreadId) {
+        const newThread: DmThreadSummary = {
+          threadId: realThreadId,
+          counterpartUserId: partner.id,
+          displayName: partner.name,
+          companyName: partner.company,
+          avatarUrl: partner.avatarUrl,
+          lastMessagePreview: existing?.lastMessagePreview || "Bắt đầu cuộc trò chuyện kinh doanh mới",
+          lastMessageAt: existing?.lastMessageAt || new Date().toISOString(),
+          lastMessageFromMe: existing?.lastMessageFromMe ?? true,
+          unreadCount: 0,
+          isConnected: partner.status === "connected",
+          isOnline: true,
+        };
+        setThreads((prev) => [newThread, ...prev.filter((t) => t.threadId !== realThreadId && t.counterpartUserId !== partner.id)]);
+        setSelectedThread(newThread);
+        setChatModalVisible(true);
+        return;
+      }
+    } catch (e) {
+      console.warn("Lỗi mở cuộc trò chuyện:", e);
+    }
+
+    const fallbackThread: DmThreadSummary = existing || {
+      threadId: partner.id,
+      counterpartUserId: partner.id,
+      displayName: partner.name,
+      companyName: partner.company,
+      avatarUrl: partner.avatarUrl,
+      lastMessagePreview: "Bắt đầu cuộc trò chuyện kinh doanh mới",
+      lastMessageAt: new Date().toISOString(),
+      lastMessageFromMe: true,
+      unreadCount: 0,
+      isConnected: partner.status === "connected",
+      isOnline: true,
+    };
+    setSelectedThread(fallbackThread);
     setChatModalVisible(true);
   };
 
@@ -918,41 +893,67 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </TouchableOpacity>
 
                 {/* 2. Danh sách Story các Doanh Nhân */}
-                {stories.map((story) => (
-                  <TouchableOpacity
-                    key={story.id}
-                    style={styles.storyCard}
-                    onPress={() => {
-                      setSelectedStory(story);
-                      setStoryViewerVisible(true);
+                {displayStories.length === 0 ? (
+                  <View
+                    style={{
+                      width: 165,
+                      height: 140,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "rgba(216, 178, 130, 0.4)",
+                      borderStyle: "dashed",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 12,
+                      marginLeft: 10,
+                      backgroundColor: isDark ? "rgba(216, 178, 130, 0.05)" : "#FDFBF7",
                     }}
-                    activeOpacity={0.85}
                   >
-                    <Image source={{ uri: resolveMediaUrl(story.storyImage) || story.storyImage }} style={styles.storyCardBg} resizeMode="cover" />
-                    <LinearGradient
-                      colors={["rgba(10, 10, 11, 0.4)", "transparent", "rgba(10, 10, 11, 0.9)"]}
-                      style={styles.storyCardGradient}
-                    />
+                    <Sparkles size={18} color="#D8B282" style={{ marginBottom: 6 }} />
+                    <Text style={{ fontSize: 11, fontWeight: "700", color: isDark ? "#F6E1C3" : "#8C653B", textAlign: "center" }}>
+                      Khoảnh khắc 24h
+                    </Text>
+                    <Text style={{ fontSize: 9.5, color: isDark ? "#94A3B8" : "#64748B", textAlign: "center", marginTop: 4 }}>
+                      Chỉ hiển thị cho đối tác đã kết nối
+                    </Text>
+                  </View>
+                ) : (
+                  displayStories.map((story) => (
+                    <TouchableOpacity
+                      key={story.id}
+                      style={styles.storyCard}
+                      onPress={() => {
+                        setSelectedStory(story);
+                        setStoryViewerVisible(true);
+                      }}
+                      activeOpacity={0.85}
+                    >
+                      <Image source={{ uri: resolveMediaUrl(story.storyImage) || story.storyImage }} style={styles.storyCardBg} resizeMode="cover" />
+                      <LinearGradient
+                        colors={["rgba(10, 10, 11, 0.4)", "transparent", "rgba(10, 10, 11, 0.9)"]}
+                        style={styles.storyCardGradient}
+                      />
 
-                    {/* Top Author Avatar & Tag */}
-                    <View style={styles.storyCardTop}>
-                      <Avatar url={story.authorAvatar} name={story.authorName} size={28} showGoldBorder />
-                      {story.tag && (
-                        <View style={styles.storyCardTag}>
-                          <Text style={styles.storyCardTagText} numberOfLines={1}>{story.tag}</Text>
-                        </View>
-                      )}
-                    </View>
+                      {/* Top Author Avatar & Tag */}
+                      <View style={styles.storyCardTop}>
+                        <Avatar url={story.authorAvatar} name={story.authorName} size={28} showGoldBorder />
+                        {story.tag && (
+                          <View style={styles.storyCardTag}>
+                            <Text style={styles.storyCardTagText} numberOfLines={1}>{story.tag}</Text>
+                          </View>
+                        )}
+                      </View>
 
-                    {/* Bottom Author Name & Time */}
-                    <View style={styles.storyCardBottom}>
-                      <Text style={styles.storyAuthorName} numberOfLines={1}>
-                        {story.authorName}
-                      </Text>
-                      <Text style={styles.storyTimeAgo}>{story.timeAgo}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
+                      {/* Bottom Author Name & Time */}
+                      <View style={styles.storyCardBottom}>
+                        <Text style={styles.storyAuthorName} numberOfLines={1}>
+                          {story.authorName}
+                        </Text>
+                        <Text style={styles.storyTimeAgo}>{story.timeAgo}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                )}
               </ScrollView>
             </View>
 

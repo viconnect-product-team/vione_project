@@ -1,0 +1,95 @@
+name: Deploy ViOne to Subdomain
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy ViOne (vione.viconnect.vn)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Generate TanStack Routes
+        run: node apps/vione_app_fe/scripts/gen-routes.mjs
+
+      - name: Build Web PWA Frontend
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          export VITE_APP_SCOPE="vione_app"
+          export VITE_APP_NAME="ViOne Connect"
+          export VITE_PUBLIC_APP_URL="https://vione.viconnect.vn"
+          export NEST_API_URL="http://vione-backend:4000"
+          npm run build --prefix apps/vione_app_fe
+
+      - name: Build Docker Frontend Image
+        run: |
+          docker build --no-cache -t vione-standalone-frontend:latest -t vione-frontend:latest -f deploy/vione/Dockerfile.frontend .
+          docker save vione-standalone-frontend:latest | gzip -1 > vione-frontend.tar.gz
+
+      - name: Prepare Remote Directories via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
+          username: ${{ secrets.REMOTE_USER || 'root' }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            set -e
+            mkdir -p ~/vione ~/ssl-proxy
+
+      - name: Copy Built Artifacts via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
+          username: ${{ secrets.REMOTE_USER || 'root' }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: "vione-frontend.tar.gz,deploy/vione/docker-compose.yml,deploy/vione/.env.production,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
+          target: "~/vione_deploy_temp"
+
+      - name: Activate New Container & Reload Nginx Proxy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
+          username: ${{ secrets.REMOTE_USER || 'root' }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            set -e
+            # Move frontend image & compose
+            cp -f ~/vione_deploy_temp/vione-frontend.tar.gz ~/vione/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/vione/docker-compose.yml ~/vione/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/vione/.env.production ~/vione/.env 2>/dev/null || true
+            
+            # Move SSL & Nginx config
+            cp -f ~/vione_deploy_temp/deploy/ssl/nginx.conf ~/ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/ssl/docker-compose.ssl.yml ~/ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/ssl/setup-ssl.sh ~/ssl-proxy/ 2>/dev/null || true
+            rm -rf ~/vione_deploy_temp
+
+            # Load Docker image & Restart Frontend
+            cd ~/vione
+            docker load -i vione-frontend.tar.gz
+            docker tag vione-standalone-frontend:latest vione-frontend:latest 2>/dev/null || true
+            rm -f vione-frontend.tar.gz
+            docker compose up -d --force-recreate frontend
+
+            # Reload or recreate Nginx SSL proxy
+            cd ~/ssl-proxy
+            sed -i 's/\r$//' setup-ssl.sh 2>/dev/null || true
+            bash setup-ssl.sh || docker compose -f docker-compose.ssl.yml restart 2>/dev/null || true
+            echo "========================================================"
+            echo ">>> SUBDOMAIN https://vione.viconnect.vn/ DEPLOYED! <<<"
+            echo "========================================================"

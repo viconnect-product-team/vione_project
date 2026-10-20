@@ -84,12 +84,12 @@ export class MailService {
   }
 
   private getCleanFromEmail(): string {
-    const raw = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@ceo1983.com';
+    const raw = process.env.SMTP_FROM || process.env.SMTP_USER || 'vumikasa6@gmail.com';
     const match = raw.match(/<([^>]+)>/);
     if (match && match[1]) {
       return match[1].trim();
     }
-    return raw.replace(/["']/g, '').trim();
+    return raw.replace(/["']/g, '').trim() || 'vumikasa6@gmail.com';
   }
 
   /**

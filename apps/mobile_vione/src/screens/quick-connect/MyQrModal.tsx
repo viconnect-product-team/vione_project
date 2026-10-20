@@ -23,7 +23,9 @@ interface MyQrModalProps {
 export const MyQrModal: React.FC<MyQrModalProps> = ({ visible, onClose }) => {
   const { user } = useAuth();
 
-  const shareUrl = user?.shareUrl || `https://vione.vn/c/${user?.code || "VIONE"}`;
+  // Mã QR công khai dẫn thẳng tới trang Profile cá nhân trên subdomain https://vione.viconnect.vn/p/:identifier
+  const identifier = user?.code || user?.id || "VIONE-VIP";
+  const shareUrl = `https://vione.viconnect.vn/p/${identifier}`;
 
   const handleShare = async () => {
     try {

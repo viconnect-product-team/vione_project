@@ -1,4 +1,4 @@
-﻿param (
+param (
     [string]$ServerIp = "14.225.217.232",
     [string]$ServerUser = "root",
     [string]$RemotePath = "~/ssl-proxy"
@@ -36,6 +36,6 @@ Write-Host "`n================================================================="
 Write-Host "KICH HOAT HTTPS DOC LAP CHO TOAN BO CAC HE THONG HOAN TAT!" -ForegroundColor Green
 Write-Host "1. Web CRM Quan tri CEO 1983 (HTTPS)   : https://${ServerIp}:5443 (Domain: https://dev-crm.14-225-217-232.sslip.io:5443)" -ForegroundColor Yellow
 Write-Host "2. App Hiep Hoi CEO 1983 (HTTPS)       : https://${ServerIp}:5444 (Domain: https://dev-app.14-225-217-232.sslip.io:5444)" -ForegroundColor Yellow
-Write-Host "3. ViOne Connect App (HTTPS)           : https://${ServerIp}:5445 (Domain: https://dev-vione.14-225-217-232.sslip.io:5445)" -ForegroundColor Yellow
+Write-Host "3. ViOne Connect App PWA (HTTPS)       : https://${ServerIp}:5445 (Subdomain: https://vione.viconnect.vn / https://dev-vione.14-225-217-232.sslip.io:5445)" -ForegroundColor Yellow
 Write-Host "4. ViOne Enterprise CRM (HTTPS)        : https://${ServerIp}:5446 (Domain: https://dev-vione-crm.14-225-217-232.sslip.io:5446)" -ForegroundColor Cyan
 Write-Host "=================================================================" -ForegroundColor Green

@@ -179,8 +179,25 @@ export class UsersService {
           AND (
             (${cleanPhone} != '' AND regexp_replace(phone, '\\D', '', 'g') = ${cleanPhone})
             OR (${userEmail} != '' AND LOWER(email) = ${userEmail})
-          )
-      `.catch((e) => console.warn('Could not auto-link member:', e));
+          );
+      `;
+    }
+
+    // Auto-sync into auth.users and user_profiles to ensure referential integrity across the ecosystem
+    try {
+      const syncEmail = newUser.email || (newUser.username?.includes('@') ? newUser.username : `${newUser.username}@vione.app`);
+      await this.prisma.$executeRawUnsafe(`
+        INSERT INTO auth.users (id, email, role)
+        VALUES ('${newUser.id}'::uuid, '${syncEmail}', 'authenticated')
+        ON CONFLICT (id) DO NOTHING;
+      `);
+      await this.prisma.$executeRawUnsafe(`
+        INSERT INTO public.user_profiles (user_id, display_name, created_at, updated_at)
+        VALUES ('${newUser.id}'::uuid, '${(newUser.name || newUser.username).replace(/'/g, "''")}', NOW(), NOW())
+        ON CONFLICT (user_id) DO NOTHING;
+      `);
+    } catch (syncErr: any) {
+      console.warn('Could not sync into auth.users or user_profiles:', syncErr?.message);
     }
 
     return newUser;

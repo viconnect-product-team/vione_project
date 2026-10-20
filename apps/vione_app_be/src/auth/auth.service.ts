@@ -102,27 +102,33 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
+    const rawUsername = (data.username || data.email || '').trim();
+    if (!rawUsername) {
+      throw new BadRequestException('Vui lòng cung cấp tên đăng nhập hoặc địa chỉ email!');
+    }
+
+    const email = (data.email || (rawUsername.includes('@') ? rawUsername : '') || '').trim();
+
     const newUser = await this.usersService.createUser({
-      username: data.username,
+      username: rawUsername,
       password: hashedPassword,
-      email: data.username.includes('@') ? data.username : undefined,
+      email: email || undefined,
       name: data.name || data.fullName,
       email_verified: false,
     });
 
     const { password, ...result } = newUser;
 
-    // Gửi email chào mừng đăng ký thành công về email người đăng ký
-    const targetEmail = (data.email || (data.username?.includes('@') ? data.username : '') || '').trim();
-    if (this.mailService && targetEmail && targetEmail.includes('@')) {
-      const applicantName = data.name || data.fullName || data.username || 'Quý Hội viên';
+    // Gửi email chào mừng đăng ký thành công về email người dùng
+    if (this.mailService && email && email.includes('@')) {
+      const applicantName = data.name || data.fullName || rawUsername || 'Quý Thành viên';
       void this.mailService.sendAppWelcomeRegistrationEmail({
-        to: targetEmail,
+        to: email,
         fullName: applicantName,
-        username: data.username,
+        username: rawUsername,
         phone: data.phone,
         companyName: data.company || data.companyName,
-        portalUrl: 'https://14.225.217.232:5444/association/login',
+        portalUrl: 'https://vione.vn',
       }).catch((err) => {
         console.warn('Could not send app welcome email:', err?.message);
       });

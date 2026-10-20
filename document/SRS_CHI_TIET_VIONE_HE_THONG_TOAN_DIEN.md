@@ -200,7 +200,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 - **Mô tả:** Quản trị toàn bộ quan hệ thương mại, mạng xã hội khoảnh khắc và phễu khách hàng của doanh nghiệp.
 - **Thành phần:**
   - Nút hành động nổi bật `+ Đăng khoảnh khắc` (Vàng Champagne Gold `.bc-cta-gold`) trên đầu màn Mạng lưới mở modal đăng bài tức thì.
-  - Dải khoảnh khắc 24h (Stories Strip) cuộn ngang với nút `+ Tạo tin 24h` và danh sách stories của đối tác, mở trình xem `StoryViewerModal`.
+  - Dải khoảnh khắc 24h (Stories Strip): Loại bỏ 100% dữ liệu mock tĩnh, chỉ hiển thị khoảnh khắc do chính mình đăng hoặc khoảnh khắc của các đối tác đã kết nối thành công (`accepted` / `connected`). Khi chưa có khoảnh khắc từ bạn bè, hiển thị Empty State sang trọng: *"Khoảnh khắc 24h chỉ hiển thị cho đối tác đã kết nối. Hãy kết nối thêm doanh nhân để xem khoảnh khắc mới!"*.
   - Mạng khoảnh khắc B2B (Moments Feed): Độc lập hoàn toàn với Stories 24h, có thanh soạn thảo "Bạn đang nghĩ gì? Chia sẻ khoảnh khắc...", danh sách bài viết hỗ trợ tương tác Thả tim, Bình luận (`MomentCommentModal`), Chia sẻ. Ảnh chụp trực tiếp từ camera được bảo toàn nguyên vẹn URI gốc (`file://`, `data:`, `blob:`), không revoke blob URL sớm trong quá trình chọn/xem trước để chống lỗi rơi vào placeholder hoặc bị ghi đè bởi ảnh khác.
   - 5 Tabs danh mục chuẩn:
     1. `Mạng lưới`: Danh bạ đối tác B2B đã kết nối, phân loại: Tất cả, Đã kết nối, Chờ duyệt, Gợi ý. Ô tìm kiếm thời gian thực theo tên, công ty, ngành nghề. Hỗ trợ thao tác 1-chạm: Chọn 1 người đã kết nối đánh dấu chuyển thành Khách hàng CRM (`POST /connect-app/customer` tự động map UUID và liên kết thông tin).
@@ -208,15 +208,16 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
     3. `Gợi ý AI`: Danh sách đối tác cần giữ kết nối (Nurture List) kèm phân tích lý do cần chăm sóc.
     4. `Tin nhắn (Messenger)`: Danh mục chat thời gian thực.
     5. `Lời mời`: Quản lý lời mời kết nối đến và đi.
-  - Máy quét danh thiếp OCR AI (`CardScanReviewModal` trên Native & `CardScanFlow` trên PWA): Chụp ảnh danh thiếp visit card, AI bóc tách đầy đủ: Họ tên, Số điện thoại, Chức danh, Tên công ty và Địa chỉ; tự động làm sạch số điện thoại và cung cấp liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`) với nút Zalo vàng Champagne Gold (`#D8B282`) chữ đen đậm (`text-slate-950 font-bold`); Lưu vào danh bạ ứng dụng ở mục Danh thiếp đã quét; Xuất file vCard `.vcf` lưu trực tiếp xuống danh bạ điện thoại thu gọn strictly chỉ gồm: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại (`TEL;TYPE=CELL,VOICE`); Trang bị nút điều khiển camera và chip trạng thái phủ màu Obsidian Quartz (`#141C2B` / `#1A2234`) phối hợp viền và chữ vàng Champagne Gold, loại bỏ hoàn toàn nút trạng thái màu đen và lỗi chữ trắng trên nền sáng.
+  - Máy quét danh thiếp OCR AI (`CardScanReviewModal` trên Native & `CardScanFlow` trên PWA): Chụp ảnh danh thiếp visit card, AI kết hợp OCR.space Engine 2 và bộ trích xuất biểu thức chính quy tiếng Việt chuyên sâu `extractVietnameseCardEntities`, bóc tách đầy đủ và chuẩn xác: Họ tên, Số điện thoại, Chức danh, Tên công ty, Email, Website và Địa chỉ; Triệt tiêu hoàn toàn mã fallback dummy hardcode (`0900000000` / `Thông tin danh thiếp`); tự động làm sạch số điện thoại và cung cấp liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`) với nút Zalo vàng Champagne Gold (`#D8B282`) chữ đen đậm (`text-slate-950 font-bold`); Lưu vào danh bạ ứng dụng ở mục Danh thiếp đã quét; Xuất file vCard `.vcf` lưu trực tiếp xuống danh bạ điện thoại thu gọn strictly chỉ gồm: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại (`TEL;TYPE=CELL,VOICE`); Trang bị nút điều khiển camera và chip trạng thái phủ màu Obsidian Quartz (`#141C2B` / `#1A2234`) phối hợp viền và chữ vàng Champagne Gold, loại bỏ hoàn toàn nút trạng thái màu đen và lỗi chữ trắng trên nền sáng.
   - Banner quét danh bạ điện thoại tìm bạn bè kiểu Zalo (`ContactsDiscoveryModal`).
 
 ##### FR-APP-07: Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1 Ghim Lịch
 - **Mô tả:** Kênh giao tiếp tức thời bảo mật cao chuẩn C-Level.
 - **Thành phần:**
   - 4 Danh mục hội thoại: `Tất cả` (chứa toàn bộ hội thoại đã gửi/nhận), `Chưa đọc`, `Nhóm`, `Tin nhắn chờ`.
+  - Khởi tạo và đồng bộ hội thoại chuẩn CSDL: Khi mở chat từ danh bạ/đối tác, hệ thống tự động gọi API `POST /connect-app/dm/threads` để nhận UUID thread thật từ PostgreSQL. Truy vấn trực tiếp `public.vione_users`, `public.user_profiles` và `public.business_identities` hiển thị đầy đủ Họ tên thật, Avatar thật, Chức danh và Tên công ty đối tác.
   - Sắp xếp tin nhắn mới nhất lên đầu (`lastMessageAt DESC`).
-  - Khung chat `ChatThreadModal`: Phản hồi tức thì 0ms, bong bóng chat Amber Gold (cá nhân) vs Slate Grey (đối tác), tick trạng thái 2 chiều.
+  - Khung chat `ChatThreadModal`: Phản hồi tức thì 0ms, tải toàn bộ lịch sử tin nhắn cũ qua `GET /connect-app/dm/threads/:threadId/messages`, bong bóng chat Amber Gold (cá nhân) vs Slate Grey (đối tác), tick trạng thái 2 chiều.
   - Thẻ đề xuất hẹn gặp 1-1 tương tác (`OpportunityMeetingProposalCard`): Nút **`[⚡ ĐỒNG Ý HẸN]`** (tự động ghim lịch vào Trang chủ và gửi thông báo 2 bên).
   - Cuộc gọi thoại & video call WebRTC bảo mật cao, khử tiếng vọng.
 
@@ -317,6 +318,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 - Xác thực qua JWT Access Token (15 phút) kết hợp Refresh Token (7 ngày) lưu trong AsyncStorage/SecureStore.
 - Băm mật khẩu bằng Argon2id/Bcrypt 12 vòng lặp, mã hóa AES-256 đối với tài liệu nhạy cảm.
 - Kiểm soát phân quyền nghiêm ngặt tại Backend NestJS Guard, không phụ thuộc vào ẩn/hiện phía client.
+- Quản trị tài khoản cốt lõi: Làm sạch toàn bộ tài khoản thử nghiệm trên CSDL PostgreSQL, chỉ duy trì 2 tài khoản quản trị tiêu chuẩn: `admin@connect.vn` (Quản trị viên ViOne Connect) và `crm@vione.vn` (Quản trị viên CRM ViOne).
 
 #### 5.3 Tính Khả Dụng & Trải Nghiệm Thượng Lưu (Usability)
 - Giao diện 2 chế độ: Dark Luxury Obsidian (`#0B0F17`) và Light Pearl (`#FFFFFF`), tông màu điểm xuyết Champagne Gold (`#D8B282`).
@@ -334,6 +336,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 2. **Hệ Thống Lưu Trữ MinIO S3:** Cung cấp Pre-signed URL cho các tác vụ tải lên ảnh bìa, avatar, tài liệu Word/Excel, video họp ban.
 3. **Hạ Tầng Giao Tiếp WebRTC & Socket.IO:** Máy chủ phân tán truyền tín hiệu thoại, video cuộc gọi P2P và thông báo đẩy (Push Notifications).
 4. **Hệ Thống Trí Tuệ Nhân Tạo AI Copilot:** Kết nối API phân tích ngôn ngữ tự nhiên, OCR bóc tách danh thiếp và thuật toán ghép cặp đối tác B2B Matcher.
+5. **Hệ Thống Email Chào Mừng Kích Hoạt (SMTP Google):** Gửi email thông báo tạo tài khoản thành công tự động từ `vumikasa6@gmail.com` qua Google SMTP SSL (`smtp.gmail.com:465`) khi người dùng đăng ký có email.
 
 ---
 
@@ -355,6 +358,9 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 | FR-APP-12 | Họp Ban 1-Chạm & Excel/Word | `WorkflowModal.tsx` | `POST /meetings/instant-room` | Đạt 100% |
 | FR-APP-13 | Trang Cá Nhân "Tôi" | `ProfileScreen.tsx` | `GET /connect-app/me` | Đạt 100% |
 | FR-APP-14 | Trợ Lý Giọng Nói AI Copilot| `ViOneVoiceAssistantModal.tsx` | `POST /api/ai/chat` | Đạt 100% |
+| FR-APP-15 | Kéo Thả Di Chuyển & Cắt Ảnh | `ImagePanCropModal.tsx` | N/A (Client Pan/Zoom/Crop) | Đạt 100% |
+| FR-APP-16 | Trang Profile Công Khai Khi Quét QR | `p.$identifier.tsx` | `GET /connect-app/public/profile/:id` | Đạt 100% |
+| FR-APP-17 | Phân Lập Cổng 5445 (PWA) & 5446 (CRM) | `nginx.conf` & `__root.tsx` | N/A (Subdomain https://vione.viconnect.vn) | Đạt 100% |
 
 ---
-*Tài liệu SRS Master 7.0 được chuẩn hóa và phê duyệt bởi Ban Kiến Trúc Công Nghệ VioConnect.*
+*Tài liệu SRS Master 7.1 được chuẩn hóa và phê duyệt bởi Ban Kiến Trúc Công Nghệ VioConnect.*

@@ -664,7 +664,7 @@ export class ConnectDmService {
     const isConnAccepted = await this.repo.checkConnectionAccepted(userId, counterpartId);
     const myUser = await this.repo.findUserAccount(userId);
 
-    const peerDisplayName = ident?.display_name || prof?.display_name || mem?.name || counterpartUser?.username || 'Doanh nhân ViOne';
+    const peerDisplayName = ident?.display_name || prof?.display_name || mem?.name || counterpartUser?.name || counterpartUser?.username || 'Doanh nhân ViOne';
 
     const threadSummary = {
       threadId: t.id,
@@ -685,17 +685,23 @@ export class ConnectDmService {
 
     const msgRows = await this.repo.findDirectMessagesByThread(t.id, 100);
 
-    let messages = msgRows.map(m => ({
-      id: m.id,
-      threadId: m.thread_id,
-      fromMe: String(m.sender_user_id).toLowerCase() === userId.toLowerCase(),
-      body: m.is_retracted ? 'Tin nhắn đã được thu hồi' : m.body,
-      reactions: Array.isArray(m.reactions) ? m.reactions : [],
-      replyTo: m.reply_to || null,
-      createdAt: m.created_at ? new Date(m.created_at).toISOString() : new Date().toISOString(),
-      readAt: m.read_at ? new Date(m.read_at).toISOString() : null,
-      retractedAt: m.is_retracted ? new Date(m.updated_at).toISOString() : null,
-    }));
+    let messages = msgRows.map(m => {
+      const fromMe = String(m.sender_user_id).toLowerCase() === userId.toLowerCase();
+      return {
+        id: m.id,
+        threadId: m.thread_id,
+        fromMe,
+        isFromMe: fromMe,
+        senderUserId: m.sender_user_id,
+        senderName: fromMe ? (myUser?.name || 'Tôi') : peerDisplayName,
+        body: m.is_retracted ? 'Tin nhắn đã được thu hồi' : m.body,
+        reactions: Array.isArray(m.reactions) ? m.reactions : [],
+        replyTo: m.reply_to || null,
+        createdAt: m.created_at ? new Date(m.created_at).toISOString() : new Date().toISOString(),
+        readAt: m.read_at ? new Date(m.read_at).toISOString() : null,
+        retractedAt: m.is_retracted ? new Date(m.updated_at).toISOString() : null,
+      };
+    });
 
     // Tra cứu bổ sung từ public.messages (hỗ trợ cả các tin nhắn legacy/kết nối trước đây)
     const myCode = await this.resolveMemberCodeForUser(userId).catch(() => '');
@@ -720,17 +726,23 @@ export class ConnectDmService {
       const existingBodies = new Set(messages.map(m => m.body));
       const formattedLegacy = legacyMsgs
         .filter(m => !existingBodies.has(m.text))
-        .map(m => ({
-          id: m.id,
-          threadId: t.id,
-          fromMe: myKeys.includes(String(m.from_id).toLowerCase()),
-          body: m.text,
-          reactions: [],
-          replyTo: null,
-          createdAt: m.created_at ? new Date(m.created_at).toISOString() : new Date().toISOString(),
-          readAt: m.read_at ? new Date(m.read_at).toISOString() : null,
-          retractedAt: null,
-        }));
+        .map(m => {
+          const fromMe = myKeys.includes(String(m.from_id).toLowerCase());
+          return {
+            id: m.id,
+            threadId: t.id,
+            fromMe,
+            isFromMe: fromMe,
+            senderUserId: fromMe ? userId : counterpartId,
+            senderName: fromMe ? (myUser?.name || 'Tôi') : peerDisplayName,
+            body: m.text,
+            reactions: [],
+            replyTo: null,
+            createdAt: m.created_at ? new Date(m.created_at).toISOString() : new Date().toISOString(),
+            readAt: m.read_at ? new Date(m.read_at).toISOString() : null,
+            retractedAt: null,
+          };
+        });
       messages = [...messages, ...formattedLegacy].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
 
@@ -763,6 +775,13 @@ export class ConnectDmService {
       if (cleanTarget.startsWith('u:')) cleanTarget = cleanTarget.substring(2);
       if (cleanTarget.startsWith('p:')) cleanTarget = cleanTarget.substring(2);
       if (cleanTarget.startsWith('th-')) cleanTarget = cleanTarget.substring(3);
+
+      if (!/^[0-9a-fA-F-]{36}$/.test(cleanTarget)) {
+        const found = await this.repo.findUserByEmailOrUsernameOrMemberCode(cleanTarget);
+        if (found?.id) {
+          cleanTarget = String(found.id);
+        }
+      }
 
       if (/^[0-9a-fA-F-]{36}$/.test(cleanTarget)) {
         const existingByUser = await this.repo.findDmThreadBetweenOrdered(cleanTarget, userId);
@@ -805,6 +824,8 @@ export class ConnectDmService {
       id: newMsgId,
       threadId: t.id,
       fromMe: true,
+      isFromMe: true,
+      senderUserId: userId,
       body: data.body,
       reactions: [],
       replyTo: data.replyTo || null,

@@ -1,4 +1,4 @@
-﻿// BC-Mobile-3A — /connect-app/me/card: Present QR.
+// BC-Mobile-3A — /connect-app/me/card: Present QR.
 //
 // The owner-facing outbound card experience: pick a persona (published
 // business card), present its QR encoding the CANONICAL public URL
@@ -34,9 +34,10 @@ export const Route = createFileRoute("/connect-app/me/card")({
   component: PresentQrPage,
 });
 
-/** Canonical public URL the QR encodes — fully qualified, /b/<slug> only. */
+/** Canonical public URL the QR encodes — fully qualified, /p/<slug> public digital profile. */
 export function canonicalPublicCardUrl(origin: string, slug: string): string {
-  return `${origin}/b/${encodeURIComponent(slug)}`;
+  const base = origin || "https://vione.viconnect.vn";
+  return `${base}/p/${encodeURIComponent(slug)}`;
 }
 
 function PresentQrPage() {
@@ -67,9 +68,10 @@ function PresentQrPage() {
   const qrValue = selected ? canonicalPublicCardUrl(window.location.origin, selected.slug) : "";
 
   const identity = myIdentity.data?.identity;
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://vione.viconnect.vn";
   const fallbackQrValue = identity?.ownerUserId
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/connect-app/network/u:${identity.ownerUserId}`
-    : "";
+    ? `${origin}/p/${identity.ownerUserId}`
+    : `${origin}/p/VIONE-VIP`;
 
   return (
     <MobilePage>

@@ -52,6 +52,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 }) => {
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const [activeThread, setActiveThread] = useState<DmThreadSummary | null>(thread);
   const [messages, setMessages] = useState<DmMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +61,12 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
   const [isVideoCall, setIsVideoCall] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
+  useEffect(() => {
+    setActiveThread(thread);
+  }, [thread]);
+
+  const currentThread = activeThread || thread;
+
   const startCall = (video: boolean) => {
     setIsVideoCall(video);
     setCallVisible(true);
@@ -67,7 +74,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
   const handleEndCall = (durationSec: number) => {
     setCallVisible(false);
-    if (!thread) return;
+    if (!currentThread) return;
 
     const mins = Math.floor(durationSec / 60);
     const secs = durationSec % 60;
@@ -78,7 +85,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
     const endMsg: DmMessage = {
       id: "call-" + Date.now(),
-      threadId: thread.threadId,
+      threadId: currentThread.threadId,
       senderUserId: "system",
       body: callNotice,
       createdAt: new Date().toISOString(),
@@ -101,20 +108,35 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
         if (!isMounted) return;
 
-        if (res.data?.messages && Array.isArray(res.data.messages)) {
-          const mapped: DmMessage[] = res.data.messages.map((m: any) => ({
-            id: m.id || "msg-" + Math.random(),
-            threadId: thread.threadId,
-            senderUserId: m.senderUserId || m.sender_id || "",
-            senderName: m.senderName || m.sender_name,
-            body: m.body || m.text || "",
-            createdAt: m.createdAt || m.created_at || new Date().toISOString(),
-            isFromMe:
-              m.isFromMe ||
-              m.senderUserId === user?.id ||
-              m.sender_id === user?.id,
-            isSystem: m.isSystem || m.is_system || false,
+        if (res.data?.thread) {
+          const t = res.data.thread;
+          setActiveThread((prev) => ({
+            ...(prev || thread),
+            displayName: t.displayName || prev?.displayName || "Doanh nhân ViOne",
+            companyName: t.companyName || prev?.companyName,
+            avatarUrl: t.avatarUrl || prev?.avatarUrl,
+            isOnline: t.isOnline ?? prev?.isOnline,
+            headline: t.headline || prev?.headline,
+            threadId: t.threadId || prev?.threadId || thread.threadId,
           }));
+        }
+
+        if (res.data?.messages && Array.isArray(res.data.messages)) {
+          const currentUserId = String(user?.id || '').toLowerCase();
+          const mapped: DmMessage[] = res.data.messages.map((m: any) => {
+            const senderId = String(m.senderUserId || m.sender_id || '').toLowerCase();
+            const fromMe = m.isFromMe ?? m.fromMe ?? (Boolean(currentUserId) && senderId === currentUserId);
+            return {
+              id: m.id || "msg-" + Math.random(),
+              threadId: thread.threadId,
+              senderUserId: m.senderUserId || m.sender_id || "",
+              senderName: m.senderName || m.sender_name || (fromMe ? "Bạn" : (res.data?.thread?.displayName || thread.displayName)),
+              body: m.body || m.text || "",
+              createdAt: m.createdAt || m.created_at || new Date().toISOString(),
+              isFromMe: fromMe,
+              isSystem: m.isSystem || m.is_system || false,
+            };
+          });
           setMessages(mapped);
         } else {
           // Khởi tạo tin nhắn chào mừng mặc định nếu hội thoại mới
@@ -162,15 +184,16 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
   const handleSend = async () => {
     const text = inputText.trim();
-    if (!text || !thread || isSending) return;
+    if (!text || !currentThread || isSending) return;
 
     setInputText("");
     setIsSending(true);
 
+    const targetThreadId = currentThread.threadId;
     const tempId = "temp-" + Date.now();
     const newMsg: DmMessage = {
       id: tempId,
-      threadId: thread.threadId,
+      threadId: targetThreadId,
       senderUserId: user?.id || "me",
       senderName: user?.displayName || "Bạn",
       body: text,
@@ -179,7 +202,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
     };
 
     setMessages((prev) => [...prev, newMsg]);
-    onMessageSent?.(thread.threadId, text);
+    onMessageSent?.(targetThreadId, text);
 
     setTimeout(() => {
       flatListRef.current?.scrollToEnd({ animated: true });
@@ -187,9 +210,13 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
     try {
       await apiRequest(
-        `connect-app/dm/threads/${thread.threadId}/messages`,
+        `connect-app/dm/threads/${targetThreadId}/messages`,
         {
           method: "POST",
+          data: {
+            body: text,
+            clientToken: Date.now().toString(),
+          },
           body: {
             body: text,
             clientToken: Date.now().toString(),
@@ -216,7 +243,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
     }
   };
 
-  if (!thread) return null;
+  if (!currentThread) return null;
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -243,15 +270,15 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
           <TouchableOpacity
             style={styles.headerInfo}
             onPress={() => {
-              if (onOpenProfile && thread) {
-                onOpenProfile(thread);
+              if (onOpenProfile && currentThread) {
+                onOpenProfile(currentThread);
               }
             }}
             activeOpacity={0.7}
           >
             <Avatar
-              url={thread.avatarUrl}
-              name={thread.displayName}
+              url={currentThread.avatarUrl}
+              name={currentThread.displayName}
               size={40}
               showGoldBorder
             />
@@ -264,9 +291,9 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                   ]}
                   numberOfLines={1}
                 >
-                  {thread.displayName}
+                  {currentThread.displayName}
                 </Text>
-                {thread.isGroup && (
+                {currentThread.isGroup && (
                   <View style={styles.groupBadge}>
                     <Users size={10} color="#B45309" />
                     <Text style={styles.groupBadgeText}>Nhóm</Text>
@@ -274,10 +301,10 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                 )}
               </View>
               <Text style={styles.headerSubtitle} numberOfLines={1}>
-                {thread.isOnline ? (
+                {currentThread.isOnline ? (
                   <Text style={{ color: "#16A34A" }}>● Đang hoạt động</Text>
                 ) : (
-                  thread.companyName || "Đối tác kinh doanh ViOne"
+                  currentThread.companyName || "Đối tác kinh doanh ViOne"
                 )}
               </Text>
             </View>
@@ -305,7 +332,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
               onPress={() =>
                 Alert.alert(
                   "Thông tin đối tác",
-                  `${thread.displayName}\n${thread.companyName || "ViOne Business Connect"}`
+                  `${currentThread.displayName}\n${currentThread.companyName || "ViOne Business Connect"}`
                 )
               }
             >
@@ -358,9 +385,9 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
                   return (
                     <View style={[styles.msgRow, isMe ? styles.msgRowRight : styles.msgRowLeft, { maxWidth: "90%" }]}>
-                      {!isMe && !thread.isGroup && (
+                      {!isMe && !currentThread.isGroup && (
                         <View style={{ marginRight: 8, alignSelf: "flex-end" }}>
-                          <Avatar url={thread.avatarUrl} name={thread.displayName} size={34} showGoldBorder />
+                          <Avatar url={currentThread.avatarUrl} name={currentThread.displayName} size={34} showGoldBorder />
                         </View>
                       )}
                       <View style={{ flex: 1 }}>
@@ -383,9 +410,9 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
 
                 return (
                   <View style={[styles.msgRow, isMe ? styles.msgRowRight : styles.msgRowLeft]}>
-                    {!isMe && !thread.isGroup && (
+                    {!isMe && !currentThread.isGroup && (
                       <View style={{ marginRight: 8, alignSelf: "flex-end", marginBottom: 2 }}>
-                        <Avatar url={thread.avatarUrl} name={thread.displayName} size={34} showGoldBorder />
+                        <Avatar url={currentThread.avatarUrl} name={currentThread.displayName} size={34} showGoldBorder />
                       </View>
                     )}
                     <View
@@ -496,9 +523,9 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
       <InAppCallModal
         visible={callVisible}
         isVideo={isVideoCall}
-        partnerName={thread.displayName}
-        partnerAvatar={thread.avatarUrl || undefined}
-        partnerCompany={thread.companyName || undefined}
+        partnerName={currentThread.displayName}
+        partnerAvatar={currentThread.avatarUrl || undefined}
+        partnerCompany={currentThread.companyName || undefined}
         onEndCall={handleEndCall}
       />
     </Modal>

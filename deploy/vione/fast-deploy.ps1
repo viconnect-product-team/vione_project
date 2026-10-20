@@ -66,7 +66,7 @@ try {
                 $env:VITE_APP_SCOPE = "vione_app"
                 $env:VITE_APP_NAME = "ViOne Connect"
                 if ($EnableHttps) {
-                    $env:VITE_PUBLIC_APP_URL = "https://14.225.217.232:5445"
+                    $env:VITE_PUBLIC_APP_URL = "https://vione.viconnect.vn"
                 } else {
                     $env:VITE_PUBLIC_APP_URL = "http://14.225.217.232:5000"
                 }

@@ -7,14 +7,12 @@
 // Không có "thành công giả": lỗi tải lên được báo đúng sự thật.
 
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Trash2 } from "lucide-react";
-import {
-  processMomentImage,
-  MOMENT_IMAGE_ACCEPT,
-} from "@/lib/business-connect/mobile/moment-image";
+import { ImagePlus, Loader2, Trash2, Move } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { getNestApiUrl } from "@/lib/api-client";
 import { getImageUrl } from "@/lib/image";
+import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
+import { toast } from "sonner";
 
 export type AvatarUploadFieldProps = {
   value: string;
@@ -28,14 +26,31 @@ export function AvatarUploadField({ value, onChange, disabled }: AvatarUploadFie
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  async function handleFile(file: File | undefined) {
+  // Crop modal state
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
+  const [originalFileName, setOriginalFileName] = useState<string>("avatar.jpg");
+
+  const handleFileSelect = (file: File | undefined) => {
     if (!file || busy) return;
+    setOriginalFileName(file.name || "avatar.jpg");
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        setSelectedImageSrc(dataUrl);
+        setCropModalOpen(true);
+      }
+    };
+    reader.readAsDataURL(file);
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  async function uploadCroppedBlob(blob: Blob) {
+    setCropModalOpen(false);
     setFailed(false);
     setBusy(true);
     try {
-      const processed = await processMomentImage(file);
-      const blobToUpload = processed.ok ? processed.image.blob : file;
-      
       const token =
         (typeof window !== "undefined" &&
           (localStorage.getItem("vibe_token") ||
@@ -46,7 +61,7 @@ export function AvatarUploadField({ value, onChange, disabled }: AvatarUploadFie
         "";
 
       const formData = new FormData();
-      formData.append("file", blobToUpload, file.name || "avatar.jpg");
+      formData.append("file", blob, originalFileName);
 
       const headers: Record<string, string> = {};
       if (token) {
@@ -87,14 +102,16 @@ export function AvatarUploadField({ value, onChange, disabled }: AvatarUploadFie
 
       if (resData?.url) {
         onChange(resData.url);
+        toast.success("Đã cập nhật ảnh đại diện thành công!");
       } else {
         setFailed(true);
+        toast.error("Không thể tải ảnh lên máy chủ");
       }
     } catch {
       setFailed(true);
+      toast.error("Đã xảy ra lỗi khi xử lý ảnh");
     } finally {
       setBusy(false);
-      if (inputRef.current) inputRef.current.value = "";
     }
   }
 
@@ -157,14 +174,28 @@ export function AvatarUploadField({ value, onChange, disabled }: AvatarUploadFie
       <input
         ref={inputRef}
         type="file"
-        accept={MOMENT_IMAGE_ACCEPT}
+        accept="image/*"
         className="sr-only"
-        onChange={(e) => void handleFile(e.target.files?.[0])}
+        onChange={(e) => handleFileSelect(e.target.files?.[0])}
       />
 
       <p className="mt-2 text-[12px] leading-snug text-[var(--bc-mobile-muted)]">
-        {failed ? t("bc.mobile.me.avatar.failed") : t("bc.mobile.me.avatar.hint")}
+        {failed ? t("bc.mobile.me.avatar.failed") : "Nhấn tải ảnh để chọn và kéo thả căn chỉnh vùng hiển thị ưng ý."}
       </p>
+
+      {/* Interactive Crop / Pan Modal */}
+      <ImagePanCropModal
+        isOpen={cropModalOpen}
+        imageSrc={selectedImageSrc}
+        aspectRatio="1:1"
+        circular={true}
+        title="Chọn vùng hiển thị Ảnh đại diện"
+        onConfirm={uploadCroppedBlob}
+        onCancel={() => {
+          setCropModalOpen(false);
+          setSelectedImageSrc(null);
+        }}
+      />
     </div>
   );
 }

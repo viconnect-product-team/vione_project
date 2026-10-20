@@ -12,6 +12,7 @@ import { BusinessConnectTopBar } from "@/components/business-connect/mobile/Busi
 import { fetchNestApi } from "@/lib/api-client";
 import { useInvalidateMyIdentity } from "@/hooks/use-my-identity";
 import { AvatarUploadField } from "@/components/business-connect/mobile/me/AvatarUploadField";
+import { CoverUploadField } from "@/components/business-connect/mobile/me/CoverUploadField";
 import { identityUpdateSchema } from "@/lib/business-connect/mobile/identity.validation";
 
 type FieldKey =
@@ -21,6 +22,7 @@ type FieldKey =
   | "companyName"
   | "bio"
   | "avatarUrl"
+  | "coverUrl"
   | "primaryEmail"
   | "primaryPhone"
   | "website"
@@ -37,6 +39,7 @@ const GROUPS: Array<{ titleKey: TKey; fields: Field[] }> = [
       { key: "displayName", labelKey: "bc.mobile.me.field.displayName", type: "text" },
       { key: "headline", labelKey: "bc.mobile.me.field.headline", type: "text" },
       { key: "avatarUrl", labelKey: "bc.mobile.me.field.avatar", type: "url" },
+      { key: "coverUrl", labelKey: "bc.mobile.me.field.avatar" as any, type: "url" },
     ],
   },
   {
@@ -70,6 +73,7 @@ const EMPTY: Record<FieldKey, string> = {
   companyName: "",
   bio: "",
   avatarUrl: "",
+  coverUrl: "",
   primaryEmail: "",
   primaryPhone: "",
   website: "",
@@ -85,6 +89,7 @@ const FIELD_PLACEHOLDERS: Record<FieldKey, string> = {
   companyName: "Ví dụ: Công ty Cổ phần Công nghệ ViOne",
   bio: "Mô tả ngắn gọn về hành trình, thế mạnh chuyên môn, quy mô doanh nghiệp và định hướng hợp tác B2B...",
   avatarUrl: "Hoặc dán liên kết URL ảnh đại diện (https://...)",
+  coverUrl: "Hoặc dán liên kết URL ảnh bìa (https://...)",
   primaryEmail: "contact@vione.vn",
   primaryPhone: "0912 345 678",
   website: "https://vione.vn",
@@ -132,6 +137,7 @@ export function IdentityEditPage() {
         companyName: identity?.companyName ?? "",
         bio: identity?.bio ?? "",
         avatarUrl: identity?.avatarUrl ?? "",
+        coverUrl: identity?.coverUrl ?? "",
         primaryEmail: identity?.primaryEmail ?? "",
         primaryPhone: identity?.primaryPhone ?? "",
         website: identity?.website ?? "",
@@ -282,6 +288,24 @@ export function IdentityEditPage() {
                             <AvatarUploadField
                               value={values.avatarUrl}
                               onChange={(url) => set("avatarUrl", url)}
+                              disabled={saving}
+                            />
+                            <input
+                              id={`me-edit-page-${field.key}`}
+                              type="url"
+                              value={values[field.key]}
+                              onChange={(e) => set(field.key, e.target.value)}
+                              disabled={saving}
+                              placeholder={FIELD_PLACEHOLDERS[field.key] || ""}
+                              aria-invalid={errors[field.key] || undefined}
+                              className={inputClass}
+                            />
+                          </div>
+                        ) : field.key === "coverUrl" ? (
+                          <div className="grid gap-2">
+                            <CoverUploadField
+                              value={values.coverUrl}
+                              onChange={(url) => set("coverUrl", url)}
                               disabled={saving}
                             />
                             <input

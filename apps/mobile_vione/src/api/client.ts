@@ -60,6 +60,7 @@ function normalizeEndpoint(endpoint: string): string {
 export interface ApiRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: any;
+  data?: any;
   headers?: Record<string, string>;
   timeoutMs?: number;
   useFallbackOnFail?: boolean;
@@ -92,8 +93,9 @@ export async function apiRequest<T = any>(
         signal: controller.signal,
       };
 
-      if (options.body && options.method !== "GET") {
-        config.body = typeof options.body === "string" ? options.body : JSON.stringify(options.body);
+      const payload = options.data !== undefined ? options.data : options.body;
+      if (payload !== undefined && options.method !== "GET") {
+        config.body = typeof payload === "string" ? payload : JSON.stringify(payload);
       }
 
       const response = await fetch(url, config);

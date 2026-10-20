@@ -5,7 +5,9 @@ cd /root/ssl-proxy
 
 # 1. Mở các cổng trên UFW nếu có UFW
 if command -v ufw >/dev/null 2>&1; then
-    echo "[UFW] Mở cổng 5443, 5444, 5445, 5446, 5006, 5007, 9050, 9051, 9060, 9061 trên tường lửa Ubuntu..."
+    echo "[UFW] Mở cổng 80, 443, 5443, 5444, 5445, 5446, 5006, 5007, 9050, 9051, 9060, 9061 trên tường lửa Ubuntu..."
+    ufw allow 80/tcp >/dev/null 2>&1 || true
+    ufw allow 443/tcp >/dev/null 2>&1 || true
     ufw allow 5443/tcp >/dev/null 2>&1 || true
     ufw allow 5444/tcp >/dev/null 2>&1 || true
     ufw allow 5445/tcp >/dev/null 2>&1 || true
@@ -20,7 +22,7 @@ if command -v ufw >/dev/null 2>&1; then
 fi
 
 # 2. Mở cổng trên iptables (cả INPUT và DOCKER-USER chain để không bị Docker/UFW nuốt gói)
-for port in 5443 5444 5445 5446 5006 5007 9050 9051 9060 9061; do
+for port in 80 443 5443 5444 5445 5446 5006 5007 9050 9051 9060 9061; do
     iptables -C INPUT -p tcp --dport $port -j ACCEPT 2>/dev/null || iptables -I INPUT -p tcp --dport $port -j ACCEPT 2>/dev/null || true
     iptables -C DOCKER-USER -p tcp --dport $port -j ACCEPT 2>/dev/null || iptables -I DOCKER-USER -p tcp --dport $port -j ACCEPT 2>/dev/null || true
 done

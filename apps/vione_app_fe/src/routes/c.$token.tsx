@@ -1,4 +1,4 @@
-﻿// BC-Mobile-5A/5D — /c/:token public Digital Card recipient route (ANONYMOUS).
+// BC-Mobile-5A/5D — /c/:token public Digital Card recipient route (ANONYMOUS).
 //
 // Privacy contract:
 // - Renders ONLY the server-side PublicIdentityCard projection.
@@ -16,9 +16,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { bcIdentityPublicByTokenFn } from "@/lib/business-connect/mobile/identity.functions";
 import { RecipientCardView } from "@/components/business-connect/mobile/me/RecipientCardView";
 import { safeWebHref } from "@/lib/business-connect/mobile/public-actions";
+import { getNestApiUrl } from "@/lib/api-client";
 import type { PublicIdentityResult } from "@/lib/business-connect/mobile/identity.types";
 
-const SITE = "https://qlhh.lovable.app";
+const SITE = "https://vione.viconnect.vn";
 
 const STATIC_META = {
   title: "Danh thiếp số — ViOne",
@@ -28,10 +29,25 @@ const STATIC_META = {
 export const Route = createFileRoute("/c/$token")({
   loader: async ({ params }): Promise<{ result: PublicIdentityResult }> => {
     try {
+      const directRes = await fetch(getNestApiUrl(`/public/profile/${encodeURIComponent(params.token)}`));
+      if (directRes.ok) {
+        const data = await directRes.json();
+        if (data.state === "public" && data.card) {
+          return {
+            result: {
+              state: "public",
+              card: data.card,
+            }
+          };
+        }
+      }
+    } catch {
+      // fallback to internal function
+    }
+
+    try {
       return { result: await bcIdentityPublicByTokenFn({ data: params.token }) };
     } catch {
-      // Malformed token (validator rejection) and any resolver failure share
-      // the same neutral outcome.
       return { result: { state: "unavailable" } };
     }
   },

@@ -1,4 +1,4 @@
-﻿param (
+param (
     [switch]$SkipBuild,
     [switch]$SkipWebBuild,
     [switch]$FrontendOnly,
@@ -33,7 +33,7 @@ $bound["EnableHttps"] = $EnableHttps
 
 Write-Host "`n=================================================================" -ForegroundColor Green
 Write-Host "TRIEN KHAI VIONE APP - MANG XA HOI DOANH NHAN THANH CONG!" -ForegroundColor Green
-Write-Host "1. ViOne App Mang Xa Hoi (HTTPS) : https://14.225.217.232:5445" -ForegroundColor Yellow
+Write-Host "1. ViOne App Mang Xa Hoi (HTTPS) : https://vione.viconnect.vn (hoac https://14.225.217.232:5445)" -ForegroundColor Yellow
 Write-Host "   -> Mien sslip.io (PWA/SSL)    : https://dev-vione.14-225-217-232.sslip.io:5445" -ForegroundColor Yellow
 Write-Host "   -> Tuyen duong chinh          : /connect-app" -ForegroundColor Yellow
 Write-Host "(Luu y: He thong ViOne App hoat dong doc lap hoan toan voi CRM)" -ForegroundColor DarkGray

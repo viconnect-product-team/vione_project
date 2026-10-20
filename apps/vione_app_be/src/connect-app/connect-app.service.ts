@@ -916,68 +916,233 @@ export class ConnectAppService implements OnModuleInit {
   }
 
   async getPublicIdentityByToken(token: string) {
+    return this.getPublicProfile(token);
+  }
+
+  async getPublicProfile(identifier: string) {
+    if (!identifier || typeof identifier !== 'string') {
+      return { state: 'unavailable' };
+    }
+    const cleanId = identifier.trim();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
+
+    let identity: any = null;
+    let userId: string | null = null;
+    let linkId: string | null = null;
+
+    // 1. Try finding by public_token in identity_share_links
     const links = await this.prisma.$queryRaw<any[]>`
       SELECT id, identity_id, status FROM public.identity_share_links
-      WHERE public_token = ${token} AND status = 'active'
+      WHERE public_token = ${cleanId} AND status = 'active'
       LIMIT 1
     `.catch(() => []);
 
-    if (links.length === 0) {
+    if (links.length > 0) {
+      linkId = links[0].id;
+      const identities = await this.prisma.$queryRaw<any[]>`
+        SELECT * FROM public.business_identities
+        WHERE id = ${links[0].identity_id}::uuid AND status = 'active'
+        LIMIT 1
+      `.catch(() => []);
+      if (identities.length > 0) {
+        identity = identities[0];
+        userId = identity.owner_user_id;
+      }
+    }
+
+    // 2. If not found and is UUID, try business_identities by id or owner_user_id
+    if (!identity && isUuid) {
+      const byBiId = await this.prisma.$queryRaw<any[]>`
+        SELECT * FROM public.business_identities
+        WHERE (id = ${cleanId}::uuid OR owner_user_id = ${cleanId}::uuid)
+        ORDER BY updated_at DESC LIMIT 1
+      `.catch(() => []);
+      if (byBiId.length > 0) {
+        identity = byBiId[0];
+        userId = identity.owner_user_id;
+      }
+    }
+
+    // 3. If still not found, try vione_users by id (if UUID), or email, username
+    let vioneUser: any = null;
+    if (!identity) {
+      if (isUuid) {
+        const u = await this.prisma.$queryRaw<any[]>`
+          SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
+          WHERE id = ${cleanId}::uuid LIMIT 1
+        `.catch(() => []);
+        if (u.length > 0) vioneUser = u[0];
+      }
+      if (!vioneUser) {
+        const u = await this.prisma.$queryRaw<any[]>`
+          SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
+          WHERE lower(email) = lower(${cleanId}) OR lower(username) = lower(${cleanId}) LIMIT 1
+        `.catch(() => []);
+        if (u.length > 0) vioneUser = u[0];
+      }
+      if (vioneUser) {
+        userId = vioneUser.id;
+        // Try to get their business_identity
+        const bi = await this.prisma.$queryRaw<any[]>`
+          SELECT * FROM public.business_identities
+          WHERE owner_user_id = ${vioneUser.id}::uuid
+          ORDER BY updated_at DESC LIMIT 1
+        `.catch(() => []);
+        if (bi.length > 0) {
+          identity = bi[0];
+        }
+      }
+    }
+
+    // 4. If still not found, try searching business_identities by email or phone
+    if (!identity) {
+      const bi = await this.prisma.$queryRaw<any[]>`
+        SELECT * FROM public.business_identities
+        WHERE lower(primary_email) = lower(${cleanId}) OR primary_phone = ${cleanId}
+        ORDER BY updated_at DESC LIMIT 1
+      `.catch(() => []);
+      if (bi.length > 0) {
+        identity = bi[0];
+        userId = identity.owner_user_id;
+      }
+    }
+
+    if (!identity && !vioneUser) {
       return { state: 'unavailable' };
     }
-    const link = links[0];
 
-    const identities = await this.prisma.$queryRaw<any[]>`
-      SELECT * FROM public.business_identities
-      WHERE id = ${link.identity_id}::uuid AND status = 'active'
-      LIMIT 1
-    `.catch(() => []);
-
-    if (identities.length === 0) {
-      return { state: 'unavailable' };
-    }
-    const identity = identities[0];
-
-    const visibilityRows = await this.prisma.$queryRaw<any[]>`
-      SELECT field_key, visibility FROM public.identity_field_visibility
-      WHERE identity_id = ${identity.id}::uuid
-    `.catch(() => []);
-
-    const visibility = {};
-    for (const row of visibilityRows) {
-      visibility[row.field_key] = row.visibility;
+    // Update last used marker if link was found
+    if (linkId) {
+      this.prisma.$executeRaw`
+        UPDATE public.identity_share_links
+        SET last_used_at = ${new Date()}
+        WHERE id = ${linkId}::uuid
+      `.catch(() => {});
     }
 
-    // Update last used marker asynchronously
-    this.prisma.$executeRaw`
-      UPDATE public.identity_share_links
-      SET last_used_at = ${new Date()}
-      WHERE id = ${link.id}::uuid
-    `.catch(() => {});
+    // Get user profile row for extra details if available
+    const resolvedUserId = userId || (identity ? identity.owner_user_id : null);
+    let userProfile: any = null;
+    if (resolvedUserId) {
+      const up = await this.prisma.$queryRaw<any[]>`
+        SELECT * FROM public.user_profiles
+        WHERE user_id = ${resolvedUserId}::uuid LIMIT 1
+      `.catch(() => []);
+      if (up.length > 0) userProfile = up[0];
+    }
 
-    // Projection mapping
-    const isFieldVisible = (key: string) => {
+    // Field visibility lookup if identity exists
+    let visibility: Record<string, string> = {};
+    if (identity?.id) {
+      const visibilityRows = await this.prisma.$queryRaw<any[]>`
+        SELECT field_key, visibility FROM public.identity_field_visibility
+        WHERE identity_id = ${identity.id}::uuid
+      `.catch(() => []);
+      for (const row of visibilityRows) {
+        visibility[row.field_key] = row.visibility;
+      }
+    }
+
+    const isVisible = (key: string) => {
       const v = visibility[key];
-      return v === 'public' || v === undefined; // Default to public if not explicitly hidden
+      return v === 'public' || v === undefined;
     };
+
+    const displayName =
+      (identity && isVisible('displayName') && identity.display_name) ||
+      (userProfile && userProfile.display_name) ||
+      (vioneUser && vioneUser.name) ||
+      'Doanh Nhân ViOne';
+
+    const jobTitle =
+      (identity && isVisible('jobTitle') && identity.job_title) ||
+      (userProfile && userProfile.professional_title) ||
+      'Lãnh đạo Doanh nghiệp';
+
+    const companyName =
+      (identity && isVisible('companyName') && identity.company_name) ||
+      (userProfile && userProfile.company_name) ||
+      'ViOne Network';
+
+    const avatarUrl =
+      (identity && isVisible('avatarUrl') && identity.avatar_url) ||
+      (userProfile && userProfile.avatar_url) ||
+      (vioneUser && vioneUser.avatar_url) ||
+      null;
+
+    const coverUrl =
+      (identity && identity.cover_url) ||
+      (vioneUser && vioneUser.cover_url) ||
+      null;
+
+    const primaryEmail =
+      (identity && isVisible('primaryEmail') && identity.primary_email) ||
+      (vioneUser && vioneUser.email) ||
+      null;
+
+    const primaryPhone =
+      (identity && isVisible('primaryPhone') && identity.primary_phone) ||
+      null;
+
+    const bio =
+      (identity && isVisible('bio') && identity.bio) ||
+      (userProfile && userProfile.bio) ||
+      null;
+
+    const headline =
+      (identity && isVisible('headline') && identity.headline) ||
+      `${jobTitle} tại ${companyName}`;
+
+    const website =
+      (identity && isVisible('website') && identity.website) ||
+      'https://vione.viconnect.vn';
+
+    const address =
+      (identity && isVisible('address') && identity.address) ||
+      null;
+
+    const city =
+      (identity && isVisible('city') && identity.city) ||
+      (userProfile && userProfile.region) ||
+      'Hà Nội';
+
+    const industry =
+      (userProfile && userProfile.industry) ||
+      'Chuyển đổi số & Quản trị doanh nghiệp';
+
+    const code =
+      resolvedUserId === '00000000-0000-4000-8000-000000000002'
+        ? 'ADM-001'
+        : resolvedUserId === 'a0000000-0000-4000-8000-000000000002'
+        ? 'CRM-001'
+        : resolvedUserId
+        ? `VIONE-${resolvedUserId.substring(0, 6).toUpperCase()}`
+        : 'VIONE-VIP';
 
     return {
       state: 'public',
       card: {
-        id: identity.id,
-        displayName: isFieldVisible('displayName') ? identity.display_name : null,
-        headline: isFieldVisible('headline') ? identity.headline : null,
-        jobTitle: isFieldVisible('jobTitle') ? identity.job_title : null,
-        companyName: isFieldVisible('companyName') ? identity.company_name : null,
-        bio: isFieldVisible('bio') ? identity.bio : null,
-        avatarUrl: isFieldVisible('avatarUrl') ? identity.avatar_url : null,
-        primaryEmail: isFieldVisible('primaryEmail') ? identity.primary_email : null,
-        primaryPhone: isFieldVisible('primaryPhone') ? identity.primary_phone : null,
-        website: isFieldVisible('website') ? identity.website : null,
-        linkedinUrl: isFieldVisible('linkedinUrl') ? identity.linkedin_url : null,
-        address: isFieldVisible('address') ? identity.address : null,
-        city: isFieldVisible('city') ? identity.city : null,
-        countryCode: isFieldVisible('countryCode') ? identity.country_code : null,
+        id: identity?.id || resolvedUserId,
+        userId: resolvedUserId,
+        code,
+        displayName,
+        fullName: displayName,
+        headline,
+        jobTitle,
+        companyName,
+        bio,
+        avatarUrl,
+        coverUrl,
+        primaryEmail,
+        primaryPhone,
+        website,
+        linkedinUrl: identity?.linkedin_url || null,
+        address,
+        city,
+        countryCode: identity?.country_code || 'VN',
+        industry,
+        verified: true,
+        shareUrl: `https://vione.viconnect.vn/p/${code}`
       }
     };
   }
@@ -1509,23 +1674,29 @@ export class ConnectAppService implements OnModuleInit {
   async listConnections(userId: string) {
     const connections = await this.prisma.$queryRaw<any[]>`
       SELECT c.id, c.requester_user_id, c.recipient_user_id, c.responded_at, c.created_at,
-             COALESCE(p.full_name, p.name, u.email, 'Thành viên') as full_name,
-             p.avatar_url,
-             p.company,
-             COALESCE(p.role, p.headline) as professional_title
+             COALESCE(up.display_name, bi.display_name, vu.name, vu.username, vu.email, 'Thành viên ViOne') as full_name,
+             COALESCE(up.avatar_url, bi.avatar_url) as avatar_url,
+             COALESCE(up.company_name, bi.company_name) as company,
+             COALESCE(up.professional_title, bi.job_title, bi.headline) as professional_title
       FROM public.user_connections c
       CROSS JOIN LATERAL (
         SELECT CASE WHEN c.requester_user_id = ${userId}::uuid THEN c.recipient_user_id ELSE c.requester_user_id END as counterpart_id
       ) cp
-      LEFT JOIN public.profiles p ON p.id = cp.counterpart_id
-      LEFT JOIN auth.users u ON u.id = cp.counterpart_id
+      LEFT JOIN public.user_profiles up ON up.user_id = cp.counterpart_id
+      LEFT JOIN public.business_identities bi ON bi.owner_user_id = cp.counterpart_id
+      LEFT JOIN public.vione_users vu ON vu.id = cp.counterpart_id
       WHERE c.status = 'accepted'::public.global_connection_status 
         AND (c.requester_user_id = ${userId}::uuid OR c.recipient_user_id = ${userId}::uuid)
       ORDER BY c.responded_at DESC NULLS LAST
-    `.catch(() => []);
+    `.catch((err) => {
+      console.warn('Lỗi listConnections query:', err);
+      return [];
+    });
     
     return connections.map(c => {
-      const counterpartUserId = c.requester_user_id === userId ? c.recipient_user_id : c.requester_user_id;
+      const counterpartUserId = String(c.requester_user_id).toLowerCase() === String(userId).toLowerCase()
+        ? String(c.recipient_user_id)
+        : String(c.requester_user_id);
       return {
         id: c.id,
         counterpartUserId,

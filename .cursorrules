@@ -6,25 +6,49 @@
   - Hai bản phải đồng bộ đồng nhất 100% với nhau từ chức năng, luồng nghiệp vụ đến giao diện, hình ảnh, văn bản (text) và màu sắc thương hiệu (Vàng Champagne Gold / Đen Thạch Anh Obsidian).
   - Tuyệt đối không được chỉ sửa 1 bản mà bỏ quên bản còn lại.
 - **Quy Chuẩn Quét Danh Thiếp AI OCR & vCard (Card Visit Scanner Rule)**:
-  - Backend `runCardOcrVision` bắt buộc hỗ trợ đa nhà cung cấp AI Vision (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `LOVABLE_API_KEY`) kèm bộ giải thuật heuristic regex trích xuất vCard/QR và draft dự phòng, không bao giờ trả về lỗi unhandled hay mock cứng.
-  - Phía Mobile Native (`CardScanReviewModal`) và Web PWA (`CardScanFlow`): Bắt buộc parse đúng cấu trúc payload `{ candidate: { fields } }`, trích xuất chuỗi an toàn `.text`, đọc đúng mảng số điện thoại `phones[0]` và email `emails[0]`. Tuyệt đối không khởi tạo form bằng dữ liệu mock tĩnh ("Nguyễn Văn Hùng").
+    - Backend `runCardOcrVision` bắt buộc hỗ trợ đa nhà cung cấp AI Vision (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `LOVABLE_API_KEY`) kèm bộ giải thuật heuristic regex trích xuất vCard/QR và draft dự phòng, không bao giờ trả về lỗi unhandled hay mock cứng.
+    - Với OCR.space Engine 2: TUYỆT ĐỐI KHÔNG truyền tham số `language: 'vie'` vì Engine 2 không chấp nhận mã này và sẽ trả về lỗi E201. Bộ bóc tách thực thể tiếng Việt `extractVietnameseCardEntities` tự động nhận diện và trích xuất đầy đủ: Họ tên, Chức danh, Số điện thoại, Công ty, Email, Website, Địa chỉ.
+    - Phía Mobile Native (`CardScanReviewModal`) và Web PWA (`CardScanFlow` / `BusinessCardReviewForm`): Bắt buộc parse đúng cấu trúc payload `{ candidate: { fields } }`, trích xuất chuỗi an toàn `.text`, đọc đúng mảng số điện thoại `phones[0]` và email `emails[0]`. Tuyệt đối không khởi tạo form bằng dữ liệu mock tĩnh ("Nguyễn Văn Hùng") hoặc dummy fallback `0900000000` / `Thông tin danh thiếp`.
+- **Quy Chuẩn Direct Messages (DM) & Tra Cứu Tài Khoản CSDL (Database User Query Rule)**:
+    - Trong CSDL PostgreSQL của ViOne, bảng người dùng chính thức là `public.vione_users` (UUID), hồ sơ người dùng là `public.user_profiles` (`user_id`, `display_name`, `avatar_url`), và danh tính kinh doanh là `public.business_identities` (`owner_user_id`, `company_name`, `title`). TUYỆT ĐỐI KHÔNG truy vấn các bảng không tồn tại như `public.users` hay `public.profiles`.
+    - Khi khởi tạo hoặc chuyển hướng vào cuộc hội thoại (Chat Thread), Mobile Native và PWA BẮT BUỘC gọi API `POST /connect-app/dm/threads` với `targetUserId` để nhận về `threadId` UUID chuẩn từ CSDL. Tuyệt đối không tự sinh prefix giả lập như `th-...`.
+    - Modal chat (`ChatThreadModal` / `ChatThreadView`) BẮT BUỘC cập nhật thông tin đối tác (`peerDisplayName`, `peerAvatarUrl`, `peerTitle`, `peerCompany`) trực tiếp từ dữ liệu API trả về (`res.data.thread`) và logic nhận diện tin nhắn `isFromMe` phải hỗ trợ cả trường `fromMe` từ backend.
+- **Quy Chuẩn Khoảnh Khắc 24h Stories (Stories Gating Rule)**:
+    - Tuyệt đối không hardcode mảng dữ liệu stories tĩnh (`DEFAULT_STORIES`, `INITIAL_STORIES`).
+    - Dải tin khoảnh khắc 24h CHỈ ĐƯỢC PHÉP hiển thị tin do chính người dùng đăng hoặc tin của những người đã kết nối bạn bè thành công (`status === 'connected'` / `status === 'accepted'`).
+    - Khi chưa có khoảnh khắc từ bạn bè, hiển thị Empty State sang trọng và tinh tế, hướng dẫn kết nối thêm doanh nhân.
+- **Quy Chuẩn Gửi Email Thông Báo Tạo Tài Khoản (Registration Welcome Email Rule)**:
+    - Khi người dùng đăng ký tài khoản thành công và có cung cấp email, backend NestJS (`AuthService.register`) BẮT BUỘC tự động gửi email chào mừng kích hoạt tài khoản thông qua `MailService.sendUserWelcome`.
+    - Email gửi đi phải sử dụng địa chỉ sender mặc định `vumikasa6@gmail.com` qua Google SMTP SSL (`smtp.gmail.com:465`), kèm thông tin đăng nhập và nút liên kết truy cập ứng dụng ViOne với mẫu HTML thương hiệu mạ vàng Champagne Gold sang trọng.
 - **Quy Chuẩn Độ Tương Phản Nút Bấm & Triệt Tiêu Chữ Đen Trên Nền Tối Khi Theme Sáng (Light Theme Contrast Rule)**:
-  - Tất cả các nút chính dùng gradient vàng Champagne Gold (`.bc-cta-gold` trên PWA hoặc `goldGradient` trên Native) bắt buộc phải có chữ màu đen thạch anh `#050C15 !important` và `font-weight: 700 / 800` ở MỌI trạng thái (bình thường, hover, active) trên cả 2 theme sáng và tối.
-  - TUYỆT ĐỐI KHÔNG để xảy ra tình trạng chữ màu đen trên nền tối (black text on dark background):
-    * Trên PWA: Không dùng `bg-[var(--bc-mobile-text)] text-[var(--bc-mobile-surface)]` cho các nút bấm vì trong Light mode `--bc-mobile-text` là màu đen và khi hover dễ bị biến thành chữ tối trên nền đen.
-    * Trên Native: Mọi modal, sheet, và màn hình bắt buộc dùng `useTheme()` (`colors.surface`, `colors.surface2`, `colors.textPrimary`, `colors.textMuted`, `colors.gold`, `colors.goldSoft`), tuyệt đối không hardcode nền tối `#0B0F17` / `#0E1522` / `#181D2A` vì khi hệ thống chuyển sang theme sáng, các trường TextInput và nhãn sẽ render chữ đen trên nền tối gây mất tương phản.
-  - Trên camera viewfinder: Trang bị đầy đủ nút bật/tắt đèn Flash và nút Đổi camera trước/sau đồng bộ ở cả 2 bản Native và PWA.
+    - Tất cả các nút chính dùng gradient vàng Champagne Gold (`.bc-cta-gold` trên PWA hoặc `goldGradient` trên Native) bắt buộc phải có chữ màu đen thạch anh `#050C15 !important` và `font-weight: 700 / 800` ở MỌI trạng thái (bình thường, hover, active) trên cả 2 theme sáng và tối.
+    - TUYỆT ĐỐI KHÔNG để xảy ra tình trạng chữ màu đen trên nền tối (black text on dark background):
+      * Trên PWA: Không dùng `bg-[var(--bc-mobile-text)] text-[var(--bc-mobile-surface)]` cho các nút bấm vì trong Light mode `--bc-mobile-text` là màu đen và khi hover dễ bị biến thành chữ tối trên nền đen.
+      * Trên Native: Mọi modal, sheet, và màn hình bắt buộc dùng `useTheme()` (`colors.surface`, `colors.surface2`, `colors.textPrimary`, `colors.textMuted`, `colors.gold`, `colors.goldSoft`), tuyệt đối không hardcode nền tối `#0B0F17` / `#0E1522` / `#181D2A` vì khi hệ thống chuyển sang theme sáng, các trường TextInput và nhãn sẽ render chữ đen trên nền tối gây mất tương phản.
+    - Trên camera viewfinder: Trang bị đầy đủ nút bật/tắt đèn Flash và nút Đổi camera trước/sau đồng bộ ở cả 2 bản Native và PWA.
 - **Quy Chuẩn Quản Lý Vùng Nhớ Ảnh Chụp Camera (Camera Object URL Revocation Rule)**:
-  - Khi xử lý ảnh chụp trực tiếp từ Camera (PWA hoặc Native), TUYỆT ĐỐI KHÔNG gọi `URL.revokeObjectURL(url)` bên trong các hàm lọc / chọn media trước khi component unmount. Việc revoke sớm khiến browser giải phóng vùng nhớ blob ngay lập tức, làm thẻ `<Image>` / `<img>` rơi vào sự kiện `onError` và tự động fallback sang ảnh placeholder hoặc ảnh khác.
+    - Khi xử lý ảnh chụp trực tiếp từ Camera (PWA hoặc Native), TUYỆT ĐỐI KHÔNG gọi `URL.revokeObjectURL(url)` bên trong các hàm lọc / chọn media trước khi component unmount. Việc revoke sớm khiến browser giải phóng vùng nhớ blob ngay lập tức, làm thẻ `<Image>` / `<img>` rơi vào sự kiện `onError` và tự động fallback sang ảnh placeholder hoặc ảnh khác.
 - **Quy Chuẩn Mời Thành Viên Cộng Đồng & Cấm Tự Động Thêm Người (Community Invitation & Zero Auto-Add Rule)**:
-  - Nghiêm cấm tuyệt đối việc hardcode hoặc tự động thêm thành viên tùy tiện khi tạo mới cộng đồng.
-  - Cộng đồng CHỈ ĐƯỢC PHÉP mời những người đã kết nối (`public.connections` / `public.user_connections`) thông qua API `POST /connect-app/community/:communityId/invites`.
-  - Người được mời BẮT BUỘC phải nhận được thông báo thời gian thực (`public.business_notifications`) kèm WebSocket và có 2 nút hành động rõ ràng: "Đồng ý tham gia" (`POST /connect-app/community/invites/:inviteRef/accept`) hoặc "Từ chối" (`POST /connect-app/community/invites/:inviteRef/decline`).
+    - Nghiêm cấm tuyệt đối việc hardcode hoặc tự động thêm thành viên tùy tiện khi tạo mới cộng đồng.
+    - Cộng đồng CHỈ ĐƯỢC PHÉP mời những người đã kết nối (`public.connections` / `public.user_connections`) thông qua API `POST /connect-app/community/:communityId/invites`.
+    - Người được mời BẮT BUỘC phải nhận được thông báo thời gian thực (`public.business_notifications`) kèm WebSocket và có 2 nút hành động rõ ràng: "Đồng ý tham gia" (`POST /connect-app/community/invites/:inviteRef/accept`) hoặc "Từ chối" (`POST /connect-app/community/invites/:inviteRef/decline`).
 - **Quy Chuẩn Xuất Danh Bạ Điện Thoại Từ Danh Thiếp & Nút Zalo (Card Visit Contacts Export Rule)**:
-  - Tệp vCard `.vcf` tải xuống danh bạ điện thoại từ danh thiếp đã quét BẮT BUỘC chỉ lưu đúng 3 thông tin: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại di động (`TEL;TYPE=CELL,VOICE`).
-  - Nút liên kết Zalo BẮT BUỘC phải là nền vàng Champagne Gold (`#D8B282`), chữ đen đậm (`#000000` / `text-slate-950 font-bold`) đạt chuẩn WCAG.
+    - Tệp vCard `.vcf` tải xuống danh bạ điện thoại từ danh thiếp đã quét BẮT BUỘC chỉ lưu đúng 3 thông tin: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại di động (`TEL;TYPE=CELL,VOICE`).
+    - Nút liên kết Zalo BẮT BUỘC phải là nền vàng Champagne Gold (`#D8B282`), chữ đen đậm (`#000000` / `text-slate-950 font-bold`) đạt chuẩn WCAG.
+- **Quy Chuẩn Kéo Thả Di Chuyển & Căn Chỉnh Vùng Hiển Thị Ảnh (Image Pan & Zoom Crop Rule)**:
+    - Khi người dùng tải lên hình ảnh (ảnh đại diện Avatar 1:1, ảnh bìa Cover 16:9), hệ thống BẮT BUỘC cung cấp công cụ căn chỉnh vùng hiển thị (`ImagePanCropModal`) cho phép kéo thả (drag/pan) di chuyển ảnh theo mọi hướng, thanh trượt zoom phóng to/thu nhỏ, xoay ảnh trước khi lưu.
+    - Đồng bộ 100% trên cả PWA (`src/components/common/ImagePanCropModal.tsx`) dùng Canvas HTML5 và Native Mobile (`src/components/ImagePanCropModal.tsx`) dùng `PanResponder` và `Animated`.
+- **Quy Chuẩn Quét Mã QR Mở Trang Profile Công Khai Không Qua App/CRM (Public Digital Card QR Rule)**:
+    - Khi quét mã QR danh tính số từ ứng dụng bên ngoài (Camera iOS/Android, Zalo, ứng dụng QR code bất kỳ), đường dẫn mở ra TUYỆT ĐỐI KHÔNG được đá vào app nội bộ hay màn đăng nhập CRM (`/auth?portal=crm`).
+    - Đường dẫn mã QR bắt buộc trỏ về trang hồ sơ số công khai: `https://vione.viconnect.vn/p/:identifier` (với `:identifier` là public token, mã người dùng, UUID, hoặc user code).
+    - Khách vãng lai xem được đầy đủ thông tin: Họ tên, Chức vụ, Tên công ty, Avatar viền vàng, Ảnh bìa, nút Gọi điện thoại trực tiếp, nút Nhắn tin Zalo, nút Tải danh bạ (.vcf) 1-chạm vào danh bạ điện thoại, nút Gửi email, Chia sẻ, Tiểu sử, Trụ sở... mà hoàn toàn không cần đăng nhập.
+    - Tuyến đường `/p/`, `/p`, `/c/`, `/b/`, `/card/`, `/profile/` bắt buộc được khai báo trong danh sách `isPublic` tại `__root.tsx` để bỏ qua AuthGate.
+- **Quy Chuẩn Phân Lập Tuyệt Đối Cổng 5445 (PWA) & Cổng 5446 (CRM) và Subdomain Chính Thức (Port Isolation & Subdomain Rule)**:
+    - Cổng 5446 được dành RIÊNG cho CRM Quản trị ViOne. TUYỆT ĐỐI KHÔNG được mở hay duy trì `/connect-app` tại cổng 5446.
+    - Cấu hình Nginx (`location /connect-app { return 301 https://vione.viconnect.vn/connect-app; }`) và React Router guard tại `__root.tsx` & `connect-app.tsx` lập tức chuyển hướng bất kỳ truy cập nào từ cổng 5446 sang subdomain chính thức `https://vione.viconnect.vn`.
+    - Subdomain chính thức của PWA ViOne là `https://vione.viconnect.vn/`. Mọi mã QR, đường link chia sẻ, script deploy (`deploy-ssl.ps1`, `nginx.conf`) đều đồng bộ trỏ vào subdomain này.
 - **Quy Chuẩn Phân Giải Gradle Plugin Android Trên Windows (Gradle Resolution Rule)**:
-  - Các file `settings.gradle` và `build.gradle` trong thư mục `android/` bắt buộc phải có bước kiểm tra trực tiếp qua Java File I/O (`new File(rootDir, "../node_modules/@react-native/gradle-plugin").exists()`, `expo/scripts/autolinking.gradle`, `react-native/gradle/libs.versions.toml`) trước khi gọi lệnh Node.js qua process builder. Điều này đảm bảo VS Code Java Language Server và Gradle daemon trên Windows không bị lỗi `Error resolving plugin [id: 'com.facebook.react.settings']` khi môi trường Java thiếu PATH chứa Node.js.
+    - Các file `settings.gradle` và `build.gradle` trong thư mục `android/` bắt buộc phải có bước kiểm tra trực tiếp qua Java File I/O (`new File(rootDir, "../node_modules/@react-native/gradle-plugin").exists()`, `expo/scripts/autolinking.gradle`, `react-native/gradle/libs.versions.toml`) trước khi gọi lệnh Node.js qua process builder. Điều này đảm bảo VS Code Java Language Server và Gradle daemon trên Windows không bị lỗi `Error resolving plugin [id: 'com.facebook.react.settings']` khi môi trường Java thiếu PATH chứa Node.js.
 
 
 ## Tech Stack

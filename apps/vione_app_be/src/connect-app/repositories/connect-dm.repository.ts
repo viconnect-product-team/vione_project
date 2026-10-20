@@ -313,7 +313,7 @@ export class ConnectDmRepository {
   // ── Open & Detail DM Threads ─────────────────────────────────────────
   async findUserByEmailOrUsernameOrMemberCode(cleanId: string): Promise<any | null> {
     const rows = await this.prisma.$queryRaw<any[]>`
-      SELECT u.id FROM public.users u
+      SELECT u.id FROM public.vione_users u
       LEFT JOIN public.members m ON m.user_id = u.id
       WHERE LOWER(u.email) = LOWER(${cleanId})
          OR LOWER(u.username) = LOWER(${cleanId})
@@ -400,7 +400,7 @@ export class ConnectDmRepository {
           AND (requester_user_id = ${counterpartId}::uuid OR recipient_user_id = ${counterpartId}::uuid)
         LIMIT 1
       `.catch(() => []),
-      this.prisma.$queryRaw<any[]>`SELECT email, username FROM public.users WHERE id = ${counterpartId}::uuid LIMIT 1`.catch(() => []),
+      this.prisma.$queryRaw<any[]>`SELECT id, email, username, name FROM public.vione_users WHERE id = ${counterpartId}::uuid LIMIT 1`.catch(() => []),
     ]);
     return {
       ident: ident[0] || null,
@@ -424,7 +424,7 @@ export class ConnectDmRepository {
 
   async findUserAccount(userId: string): Promise<any | null> {
     const rows = await this.prisma.$queryRaw<any[]>`
-      SELECT email, username FROM public.users WHERE id = ${userId}::uuid LIMIT 1
+      SELECT id, email, username, name FROM public.vione_users WHERE id = ${userId}::uuid LIMIT 1
     `.catch(() => []);
     return rows[0] || null;
   }

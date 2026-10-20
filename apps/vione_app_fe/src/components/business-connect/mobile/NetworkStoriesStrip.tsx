@@ -18,68 +18,8 @@ export interface EntrepreneurStory {
   viewsCount: number;
 }
 
-const DEFAULT_STORIES: EntrepreneurStory[] = [
-  {
-    id: "story-1",
-    authorName: "Nguyễn Tuấn Hải",
-    authorTitle: "Chủ tịch HĐQT",
-    authorCompany: "Alphanam Group",
-    authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
-    storyImage: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&auto=format&fit=crop&q=80",
-    storyCaption: "Khai mạc Diễn đàn Xúc tiến Đầu tư Quốc tế 2026 cùng hơn 500 tập đoàn hàng đầu. Cơ hội bứt phá chuỗi cung ứng toàn cầu!",
-    tag: "Xúc tiến đầu tư",
-    timeAgo: "1 giờ trước",
-    viewsCount: 342,
-  },
-  {
-    id: "story-2",
-    authorName: "Trần Mai Phương",
-    authorTitle: "Tổng Giám Đốc",
-    authorCompany: "VinTech Innovation",
-    authorAvatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80",
-    storyImage: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=900&auto=format&fit=crop&q=80",
-    storyCaption: "Chính thức ký kết hợp tác công nghệ AI Agent tự động hóa doanh nghiệp cùng đối tác Singapore. Bước chuyển mình quan trọng!",
-    tag: "Ký kết đối tác",
-    timeAgo: "3 giờ trước",
-    viewsCount: 489,
-  },
-  {
-    id: "story-3",
-    authorName: "Lê Hoàng Long",
-    authorTitle: "Sáng Lập & CEO",
-    authorCompany: "GreenE Solar",
-    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80",
-    storyImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80",
-    storyCaption: "Gặp gỡ bàn tròn doanh nhân CEO 1983 tại JW Marriott. Tinh thần chia sẻ giá trị và liên kết kinh tế tư nhân!",
-    tag: "Bàn tròn CEO",
-    timeAgo: "5 giờ trước",
-    viewsCount: 620,
-  },
-  {
-    id: "story-4",
-    authorName: "Phạm Thùy Linh",
-    authorTitle: "Giám Đốc Chiến Lược",
-    authorCompany: "LuxVillas Property",
-    authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80",
-    storyImage: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=900&auto=format&fit=crop&q=80",
-    storyCaption: "Khảo sát thực địa tổ hợp bất động sản nghỉ dưỡng sinh thái chuẩn ESG. Chuẩn bị ra mắt quý 3!",
-    tag: "Khảo sát dự án",
-    timeAgo: "7 giờ trước",
-    viewsCount: 275,
-  },
-  {
-    id: "story-5",
-    authorName: "Đỗ Đăng Khoa",
-    authorTitle: "Chủ tịch",
-    authorCompany: "TechVina Global",
-    authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80",
-    storyImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&auto=format&fit=crop&q=80",
-    storyCaption: "Chào đón đoàn đại biểu xúc tiến thương mại song phương tại trụ sở Hà Nội!",
-    tag: "Đoàn đại biểu",
-    timeAgo: "9 giờ trước",
-    viewsCount: 512,
-  },
-];
+// Danh sách story mặc định trống - chỉ hiển thị stories của những người đã kết nối hoặc của chính mình
+const DEFAULT_STORIES: EntrepreneurStory[] = [];
 
 const STORY_TAGS = [
   "Cơ hội hợp tác",
@@ -94,23 +34,24 @@ const LOCAL_STORAGE_STORIES_KEY = "vione_user_stories_24h";
 
 interface NetworkStoriesStripProps {
   onOpenCreateStory?: () => void;
+  connectedPartnerIds?: string[];
 }
 
-export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripProps) {
+export function NetworkStoriesStrip({ onOpenCreateStory, connectedPartnerIds }: NetworkStoriesStripProps) {
   const viewerUserId = useViewerUserId();
   const [stories, setStories] = useState<EntrepreneurStory[]>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_STORIES_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return [...parsed, ...DEFAULT_STORIES];
+        if (Array.isArray(parsed)) {
+          return parsed;
         }
       }
     } catch {
       // fallback
     }
-    return DEFAULT_STORIES;
+    return [];
   });
 
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
@@ -406,6 +347,22 @@ export function NetworkStoriesStrip({ onOpenCreateStory }: NetworkStoriesStripPr
           </div>
 
           {/* Danh sách Stories của các Doanh nhân */}
+          {stories.length === 0 && (
+            <div
+              onClick={() => setIsCreateModalOpen(true)}
+              role="button"
+              tabIndex={0}
+              className="flex-none flex flex-col items-center justify-center w-[160px] h-[155px] rounded-2xl border border-dashed border-[#D8B282]/40 bg-amber-500/5 p-3 text-center cursor-pointer hover:border-[#D8B282] transition"
+            >
+              <Sparkles className="w-5 h-5 text-[#D8B282] mb-1.5" />
+              <p className="text-[11px] font-bold text-slate-800 dark:text-[#F6E1C3] leading-snug">
+                Khoảnh khắc 24h
+              </p>
+              <p className="text-[9.5px] text-slate-500 dark:text-[#D4C3A3]/80 mt-1 leading-tight">
+                Chỉ hiển thị cho đối tác đã kết nối
+              </p>
+            </div>
+          )}
           {stories.map((story, idx) => (
             <div
               key={story.id}

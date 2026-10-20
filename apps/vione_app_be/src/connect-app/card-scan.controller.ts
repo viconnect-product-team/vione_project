@@ -2,7 +2,7 @@ import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ConnectAppService } from './connect-app.service';
 
-@Controller('card-scans')
+@Controller(['card-scans', 'connect-app/card-scan', 'connect-app/card-scans'])
 @UseGuards(JwtAuthGuard)
 export class CardScanController {
   constructor(private readonly connectAppService: ConnectAppService) {}

@@ -527,8 +527,19 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     setTenantHost(isTenantHost(window.location.hostname));
   }, []);
 
+  // Tách biệt hoàn toàn cổng 5446 (CRM ViOne) và ViOne App PWA (5445 / vione.viconnect.vn):
+  // Cổng 5446 chỉ thuộc về CRM của ViOne. Không cho phép mở PWA /connect-app tại cổng 5446.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isCrmPort = window.location.port === "5446";
+    const isCrmHost = window.location.hostname.includes("crm") || window.location.hostname.includes("dev-vione-crm");
+    if ((isCrmPort || isCrmHost) && pathname.startsWith("/connect-app")) {
+      window.location.replace(`https://vione.viconnect.vn${pathname}${window.location.search}`);
+    }
+  }, [pathname]);
+
   // Public routes: auth screen, the member PWA, the install landing page,
-  // the marketing landing page, and the QR-opened membership card.
+  // public digital profile card (QR scan from outside), and public card links.
   const isPublic =
     pathname === "/" ||
     pathname === "/auth" ||
@@ -544,7 +555,14 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/h/") ||
     pathname === "/m" ||
     pathname.startsWith("/m/") ||
+    pathname === "/p" ||
+    pathname.startsWith("/p/") ||
+    pathname === "/c" ||
+    pathname.startsWith("/c/") ||
+    pathname === "/b" ||
+    pathname.startsWith("/b/") ||
     pathname.startsWith("/card/") ||
+    pathname.startsWith("/profile/") ||
     pathname === "/verify" ||
     pathname.startsWith("/association") ||
     pathname.startsWith("/vione") ||

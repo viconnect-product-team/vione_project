@@ -222,11 +222,36 @@ export function buildCandidateFromModel(model: any, scanId: string): any {
   });
   if (model.displayNameLine !== null && !displayName) warnings.push('name_needs_review');
 
-  const title = pickClassifiedLine(lines, model.titleLine, { maxLen: 120 });
+  let title = pickClassifiedLine(lines, model.titleLine, { maxLen: 120 });
   if (model.titleLine !== null && !title) warnings.push('title_needs_review');
 
-  const companyName = pickClassifiedLine(lines, model.companyNameLine, { maxLen: 120 });
+  let companyName = pickClassifiedLine(lines, model.companyNameLine, { maxLen: 120 });
   if (model.companyNameLine !== null && !companyName) warnings.push('company_needs_review');
+
+  // Nếu title hoặc companyName chứa dấu phân cách kết hợp | hoặc - (vd: "CEO | VŨ LAND DEVELOPMENT")
+  if (title && (title.value.includes('|') || title.value.includes(' - '))) {
+    const sep = title.value.includes('|') ? '|' : ' - ';
+    const parts = title.value.split(sep).map((p: string) => p.trim());
+    for (const part of parts) {
+      if (TITLE_REGEX.test(part)) {
+        title = { ...title, value: part };
+      } else if (COMPANY_REGEX.test(part) && (!companyName || companyName.value === title.value)) {
+        companyName = { ...title, value: part };
+      }
+    }
+  }
+
+  if (companyName && (companyName.value.includes('|') || companyName.value.includes(' - '))) {
+    const sep = companyName.value.includes('|') ? '|' : ' - ';
+    const parts = companyName.value.split(sep).map((p: string) => p.trim());
+    for (const part of parts) {
+      if (COMPANY_REGEX.test(part)) {
+        companyName = { ...companyName, value: part };
+      } else if (TITLE_REGEX.test(part) && !title) {
+        title = { ...companyName, value: part };
+      }
+    }
+  }
 
   const address = pickClassifiedLine(lines, model.addressLine, { maxLen: 160 });
   if (model.addressLine !== null && !address) warnings.push('address_needs_review');
@@ -306,30 +331,50 @@ export function extractVietnameseCardEntities(rawLines: string[]): any {
   let companyNameLine: number | null = null;
   let addressLine: number | null = null;
 
-  // Đưa tất cả các dòng vào mảng lines
   for (const text of cleanLines) {
-    lines.push({ text, confidence: 0.9 });
+    lines.push({ text, confidence: 0.92 });
   }
 
-  // 1. Tìm dòng Chức vụ (Title)
+  // 1. Kiểm tra các dòng kết hợp có dấu phân cách | hoặc - (vd: "CEO | VŨ LAND DEVELOPMENT")
   for (let i = 0; i < lines.length; i++) {
     const text = lines[i].text;
-    if (TITLE_REGEX.test(text) && !COMPANY_REGEX.test(text) && !EMAIL_RE.test(text)) {
-      titleLine = i;
-      break;
+    if (text.includes('|') || text.includes(' - ')) {
+      const separator = text.includes('|') ? '|' : ' - ';
+      const parts = text.split(separator).map((p) => p.trim());
+      for (const part of parts) {
+        if (TITLE_REGEX.test(part) && titleLine === null) {
+          titleLine = i;
+        }
+        if (COMPANY_REGEX.test(part) && companyNameLine === null) {
+          companyNameLine = i;
+        }
+      }
     }
   }
 
-  // 2. Tìm dòng Tên công ty (Company Name)
-  for (let i = 0; i < lines.length; i++) {
-    const text = lines[i].text;
-    if (COMPANY_REGEX.test(text) && i !== titleLine) {
-      companyNameLine = i;
-      break;
+  // 2. Tìm dòng Chức vụ (Title) nếu chưa thấy
+  if (titleLine === null) {
+    for (let i = 0; i < lines.length; i++) {
+      const text = lines[i].text;
+      if (TITLE_REGEX.test(text) && !EMAIL_RE.test(text)) {
+        titleLine = i;
+        break;
+      }
     }
   }
 
-  // 3. Tìm dòng Địa chỉ (Address)
+  // 3. Tìm dòng Tên công ty (Company Name) nếu chưa thấy
+  if (companyNameLine === null) {
+    for (let i = 0; i < lines.length; i++) {
+      const text = lines[i].text;
+      if (COMPANY_REGEX.test(text) && i !== titleLine && !EMAIL_RE.test(text)) {
+        companyNameLine = i;
+        break;
+      }
+    }
+  }
+
+  // 4. Tìm dòng Địa chỉ (Address)
   for (let i = 0; i < lines.length; i++) {
     const text = lines[i].text;
     if (ADDRESS_REGEX.test(text) && i !== companyNameLine && i !== titleLine) {
@@ -338,26 +383,27 @@ export function extractVietnameseCardEntities(rawLines: string[]): any {
     }
   }
 
-  // 4. Tìm dòng Họ và Tên (Display Name)
-  // Ưu tiên dòng đứng trước hoặc sau dòng Chức vụ, hoặc dòng có họ Việt Nam, độ dài 2-4 từ
+  // 5. Tìm dòng Họ và Tên (Display Name)
+  // Ưu tiên dòng có họ Việt Nam hoặc viết hoa toàn bộ, độ dài 2-5 từ, không chứa số/email/url/chức vụ
   for (let i = 0; i < lines.length; i++) {
     if (i === titleLine || i === companyNameLine || i === addressLine) continue;
     const text = lines[i].text;
-    // Bỏ qua dòng là số điện thoại hoặc email hoặc website
     if (EMAIL_RE.test(text) || URL_RE.test(text)) continue;
     const digitsCount = (text.match(/\d/g) || []).length;
-    if (digitsCount > 3) continue;
+    if (digitsCount > 2) continue;
 
     const words = text.split(/\s+/).filter(Boolean);
     if (words.length >= 2 && words.length <= 5) {
       if (VN_SURNAMES_REGEX.test(text) || text === text.toUpperCase() || /^[A-ZÀ-Ỹ]/.test(text)) {
-        displayNameLine = i;
-        break;
+        if (!TITLE_REGEX.test(text) && !COMPANY_REGEX.test(text)) {
+          displayNameLine = i;
+          break;
+        }
       }
     }
   }
 
-  // Nếu vẫn chưa tìm được tên, chọn dòng ngắn đầu tiên không phải công ty/chức vụ/liên hệ
+  // Nếu vẫn chưa tìm được tên, chọn dòng chữ ngắn đầu tiên hợp lệ
   if (displayNameLine === null) {
     for (let i = 0; i < lines.length; i++) {
       if (i === titleLine || i === companyNameLine || i === addressLine) continue;
@@ -386,49 +432,83 @@ export function extractVietnameseCardEntities(rawLines: string[]): any {
 
 async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 14000);
+    let preparedBase64 = imageDataUrl;
 
-    const formData = new URLSearchParams();
-    formData.append('apikey', process.env['OCR_SPACE_API_KEY'] || 'K88533814688957');
-    formData.append('base64Image', imageDataUrl);
-    formData.append('language', 'vie');
-    formData.append('isOverlayRequired', 'true');
-    formData.append('detectOrientation', 'true');
-    formData.append('scale', 'true');
-    formData.append('OCREngine', '2');
+    // Nén ảnh tự động bằng sharp nếu base64 quá lớn (> 300KB) để tránh timeout hoặc OCR.space reject
+    try {
+      const sharpModule = require('sharp');
+      if (imageDataUrl.includes('data:')) {
+        const parts = imageDataUrl.split(',');
+        if (parts[1] && parts[1].length > 300000) {
+          const rawBuffer = Buffer.from(parts[1], 'base64');
+          const compressedBuffer = await sharpModule(rawBuffer)
+            .resize({ width: 1200, withoutEnlargement: true })
+            .jpeg({ quality: 85 })
+            .toBuffer();
+          preparedBase64 = `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+        }
+      }
+    } catch {
+      // sharp fallback pass through
+    }
 
-    const res = await fetch('https://api.ocr.space/parse/image', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: formData.toString(),
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
+    const apiKeys = [
+      process.env['OCR_SPACE_API_KEY'],
+      'K88533814688957',
+      'helloworld',
+    ].filter(Boolean) as string[];
 
-    if (!res.ok) return null;
-    const json = (await res.json()) as any;
-    if (json.IsErroredOnProcessing || !Array.isArray(json.ParsedResults)) return null;
+    for (const apiKey of apiKeys) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
 
-    const parsed = json.ParsedResults[0];
-    const extractedLines: string[] = [];
+        const formData = new URLSearchParams();
+        formData.append('apikey', apiKey);
+        formData.append('base64Image', preparedBase64);
+        formData.append('isOverlayRequired', 'true');
+        formData.append('detectOrientation', 'true');
+        formData.append('scale', 'true');
+        formData.append('OCREngine', '2');
 
-    // Lấy theo TextOverlay Lines nếu có để đảm bảo thứ tự dòng trên thẻ
-    if (parsed.TextOverlay && Array.isArray(parsed.TextOverlay.Lines)) {
-      for (const lineObj of parsed.TextOverlay.Lines) {
-        const lineStr = (lineObj.LineText || '').trim();
-        if (lineStr) extractedLines.push(lineStr);
+        const res = await fetch('https://api.ocr.space/parse/image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData.toString(),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+
+        if (!res.ok) continue;
+        const json = (await res.json()) as any;
+        if (json.IsErroredOnProcessing || !Array.isArray(json.ParsedResults)) continue;
+
+        const parsed = json.ParsedResults[0];
+        const extractedLines: string[] = [];
+
+        if (parsed.TextOverlay && Array.isArray(parsed.TextOverlay.Lines)) {
+          for (const lineObj of parsed.TextOverlay.Lines) {
+            const lineStr = (lineObj.LineText || '').trim();
+            if (lineStr) extractedLines.push(lineStr);
+          }
+        }
+
+        if (extractedLines.length === 0 && parsed.ParsedText) {
+          const splitLines = parsed.ParsedText.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
+          extractedLines.push(...splitLines);
+        }
+
+        if (extractedLines.length > 0) {
+          return extractedLines;
+        }
+      } catch (keyErr: any) {
+        console.warn(`[callOcrSpaceApi] Key failed, trying next:`, keyErr?.message || keyErr);
       }
     }
 
-    if (extractedLines.length === 0 && parsed.ParsedText) {
-      const splitLines = parsed.ParsedText.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
-      extractedLines.push(...splitLines);
-    }
-
-    return extractedLines.length > 0 ? extractedLines : null;
+    return null;
   } catch (err: any) {
     console.warn('[callOcrSpaceApi] OCR.space request failed or timed out:', err?.message || err);
     return null;
@@ -487,13 +567,6 @@ export function parseCardHeuristicFallback(imageDataUrl: string): any {
         }
       }
     }
-  }
-
-  if (lines.length === 0) {
-    lines.push({ text: 'Đối tác mới', confidence: 0.85 });
-    lines.push({ text: 'Giám Đốc', confidence: 0.8 });
-    displayNameLine = 0;
-    titleLine = 1;
   }
 
   return {

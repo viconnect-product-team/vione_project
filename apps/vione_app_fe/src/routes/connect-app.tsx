@@ -14,6 +14,13 @@ export const Route = createFileRoute("/connect-app")({
     if (typeof window === "undefined") {
       return;
     }
+    const isCrmPort = window.location.port === "5446";
+    const isCrmHost = window.location.hostname.includes("crm") || window.location.hostname.includes("dev-vione-crm");
+    if (isCrmPort || isCrmHost) {
+      // Cổng 5446 chỉ dành cho CRM ViOne. Tuyệt đối không cho phép mở ViOne PWA tại đây.
+      window.location.replace(`https://vione.viconnect.vn${location.pathname}${location.searchStr}`);
+      return;
+    }
     rememberVioneAppContext();
     const token = localStorage.getItem("vibe_token") || localStorage.getItem("access_token");
     if (!token) {

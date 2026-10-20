@@ -349,6 +349,27 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
             },
           ]}
         >
+          {/* Subtle Cover Image Banner Backdrop */}
+          {resolveMediaUrl(currentUser?.coverUrl) ? (
+            <View style={styles.cardCoverBannerWrap} pointerEvents="none">
+              <Image
+                source={{ uri: resolveMediaUrl(currentUser?.coverUrl)! }}
+                style={styles.cardCoverBanner}
+                resizeMode="cover"
+              />
+              <View
+                style={[
+                  styles.cardCoverGradientOverlay,
+                  {
+                    backgroundColor: isDark
+                      ? "rgba(14, 21, 34, 0.84)"
+                      : "rgba(255, 255, 255, 0.88)",
+                  },
+                ]}
+              />
+            </View>
+          ) : null}
+
           {/* Subtle Watermark 'V' */}
           <Text
             style={[
@@ -1593,6 +1614,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 2,
+  },
+  cardCoverBannerWrap: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+    borderRadius: 20,
+  },
+  cardCoverBanner: {
+    width: "100%",
+    height: "100%",
+  },
+  cardCoverGradientOverlay: {
+    ...StyleSheet.absoluteFillObject,
   },
   watermarkV: {
     position: "absolute",
