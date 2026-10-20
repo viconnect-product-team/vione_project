@@ -23,3 +23,16 @@
   - Hai bản phải đồng bộ đồng nhất 100% với nhau từ chức năng, luồng nghiệp vụ đến giao diện, hình ảnh, văn bản (text) và màu sắc thương hiệu (Vàng Champagne Gold / Đen Thạch Anh Obsidian).
   - Tuyệt đối không được chỉ sửa 1 bản mà bỏ quên bản còn lại.
 
+## 5. Quy Chuẩn Agent Phân Tách Triển Khai Subdomain & Môi Trường Server (STRICT SUBDOMAIN & ENVIRONMENT DEPLOYMENT ISOLATION)
+- **PHÂN ĐỊNH TUYỆT ĐỐI GIỮA HAI MÔI TRƯỜNG DEV VÀ SUBDOMAIN PRODUCTION**:
+  - **Môi Trường Subdomain Production (Cổng Chuẩn 80 & 443 SSL)**:
+    * **ViOne PWA App**: Subdomain chính thức `https://vione.viconnect.vn/`. Điều phối qua kịch bản `.\deploy-subdomain-vione.ps1` hoặc `.\deploy-subdomain.ps1 -Subdomain vione`. Tự động kích hoạt khi push Git qua GitHub Actions `.github/workflows/deploy-vione.yml`.
+    * **ViOne CRM Enterprise**: Subdomain chính thức `https://crm.viconnect.vn/`. Điều phối qua kịch bản `.\deploy-subdomain-crm.ps1` hoặc `.\deploy-subdomain.ps1 -Subdomain crm`. Kích hoạt CI/CD qua `.github/workflows/deploy-crm.yml`.
+    * **Phân Lập Tuyệt Đối**: Cổng 443 và Nginx phân luồng VirtualHost riêng biệt. Subdomain CRM (`crm.viconnect.vn`) cấm phục vụ `/connect-app` (tự động 301 Redirect sang `https://vione.viconnect.vn/connect-app`).
+  - **Môi Trường Server Dev (Cổng Chuyên Biệt Kèm Port Trong URL)**:
+    * **ViOne App Dev (Cổng 5445 HTTPS / 5010 HTTP)**: Triển khai qua `.\deploy-vione.ps1` trỏ URL `https://dev-vione.14-225-217-232.sslip.io:5445`.
+    * **ViOne CRM Dev (Cổng 5446 HTTPS / 5006 HTTP)**: Triển khai qua `.\deploy-crm.ps1` trỏ URL `https://dev-vione-crm.14-225-217-232.sslip.io:5446`.
+  - **Trách Nhiệm Của Agent Triển Khai (.ps1)**:
+    * Trước khi build, BẮT BUỘC xác định đúng `TargetEnv` (`prod` cho subdomain, `dev` cho dev server) để nạp biến môi trường `VITE_PUBLIC_APP_URL` và `VITE_APP_SCOPE` chính xác.
+    * Khi cần triển khai toàn diện, dùng Master Hub `.\deploy.ps1` với các cờ tham số rõ ràng. Tuyệt đối không nhầm lẫn giữa URL Dev và URL Subdomain Production.
+

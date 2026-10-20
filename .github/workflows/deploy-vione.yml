@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER || 'root' }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: "vione-frontend.tar.gz,deploy/vione/docker-compose.yml,deploy/vione/.env.production,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
-          target: "~/vione_deploy_temp"
+          target: "vione_deploy_temp"
 
       - name: Activate New Container & Reload Nginx Proxy
         uses: appleboy/ssh-action@v1.2.0

@@ -67,3 +67,9 @@ curl -k -s -I https://127.0.0.1:5445/ 2>&1 | head -n 5 || echo "Lỗi kết nố
 echo "--- TEST NỘI BỘ HTTPS 5446 (VIONE ENTERPRISE CRM) ---"
 curl -k -s -I https://127.0.0.1:5446/ 2>&1 | head -n 5 || echo "Lỗi kết nối https 5446 nội bộ"
 
+echo "--- TEST NỘI BỘ SUBDOMAIN PWA (https://vione.viconnect.vn) ---"
+curl -k -s -I -H "Host: vione.viconnect.vn" https://127.0.0.1:443/ 2>&1 | head -n 5 || echo "Lỗi kết nối https://vione.viconnect.vn nội bộ"
+
+echo "--- TEST NỘI BỘ SUBDOMAIN CRM (https://crm.viconnect.vn) ---"
+curl -k -s -I -H "Host: crm.viconnect.vn" https://127.0.0.1:443/ 2>&1 | head -n 5 || echo "Lỗi kết nối https://crm.viconnect.vn nội bộ"
+
