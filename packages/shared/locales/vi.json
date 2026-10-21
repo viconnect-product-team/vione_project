@@ -5402,7 +5402,7 @@
   "bc.mobile.cardScan.preparing": "Chuẩn bị ảnh…",
   "bc.mobile.cardScan.reading": "Đang đọc danh thiếp…",
   "bc.mobile.cardScan.review.title": "Kiểm tra danh thiếp",
-  "bc.mobile.cardScan.review.subtitle": "AI đề xuất — bạn xác nhận trước khi lưu",
+  "bc.mobile.cardScan.review.subtitle": "Xác nhận và chỉnh sửa thông tin trước khi lưu danh bạ",
   "bc.mobile.cardScan.confidence.overall": "AI đã nhận diện {percent}%",
   "bc.mobile.cardScan.confidence.overallHint": "Độ tin cậy ước tính — hãy kiểm tra lại trước khi lưu.",
   "bc.mobile.cardScan.confidence.clear": "Rõ",

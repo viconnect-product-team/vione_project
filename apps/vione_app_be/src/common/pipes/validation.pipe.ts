@@ -14,11 +14,20 @@ export class VietnameseValidationPipe implements PipeTransform {
       return value;
     }
 
-    const object = plainToInstance(metadata.metatype, value);
-    const errors: ValidationError[] = await validate(object, {
-      whitelist: true,
-      forbidNonWhitelisted: false,
-    });
+    let object: any;
+    let errors: ValidationError[] = [];
+    try {
+      object = plainToInstance(metadata.metatype, value);
+      if (!object || typeof object !== 'object') {
+        return value;
+      }
+      errors = await validate(object, {
+        whitelist: false,
+        forbidNonWhitelisted: false,
+      });
+    } catch {
+      return value;
+    }
 
     if (errors && errors.length > 0) {
       const messages: string[] = [];

@@ -36,11 +36,18 @@ export const ScanQrModal: React.FC<ScanQrModalProps> = ({
       onScanned(data);
     } else {
       let targetId = data;
-      if (data.includes("/c/")) {
-        targetId = data.split("/c/")[1];
+      if (data.includes("/p/")) {
+        targetId = data.split("/p/")[1].split("?")[0].split("#")[0];
+      } else if (data.includes("/profile/")) {
+        targetId = data.split("/profile/")[1].split("?")[0].split("#")[0];
+      } else if (data.includes("/c/")) {
+        targetId = data.split("/c/")[1].split("?")[0].split("#")[0];
       } else if (data.includes("userId=")) {
         targetId = data.split("userId=")[1].split("&")[0];
       }
+      try {
+        targetId = decodeURIComponent(targetId).trim();
+      } catch {}
 
       Alert.alert(
         "Đã nhận diện mã QR đối tác",

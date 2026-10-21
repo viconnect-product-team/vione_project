@@ -5390,7 +5390,7 @@
   "bc.mobile.cardScan.preparing": "Preparing image…",
   "bc.mobile.cardScan.reading": "Reading your card…",
   "bc.mobile.cardScan.review.title": "Review card",
-  "bc.mobile.cardScan.review.subtitle": "AI suggests — you confirm before saving",
+  "bc.mobile.cardScan.review.subtitle": "Confirm and edit information before saving to contacts",
   "bc.mobile.cardScan.confidence.overall": "AI recognized {percent}%",
   "bc.mobile.cardScan.confidence.overallHint": "Estimated confidence — please double-check before saving.",
   "bc.mobile.cardScan.confidence.clear": "Clear",

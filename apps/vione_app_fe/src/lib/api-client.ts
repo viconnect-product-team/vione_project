@@ -97,6 +97,10 @@ function mapEndpoint(endpoint: string): string {
     mapped = mapped.replace("/connect-app/card-scan", "/card-scans");
   } else if (mapped.startsWith("/connect-app/public/identity/")) {
     mapped = mapped.replace("/connect-app/public/identity/", "/public/identity/");
+  } else if (mapped.startsWith("/connect-app/public/profile/")) {
+    mapped = mapped.replace("/connect-app/public/profile/", "/public/identity/");
+  } else if (mapped.startsWith("/public/profile/")) {
+    mapped = mapped.replace("/public/profile/", "/public/identity/");
   } else if (mapped.startsWith("/connect-app/notifications")) {
     mapped = mapped.replace("/connect-app/notifications", "/me/notifications");
   } else if (

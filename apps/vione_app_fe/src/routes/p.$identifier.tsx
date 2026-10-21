@@ -55,17 +55,53 @@ export type PublicProfileData = {
   shareUrl?: string;
 };
 
+async function fetchPublicProfileByIdentifier(rawId: string): Promise<{ state: "public" | "unavailable"; card?: PublicProfileData }> {
+  if (!rawId || typeof rawId !== "string") return { state: "unavailable" };
+  let cleanId = rawId.trim();
+  if (cleanId.includes("/p/")) {
+    cleanId = cleanId.split("/p/").pop()?.split("?")[0]?.split("#")[0] || cleanId;
+  }
+  if (cleanId.includes("/profile/")) {
+    cleanId = cleanId.split("/profile/").pop()?.split("?")[0]?.split("#")[0] || cleanId;
+  }
+  if (cleanId.includes("/identity/")) {
+    cleanId = cleanId.split("/identity/").pop()?.split("?")[0]?.split("#")[0] || cleanId;
+  }
+  if (cleanId.includes("/c/")) {
+    cleanId = cleanId.split("/c/").pop()?.split("?")[0]?.split("#")[0] || cleanId;
+  }
+  try {
+    cleanId = decodeURIComponent(cleanId).trim();
+  } catch {}
+
+  const endpointsToTry = [
+    `/public/identity/${encodeURIComponent(cleanId)}`,
+    `/public/profile/${encodeURIComponent(cleanId)}`,
+    `/public/p/${encodeURIComponent(cleanId)}`,
+    `/public/${encodeURIComponent(cleanId)}`,
+  ];
+
+  for (const endpoint of endpointsToTry) {
+    try {
+      const url = getNestApiUrl(endpoint);
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.state === "public" && data.card) {
+          return data;
+        }
+      }
+    } catch {}
+  }
+  return { state: "unavailable" };
+}
+
 export const Route = createFileRoute("/p/$identifier")({
   ssr: false,
   loader: async ({ params }: { params: any }): Promise<{ state: "public" | "unavailable"; card?: PublicProfileData }> => {
     try {
       const identifier = params?.identifier || "";
-      const res = await fetch(getNestApiUrl(`/public/profile/${encodeURIComponent(identifier)}`));
-      if (!res.ok) {
-        return { state: "unavailable" };
-      }
-      const data = await res.json();
-      return data;
+      return await fetchPublicProfileByIdentifier(identifier);
     } catch (e) {
       console.warn("[PublicProfile] Loader error:", e);
       return { state: "unavailable" };
@@ -108,8 +144,7 @@ function PublicExecutiveProfilePage() {
   // Client-side fallback retry if initial SSR/loader had a transient network delay
   useEffect(() => {
     if (loaderData.state !== "public" || !loaderData.card) {
-      fetch(getNestApiUrl(`/public/profile/${encodeURIComponent(identifier)}`))
-        .then((res) => (res.ok ? res.json() : { state: "unavailable" }))
+      fetchPublicProfileByIdentifier(identifier)
         .then((data) => {
           if (data && data.state === "public" && data.card) {
             setProfileData(data);

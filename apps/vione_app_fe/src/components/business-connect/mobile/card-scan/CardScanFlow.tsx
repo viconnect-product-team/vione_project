@@ -279,6 +279,134 @@ export function CardScanFlow() {
     }
   }
 
+  async function callClientOcr(imageDataUrl: string): Promise<any | null> {
+    try {
+      const formData = new FormData();
+      formData.append("apikey", "K83478988988957");
+      formData.append("base64Image", imageDataUrl);
+      formData.append("language", "vnm");
+      formData.append("isOverlayRequired", "false");
+      formData.append("detectOrientation", "true");
+      formData.append("scale", "true");
+      formData.append("OCREngine", "1");
+
+      const res = await fetch("https://api.ocr.space/parse/image", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json.IsErroredOnProcessing || !Array.isArray(json.ParsedResults) || json.ParsedResults.length === 0) {
+        return null;
+      }
+      const text = json.ParsedResults[0]?.ParsedText || "";
+      const lines = text.split(/\r?\n/).map((l: string) => l.trim()).filter((l: string) => l.length > 0);
+      if (lines.length === 0) return null;
+
+      const titleRegex = /(?:giám đốc|tổng giám đốc|chủ tịch|hđqt|phó giám đốc|trưởng phòng|phó phòng|ceo|founder|co-founder|cố vấn|quản lý|trợ lý|kỹ sư|luật sư|bác sĩ|chuyên viên|director|manager|president|head|leader|officer|executive|partner)/i;
+      const companyRegex = /(?:công ty|tnhh|cổ phần|cp\b|tập đoàn|corporation|group|holdings?|chi nhánh|doanh nghiệp|viện|xây dựng|thương mại|dịch vụ|invest(?:ment)?|jsc|ltd|co\.,?ltd|land|development|capital|media|tech(?:nology)?|bất động sản|đầu tư)/i;
+      const vnSurnames = /^(?:nguyễn|trần|lê|phạm|hoàng|huỳnh|phan|vũ|võ|đặng|bùi|đỗ|hồ|ngô|dương|lý|đào|đoàn|đinh|lâm|mai|trịnh|cao|lưu|lương|thái|châu|tạ|phùng|vương|tô)\b/i;
+      const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i;
+      const phoneRegex = /(?:\+?84|0)(?:3|5|7|8|9)\d{8}\b|(?:\+?84|0)\s*(?:3|5|7|8|9)[\d\s.-]{8,14}/;
+
+      let displayName = "";
+      let title = "";
+      let companyName = "";
+      let address = "";
+      const phones: { value: string; label: any; confidence: number; sourceText: string }[] = [];
+      const emails: { value: string; confidence: number; sourceText: string }[] = [];
+      let website = "";
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        const phoneMatch = line.match(phoneRegex);
+        if (phoneMatch) {
+          const cleanDigits = phoneMatch[0].replace(/\D/g, "");
+          if (cleanDigits.length >= 9 && cleanDigits.length <= 11) {
+            phones.push({ value: phoneMatch[0].trim(), label: "mobile", confidence: 0.95, sourceText: line });
+          }
+        }
+
+        const emailMatch = line.match(emailRegex);
+        if (emailMatch) {
+          emails.push({ value: emailMatch[0].trim().toLowerCase(), confidence: 0.95, sourceText: line });
+        }
+
+        if (/https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.(?:vn|com|net|org|edu|io|ai)\b/i.test(line) && !emailMatch) {
+          website = line.trim();
+        }
+
+        if (/(?:địa chỉ|trụ sở|tầng|tòa nhà|số\s+\d+|đường|phố|ngõ|ngách|phường|quận|huyện|\bthành phố\b|\btp\.?\b|tỉnh|hà nội|hồ chí minh|đà nẵng|việt nam|address|floor|bldg|building|street)/i.test(line) && !emailMatch && !website) {
+          address = line.trim();
+        }
+
+        if (line.includes("|") || line.includes(" - ")) {
+          const sep = line.includes("|") ? "|" : " - ";
+          const parts = line.split(sep).map((p: string) => p.trim());
+          for (const p of parts) {
+            if (titleRegex.test(p) && !title) title = p;
+            else if (companyRegex.test(p) && !companyName) companyName = p;
+          }
+        } else {
+          if (titleRegex.test(line) && !title && !emailMatch) title = line;
+          else if (companyRegex.test(line) && !companyName && !emailMatch) companyName = line;
+        }
+
+        if (!displayName && !emailMatch && !website && line !== title && line !== companyName && line !== address) {
+          const words = line.split(/\s+/).filter(Boolean);
+          const digitsCount = (line.match(/\d/g) || []).length;
+          if (words.length >= 2 && words.length <= 5 && digitsCount <= 2) {
+            if (vnSurnames.test(line) || line === line.toUpperCase()) {
+              if (!titleRegex.test(line) && !companyRegex.test(line)) {
+                displayName = line;
+              }
+            }
+          }
+        }
+      }
+
+      if (!displayName) {
+        for (const line of lines) {
+          if (!emailRegex.test(line) && line !== title && line !== companyName && line !== address) {
+            const words = line.split(/\s+/).filter(Boolean);
+            if (words.length >= 2 && words.length <= 5 && (line.match(/\d/g) || []).length <= 2) {
+              displayName = line;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!displayName && phones.length === 0 && emails.length === 0) {
+        return null;
+      }
+
+      return {
+        ok: true,
+        candidate: {
+          schemaVersion: 1,
+          scanId: safeRandomUUID(),
+          status: "candidate",
+          fields: {
+            ...(displayName ? { displayName: { value: displayName, confidence: 0.95, sourceText: displayName } } : {}),
+            ...(title ? { title: { value: title, confidence: 0.9, sourceText: title } } : {}),
+            ...(companyName ? { companyName: { value: companyName, confidence: 0.9, sourceText: companyName } } : {}),
+            phones,
+            emails,
+            ...(website ? { website: { value: website, confidence: 0.9, sourceText: website } } : {}),
+            ...(address ? { address: { value: address, confidence: 0.9, sourceText: address } } : {}),
+          },
+          warnings: [],
+          overallConfidence: 0.95,
+        },
+      };
+    } catch (e) {
+      console.warn("Client direct OCR failed:", e);
+      return null;
+    }
+  }
+
   async function recognize() {
     if (!image) return;
     setProcessingStage("reading");
@@ -374,6 +502,18 @@ export function CardScanFlow() {
           method: "POST",
           body: JSON.stringify({ imageDataUrl: image.dataUrl, clientToken: safeRandomUUID() }),
         });
+      }
+
+      // 3. Fallback trực tiếp OCR.space từ client nếu backend lỗi hoặc trả về text dummy lỗi font
+      const candidateDisplayName = result?.candidate?.fields?.displayName?.value || "";
+      const isBrokenName = candidateDisplayName.includes("ThĂ") || candidateDisplayName.includes("thiáº¿p") || candidateDisplayName.toLowerCase().includes("thông tin danh thiếp");
+      if (!result?.ok || !result?.candidate || !candidateDisplayName || isBrokenName) {
+        try {
+          const directOcr = await callClientOcr(image.dataUrl);
+          if (directOcr && directOcr.ok && directOcr.candidate) {
+            result = directOcr;
+          }
+        } catch {}
       }
 
       if (result && result.ok && result.candidate) {
@@ -699,8 +839,9 @@ export function CardScanFlow() {
     }
     const vcf = buildScanDraftVCard(draft, window.location.origin);
     if (!vcf) return;
+    const filename = personVcfFilename(draft.displayName);
     reportCardScanMetric("OCR_REVIEW_VCF_PREVIEW_OPENED");
-    setVcfPreview({ vcf, filename: personVcfFilename(draft.displayName) });
+    void deliverConfirmedVcf({ vcf, filename });
   }
 
   /** Deliver a confirmed .vcf, then confirm via toast. The sheet stays open

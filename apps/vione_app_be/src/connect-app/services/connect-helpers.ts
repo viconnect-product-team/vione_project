@@ -504,12 +504,12 @@ async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
     const preparedBase64 = imageDataUrl;
 
     const apiKeys = [
+      'K83478988988957',
+      'K87899142388957',
+      'K82729916888957',
       process.env['OCR_SPACE_API_KEY'],
       'K88533814688957',
       'helloworld',
-      'K87899142388957',
-      'K83478988988957',
-      'K82729916888957',
     ].filter(Boolean) as string[];
 
     // Ưu tiên Engine 1 (hỗ trợ tiếng Việt với language: 'vnm') trước Engine 2
@@ -525,7 +525,7 @@ async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
           if (engine === '1') {
             formData.append('language', 'vnm');
           }
-          formData.append('isOverlayRequired', 'true');
+          formData.append('isOverlayRequired', 'false');
           formData.append('detectOrientation', 'true');
           formData.append('scale', 'true');
           formData.append('OCREngine', engine);

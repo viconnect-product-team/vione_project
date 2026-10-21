@@ -103,7 +103,7 @@ export class CommunityController {
   @UseGuards(JwtAuthGuard)
   async createCommunity(
     @Request() req,
-    @Body() body: CreateCommunityDto,
+    @Body() body: any,
   ) {
     return this.connectAppService.createCommunity(req.user.id, body);
   }

@@ -217,15 +217,20 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
 
             const isDummy = (str: string): boolean => {
               if (!str) return true;
-              const lower = str.trim().toLowerCase();
+              const raw = str.trim();
+              const lower = raw.toLowerCase();
               const digits = lower.replace(/\D/g, "");
               return (
-                lower === "đối tác mới" ||
-                lower === "doi tac moi" ||
-                lower === "thông tin danh thiếp" ||
-                lower === "thong tin danh thiep" ||
-                lower === "đối tác liên hệ" ||
-                lower === "doi tac lien he" ||
+                lower.includes("đối tác mới") ||
+                lower.includes("doi tac moi") ||
+                lower.includes("thông tin danh thiếp") ||
+                lower.includes("thong tin danh thiep") ||
+                raw.includes("ThĂ") ||
+                raw.includes("thiáº¿p") ||
+                lower.includes("đối tác liên hệ") ||
+                lower.includes("doi tac lien he") ||
+                raw.includes("Äá»") ||
+                raw.includes("liĂªn há»") ||
                 digits === "0900000000" ||
                 /^090{7,}$/.test(digits)
               );
@@ -507,9 +512,8 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
               ) : null}
 
               <View style={[styles.successBadgeRow, { backgroundColor: colors.goldSoft, borderColor: colors.surfaceBorderGold }]}>
-                <Sparkles size={16} color={colors.gold} style={{ marginRight: 6 }} />
                 <Text style={[styles.successBadgeText, { color: colors.textGold }]}>
-                  Đã nhận diện tối thiểu: Tên, Chức danh & Số điện thoại
+                  Xác nhận và chỉnh sửa thông tin trước khi lưu danh bạ
                 </Text>
               </View>
 
@@ -544,7 +548,9 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 6,
-                        backgroundColor: "#0068FF",
+                        backgroundColor: isDark ? "rgba(216, 178, 130, 0.15)" : "#FEF3C7",
+                        borderWidth: 1,
+                        borderColor: colors.gold,
                         paddingVertical: 10,
                         paddingHorizontal: 10,
                         borderRadius: 10,
@@ -557,8 +563,8 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                       }}
                       activeOpacity={0.8}
                     >
-                      <MessageCircle size={15} color="#FFFFFF" />
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>
+                      <MessageCircle size={15} color={colors.gold} />
+                      <Text style={{ color: colors.gold, fontSize: 12, fontWeight: "700" }}>
                         Kết bạn Zalo
                       </Text>
                     </TouchableOpacity>

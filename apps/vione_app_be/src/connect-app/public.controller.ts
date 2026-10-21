@@ -16,12 +16,7 @@ export class PublicController {
     return this.connectAppService.resolveAssociationByHost(host);
   }
 
-  @Get(['identity/:token', 'p/:token'])
-  async getPublicIdentityByToken(@Param('token') token: string) {
-    return this.connectAppService.getPublicProfile(token);
-  }
-
-  @Get(['profile/:identifier', 'p/:identifier', 'identity/:identifier'])
+  @Get(['identity/:identifier', 'profile/:identifier', 'p/:identifier', ':identifier'])
   async getPublicProfile(@Param('identifier') identifier: string) {
     return this.connectAppService.getPublicProfile(identifier);
   }

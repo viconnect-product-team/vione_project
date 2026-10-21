@@ -53,13 +53,18 @@ export type ScanReviewDraft = {
 
 function isDummyField(val?: string | null): boolean {
   if (!val) return true;
-  const lower = val.trim().toLowerCase();
+  const raw = val.trim();
+  const lower = raw.toLowerCase();
   const digits = lower.replace(/\D/g, "");
   return (
-    lower === "thông tin danh thiếp" ||
-    lower === "thong tin danh thiep" ||
-    lower === "đối tác liên hệ" ||
-    lower === "doi tac lien he" ||
+    lower.includes("thông tin danh thiếp") ||
+    lower.includes("thong tin danh thiep") ||
+    raw.includes("ThĂ") ||
+    raw.includes("thiáº¿p") ||
+    lower.includes("đối tác liên hệ") ||
+    lower.includes("doi tac lien he") ||
+    raw.includes("Äá»") ||
+    raw.includes("liĂªn há»") ||
     lower === "đối tác mới" ||
     lower === "doi tac moi" ||
     digits === "0900000000" ||

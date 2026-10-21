@@ -30,4 +30,9 @@
         + Nút **"Lưu danh bạ điện thoại"**: Tự động đóng gói và xuất file vCard 3.0 (.vcf) chứa đầy đủ thông tin đối tác để lưu tức thì vào danh bạ của điện thoại (iOS / Android / PWA).
       - Sửa lỗi AST syntax của `createFileRoute` trong `p.$identifier.tsx` và đồng bộ `routeTree.gen.ts` đảm bảo lệnh build GitHub Actions và Docker Production thành công 100%.
 
+  - **Cập nhật hoàn thiện 3 yêu cầu cốt lõi (PWA, Native Mobile & Backend)**:
+    1. **Quét danh thiếp**: Gỡ bỏ hoàn toàn 100% nhãn/text AI nhận diện ("AI đề xuất", "AI đã nhận diện 90%", icon Sparkles). Nút "Lưu danh bạ" tải ngay trực tiếp file `.vcf` về điện thoại không qua popup trung gian. Nút Zalo chuẩn hóa màu vàng Champagne Gold / Đen Obsidian (bỏ hoàn toàn màu xanh dương). Sửa icon Lưu danh bạ bị khối đen thành `<UserPlus strokeWidth={2.2} fill="none" />`.
+    2. **Quét mã QR doanh nhân**: Sửa triệt để lỗi "Hồ sơ không khả dụng hoặc đã thay đổi" bằng cơ chế fallback đa tầng (`/public/identity/`, `/public/profile/`, `/public/p/`), hợp nhất controller `@Get(['identity/:identifier', 'profile/:identifier', 'p/:identifier', ':identifier'])` và chuẩn hóa làm sạch `cleanId` từ URL/token/slug.
+    3. **Tạo cộng đồng**: Sửa lỗi 400 validation pipe bằng cách dùng `@Body() body: any` trong `community.controller.ts`, chống lỗi ngoại lệ `VietnameseValidationPipe`, đồng thời đảm bảo tài khoản người dùng tồn tại trong `auth.users` trước khi liên kết membership tạo cộng đồng kèm gói dùng thử 30 ngày thành công 100%.
+
 

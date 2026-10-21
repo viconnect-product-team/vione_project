@@ -7,19 +7,17 @@
 // evidence). One primary phone + one primary email persist.
 
 import { forwardRef, useId, useMemo } from "react";
-import { Save, X, AlertTriangle, Share2, Sparkles, Download, MessageCircle, UserPlus } from "lucide-react";
+import { X, AlertTriangle, Download, MessageCircle, UserPlus } from "lucide-react";
 import { useT, type TKey } from "@/lib/i18n";
 import type {
   BusinessCardCandidate,
   PhoneLabel,
 } from "@/lib/business-connect/mobile/card-scan.types";
-import { confidenceBand } from "@/lib/business-connect/mobile/card-scan.types";
 import type {
   ScanReviewDraft,
   ScanReviewErrors,
 } from "@/lib/business-connect/mobile/card-scan.review";
-import { buildScanDraftVCard } from "@/lib/business-connect/mobile/card-scan.vcard";
-import { VcfPreviewRows } from "@/components/business-connect/mobile/VcfPreviewRows";
+
 
 const PHONE_LABEL_KEY: Record<PhoneLabel, TKey> = {
   mobile: "bc.mobile.cardScan.phone.mobile",
@@ -28,23 +26,6 @@ const PHONE_LABEL_KEY: Record<PhoneLabel, TKey> = {
   fax: "bc.mobile.cardScan.phone.fax",
 };
 
-/** Textual confidence chip — shown only when a value needs human attention. */
-function ConfidenceChip({ confidence }: { confidence: number | undefined }) {
-  const t = useT();
-  if (confidence === undefined) return null;
-  const band = confidenceBand(confidence);
-  if (band === "clear") return null;
-  return (
-    <span className="rounded-full bg-[var(--bc-mobile-surface-2)] px-2 py-0.5 text-[11px] text-[var(--bc-mobile-muted)]">
-      {t(
-        band === "review"
-          ? "bc.mobile.cardScan.confidence.review"
-          : "bc.mobile.cardScan.confidence.unclear",
-      )}
-    </span>
-  );
-}
-
 const INPUT_CLASS =
   "w-full rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] px-3.5 py-2.5 text-[15px] text-[var(--bc-mobile-text)] outline-none transition-colors placeholder:text-[var(--bc-mobile-muted)] focus:border-[var(--bc-mobile-navy)] motion-reduce:transition-none aria-[invalid=true]:border-red-500";
 
@@ -52,7 +33,6 @@ function Field({
   id,
   label,
   error,
-  confidence,
   children,
 }: {
   id: string;
@@ -63,12 +43,9 @@ function Field({
 }) {
   return (
     <div className="grid gap-1.5">
-      <div className="flex items-center justify-between gap-2">
-        <label htmlFor={id} className="text-[12px] font-medium text-[var(--bc-mobile-muted)]">
-          {label}
-        </label>
-        <ConfidenceChip confidence={confidence} />
-      </div>
+      <label htmlFor={id} className="text-[12px] font-medium text-[var(--bc-mobile-muted)]">
+        {label}
+      </label>
       {children}
       {error ? (
         <p id={`${id}-error`} className="text-[12px] text-red-600 dark:text-red-400">
@@ -118,9 +95,6 @@ export const BusinessCardReviewForm = forwardRef<
   const uid = useId();
   const id = (name: string) => `${uid}-${name}`;
   const { fields } = candidate;
-  const overallPercent = Math.round(Math.min(1, Math.max(0, candidate.overallConfidence)) * 100);
-  const saveablePhones = fields.phones.filter((p) => p.label !== "fax");
-
   const errorMessages: string[] = [];
   if (errors.name_required) errorMessages.push(t("bc.mobile.cardScan.review.error.name"));
   if (errors.invalid_phone) errorMessages.push(t("bc.mobile.cardScan.review.error.phone"));
@@ -128,18 +102,6 @@ export const BusinessCardReviewForm = forwardRef<
   if (errors.invalid_website) errorMessages.push(t("bc.mobile.cardScan.review.error.website"));
   if (errors.contact_method_required)
     errorMessages.push(t("bc.mobile.cardScan.review.error.contact"));
-
-  // Inline live vCard preview: built from the CURRENT draft on every edit,
-  // so the human sees exactly what will be exported BEFORE pressing the
-  // export button. Null while the draft has no name (button is disabled).
-  const vcfPreview = useMemo(
-    () =>
-      buildScanDraftVCard(
-        draft,
-        typeof window === "undefined" ? undefined : window.location.origin,
-      ),
-    [draft],
-  );
 
   return (
     <div className="flex flex-1 flex-col px-6 pb-8">
@@ -154,22 +116,7 @@ export const BusinessCardReviewForm = forwardRef<
         {t("bc.mobile.cardScan.review.subtitle")}
       </p>
 
-      {/* Overall OCR confidence — an estimate, never a save threshold. */}
-      <div className="mt-3 flex items-start gap-2 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-3 py-2.5">
-        <Sparkles
-          className="mt-0.5 h-4 w-4 shrink-0 text-[var(--bc-mobile-muted)]"
-          strokeWidth={1.8}
-          aria-hidden
-        />
-        <div className="min-w-0">
-          <p className="text-[13px] font-medium text-[var(--bc-mobile-text)]">
-            {t("bc.mobile.cardScan.confidence.overall", { percent: overallPercent })}
-          </p>
-          <p className="mt-0.5 text-[12px] text-[var(--bc-mobile-muted)]">
-            {t("bc.mobile.cardScan.confidence.overallHint")}
-          </p>
-        </div>
-      </div>
+
 
       {duplicateHint ? (
         <p className="mt-3 flex items-start gap-2 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-3 py-2.5 text-[13px] text-[var(--bc-mobile-muted)]">
@@ -304,7 +251,6 @@ export const BusinessCardReviewForm = forwardRef<
                     {t(PHONE_LABEL_KEY[p.label])}
                   </span>
                 ) : null}
-                <ConfidenceChip confidence={saveablePhones[i]?.confidence} />
               </div>
             ))}
             <p className="text-[12px] text-[var(--bc-mobile-muted)]">
@@ -338,14 +284,14 @@ export const BusinessCardReviewForm = forwardRef<
                     href={`https://zalo.me/${cleanP}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0068FF] hover:bg-[#0055d4] px-3 py-2 text-xs font-bold text-white shadow-sm transition active:scale-[0.98] cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-[#DFB76C] bg-gradient-to-r from-[#DFB76C]/15 to-[#B38E5D]/15 hover:bg-[#DFB76C]/25 px-3 py-2 text-xs font-bold text-[#B38E5D] dark:text-[#FFE8C2] shadow-sm transition active:scale-[0.98] cursor-pointer"
                   >
-                    <MessageCircle className="h-4 w-4 shrink-0" />
+                    <MessageCircle className="h-4 w-4 shrink-0 text-[#B38E5D] dark:text-[#FFE8C2]" fill="none" />
                     <span>Kết bạn Zalo</span>
                   </a>
                 ) : (
-                  <div className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-500/10 border border-slate-500/20 px-3 py-2 text-xs font-semibold text-[var(--bc-mobile-muted)] opacity-60">
-                    <MessageCircle className="h-4 w-4 shrink-0" />
+                  <div className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] px-3 py-2 text-xs font-semibold text-[var(--bc-mobile-muted)] opacity-60">
+                    <MessageCircle className="h-4 w-4 shrink-0" fill="none" />
                     <span>Chưa có SĐT</span>
                   </div>
                 )}
@@ -357,7 +303,7 @@ export const BusinessCardReviewForm = forwardRef<
                     disabled={saving || exportVcfDisabled === true}
                     className="flex items-center justify-center gap-1.5 rounded-xl border border-[#DFB76C] bg-gradient-to-r from-[#DFB76C]/15 to-[#B38E5D]/15 hover:bg-[#DFB76C]/25 px-3 py-2 text-xs font-bold text-[#B38E5D] dark:text-[#FFE8C2] shadow-sm transition active:scale-[0.98] disabled:opacity-40 cursor-pointer"
                   >
-                    <Download className="h-4 w-4 shrink-0" />
+                    <Download className="h-4 w-4 shrink-0 text-[#B38E5D] dark:text-[#FFE8C2]" strokeWidth={2} fill="none" />
                     <span>Lưu danh bạ</span>
                   </button>
                 ) : null}
@@ -395,7 +341,6 @@ export const BusinessCardReviewForm = forwardRef<
                   }}
                   className={INPUT_CLASS}
                 />
-                <ConfidenceChip confidence={fields.emails[i]?.confidence} />
               </div>
             ))}
           </fieldset>
@@ -405,7 +350,6 @@ export const BusinessCardReviewForm = forwardRef<
           id={id("website")}
           label={t("bc.mobile.cardScan.review.website")}
           error={errors.invalid_website ? t("bc.mobile.cardScan.review.error.website") : null}
-          confidence={fields.website?.confidence}
         >
           <input
             id={id("website")}
@@ -424,7 +368,6 @@ export const BusinessCardReviewForm = forwardRef<
         <Field
           id={id("address")}
           label={t("bc.mobile.cardScan.review.address")}
-          confidence={fields.address?.confidence}
         >
           <input
             id={id("address")}
@@ -439,18 +382,6 @@ export const BusinessCardReviewForm = forwardRef<
       </div>
 
       <div className="mt-auto grid gap-3 pt-8">
-        {onExportVcf && vcfPreview ? (
-          <section
-            data-testid="vcf-inline-preview"
-            aria-label={t("bc.mobile.vcfPreview.title")}
-            className="rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-4 pb-3 pt-3.5"
-          >
-            <h3 className="text-[12px] font-semibold uppercase tracking-wide text-[var(--bc-mobile-muted)]">
-              {t("bc.mobile.vcfPreview.title")}
-            </h3>
-            <VcfPreviewRows vcf={vcfPreview} />
-          </section>
-        ) : null}
         {onExportVcf ? (
           <button
             type="button"
@@ -458,7 +389,7 @@ export const BusinessCardReviewForm = forwardRef<
             disabled={saving || exportVcfDisabled === true}
             className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#DFB76C] bg-gradient-to-r from-[#DFB76C]/10 to-amber-500/10 px-6 text-[15px] font-bold text-[#B38E5D] dark:text-[#FFE8C2] transition-colors hover:bg-[#DFB76C]/20 disabled:opacity-50 motion-reduce:transition-none cursor-pointer"
           >
-            <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
+            <Download className="h-4.5 w-4.5 text-[#B38E5D] dark:text-[#FFE8C2]" strokeWidth={2} fill="none" aria-hidden />
             <span>Lưu danh bạ điện thoại (.vcf)</span>
           </button>
         ) : null}
@@ -468,7 +399,7 @@ export const BusinessCardReviewForm = forwardRef<
           disabled={saving}
           className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bc-cta-gold px-6 text-[15px] font-bold shadow-md shadow-[#D8B282]/25 hover:opacity-95 active:scale-[0.99] disabled:opacity-50 motion-reduce:transition-none cursor-pointer"
         >
-          <Save className="h-4.5 w-4.5 text-slate-950" strokeWidth={2} aria-hidden />
+          <UserPlus className="h-5 w-5 text-slate-950" strokeWidth={2.2} fill="none" aria-hidden />
           <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.save")}</span>
         </button>
         <button

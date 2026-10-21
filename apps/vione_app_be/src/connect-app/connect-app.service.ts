@@ -928,6 +928,18 @@ export class ConnectAppService implements OnModuleInit {
     if (cleanId.includes('/p/')) {
       cleanId = cleanId.split('/p/').pop()?.split('?')[0]?.split('#')[0] || cleanId;
     }
+    if (cleanId.includes('/profile/')) {
+      cleanId = cleanId.split('/profile/').pop()?.split('?')[0]?.split('#')[0] || cleanId;
+    }
+    if (cleanId.includes('/identity/')) {
+      cleanId = cleanId.split('/identity/').pop()?.split('?')[0]?.split('#')[0] || cleanId;
+    }
+    if (cleanId.includes('/c/')) {
+      cleanId = cleanId.split('/c/').pop()?.split('?')[0]?.split('#')[0] || cleanId;
+    }
+    try {
+      cleanId = decodeURIComponent(cleanId).trim();
+    } catch {}
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
 
     let identity: any = null;
@@ -6175,6 +6187,15 @@ export class ConnectAppService implements OnModuleInit {
       INSERT INTO public.associations (id, name, slug, tagline, about, logo_url, banner_url, created_at, updated_at)
       VALUES (${communityId}::uuid, ${name}, ${slug}, ${tagline}, ${about}, ${logoUrl}, ${bannerUrl}, ${now}, ${now})
     `;
+
+    // Đảm bảo tài khoản người dùng tồn tại trong auth.users trước khi liên kết membership (tránh lỗi khóa ngoại)
+    try {
+      await this.prisma.$executeRaw`
+        INSERT INTO auth.users (id, email, role, created_at, updated_at)
+        VALUES (${userId}::uuid, ${userId + '@vione.network'}, 'authenticated', ${now}, ${now})
+        ON CONFLICT (id) DO NOTHING
+      `;
+    } catch {}
 
     // Gán người tạo làm quản trị viên (admin) của cộng đồng
     try {

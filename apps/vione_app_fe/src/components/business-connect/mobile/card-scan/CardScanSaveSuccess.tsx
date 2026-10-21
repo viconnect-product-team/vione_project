@@ -5,7 +5,7 @@
 
 import { forwardRef } from "react";
 import { Link } from "@tanstack/react-router";
-import { CheckCircle2, ScanLine, Sparkles } from "lucide-react";
+import { CheckCircle2, ScanLine } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import type { ScanSaveResultKind } from "@/lib/business-connect/mobile/card-scan.review";
 
@@ -44,8 +44,6 @@ export const CardScanSaveSuccess = forwardRef<
   headingRef,
 ) {
   const t = useT();
-  const ocrPercent =
-    ocrConfidence === undefined ? null : Math.round(Math.min(1, Math.max(0, ocrConfidence)) * 100);
   const titleCompany = [title, companyName].filter(Boolean).join(" · ");
   const cleanPhone = phone ? phone.replace(/\D/g, "") : null;
   return (
@@ -69,12 +67,7 @@ export const CardScanSaveSuccess = forwardRef<
             <p className="mt-0.5 text-[13px] text-[var(--bc-mobile-muted)]">{titleCompany}</p>
           ) : null}
         </div>
-        {ocrPercent !== null ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--bc-mobile-surface-2)] px-3 py-1 text-[12px] text-[var(--bc-mobile-muted)]">
-            <Sparkles className="h-3.5 w-3.5" strokeWidth={1.8} aria-hidden />
-            {t("bc.mobile.cardScan.confidence.overall", { percent: ocrPercent })}
-          </span>
-        ) : null}
+
       </div>
 
       {sessionSaved.length > 1 ? (
