@@ -82,11 +82,9 @@ export function TapToConnectSheet({ onClose }: { onClose: () => void }) {
     }
   }, [mode, shareLink, loadingShareLink]);
 
-  const myQrValue = shareLink?.token
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/c/${shareLink.token}`
-    : identity?.ownerUserId
-      ? `${typeof window !== "undefined" ? window.location.origin : ""}/connect-app/network/u:${identity.ownerUserId}`
-      : "";
+  const publicId = shareLink?.token || identity?.code || identity?.ownerUserId || "";
+  const baseOrigin = typeof window !== "undefined" && window.location.origin ? window.location.origin : "https://vione.viconnect.vn";
+  const myQrValue = publicId ? `${baseOrigin}/p/${encodeURIComponent(publicId)}` : "";
 
   // State for resolved profile before / after connecting
   const [detectedToken, setDetectedToken] = useState<string | null>(null);
@@ -488,8 +486,7 @@ export function TapToConnectSheet({ onClose }: { onClose: () => void }) {
                 </div>
 
                 <p className="mt-3.5 max-w-[280px] text-[12.5px] leading-relaxed text-[var(--bc-mobile-muted)]">
-                  Đưa mã này cho người đối diện quét camera để kết nối và trao đổi danh thiếp ngay
-                  lập tức.
+                  Đưa mã này cho đối tác quét trực tiếp bằng ứng dụng <strong>Zalo</strong> hoặc Camera điện thoại để xem danh thiếp số và lưu danh bạ ngay lập tức.
                 </p>
 
                 {myQrValue && (
@@ -904,7 +901,7 @@ function ZaloProfilePreview({
 // ─── Profile contact rows ────────────────────────────────────────────────────
 
 function ProfileContacts({ profile }: { profile: NfcTapProfile }) {
-  const rows: { icon: React.ReactNode; label: string; href?: string }[] = [];
+  const rows: { icon: React.ReactNode; label: string; href?: string; zaloHref?: string }[] = [];
 
   if (profile.jobTitle || profile.companyName) {
     rows.push({
@@ -913,10 +910,12 @@ function ProfileContacts({ profile }: { profile: NfcTapProfile }) {
     });
   }
   if (profile.primaryPhone) {
+    const cleanPhone = profile.primaryPhone.replace(/\D/g, "");
     rows.push({
       icon: <Phone className="h-3.5 w-3.5" strokeWidth={1.8} />,
       label: profile.primaryPhone,
       href: `tel:${profile.primaryPhone}`,
+      zaloHref: cleanPhone ? `https://zalo.me/${cleanPhone}` : undefined,
     });
   }
   if (profile.primaryEmail) {
@@ -945,19 +944,31 @@ function ProfileContacts({ profile }: { profile: NfcTapProfile }) {
   return (
     <div className="divide-y divide-[var(--bc-mobile-border)] border-t border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)]/30">
       {rows.map((row, i) => (
-        <div key={i} className="flex items-center gap-3 px-5 py-2.5">
-          <span className="shrink-0 text-[var(--bc-mobile-muted)]">{row.icon}</span>
-          {row.href ? (
+        <div key={i} className="flex items-center justify-between gap-3 px-5 py-2.5">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className="shrink-0 text-[var(--bc-mobile-muted)]">{row.icon}</span>
+            {row.href ? (
+              <a
+                href={row.href}
+                className="truncate text-[13px] font-medium text-[var(--bc-mobile-accent)] underline-offset-2 hover:underline"
+                target={row.href.startsWith("http") ? "_blank" : undefined}
+                rel={row.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              >
+                {row.label}
+              </a>
+            ) : (
+              <span className="truncate text-[13px] text-[var(--bc-mobile-text)]">{row.label}</span>
+            )}
+          </div>
+          {row.zaloHref && (
             <a
-              href={row.href}
-              className="truncate text-[13px] font-medium text-[var(--bc-mobile-accent)] underline-offset-2 hover:underline"
-              target={row.href.startsWith("http") ? "_blank" : undefined}
-              rel={row.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              href={row.zaloHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-2.5 py-1 rounded-lg bg-[#0068FF] hover:bg-[#0055d4] text-[11px] font-bold text-white shadow-xs transition"
             >
-              {row.label}
+              Nhắn Zalo
             </a>
-          ) : (
-            <span className="truncate text-[13px] text-[var(--bc-mobile-text)]">{row.label}</span>
           )}
         </div>
       ))}

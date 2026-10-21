@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { QrCanvas } from "@/components/member/QrCanvas";
 import { getPublicCard, type PublicCard } from "@/lib/card.functions";
+import { getImageUrl } from "@/lib/image";
 import { toast } from "sonner";
 
 const appIcon = "/landing_web_vione/vione-logo.png";
@@ -149,6 +150,7 @@ function PublicCardView() {
   const [lang, setLang] = useState<Lang>("vi");
   const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const t = (k: keyof typeof T) => T[k][lang];
 
   if (!member || (!member.found && !member.name)) {
@@ -162,7 +164,7 @@ function PublicCardView() {
           Mã định danh <span className="font-mono text-amber-300 font-bold">{code}</span> chưa được kích hoạt hoặc không tồn tại.
         </p>
         <p className="text-xs text-slate-500 max-w-sm">
-          Vui lòng quét lại mã QR chính thức từ CLB Doanh Nhân CEO 1983 hoặc liên hệ Ban Thư ký để được hỗ trợ.
+          Vui lòng quét lại mã QR chính thức từ ViOne Connect hoặc liên hệ Ban Thư ký để được hỗ trợ.
         </p>
         <Link
           to="/association"
@@ -180,7 +182,7 @@ function PublicCardView() {
   const primaryName = member.name?.trim() || t("noName");
   let secondaryCompany = member.company?.trim() || t("noCompany");
   if (secondaryCompany.toLowerCase() === "vione platform" || secondaryCompany === "ViOne Platform") {
-    secondaryCompany = "CLB Doanh Nhân CEO 1983";
+    secondaryCompany = "Hệ Sinh Thái ViOne Connect";
   }
 
   const primaryTitle = member.title?.trim() || (isCompany ? "Đại diện Doanh nghiệp" : "Lãnh đạo Doanh nghiệp Hội viên");
@@ -192,9 +194,9 @@ function PublicCardView() {
       .filter(Boolean)
       .slice(-2)
       .join("")
-      .toUpperCase() || "CEO";
+      .toUpperCase() || "VO";
 
-  const resolvedPhoto = member.photoUrl || null;
+  const resolvedPhoto = member.photoUrl && !imgError ? getImageUrl(member.photoUrl) : null;
   const formattedValidUntil = formatDate(member.validUntil);
   const formattedJoinedAt = formatDate(member.joinedAt);
 
@@ -363,17 +365,17 @@ function PublicCardView() {
                 <div className="flex items-center gap-2.5">
                   <img
                     src={appIcon}
-                    alt="CLB CEO 1983"
+                    alt="ViOne Connect"
                     className="h-11 w-11 rounded-xl shadow-md border border-amber-400/40 bg-white/10 p-0.5 object-contain"
                     width={44}
                     height={44}
                   />
                   <div className="leading-tight">
-                    <div className="text-[12px] font-black tracking-wider uppercase text-white drop-shadow-xs">
-                      CLB DOANH NHÂN CEO 1983
+                    <div className="text-[12px] font-black tracking-wider uppercase text-white drop-shadow-md">
+                      DOANH NHÂN VIONE CONNECT
                     </div>
                     <div className="text-[8.5px] font-bold tracking-widest uppercase text-amber-300 mt-0.5">
-                      NÂNG TẦM GIÁ TRỊ • TIÊN PHONG KẾT NỐI
+                      TIÊN PHONG KẾT NỐI • NÂNG TẦM GIÁ TRỊ
                     </div>
                   </div>
                 </div>
@@ -390,7 +392,7 @@ function PublicCardView() {
                   <Crown className="h-3 w-3 text-amber-400" />
                   {t("memberCard")}
                 </span>
-                <span className="text-[10px] font-bold text-amber-200/80">
+                <span className="text-[10.5px] font-bold text-amber-200">
                   {isCompany ? t("company") : t("individual")}
                 </span>
               </div>
@@ -401,6 +403,7 @@ function PublicCardView() {
                   <img
                     src={resolvedPhoto}
                     alt={primaryName}
+                    onError={() => setImgError(true)}
                     className="h-15 w-15 shrink-0 rounded-full border-2 border-amber-400 object-cover shadow-lg bg-slate-800"
                     width={60}
                     height={60}
@@ -411,13 +414,13 @@ function PublicCardView() {
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-[17px] font-black tracking-wide text-white drop-shadow-sm truncate">
+                  <h1 className="text-[17px] font-black tracking-wide text-white drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.9)] truncate">
                     {primaryName}
                   </h1>
-                  <p className="text-[12px] font-bold text-amber-300/95 truncate mt-0.5">
+                  <p className="text-[12.5px] font-extrabold text-[#FDE047] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate mt-0.5">
                     {primaryTitle}
                   </p>
-                  <p className="text-[11.5px] font-medium text-slate-300 truncate">
+                  <p className="text-[12px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] truncate">
                     {secondaryCompany}
                   </p>
                 </div>
@@ -442,10 +445,10 @@ function PublicCardView() {
 
               <div className="relative z-10 flex items-center justify-between">
                 <div className="text-[11px] font-black uppercase tracking-widest text-amber-300">
-                  CLB DOANH NHÂN CEO 1983
+                  DOANH NHÂN VIONE CONNECT
                 </div>
                 <span className="inline-flex items-center gap-1 text-[9px] font-bold rounded-full bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 text-amber-300">
-                  CEO 1983
+                  VIONE VIP
                 </span>
               </div>
 
@@ -583,9 +586,9 @@ function PublicCardView() {
         {/* Back to Home action button */}
         <Link
           to="/association"
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#003B95] to-[#002766] hover:from-[#002B70] hover:to-[#001D4D] py-3.5 text-[13px] font-bold text-white shadow-lg border border-blue-500/30 transition active:scale-98"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold py-3.5 text-[13px] shadow-lg border border-amber-300/40 transition hover:opacity-95 active:scale-98"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4 text-slate-950" />
           <span>{t("back")}</span>
         </Link>
       </div>

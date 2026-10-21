@@ -3243,7 +3243,39 @@ export class ConnectAppService implements OnModuleInit {
       return { ok: false, reason: 'invalid_token', profile: null, connectionId: null, state: 'unavailable' };
     }
 
-    const cleanToken = tokenRaw.trim();
+    let cleanToken = tokenRaw.trim();
+
+    // Chuẩn hóa token nếu client truyền cả URL đầy đủ (ví dụ quét QR ngoài hoặc NFC URL)
+    if (cleanToken.startsWith('http://') || cleanToken.startsWith('https://')) {
+      try {
+        const parsedUrl = new URL(cleanToken);
+        const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
+        // Hỗ trợ các định dạng URL: /p/:id, /c/:id, /card/:id, /b/:id, /m/:id
+        if (pathSegments.length >= 2 && ['p', 'c', 'card', 'b', 'm'].includes(pathSegments[0])) {
+          cleanToken = decodeURIComponent(pathSegments[1]);
+        } else if (pathSegments.length === 1 && pathSegments[0] !== '') {
+          cleanToken = decodeURIComponent(pathSegments[0]);
+        } else if (parsedUrl.hostname.includes('zalo.me')) {
+          const zaloMatch = cleanToken.match(/zalo\.me\/([a-zA-Z0-9_+.-]+)/i);
+          if (zaloMatch?.[1]) {
+            cleanToken = zaloMatch[1];
+          }
+        }
+      } catch {
+        const urlMatch = cleanToken.match(/(?:\/p\/|\/c\/|\/card\/|\/b\/)([a-zA-Z0-9_\-+]+)/i);
+        if (urlMatch?.[1]) {
+          cleanToken = urlMatch[1];
+        }
+      }
+    } else if (cleanToken.startsWith('VIONE-MEMBER:')) {
+      cleanToken = cleanToken.replace(/^VIONE-MEMBER:\s*/i, '').trim();
+    } else if (cleanToken.startsWith('VIONE:')) {
+      cleanToken = cleanToken.replace(/^VIONE:\s*/i, '').trim();
+    }
+
+    if (cleanToken.includes('?')) {
+      cleanToken = cleanToken.split('?')[0];
+    }
 
     // 1. Phân giải targetUserId và metadata từ token
     let targetUserId: string | null = null;
@@ -6120,7 +6152,16 @@ export class ConnectAppService implements OnModuleInit {
       .replace(/Đ/g, 'd')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    const slug = input.slug?.trim() || cleanSlug || `comm-${Date.now().toString(36)}`;
+    const baseSlug = input.slug?.trim() || cleanSlug || `comm-${Date.now().toString(36)}`;
+    let slug = baseSlug;
+    try {
+      const existing = await this.prisma.$queryRaw<any[]>`
+        SELECT id FROM public.associations WHERE slug = ${slug} LIMIT 1
+      `;
+      if (existing.length > 0) {
+        slug = `${baseSlug}-${Date.now().toString(36).slice(-4)}`;
+      }
+    } catch {}
     const tagline = input.tagline || input.description || null;
     const about = input.about || input.description || null;
     const logoUrl = input.logoUrl || null;

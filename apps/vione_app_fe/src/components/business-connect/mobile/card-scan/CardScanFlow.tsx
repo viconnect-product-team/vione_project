@@ -60,7 +60,6 @@ import { buildScanDraftVCard } from "@/lib/business-connect/mobile/card-scan.vca
 import { personVcfFilename, shareOrDownloadVcf } from "@/lib/business-connect/mobile/person-vcard";
 import { VcfPreviewSheet } from "@/components/business-connect/mobile/VcfPreviewSheet";
 import { BusinessCardCapture } from "./BusinessCardCapture";
-import { LiveCardAutoCapture } from "./LiveCardAutoCapture";
 import { BusinessCardImagePreview } from "./BusinessCardImagePreview";
 import { BusinessCardCropper } from "./BusinessCardCropper";
 import { BusinessCardOcrProgress, type CardScanProcessingStage } from "./BusinessCardOcrProgress";
@@ -149,25 +148,11 @@ export function CardScanFlow() {
   // ── Auto capture (live viewfinder) ───────────────────────────────────────
   /** Preference: fire the shutter automatically on a steady, readable card. */
   const [autoCapture, setAutoCapture] = useState(true);
-  const [liveOpen, setLiveOpen] = useState(false);
 
-  /** Live camera is possible in a secure context, localhost, or native mobile container with mediaDevices. */
-  function canUseLiveCamera(): boolean {
-    return (
-      typeof navigator !== "undefined" &&
-      typeof navigator.mediaDevices?.getUserMedia === "function"
-    );
-  }
-
-  /** Entry point for every "take photo" action: live auto mode when enabled
-   * and supported, otherwise the native camera input (unchanged behaviour). */
+  /** Entry point for every "take photo" action: resets errors and ensures capture stage. */
   function startCamera() {
-    if (autoCapture && canUseLiveCamera()) {
-      setCaptureError(null);
-      setLiveOpen(true);
-      return;
-    }
-    cameraInputRef.current?.click();
+    setCaptureError(null);
+    setStage("capture");
   }
 
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -188,16 +173,6 @@ export function CardScanFlow() {
       stage === "review" || stage === "saved" ? resultHeadingRef.current : headingRef.current;
     target?.focus();
   }, [stage]);
-
-  // Auto-start camera on initial mount for instant card capture experience
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (stage === "capture" && !liveOpen && !image) {
-        startCamera();
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  }, []);
 
   // The expiry alert takes focus when the session lapses mid-review.
   useEffect(() => {
@@ -803,24 +778,10 @@ export function CardScanFlow() {
         <BusinessCardCapture
           onCaptured={(file) => void onFileSelected(file)}
           onLibrary={() => libraryInputRef.current?.click()}
+          onManualEntry={() => startManualReview()}
           error={captureError}
           autoCapture={autoCapture}
           onAutoCaptureChange={setAutoCapture}
-        />
-      ) : null}
-
-      {liveOpen ? (
-        <LiveCardAutoCapture
-          onCaptured={(file) => {
-            setLiveOpen(false);
-            void onFileSelected(file);
-          }}
-          onCancel={() => setLiveOpen(false)}
-          onManualFallback={() => {
-            setLiveOpen(false);
-            setAutoCapture(false);
-            window.setTimeout(() => cameraInputRef.current?.click(), 0);
-          }}
         />
       ) : null}
 
@@ -828,7 +789,7 @@ export function CardScanFlow() {
         <BusinessCardImagePreview
           image={image}
           onRecognize={() => void recognize()}
-          onRetake={startCamera}
+          onRetake={retake}
           onChooseOther={() => libraryInputRef.current?.click()}
           onCrop={() => setCropOpen(true)}
         />
@@ -927,12 +888,7 @@ export function CardScanFlow() {
           ocrConfidence={candidate?.overallConfidence}
           sessionSaved={sessionSaved}
           onScanAnother={retake}
-          onScanNext={() => {
-            retake();
-            // Straight back to the camera — batch scanning skips the empty
-            // capture screen between cards.
-            window.setTimeout(startCamera, 0);
-          }}
+          onScanNext={retake}
           onDone={() => void navigate({ to: "/connect-app/network" })}
         />
       ) : null}
@@ -961,7 +917,7 @@ export function CardScanFlow() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={startCamera}
+                onClick={retake}
                 className="flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] px-4 text-[14px] font-medium text-[var(--bc-mobile-text)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] motion-reduce:transition-none"
               >
                 <Camera className="h-4 w-4" strokeWidth={1.8} aria-hidden />

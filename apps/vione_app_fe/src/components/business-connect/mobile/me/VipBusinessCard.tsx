@@ -1,7 +1,7 @@
 // ViOne Luxury VIP Business Card Component (Mạ Vàng Champagne Gold / Mạ Bạc Bạch Kim)
 // Used in QR Scanned Profile (/p/:identifier), Preview Sheet in /connect-app/me, and Digital Business Card.
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Phone,
   Mail,
@@ -77,15 +77,26 @@ export function VipBusinessCard({
   onShare,
   copied = false,
 }: VipBusinessCardProps) {
+  const [imgError, setImgError] = useState(false);
   const isGold = style === "gold";
   const displayName = profile.displayName || "Doanh Nhân ViOne";
   const cleanPhone = (profile.primaryPhone || "").replace(/[^\d+]/g, "");
-  const zaloLink = profile.zaloUrl || (cleanPhone ? `https://zalo.me/${cleanPhone}` : null);
+  const zaloPhone = cleanPhone.replace(/^\+84/, "0").replace(/^84/, "0");
+  const zaloLink = profile.zaloUrl || (zaloPhone ? `https://zalo.me/${zaloPhone}` : null);
   const webLink = profile.website
     ? profile.website.startsWith("http")
       ? profile.website
       : `https://${profile.website}`
     : null;
+
+  const initials =
+    displayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(-2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "VO";
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -95,8 +106,8 @@ export function VipBusinessCard({
       <div
         className={`relative w-full overflow-hidden rounded-3xl p-5 sm:p-6 transition-all shadow-2xl select-none ${
           isGold
-            ? "border-2 border-[#DFB76C]/60 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#2A1F0D] via-[#140F06] to-[#0A0703] text-[#F5E8D3] shadow-[0_12px_40px_rgba(223,183,108,0.22)]"
-            : "border-2 border-slate-300/70 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#242E3D] via-[#111620] to-[#080B10] text-[#F1F5F9] shadow-[0_12px_40px_rgba(203,213,225,0.18)]"
+            ? "border-2 border-[#DFB76C]/80 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#2A1F0D] via-[#140F06] to-[#0A0703] text-[#F5E8D3] shadow-[0_12px_40px_rgba(223,183,108,0.28)]"
+            : "border-2 border-slate-300/80 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#242E3D] via-[#111620] to-[#080B10] text-[#F1F5F9] shadow-[0_12px_40px_rgba(203,213,225,0.22)]"
         }`}
       >
         {/* Metallic Foil Sheen Effects */}
@@ -134,8 +145,8 @@ export function VipBusinessCard({
 
             {/* Contactless Waves Icon */}
             <Wifi
-              className={`h-5 w-5 rotate-90 opacity-75 ${
-                isGold ? "text-[#DFB76C]" : "text-slate-300"
+              className={`h-5 w-5 rotate-90 opacity-85 ${
+                isGold ? "text-[#DFB76C]" : "text-slate-200"
               }`}
             />
           </div>
@@ -144,11 +155,11 @@ export function VipBusinessCard({
           <div
             className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-black tracking-wider uppercase border shadow-md ${
               isGold
-                ? "border-[#DFB76C]/60 bg-gradient-to-r from-[#DFB76C]/25 to-[#B38E5D]/15 text-[#FFE8C2]"
-                : "border-slate-300/60 bg-gradient-to-r from-slate-200/20 to-slate-400/10 text-slate-100"
+                ? "border-[#DFB76C]/70 bg-gradient-to-r from-[#DFB76C]/35 to-[#B38E5D]/20 text-[#FFF3D6] shadow-[0_2px_8px_rgba(223,183,108,0.3)]"
+                : "border-slate-300/70 bg-gradient-to-r from-slate-200/25 to-slate-400/15 text-white shadow-[0_2px_8px_rgba(255,255,255,0.2)]"
             }`}
           >
-            <Crown className={`h-3.5 w-3.5 ${isGold ? "text-[#DFB76C]" : "text-slate-300"}`} />
+            <Crown className={`h-3.5 w-3.5 ${isGold ? "text-[#FFD580]" : "text-slate-100"}`} />
             <span>{isGold ? "VIP MẠ VÀNG" : "VIP MẠ BẠC"}</span>
           </div>
         </div>
@@ -165,19 +176,22 @@ export function VipBusinessCard({
               }`}
             >
               <div className="h-full w-full rounded-[14px] overflow-hidden bg-black/80">
-                {profile.avatarUrl ? (
+                {profile.avatarUrl && !imgError ? (
                   <img
                     src={getImageUrl(profile.avatarUrl)}
                     alt={displayName}
+                    onError={() => setImgError(true)}
                     className="h-full w-full object-cover"
                   />
                 ) : (
                   <div
-                    className={`h-full w-full flex items-center justify-center font-bold text-xl ${
-                      isGold ? "text-[#DFB76C] bg-[#1A140A]" : "text-slate-200 bg-[#161D27]"
+                    className={`h-full w-full flex items-center justify-center font-black text-xl tracking-wider select-none ${
+                      isGold
+                        ? "text-[#FFD580] bg-gradient-to-br from-[#2E200C] to-[#120D05]"
+                        : "text-white bg-gradient-to-br from-[#242E3D] to-[#0D121B]"
                     }`}
                   >
-                    {displayName.slice(0, 2).toUpperCase()}
+                    {initials}
                   </div>
                 )}
               </div>
@@ -194,43 +208,41 @@ export function VipBusinessCard({
             </div>
           </div>
 
-          {/* Member Text Info */}
+          {/* Member Text Info - High Contrast & Sharp Legibility */}
           <div className="min-w-0 flex-1">
             <h3
-              className={`text-lg sm:text-xl font-black tracking-tight leading-snug truncate ${
-                isGold
-                  ? "bg-gradient-to-r from-[#FFFFFF] via-[#FFF0D4] to-[#DFB76C] bg-clip-text text-transparent"
-                  : "bg-gradient-to-r from-[#FFFFFF] via-[#E2E8F0] to-[#CBD5E1] bg-clip-text text-transparent"
+              className={`text-lg sm:text-xl font-black tracking-tight leading-snug truncate drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)] ${
+                isGold ? "text-[#FFFDF7]" : "text-white"
               }`}
             >
-              {profile.displayName || "Doanh Nhân ViOne"}
+              {displayName}
             </h3>
 
             {profile.jobTitle && (
               <p
-                className={`text-[13px] font-bold mt-0.5 flex items-center gap-1.5 truncate ${
-                  isGold ? "text-[#E6C687]" : "text-slate-200"
+                className={`text-[13px] font-extrabold mt-0.5 flex items-center gap-1.5 truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] ${
+                  isGold ? "text-[#FDE047]" : "text-white"
                 }`}
               >
-                <Briefcase className="h-3.5 w-3.5 shrink-0 opacity-80" />
+                <Briefcase className={`h-3.5 w-3.5 shrink-0 ${isGold ? "text-[#F59E0B]" : "text-slate-200"}`} />
                 <span className="truncate">{profile.jobTitle}</span>
               </p>
             )}
 
             {profile.companyName && (
-              <p className="text-[12px] font-medium text-slate-300/90 mt-0.5 flex items-center gap-1.5 truncate">
-                <Building2 className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              <p className="text-[12.5px] font-bold text-white mt-0.5 flex items-center gap-1.5 truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                <Building2 className={`h-3.5 w-3.5 shrink-0 ${isGold ? "text-amber-300" : "text-slate-300"}`} />
                 <span className="truncate">{profile.companyName}</span>
               </p>
             )}
 
             {visibleFields.phone && profile.primaryPhone && (
               <p
-                className={`text-[12.5px] font-semibold font-mono mt-1 flex items-center gap-1.5 ${
-                  isGold ? "text-amber-200/90" : "text-slate-300"
+                className={`text-[12.5px] font-bold font-mono mt-1 flex items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
+                  isGold ? "text-[#FDE68A]" : "text-slate-100"
                 }`}
               >
-                <Phone className="h-3 w-3 shrink-0 opacity-80" />
+                <Phone className={`h-3.5 w-3.5 shrink-0 ${isGold ? "text-[#F59E0B]" : "text-slate-300"}`} />
                 <span>{profile.primaryPhone}</span>
               </p>
             )}
@@ -238,12 +250,14 @@ export function VipBusinessCard({
         </div>
 
         {/* Card Footer: Brand watermark & Code */}
-        <div className="relative z-10 mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
-          <div className="flex items-center gap-1.5 font-black tracking-wider opacity-85">
-            <span className={isGold ? "text-[#DFB76C]" : "text-slate-300"}>VIONE NETWORK</span>
-            <span className="text-slate-400 font-normal">| VIP EXECUTIVE</span>
+        <div className="relative z-10 mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-[11px]">
+          <div className="flex items-center gap-1.5 font-black tracking-wider">
+            <span className={isGold ? "text-[#F5C46B] font-extrabold drop-shadow-xs" : "text-white font-extrabold drop-shadow-xs"}>
+              VIONE NETWORK
+            </span>
+            <span className="text-amber-200/80 font-semibold">| VIP EXECUTIVE</span>
           </div>
-          <div className="font-mono text-[10px] px-2 py-0.5 rounded bg-black/40 border border-white/10 text-slate-300">
+          <div className="font-mono text-[10.5px] font-bold px-2.5 py-0.5 rounded bg-black/70 border border-amber-400/40 text-amber-300 shadow-sm">
             {profile.code || "VIONE-VIP"}
           </div>
         </div>

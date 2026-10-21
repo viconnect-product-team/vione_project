@@ -91,8 +91,8 @@ export function AssociationMemberQrModal({
 
   const qrUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/card/${memberCode}`
-      : `https://ceo1983club.com/card/${memberCode}`;
+      ? `${window.location.origin}/p/${memberCode}`
+      : `https://vione.viconnect.vn/p/${memberCode}`;
 
 
   // Auto-close QR modal if someone connects to this user, allowing IncomingConnectionModal to pop up cleanly
@@ -135,7 +135,7 @@ export function AssociationMemberQrModal({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Mã QR Hội Viên CEO 1983 - ${memberName}`,
+          title: `Mã QR Doanh Nhân ViOne - ${memberName}`,
           text: `${memberName} · ${memberTitle} · ${memberCompany}`,
           url: qrUrl,
         });
@@ -170,15 +170,28 @@ export function AssociationMemberQrModal({
     setErrorMsg(null);
 
     let code: string | null = null;
-    if (raw.includes("CEO1983-MEMBER:")) {
+    if (raw.includes("VIONE-MEMBER:")) {
+      code = raw.replace("VIONE-MEMBER:", "").trim();
+    } else if (raw.includes("VBA-MEMBER:")) {
+      code = raw.replace("VBA-MEMBER:", "").trim();
+    } else if (raw.includes("CEO1983-MEMBER:")) {
       code = raw.replace("CEO1983-MEMBER:", "").trim();
+    } else if (raw.includes("/p/")) {
+      const match = raw.match(/\/p\/([^/?#]+)/);
+      if (match) code = match[1];
+    } else if (raw.includes("/c/")) {
+      const match = raw.match(/\/c\/([^/?#]+)/);
+      if (match) code = match[1];
     } else if (raw.includes("/card/")) {
       const match = raw.match(/\/card\/([^/?#]+)/);
       if (match) code = match[1];
     } else if (raw.includes("/b/")) {
       const match = raw.match(/\/b\/([^/?#]+)/);
       if (match) code = match[1];
-    } else if (/^[A-Za-z0-9_-]{3,32}$/.test(raw.trim())) {
+    } else if (raw.includes("zalo.me/")) {
+      const match = raw.match(/zalo\.me\/([a-zA-Z0-9_.-]+)/);
+      if (match) code = match[1];
+    } else if (/^[A-Za-z0-9_-]{3,64}$/.test(raw.trim())) {
       code = raw.trim();
     }
 
@@ -203,18 +216,35 @@ export function AssociationMemberQrModal({
     }
 
     if (!code) {
-      setErrorMsg("Mã QR không đúng định dạng hội viên CEO 1983");
+      setErrorMsg("Mã QR không đúng định dạng hội viên hoặc tài khoản ViOne");
       return;
     }
 
     try {
-      const res = await fetchNestApi<any>(`/api/members/${code}`);
+      // First try ViOne public profile projection
+      let res = await fetchNestApi<any>(`/public/profile/${code}`).catch(() => null);
+      if (res && res.card) {
+        const c = res.card;
+        setScannedPartner({
+          code: c.code || code,
+          name: c.displayName || c.name || "Doanh nhân ViOne",
+          company: c.companyName || "Hệ sinh thái ViOne Connect",
+          title: c.jobTitle || "Hội viên Doanh nhân",
+          avatar: c.avatarUrl ? resolveMediaUrl(c.avatarUrl) || c.avatarUrl : null,
+          phone: c.primaryPhone || null,
+          email: c.primaryEmail || null,
+          industry: c.industry || null,
+          userId: c.userId || c.id || null,
+        });
+        return;
+      }
+      res = await fetchNestApi<any>(`/api/members/${code}`);
       if (res && res.name) {
         setScannedPartner({
           code: res.code || code,
           name: res.name,
-          company: res.companyName || res.company || "CLB CEO 1983",
-          title: res.title || res.industry || "Hội viên",
+          company: res.companyName || res.company || "Hệ sinh thái ViOne Connect",
+          title: res.title || res.industry || "Doanh nhân",
           avatar: res.avatar ? resolveMediaUrl(res.avatar) || res.avatar : null,
           phone: res.phone || null,
           email: res.email || null,
@@ -225,7 +255,7 @@ export function AssociationMemberQrModal({
         setScannedPartner({
           code,
           name: `Hội viên ${code}`,
-          company: "CLB Doanh Nhân CEO 1983",
+          company: "Hệ sinh thái ViOne Connect",
           title: "Hội viên chính thức",
           avatar: null,
         });
@@ -234,7 +264,7 @@ export function AssociationMemberQrModal({
       setScannedPartner({
         code,
         name: `Hội viên ${code}`,
-        company: "CLB Doanh Nhân CEO 1983",
+        company: "Hệ sinh thái ViOne Connect",
         title: "Hội viên chính thức",
         avatar: null,
       });

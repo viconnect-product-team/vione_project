@@ -130,17 +130,17 @@ export function ImagePanCropModal({
   const isOneToOne = aspectRatio === "1:1";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 selection:bg-[#D8B282]/30">
-      <div className="relative flex w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-[#D8B282]/30 bg-[#0C1220] shadow-2xl shadow-black">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 dark:bg-black/85 backdrop-blur-md p-4 selection:bg-[#D8B282]/30 animate-in fade-in duration-150">
+      <div className="relative flex w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-slate-200 dark:border-[#D8B282]/30 bg-white dark:bg-[#0C1220] shadow-2xl text-slate-900 dark:text-white">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 px-5 py-4 bg-slate-50/60 dark:bg-white/[0.02]">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D8B282]/20 text-[#D8B282]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D8B282]/25 text-[#8C653B] dark:text-[#D8B282]">
               <Move className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">{title}</h3>
-              <p className="text-[11px] text-slate-400">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Kéo để di chuyển góc ảnh · Dùng thanh trượt để phóng to/thu nhỏ
               </p>
             </div>
@@ -148,14 +148,14 @@ export function ImagePanCropModal({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-full p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition"
+            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white transition cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Viewport Workspace */}
-        <div className="relative flex items-center justify-center bg-[#070A12] p-6 overflow-hidden select-none">
+        <div className="relative flex items-center justify-center bg-slate-100 dark:bg-[#070A12] p-6 overflow-hidden select-none border-y border-slate-200/60 dark:border-transparent">
           {/* Target Crop Mask Frame */}
           <div
             ref={containerRef}
@@ -163,7 +163,7 @@ export function ImagePanCropModal({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onWheel={handleWheel}
-            className={`relative overflow-hidden cursor-grab active:cursor-grabbing border-2 border-[#D8B282] shadow-[0_0_30px_rgba(216,178,130,0.25)] touch-none ${
+            className={`relative overflow-hidden cursor-grab active:cursor-grabbing border-2 border-[#D8B282] shadow-[0_0_30px_rgba(216,178,130,0.35)] touch-none ${
               isOneToOne
                 ? `w-64 h-64 sm:w-72 sm:h-72 ${circular ? "rounded-full" : "rounded-2xl"}`
                 : "w-full aspect-[16/9] rounded-2xl"
@@ -203,7 +203,7 @@ export function ImagePanCropModal({
         </div>
 
         {/* Controls Toolbar */}
-        <div className="flex flex-col gap-3 border-t border-white/10 bg-[#0E1524] px-5 py-4">
+        <div className="flex flex-col gap-3 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0E1524] px-5 py-4">
           {/* Zoom Slider */}
           <div className="flex items-center gap-3">
             <ZoomOut className="h-4 w-4 text-slate-400 shrink-0" />
@@ -214,10 +214,10 @@ export function ImagePanCropModal({
               step="0.05"
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-[#D8B282]"
+              className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 dark:bg-slate-700 accent-[#B38E5D] dark:accent-[#D8B282]"
             />
             <ZoomIn className="h-4 w-4 text-slate-400 shrink-0" />
-            <span className="min-w-10 text-right font-mono text-xs text-[#D8B282]">
+            <span className="min-w-10 text-right font-mono text-xs font-bold text-[#8C653B] dark:text-[#D8B282]">
               {Math.round(zoom * 100)}%
             </span>
 
@@ -226,13 +226,13 @@ export function ImagePanCropModal({
               type="button"
               onClick={() => setRotation((r) => (r + 90) % 360)}
               title="Xoay ảnh 90 độ"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition cursor-pointer"
             >
               <RotateCw className="h-3.5 w-3.5" />
             </button>
           </div>
 
-          <p className="text-center text-[11px] text-slate-400">
+          <p className="text-center text-[11px] text-slate-500 dark:text-slate-400">
             Dùng ngón tay hoặc chuột kéo ảnh để căn giữa khuôn mặt hoặc góc mong muốn.
           </p>
 
@@ -241,16 +241,16 @@ export function ImagePanCropModal({
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-white/10 transition"
+              className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition cursor-pointer"
             >
               Hủy bỏ
             </button>
             <button
               type="button"
               onClick={handleCropAndConfirm}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#D8B282] to-[#B38E5D] px-5 py-2 text-xs font-bold text-[#070B14] shadow-md shadow-[#D8B282]/20 hover:brightness-105 active:scale-95 transition"
+              className="flex items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold px-5 py-2 text-xs shadow-md border border-amber-300/40 hover:brightness-105 active:scale-95 transition cursor-pointer"
             >
-              <Check className="h-4 w-4" />
+              <Check className="h-4 w-4 text-slate-950" />
               <span>Áp dụng vùng chọn</span>
             </button>
           </div>

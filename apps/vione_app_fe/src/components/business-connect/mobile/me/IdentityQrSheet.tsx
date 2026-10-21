@@ -15,7 +15,7 @@ import type { IdentityShareLinkInfo } from "@/lib/business-connect/mobile/identi
 
 export function identityShareUrl(token: string): string {
   let base = "https://vione.viconnect.vn";
-  if (typeof window !== "undefined" && window.location.origin.includes("vione.viconnect.vn")) {
+  if (typeof window !== "undefined" && window.location.origin && !window.location.origin.includes("localhost") && !window.location.origin.includes("127.0.0.1")) {
     base = window.location.origin;
   }
   return `${base.replace(/\/+$/, "")}/p/${encodeURIComponent(token)}`;

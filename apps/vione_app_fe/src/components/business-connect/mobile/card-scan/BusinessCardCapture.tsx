@@ -3,7 +3,7 @@
 // Supports manual snap, live auto-shutter on steady frame, camera flip, torch, and file upload.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Camera, ImagePlus, Sun, Crop, ScanLine, ShieldCheck, Zap, RefreshCw, ZapOff, Loader2 } from "lucide-react";
+import { Camera, ImagePlus, Sun, Crop, ScanLine, ShieldCheck, Zap, RefreshCw, ZapOff, Loader2, PenSquare } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import {
   AUTO_CAPTURE_STABLE_FRAMES,
@@ -25,12 +25,15 @@ function Corner({ className }: { className: string }) {
 export function BusinessCardCapture({
   onCaptured,
   onLibrary,
+  onManualEntry,
   error,
   autoCapture,
   onAutoCaptureChange,
 }: {
   onCaptured: (file: File) => void;
   onLibrary: () => void;
+  /** Optional fallback to enter business card information manually */
+  onManualEntry?: () => void;
   /** Auto-shutter preference (live viewfinder fires on a steady, sharp card). */
   autoCapture: boolean;
   onAutoCaptureChange: (next: boolean) => void;
@@ -416,6 +419,16 @@ export function BusinessCardCapture({
                       <ImagePlus className="h-3.5 w-3.5 text-[var(--bc-mobile-accent-strong)]" />
                       <span>Chọn từ thư viện</span>
                     </button>
+                    {onManualEntry && (
+                      <button
+                        type="button"
+                        onClick={onManualEntry}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] text-[var(--bc-mobile-text)] hover:opacity-80 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <PenSquare className="h-3.5 w-3.5 text-[var(--bc-mobile-accent-strong)]" />
+                        <span>Tự nhập tay</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -549,6 +562,17 @@ export function BusinessCardCapture({
               <ImagePlus className="h-5 w-5 text-[var(--bc-mobile-accent-strong)]" />
             </button>
           </div>
+
+          {onManualEntry && (
+            <button
+              type="button"
+              onClick={onManualEntry}
+              className="mt-1 flex items-center justify-center gap-1.5 py-1 text-center text-[12.5px] font-semibold text-[var(--bc-mobile-accent-strong)] hover:underline cursor-pointer"
+            >
+              <PenSquare className="h-3.5 w-3.5" />
+              <span>Hoặc tự nhập thông tin thủ công</span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -1,18 +1,57 @@
 import { Controller, Get, Post, Body, Request, UseGuards, Param, Query, Delete, Patch } from '@nestjs/common';
+import { IsNotEmpty, IsOptional, IsString, IsBoolean, IsNumber } from 'class-validator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
 import { ConnectAppService } from './connect-app.service';
 
 export class CreateCommunityDto {
+  @IsNotEmpty({ message: 'Tên cộng đồng không được để trống' })
+  @IsString({ message: 'Tên cộng đồng phải là chuỗi ký tự' })
   name!: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
   logoUrl?: string;
+
+  @IsOptional()
+  @IsString()
   bannerUrl?: string;
+
+  @IsOptional()
+  @IsString()
   coverUrl?: string;
+
+  @IsOptional()
+  @IsString()
   slug?: string;
+
+  @IsOptional()
+  @IsString()
   tagline?: string;
+
+  @IsOptional()
+  @IsString()
   about?: string;
+
+  @IsOptional()
+  @IsString()
   communityType?: 'b2b_networking' | 'company_internal';
+
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isTrial?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  trialDays?: number;
 }
 
 function cleanCommunityId(communityId: string): string {

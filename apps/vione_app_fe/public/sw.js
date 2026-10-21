@@ -37,8 +37,15 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
 
-  // Không can thiệp API calls hoặc WebSocket
-  if (url.pathname.startsWith("/api") || url.pathname.startsWith("/dm") || url.pathname.startsWith("/socket.io")) {
+  // Không can thiệp API calls, uploads hoặc WebSocket
+  if (
+    url.pathname.startsWith("/api") ||
+    url.pathname.startsWith("/dm") ||
+    url.pathname.startsWith("/upload") ||
+    url.pathname.startsWith("/socket.io") ||
+    url.pathname.startsWith("/communities") ||
+    url.pathname.startsWith("/connect-app/community")
+  ) {
     return;
   }
 
@@ -53,7 +60,14 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match(request) || caches.match("/connect-app"))
+        .catch(async () => {
+          const cached = (await caches.match(request)) || (await caches.match("/connect-app"));
+          if (cached) return cached;
+          return new Response("Ứng dụng tạm thời gián đoạn kết nối mạng", {
+            status: 503,
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          });
+        })
     );
     return;
   }
@@ -69,26 +83,41 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match(request))
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return new Response(null, { status: 404, statusText: "Asset Not Found" });
+        })
     );
     return;
   }
 
-  // 3. Các assets tĩnh khác: Stale-While-Revalidate
+  // 3. Các assets tĩnh khác: Stale-While-Revalidate với Response fallback hợp lệ
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
-            const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          }
-          return networkResponse;
-        })
-        .catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
-    })
+    (async () => {
+      const cached = await caches.match(request);
+      if (cached) {
+        fetch(request)
+          .then((res) => {
+            if (res && res.status === 200 && res.type === "basic") {
+              const copy = res.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            }
+          })
+          .catch(() => {});
+        return cached;
+      }
+      try {
+        const res = await fetch(request);
+        if (res && res.status === 200 && res.type === "basic") {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
+        return res;
+      } catch {
+        return new Response(null, { status: 503, statusText: "Network Error" });
+      }
+    })()
   );
 });
 

@@ -52,6 +52,16 @@ export function parseTapConnectValue(raw: string, origin: string): TapConnectTar
   if (value.startsWith("http://") || value.startsWith("https://")) {
     try {
       const parsedUrl = new URL(value);
+      // ViOne Public Executive Profile Card (/p/:identifier)
+      const pM = /\/p\/([^/?#\s]+)/i.exec(parsedUrl.pathname);
+      if (pM && pM[1]) return { kind: "token", token: decodeURIComponent(pM[1]) };
+
+      // Zalo link: https://zalo.me/0912345678 or zalo.me/:id
+      if (parsedUrl.hostname.includes("zalo.me")) {
+        const zaloSegment = parsedUrl.pathname.replace(/^\/+/, "").split("/")[0]?.split("?")[0];
+        if (zaloSegment) return { kind: "token", token: decodeURIComponent(zaloSegment) };
+      }
+
       const cardM = /\/(?:m\/)?card\/([^/?#\s]+)/i.exec(parsedUrl.pathname);
       if (cardM && cardM[1]) return { kind: "token", token: decodeURIComponent(cardM[1]) };
       const bM = /\/b\/([^/?#\s]+)/i.exec(parsedUrl.pathname);
@@ -60,6 +70,8 @@ export function parseTapConnectValue(raw: string, origin: string): TapConnectTar
       if (cM && cM[1]) return { kind: "token", token: decodeURIComponent(cM[1]) };
       const memM = /\/m\/members\/([^/?#\s]+)/i.exec(parsedUrl.pathname);
       if (memM && memM[1]) return { kind: "token", token: decodeURIComponent(memM[1]) };
+      const netM = /\/connect-app\/network\/(?:u:)?([^/?#\s]+)/i.exec(parsedUrl.pathname);
+      if (netM && netM[1]) return { kind: "token", token: decodeURIComponent(netM[1]) };
       const codeParam = parsedUrl.searchParams.get("code") || parsedUrl.searchParams.get("t");
       if (codeParam) return { kind: "token", token: decodeURIComponent(codeParam) };
     } catch {}
@@ -71,10 +83,22 @@ export function parseTapConnectValue(raw: string, origin: string): TapConnectTar
     return { kind: "token", token: value };
   }
 
-  // 2. Direct match for /c/<token> anywhere in URL / text
+  // 2. Direct match for /p/<token> anywhere in URL / text
+  const pTokenMatch = /\/p\/([^/?#\s]+)(?:[\/?#\s]|$)/i.exec(value);
+  if (pTokenMatch && pTokenMatch[1]) {
+    return { kind: "token", token: decodeURIComponent(pTokenMatch[1]) };
+  }
+
+  // 2b. Direct match for /c/<token> anywhere in URL / text
   const cTokenMatch = /\/c\/([^/?#\s]+)(?:[\/?#\s]|$)/i.exec(value);
   if (cTokenMatch && cTokenMatch[1]) {
     return { kind: "token", token: decodeURIComponent(cTokenMatch[1]) };
+  }
+
+  // 2c. Direct match for zalo.me/<user_or_phone>
+  const zaloDirectMatch = /(?:https?:\/\/)?(?:www\.)?zalo\.me\/([a-zA-Z0-9_.-]+)/i.exec(value);
+  if (zaloDirectMatch && zaloDirectMatch[1]) {
+    return { kind: "token", token: decodeURIComponent(zaloDirectMatch[1]) };
   }
 
   // 3. Match for /verify?t=<token> or /verify?code=<code>
@@ -105,8 +129,8 @@ export function parseTapConnectValue(raw: string, origin: string): TapConnectTar
     return { kind: "token", token: decodeURIComponent(memberMatch[1]) };
   }
 
-  // 7. Match for VBA-MEMBER:<code> or CEO1983:<code>
-  const vbaMemberMatch = /^(?:VBA-MEMBER|CEO1983|MEMBER):([^\s]+)$/i.exec(value);
+  // 7. Match for VIONE-MEMBER:<code>, VBA-MEMBER:<code>, or CEO1983:<code>
+  const vbaMemberMatch = /^(?:VIONE-MEMBER|VIONE|VBA-MEMBER|CEO1983|MEMBER):([^\s]+)$/i.exec(value);
   if (vbaMemberMatch && vbaMemberMatch[1]) {
     return { kind: "token", token: decodeURIComponent(vbaMemberMatch[1]) };
   }
@@ -114,6 +138,8 @@ export function parseTapConnectValue(raw: string, origin: string): TapConnectTar
   // 8. Same origin path matching
   const path = pathFromSameOrigin(value, origin);
   if (path) {
+    const pMatch = /^\/p\/([^/]+)\/?$/.exec(path);
+    if (pMatch && pMatch[1]) return { kind: "token", token: decodeURIComponent(pMatch[1]) };
     const cMatch = /^\/c\/([^/]+)\/?$/.exec(path);
     if (cMatch && cMatch[1]) return { kind: "token", token: decodeURIComponent(cMatch[1]) };
     const bMatch = /^\/b\/([^/]+)\/?$/.exec(path);
