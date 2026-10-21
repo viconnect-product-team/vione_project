@@ -22,5 +22,12 @@
   - **Sửa lỗi màu giao diện theme sáng (bị màu đen) ở chức năng chỉnh sửa thông tin mã QR**:
     - Sửa biến CSS `--bc-mobile-ivory` trong `styles.css` từ `#000000` thành `#FFFFFF` khi ở chế độ sáng (`html:not(.dark)`), giải quyết triệt để lỗi khung thẻ QR bị đen đặc trong theme sáng.
     - Thay thế toàn bộ mã màu cố định nền đen / chữ trắng (`bg-[#0B0F19]`, `text-white`, `border-white/10`, `bg-white/[0.02]`) trong `QrPresetSetupModal.tsx` và màn hình `connect-app.me.index.tsx` thành các biến theme linh hoạt (`--bc-mobile-surface`, `--bc-mobile-text`, `--bc-mobile-border`, `--bc-mobile-surface-soft`), giúp giao diện chuyển đổi mượt mà, sang trọng và chuẩn màu vàng Champagne Gold trên cả 2 theme Sáng và Tối.
-    - Đảm bảo đồng bộ kiến trúc giữa PWA ViOne (`vione_app_fe`) và Native ViOne (`mobile_vione`).
+    - **Nâng cấp quy trình quét thẻ danh thiếp: Bỏ AI đọc, trích xuất OCR trực tiếp & Bổ sung Lưu danh bạ + Kết bạn Zalo**:
+      - Bỏ hoàn toàn phần gọi Cloud AI Vision bên ngoài (OpenAI/Gemini/Lovable/Anthropic) trong `runCardOcrVision` để loại bỏ độ trễ 12s, lỗi hết quota và kết quả thiếu ổn định.
+      - Chuyển sang đọc OCR tiếng Việt tốc độ cao trực tiếp: bóc tách chính xác toàn bộ các trường trên thẻ gồm Họ tên, Chức vụ, Công ty, Số điện thoại, Email, Website, Địa chỉ.
+      - **Bổ sung cụm tác vụ kết nối nhanh trên giao diện xem lại thẻ (Cả PWA & Native ViOne)**:
+        + Nút **"Kết bạn Zalo"** (`https://zalo.me/{cleanPhone}`): 1 chạm mở ngay ứng dụng Zalo để kết nối trực tiếp với đối tác.
+        + Nút **"Lưu danh bạ điện thoại"**: Tự động đóng gói và xuất file vCard 3.0 (.vcf) chứa đầy đủ thông tin đối tác để lưu tức thì vào danh bạ của điện thoại (iOS / Android / PWA).
+      - Sửa lỗi AST syntax của `createFileRoute` trong `p.$identifier.tsx` và đồng bộ `routeTree.gen.ts` đảm bảo lệnh build GitHub Actions và Docker Production thành công 100%.
+
 

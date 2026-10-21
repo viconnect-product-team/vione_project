@@ -7,7 +7,7 @@
 // evidence). One primary phone + one primary email persist.
 
 import { forwardRef, useId, useMemo } from "react";
-import { Save, X, AlertTriangle, Share2, Sparkles } from "lucide-react";
+import { Save, X, AlertTriangle, Share2, Sparkles, Download, MessageCircle, UserPlus } from "lucide-react";
 import { useT, type TKey } from "@/lib/i18n";
 import type {
   BusinessCardCandidate,
@@ -313,25 +313,53 @@ export const BusinessCardReviewForm = forwardRef<
           </fieldset>
         )}
 
-        {/* Zalo Direct Chat Link */}
+        {/* Tác vụ nhanh: Kết bạn Zalo & Lưu danh bạ điện thoại */}
         {(() => {
           const rawP = draft.phones[draft.primaryPhone]?.value || draft.phones[0]?.value || "";
           const cleanP = rawP.replace(/\D/g, "");
-          if (!cleanP) return null;
           return (
-            <div className="flex items-center justify-between rounded-xl bg-blue-500/10 border border-blue-500/30 p-2.5 px-3">
-              <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 font-semibold truncate">
-                <span className="font-bold">Zalo:</span>
-                <span className="truncate">https://zalo.me/{cleanP}</span>
+            <div className="rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-[var(--bc-mobile-text)] uppercase tracking-wider text-[11px]">
+                  Tác vụ kết nối nhanh
+                </span>
+                {cleanP ? (
+                  <span className="text-[var(--bc-mobile-muted)] text-[11px] font-mono">
+                    {cleanP}
+                  </span>
+                ) : null}
               </div>
-              <a
-                href={`https://zalo.me/${cleanP}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-bold text-white bg-[#0068FF] px-3 py-1 rounded-lg hover:bg-blue-600 transition shrink-0 ml-2"
-              >
-                Mở Zalo
-              </a>
+
+              <div className="grid grid-cols-2 gap-2">
+                {cleanP ? (
+                  <a
+                    href={`https://zalo.me/${cleanP}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0068FF] hover:bg-[#0055d4] px-3 py-2 text-xs font-bold text-white shadow-sm transition active:scale-[0.98] cursor-pointer"
+                  >
+                    <MessageCircle className="h-4 w-4 shrink-0" />
+                    <span>Kết bạn Zalo</span>
+                  </a>
+                ) : (
+                  <div className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-500/10 border border-slate-500/20 px-3 py-2 text-xs font-semibold text-[var(--bc-mobile-muted)] opacity-60">
+                    <MessageCircle className="h-4 w-4 shrink-0" />
+                    <span>Chưa có SĐT</span>
+                  </div>
+                )}
+
+                {onExportVcf ? (
+                  <button
+                    type="button"
+                    onClick={onExportVcf}
+                    disabled={saving || exportVcfDisabled === true}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-[#DFB76C] bg-gradient-to-r from-[#DFB76C]/15 to-[#B38E5D]/15 hover:bg-[#DFB76C]/25 px-3 py-2 text-xs font-bold text-[#B38E5D] dark:text-[#FFE8C2] shadow-sm transition active:scale-[0.98] disabled:opacity-40 cursor-pointer"
+                  >
+                    <Download className="h-4 w-4 shrink-0" />
+                    <span>Lưu danh bạ</span>
+                  </button>
+                ) : null}
+              </div>
             </div>
           );
         })()}
@@ -426,10 +454,10 @@ export const BusinessCardReviewForm = forwardRef<
             type="button"
             onClick={onExportVcf}
             disabled={saving || exportVcfDisabled === true}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#D8B282] bg-[var(--bc-mobile-surface)] px-6 text-[15px] font-semibold text-[var(--bc-mobile-accent-strong)] transition-colors hover:bg-[var(--bc-mobile-surface-2)] disabled:opacity-50 motion-reduce:transition-none cursor-pointer"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#DFB76C] bg-gradient-to-r from-[#DFB76C]/10 to-amber-500/10 px-6 text-[15px] font-bold text-[#B38E5D] dark:text-[#FFE8C2] transition-colors hover:bg-[#DFB76C]/20 disabled:opacity-50 motion-reduce:transition-none cursor-pointer"
           >
-            <Share2 className="h-4 w-4" strokeWidth={1.8} aria-hidden />
-            {t("bc.mobile.cardScan.review.exportVcf")}
+            <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
+            <span>Lưu danh bạ điện thoại (.vcf)</span>
           </button>
         ) : null}
         <button

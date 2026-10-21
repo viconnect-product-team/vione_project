@@ -12,6 +12,7 @@ import {
   Switch,
   Image,
   Linking,
+  Share,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -39,6 +40,8 @@ import {
   ExternalLink,
   Zap,
   RefreshCw,
+  Download,
+  MessageCircle,
 } from "lucide-react-native";
 import { ConnectionPerson } from "../types";
 import { cardScanApi, customerApi, B2BCustomerData } from "../api/services";
@@ -145,6 +148,32 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
         "Hệ thống đã tự động trích xuất thông tin đối tác từ mã QR trên danh thiếp!",
         [{ text: "Xem & Lưu ngay", onPress: () => setStep("review") }]
       );
+    }
+  };
+
+  const handleSaveToDeviceContacts = async () => {
+    const vcard = [
+      "BEGIN:VCARD",
+      "VERSION:3.0",
+      name.trim() ? `FN:${name.trim()}` : "",
+      title.trim() ? `TITLE:${title.trim()}` : "",
+      company.trim() ? `ORG:${company.trim()}` : "",
+      phone.trim() ? `TEL;TYPE=CELL:${phone.trim()}` : "",
+      email.trim() ? `EMAIL:${email.trim()}` : "",
+      address.trim() ? `ADR;TYPE=WORK:;;${address.trim()};;;;` : "",
+      website.trim() ? `URL:${website.trim()}` : "",
+      "END:VCARD",
+    ]
+      .filter(Boolean)
+      .join("\r\n");
+
+    try {
+      await Share.share({
+        title: `Danh bạ - ${name.trim() || "Đối tác"}`,
+        message: vcard,
+      });
+    } catch {
+      Alert.alert("Danh bạ", "Không thể xuất danh bạ điện thoại.");
     }
   };
 
@@ -466,52 +495,99 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
                 </Text>
               </View>
 
-              {/* ZALO DIRECT CHAT LINK */}
-              {phone.trim() ? (() => {
-                const cleanPhone = phone.replace(/\D/g, "");
-                return (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginVertical: 10,
-                      padding: 12,
-                      borderRadius: 12,
-                      backgroundColor: "rgba(216, 178, 130, 0.12)",
-                      borderWidth: 1,
-                      borderColor: "rgba(216, 178, 130, 0.4)",
-                    }}
-                  >
-                    <View style={{ flex: 1, marginRight: 8 }}>
-                      <Text style={{ fontSize: 11, fontWeight: "800", color: "#D8B282" }}>
-                        LIÊN KẾT ZALO TRỰC TIẾP
-                      </Text>
-                      <Text style={{ fontSize: 12.5, fontWeight: "600", color: colors.textPrimary, marginTop: 2 }}>
-                        https://zalo.me/{cleanPhone}
-                      </Text>
-                    </View>
+              {/* TÁC VỤ KẾT NỐI NHANH: KẾT BẠN ZALO & LƯU DANH BẠ */}
+              <View
+                style={{
+                  marginVertical: 12,
+                  padding: 12,
+                  borderRadius: 14,
+                  backgroundColor: isDark ? "rgba(216, 178, 130, 0.1)" : "#FEF3C7",
+                  borderWidth: 1,
+                  borderColor: isDark ? "rgba(216, 178, 130, 0.35)" : "#FDE68A",
+                }}
+              >
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <Text style={{ fontSize: 11, fontWeight: "800", color: colors.gold, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                    Tác vụ kết nối nhanh
+                  </Text>
+                  {phone.trim() ? (
+                    <Text style={{ fontSize: 12, fontWeight: "700", color: colors.textPrimary }}>
+                      {phone.trim()}
+                    </Text>
+                  ) : null}
+                </View>
+
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  {phone.trim() ? (
                     <TouchableOpacity
                       style={{
-                        backgroundColor: "#D8B282",
-                        paddingHorizontal: 14,
-                        paddingVertical: 8,
-                        borderRadius: 8,
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                        backgroundColor: "#0068FF",
+                        paddingVertical: 10,
+                        paddingHorizontal: 10,
+                        borderRadius: 10,
                       }}
                       onPress={() => {
+                        const cleanPhone = phone.replace(/\D/g, "");
                         Linking.openURL(`https://zalo.me/${cleanPhone}`).catch(() => {
                           Alert.alert("Zalo", `Mở liên kết: https://zalo.me/${cleanPhone}`);
                         });
                       }}
                       activeOpacity={0.8}
                     >
-                      <Text style={{ color: "#000000", fontSize: 12, fontWeight: "800" }}>
-                        Mở Zalo
+                      <MessageCircle size={15} color="#FFFFFF" />
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>
+                        Kết bạn Zalo
                       </Text>
                     </TouchableOpacity>
-                  </View>
-                );
-              })() : null}
+                  ) : (
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                        backgroundColor: "rgba(148, 163, 184, 0.2)",
+                        paddingVertical: 10,
+                        paddingHorizontal: 10,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={{ color: colors.textDisabled, fontSize: 12, fontWeight: "600" }}>
+                        Chưa có SĐT
+                      </Text>
+                    </View>
+                  )}
+
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                      backgroundColor: colors.surface2,
+                      borderWidth: 1,
+                      borderColor: colors.gold,
+                      paddingVertical: 10,
+                      paddingHorizontal: 10,
+                      borderRadius: 10,
+                    }}
+                    onPress={handleSaveToDeviceContacts}
+                    activeOpacity={0.8}
+                  >
+                    <Download size={15} color={colors.gold} />
+                    <Text style={{ color: colors.gold, fontSize: 12, fontWeight: "700" }}>
+                      Lưu danh bạ máy
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
 
               {/* THÔNG TIN DANH BẠ CƠ BẢN */}

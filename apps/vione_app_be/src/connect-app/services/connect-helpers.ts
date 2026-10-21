@@ -652,83 +652,7 @@ export function parseCardHeuristicFallback(imageDataUrl: string): any {
 }
 
 export async function runCardOcrVision(imageDataUrl: string): Promise<unknown> {
-  const apiKey =
-    process.env['GEMINI_API_KEY'] ||
-    process.env['OPENAI_API_KEY'] ||
-    process.env['LOVABLE_API_KEY'] ||
-    process.env['ANTHROPIC_API_KEY'];
-
-  // 1. Thử gọi Cloud AI Vision nếu có API key
-  if (apiKey) {
-    try {
-      let endpoint = 'https://ai.gateway.lovable.dev/v1/chat/completions';
-      let model = 'google/gemini-2.5-flash';
-
-      if (apiKey.startsWith('AIza') || process.env['GEMINI_API_KEY']) {
-        endpoint = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-        model = process.env['AI_MODEL'] || 'gemini-1.5-flash';
-      } else if (process.env['OPENAI_API_KEY'] && !process.env['LOVABLE_API_KEY']) {
-        endpoint = 'https://api.openai.com/v1/chat/completions';
-        model = 'gpt-4o-mini';
-      }
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          model,
-          temperature: 0.1,
-          response_format: { type: 'json_object' },
-          messages: [
-            {
-              role: 'system',
-              content: `You are a business-card OCR extraction engine inside a contact-acquisition pipeline.
-Accurately read and extract all text from the business card image (Names, Job Titles, Company, Phone numbers, Emails, Address, Website).
-Return STRICT JSON only:
-{
-  "isBusinessCard": boolean,
-  "unusableReason": string | null,
-  "lines": [ { "text": string, "confidence": number } ],
-  "displayNameLine": number | null,
-  "titleLine": number | null,
-  "companyNameLine": number | null,
-  "addressLine": number | null,
-  "qrPresent": boolean
-}`,
-            },
-            {
-              role: 'user',
-              content: [
-                { type: 'text', text: 'Read this business card image and return JSON.' },
-                { type: 'image_url', image_url: { url: imageDataUrl } },
-              ],
-            },
-          ],
-        }),
-      });
-
-      clearTimeout(timeout);
-
-      if (response.ok) {
-        const json = (await response.json()) as any;
-        const content = json?.choices?.[0]?.message?.content;
-        if (content) {
-          return JSON.parse(content);
-        }
-      }
-    } catch (err: any) {
-      console.warn('[runCardOcrVision] Cloud AI vision call error, falling back to OCR engine:', err?.message || err);
-    }
-  }
-
-  // 2. Fallback sang OCR.space miễn phí nhận diện tiếng Việt (Engine 2)
+  // Bỏ phần AI đọc theo yêu cầu người dùng: trực tiếp đọc và bóc tách toàn bộ trường trên thẻ qua OCR tiếng Việt
   try {
     const ocrLines = await callOcrSpaceApi(imageDataUrl);
     if (ocrLines && ocrLines.length > 0) {
@@ -736,10 +660,10 @@ Return STRICT JSON only:
       return extracted;
     }
   } catch (ocrErr: any) {
-    console.warn('[runCardOcrVision] OCR.space engine error:', ocrErr?.message || ocrErr);
+    console.warn('[runCardOcrVision] OCR engine error, falling back to local heuristic:', ocrErr?.message || ocrErr);
   }
 
-  // 3. Fallback Heuristic cục bộ cuối cùng
+  // Fallback Heuristic cục bộ nếu có dữ liệu vCard/text nhúng
   return parseCardHeuristicFallback(imageDataUrl);
 }
 

@@ -55,7 +55,7 @@ export type PublicProfileData = {
   shareUrl?: string;
 };
 
-export const Route = createFileRoute("/p/$identifier" as any)({
+export const Route = createFileRoute("/p/$identifier")({
   ssr: false,
   loader: async ({ params }: { params: any }): Promise<{ state: "public" | "unavailable"; card?: PublicProfileData }> => {
     try {
@@ -115,7 +115,7 @@ function PublicExecutiveProfilePage() {
             setProfileData(data);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     } else {
       setProfileData(loaderData);
     }
@@ -286,11 +286,10 @@ function PublicExecutiveProfilePage() {
             <button
               type="button"
               onClick={() => setCardStyle("gold")}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                cardStyle === "gold"
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${cardStyle === "gold"
                   ? "bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-[#0A0703] shadow-md shadow-[#DFB76C]/20"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <Crown className="h-3 w-3" />
               <span>Mạ Vàng VIP</span>
@@ -298,11 +297,10 @@ function PublicExecutiveProfilePage() {
             <button
               type="button"
               onClick={() => setCardStyle("silver")}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
-                cardStyle === "silver"
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${cardStyle === "silver"
                   ? "bg-gradient-to-r from-slate-200 to-slate-400 text-[#0A0703] shadow-md shadow-white/10"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <Sparkles className="h-3 w-3" />
               <span>Mạ Bạc VIP</span>
