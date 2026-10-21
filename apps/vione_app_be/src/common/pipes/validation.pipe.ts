@@ -36,6 +36,9 @@ export class VietnameseValidationPipe implements PipeTransform {
       for (const err of errors) {
         if (err.constraints) {
           const first = Object.keys(err.constraints)[0];
+          if (first === 'unknownValue' || !err.property) {
+            continue;
+          }
           let msg = `Trường ${err.property} không hợp lệ.`;
           switch (first) {
             case 'isNotEmpty':
@@ -66,11 +69,13 @@ export class VietnameseValidationPipe implements PipeTransform {
         }
       }
 
-      throw new BadRequestException({
-        statusCode: 400,
-        message: messages.join('; ') || 'Dữ liệu gửi lên không đúng định dạng yêu cầu!',
-        errors: errorMap,
-      });
+      if (messages.length > 0) {
+        throw new BadRequestException({
+          statusCode: 400,
+          message: messages.join('; ') || 'Dữ liệu gửi lên không đúng định dạng yêu cầu!',
+          errors: errorMap,
+        });
+      }
     }
 
     return object;

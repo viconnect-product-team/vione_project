@@ -291,6 +291,12 @@ export const communityApi = {
   createCommunity: async (data: { name: string; description?: string; tagline?: string; category?: string }) => {
     return api.post<CommunityItem>(API_ENDPOINTS.COMMUNITIES.BASE, data);
   },
+  activateCommunityTrial: async (data?: { plan?: string; trialDays?: number; communityId?: string }) => {
+    return api.post<{ ok: boolean; hasCommunityPlan: boolean; isTrial: boolean; trialDaysLeft: number }>(
+      `${API_ENDPOINTS.COMMUNITIES.BASE}/trial`,
+      data || { plan: "community_trial_30d", trialDays: 30 }
+    );
+  },
   getCommunityDetail: async (communityId: string) => {
     return api.get<CommunityItem>(API_ENDPOINTS.COMMUNITIES.BY_ID(communityId));
   },

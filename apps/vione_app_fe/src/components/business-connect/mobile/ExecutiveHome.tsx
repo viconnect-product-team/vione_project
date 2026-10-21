@@ -149,8 +149,10 @@ export function ExecutiveHome() {
               setHasCompanyWithStaff(res.hasCompanyWithStaff);
             }
             if (typeof res.hasCommunityPlan === "boolean") {
-              setHasCommunityPlan(res.hasCommunityPlan);
-              if (res.hasCommunityPlan) {
+              const localActive = localStorage.getItem("vione_community_subscription_active") === "true";
+              const active = res.hasCommunityPlan || localActive;
+              setHasCommunityPlan(active);
+              if (active) {
                 localStorage.setItem("vione_community_subscription_active", "true");
               }
             }
@@ -2092,7 +2094,7 @@ function CommunityPackageTrialCta({ onOpenTrialModal }: { onOpenTrialModal: () =
           Mở Khóa Phân Hệ Giao Việc & Điều Hành
         </h2>
         <p className="mt-1 text-[12px] text-slate-600 dark:text-zinc-400 leading-relaxed">
-          Chỉ tài khoản đăng ký gói cộng đồng mới có quyền sở hữu 1 cộng đồng riêng và kích hoạt trung tâm điều hành giao việc, chấm công GPS, ký duyệt chi và quản trị CRM.
+          ViOne tặng bạn 30 ngày dùng thử miễn phí trọn vẹn tất cả tính năng: Giao việc & kiểm soát tiến độ, Chấm công GPS, Ký duyệt chi ngân sách và Kết nối giao thương B2B.
         </p>
       </div>
 
@@ -2117,7 +2119,7 @@ function CommunityPackageTrialCta({ onOpenTrialModal }: { onOpenTrialModal: () =
         className="mt-4 w-full py-3 px-4 rounded-2xl font-black text-xs bg-[linear-gradient(135deg,#DFB76C_0%,#C89B48_50%,#B38230_100%)] text-slate-950 border border-[#DFB76C]/60 shadow-md hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
         <Sparkles className="h-4 w-4 text-slate-950" />
-        <span>⚡ Tạo cộng đồng dùng thử 30 ngày free</span>
+        <span>⚡ Tạo cộng đồng & Kích hoạt 30 ngày dùng thử miễn phí</span>
       </button>
     </section>
   );

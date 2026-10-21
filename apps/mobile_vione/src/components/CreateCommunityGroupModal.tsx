@@ -54,6 +54,15 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
     };
 
     try {
+      await communityApi.activateCommunityTrial({
+        plan: "community_trial_30d",
+        trialDays: 30,
+      });
+    } catch (err) {
+      console.warn("Lỗi kích hoạt trial lên API:", err);
+    }
+
+    try {
       await communityApi.createCommunity({
         name: name.trim(),
         description: description.trim() || undefined,

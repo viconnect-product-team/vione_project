@@ -33,10 +33,12 @@ jobs:
           export NEST_API_URL="http://vione-backend:4000"
           npm run build --prefix apps/vione_app_fe
 
-      - name: Build Docker Frontend Image
+      - name: Build Docker Frontend & Backend Images
         run: |
           docker build --no-cache -t vione-standalone-frontend:latest -t vione-frontend:latest -f deploy/vione/Dockerfile.frontend .
           docker save vione-standalone-frontend:latest | gzip -1 > vione-frontend.tar.gz
+          docker build --no-cache -t vione-standalone-backend:latest -t vione-backend:latest -f Dockerfile.backend .
+          docker save vione-standalone-backend:latest | gzip -1 > vione-backend.tar.gz
 
       - name: Prepare Remote Directories via SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -54,7 +56,7 @@ jobs:
           host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
           username: ${{ secrets.REMOTE_USER || 'root' }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "vione-frontend.tar.gz,deploy/vione/docker-compose.yml,deploy/vione/.env.production,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
+          source: "vione-frontend.tar.gz,vione-backend.tar.gz,deploy/vione/docker-compose.yml,deploy/vione/.env.production,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
           target: "vione_deploy_temp"
 
       - name: Activate New Container & Reload Nginx Proxy
@@ -65,8 +67,9 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            # Move frontend image & compose
+            # Move frontend and backend images & compose
             cp -f ~/vione_deploy_temp/vione-frontend.tar.gz ~/vione/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/vione-backend.tar.gz ~/vione/ 2>/dev/null || true
             cp -f ~/vione_deploy_temp/deploy/vione/docker-compose.yml ~/vione/ 2>/dev/null || true
             cp -f ~/vione_deploy_temp/deploy/vione/.env.production ~/vione/.env 2>/dev/null || true
             
@@ -76,13 +79,20 @@ jobs:
             cp -f ~/vione_deploy_temp/deploy/ssl/setup-ssl.sh ~/ssl-proxy/ 2>/dev/null || true
             rm -rf ~/vione_deploy_temp
 
-            # Load Docker image & Restart Frontend
+            # Load Docker images & Restart Services
             cd ~/vione
-            docker load -i vione-frontend.tar.gz
-            docker tag vione-standalone-frontend:latest vione-frontend:latest 2>/dev/null || true
-            rm -f vione-frontend.tar.gz
-            docker compose up -d --force-recreate frontend
-            docker compose up -d backend minio 2>/dev/null || true
+            if [ -f vione-frontend.tar.gz ]; then
+              docker load -i vione-frontend.tar.gz
+              docker tag vione-standalone-frontend:latest vione-frontend:latest 2>/dev/null || true
+              rm -f vione-frontend.tar.gz
+            fi
+            if [ -f vione-backend.tar.gz ]; then
+              docker load -i vione-backend.tar.gz
+              docker tag vione-standalone-backend:latest vione-backend:latest 2>/dev/null || true
+              rm -f vione-backend.tar.gz
+            fi
+            docker compose up -d --force-recreate frontend backend
+            docker compose up -d minio 2>/dev/null || true
 
             # Reload or recreate Nginx SSL proxy
             cd ~/ssl-proxy
