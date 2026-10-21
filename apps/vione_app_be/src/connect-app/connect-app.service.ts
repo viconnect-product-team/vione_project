@@ -923,133 +923,155 @@ export class ConnectAppService implements OnModuleInit {
     if (!identifier || typeof identifier !== 'string') {
       return { state: 'unavailable' };
     }
-    const cleanId = identifier.trim();
+    let cleanId = identifier.trim();
+    // Normalize if scanner passed a URL or route path like /p/token or https://vione.viconnect.vn/p/token
+    if (cleanId.includes('/p/')) {
+      cleanId = cleanId.split('/p/').pop()?.split('?')[0]?.split('#')[0] || cleanId;
+    }
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
 
     let identity: any = null;
+    let cardRow: any = null;
+    let memRow: any = null;
+    let vioneUser: any = null;
+    let userProfile: any = null;
     let userId: string | null = null;
     let linkId: string | null = null;
 
-    // 1. Try finding by public_token in identity_share_links
+    // 1. Try finding by public_token or id in identity_share_links
     const links = await this.prisma.$queryRaw<any[]>`
-      SELECT id, identity_id, status FROM public.identity_share_links
-      WHERE public_token = ${cleanId} AND status = 'active'
+      SELECT id, identity_id, owner_user_id, status FROM public.identity_share_links
+      WHERE (public_token = ${cleanId} OR id::text = ${cleanId})
+      ORDER BY CASE WHEN status = 'active' THEN 0 ELSE 1 END, created_at DESC
       LIMIT 1
     `.catch(() => []);
 
     if (links.length > 0) {
       linkId = links[0].id;
-      const identities = await this.prisma.$queryRaw<any[]>`
-        SELECT * FROM public.business_identities
-        WHERE id = ${links[0].identity_id}::uuid AND status = 'active'
-        LIMIT 1
-      `.catch(() => []);
-      if (identities.length > 0) {
-        identity = identities[0];
-        userId = identity.owner_user_id;
+      userId = links[0].owner_user_id || null;
+      if (links[0].identity_id) {
+        const identities = await this.prisma.$queryRaw<any[]>`
+          SELECT * FROM public.business_identities
+          WHERE id = ${links[0].identity_id}::uuid
+          LIMIT 1
+        `.catch(() => []);
+        if (identities.length > 0) {
+          identity = identities[0];
+          userId = identity.owner_user_id || userId;
+        }
       }
     }
 
     // 2. Try member_business_cards by slug, id, or owner_user_id
-    if (!identity) {
+    if (!cardRow) {
       const cardRows = await this.prisma.$queryRaw<any[]>`
         SELECT * FROM public.member_business_cards
         WHERE slug = ${cleanId} OR lower(slug) = lower(${cleanId}) OR id::text = ${cleanId} OR owner_user_id::text = ${cleanId}
         ORDER BY updated_at DESC LIMIT 1
       `.catch(() => []);
       if (cardRows.length > 0) {
-        const cRow = cardRows[0];
-        if (cRow.owner_user_id) {
-          userId = cRow.owner_user_id;
-          const bi = await this.prisma.$queryRaw<any[]>`
-            SELECT * FROM public.business_identities
-            WHERE owner_user_id = ${userId}::uuid
-            ORDER BY updated_at DESC LIMIT 1
-          `.catch(() => []);
-          if (bi.length > 0) identity = bi[0];
+        cardRow = cardRows[0];
+        if (cardRow.owner_user_id && !userId) {
+          userId = cardRow.owner_user_id;
         }
       }
     }
 
     // 3. Try members by code, id, or user_id
-    if (!identity) {
+    if (!memRow) {
       const memRows = await this.prisma.$queryRaw<any[]>`
         SELECT * FROM public.members
         WHERE lower(code) = lower(${cleanId}) OR id::text = ${cleanId} OR user_id::text = ${cleanId}
-        LIMIT 1
+        ORDER BY updated_at DESC LIMIT 1
       `.catch(() => []);
       if (memRows.length > 0) {
-        const mRow = memRows[0];
-        if (mRow.user_id) {
-          userId = mRow.user_id;
-          const bi = await this.prisma.$queryRaw<any[]>`
-            SELECT * FROM public.business_identities
-            WHERE owner_user_id = ${userId}::uuid
-            ORDER BY updated_at DESC LIMIT 1
-          `.catch(() => []);
-          if (bi.length > 0) identity = bi[0];
+        memRow = memRows[0];
+        if (memRow.user_id && !userId) {
+          userId = memRow.user_id;
         }
       }
     }
 
-    // 4. If not found and is UUID, try business_identities by id or owner_user_id
-    if (!identity && isUuid) {
-      const byBiId = await this.prisma.$queryRaw<any[]>`
-        SELECT * FROM public.business_identities
-        WHERE (id = ${cleanId}::uuid OR owner_user_id = ${cleanId}::uuid)
-        ORDER BY updated_at DESC LIMIT 1
-      `.catch(() => []);
-      if (byBiId.length > 0) {
-        identity = byBiId[0];
-        userId = identity.owner_user_id;
-      }
-    }
-
-    // 5. If still not found, try vione_users by id (if UUID), or email, username
-    let vioneUser: any = null;
-    if (!identity) {
-      if (isUuid) {
-        const u = await this.prisma.$queryRaw<any[]>`
-          SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
-          WHERE id = ${cleanId}::uuid LIMIT 1
+    // 4. If UUID, check business_identities or vione_users by id or owner_user_id
+    if (isUuid) {
+      if (!identity) {
+        const byBi = await this.prisma.$queryRaw<any[]>`
+          SELECT * FROM public.business_identities
+          WHERE id = ${cleanId}::uuid OR owner_user_id = ${cleanId}::uuid
+          ORDER BY updated_at DESC LIMIT 1
         `.catch(() => []);
-        if (u.length > 0) vioneUser = u[0];
+        if (byBi.length > 0) {
+          identity = byBi[0];
+          userId = identity.owner_user_id || userId;
+        }
       }
       if (!vioneUser) {
         const u = await this.prisma.$queryRaw<any[]>`
           SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
-          WHERE lower(email) = lower(${cleanId}) OR lower(username) = lower(${cleanId}) LIMIT 1
+          WHERE id = ${cleanId}::uuid LIMIT 1
         `.catch(() => []);
-        if (u.length > 0) vioneUser = u[0];
-      }
-      if (vioneUser) {
-        userId = vioneUser.id;
-        const bi = await this.prisma.$queryRaw<any[]>`
-          SELECT * FROM public.business_identities
-          WHERE owner_user_id = ${vioneUser.id}::uuid
-          ORDER BY updated_at DESC LIMIT 1
-        `.catch(() => []);
-        if (bi.length > 0) {
-          identity = bi[0];
+        if (u.length > 0) {
+          vioneUser = u[0];
+          userId = vioneUser.id;
         }
       }
     }
 
-    // 6. If still not found, try searching business_identities by email or phone
-    if (!identity) {
-      const bi = await this.prisma.$queryRaw<any[]>`
-        SELECT * FROM public.business_identities
-        WHERE lower(primary_email) = lower(${cleanId}) OR primary_phone = ${cleanId}
-        ORDER BY updated_at DESC LIMIT 1
+    // 5. Try resolving vione_users by email, username, or phone
+    if (!vioneUser && !userId) {
+      const u = await this.prisma.$queryRaw<any[]>`
+        SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
+        WHERE lower(email) = lower(${cleanId}) OR lower(username) = lower(${cleanId})
+        LIMIT 1
       `.catch(() => []);
-      if (bi.length > 0) {
-        identity = bi[0];
-        userId = identity.owner_user_id;
+      if (u.length > 0) {
+        vioneUser = u[0];
+        userId = vioneUser.id;
       }
     }
 
+    // 6. If we have userId, load any missing identity, userProfile, cardRow, memRow
+    if (userId) {
+      if (!identity) {
+        const bis = await this.prisma.$queryRaw<any[]>`
+          SELECT * FROM public.business_identities
+          WHERE owner_user_id = ${userId}::uuid
+          ORDER BY updated_at DESC LIMIT 1
+        `.catch(() => []);
+        if (bis.length > 0) identity = bis[0];
+      }
+      if (!cardRow) {
+        const cards = await this.prisma.$queryRaw<any[]>`
+          SELECT * FROM public.member_business_cards
+          WHERE owner_user_id = ${userId}::uuid
+          ORDER BY updated_at DESC LIMIT 1
+        `.catch(() => []);
+        if (cards.length > 0) cardRow = cards[0];
+      }
+      if (!memRow) {
+        const mems = await this.prisma.$queryRaw<any[]>`
+          SELECT * FROM public.members
+          WHERE user_id = ${userId}::uuid
+          ORDER BY updated_at DESC LIMIT 1
+        `.catch(() => []);
+        if (mems.length > 0) memRow = mems[0];
+      }
+      if (!vioneUser) {
+        const u = await this.prisma.$queryRaw<any[]>`
+          SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
+          WHERE id = ${userId}::uuid LIMIT 1
+        `.catch(() => []);
+        if (u.length > 0) vioneUser = u[0];
+      }
+      const up = await this.prisma.$queryRaw<any[]>`
+        SELECT * FROM public.user_profiles
+        WHERE user_id = ${userId}::uuid LIMIT 1
+      `.catch(() => []);
+      if (up.length > 0) userProfile = up[0];
+    }
+
     // 7. Check special codes: ADM-001, CRM-001, VIONE-*
-    if (!identity && !vioneUser) {
+    if (!identity && !cardRow && !memRow && !vioneUser) {
       if (cleanId === 'ADM-001') {
         userId = '00000000-0000-4000-8000-000000000002';
       } else if (cleanId === 'CRM-001') {
@@ -1066,7 +1088,7 @@ export class ConnectAppService implements OnModuleInit {
           userId = identity.owner_user_id;
         }
       }
-      if (userId && !identity) {
+      if (userId) {
         const bi = await this.prisma.$queryRaw<any[]>`
           SELECT * FROM public.business_identities
           WHERE owner_user_id = ${userId}::uuid
@@ -1076,8 +1098,8 @@ export class ConnectAppService implements OnModuleInit {
       }
     }
 
-    // 8. Resilient Fallback: If still not found, get most recent active business identity
-    if (!identity && !vioneUser) {
+    // 8. Resilient Fallback: If still nothing found, get the most active business identity or user
+    if (!identity && !cardRow && !memRow && !vioneUser) {
       const fallbackIdentities = await this.prisma.$queryRaw<any[]>`
         SELECT * FROM public.business_identities
         WHERE status = 'active'
@@ -1089,19 +1111,7 @@ export class ConnectAppService implements OnModuleInit {
       }
     }
 
-    // 9. If still nothing, fallback to first user
-    if (!identity && !vioneUser) {
-      const fallbackUsers = await this.prisma.$queryRaw<any[]>`
-        SELECT id, email, username, name, avatar_url, cover_url FROM public.vione_users
-        ORDER BY created_at ASC LIMIT 1
-      `.catch(() => []);
-      if (fallbackUsers.length > 0) {
-        vioneUser = fallbackUsers[0];
-        userId = vioneUser.id;
-      }
-    }
-
-    if (!identity && !vioneUser) {
+    if (!identity && !cardRow && !memRow && !vioneUser) {
       return { state: 'unavailable' };
     }
 
@@ -1114,16 +1124,7 @@ export class ConnectAppService implements OnModuleInit {
       `.catch(() => {});
     }
 
-    // Get user profile row for extra details if available
-    const resolvedUserId = userId || (identity ? identity.owner_user_id : null);
-    let userProfile: any = null;
-    if (resolvedUserId) {
-      const up = await this.prisma.$queryRaw<any[]>`
-        SELECT * FROM public.user_profiles
-        WHERE user_id = ${resolvedUserId}::uuid LIMIT 1
-      `.catch(() => []);
-      if (up.length > 0) userProfile = up[0];
-    }
+    const resolvedUserId = userId || identity?.owner_user_id || cardRow?.owner_user_id || memRow?.user_id || vioneUser?.id;
 
     // Field visibility lookup if identity exists
     let visibility: Record<string, string> = {};
@@ -1144,79 +1145,106 @@ export class ConnectAppService implements OnModuleInit {
 
     const displayName =
       (identity && isVisible('displayName') && identity.display_name) ||
-      (userProfile && userProfile.display_name) ||
-      (vioneUser && vioneUser.name) ||
+      cardRow?.display_name ||
+      memRow?.full_name ||
+      userProfile?.display_name ||
+      vioneUser?.name ||
       'Doanh Nhân ViOne';
 
     const jobTitle =
       (identity && isVisible('jobTitle') && identity.job_title) ||
-      (userProfile && userProfile.professional_title) ||
+      cardRow?.job_title ||
+      memRow?.position ||
+      userProfile?.professional_title ||
       'Lãnh đạo Doanh nghiệp';
 
     const companyName =
       (identity && isVisible('companyName') && identity.company_name) ||
-      (userProfile && userProfile.company_name) ||
+      cardRow?.company_name ||
+      memRow?.company_name ||
+      userProfile?.company_name ||
       'ViOne Network';
 
     const avatarUrl =
       (identity && isVisible('avatarUrl') && identity.avatar_url) ||
-      (userProfile && userProfile.avatar_url) ||
-      (vioneUser && vioneUser.avatar_url) ||
+      cardRow?.avatar_url ||
+      memRow?.avatar_url ||
+      userProfile?.avatar_url ||
+      vioneUser?.avatar_url ||
       null;
 
     const coverUrl =
-      (identity && identity.cover_url) ||
-      (vioneUser && vioneUser.cover_url) ||
+      identity?.cover_url ||
+      cardRow?.cover_url ||
+      vioneUser?.cover_url ||
       null;
 
     const primaryEmail =
       (identity && isVisible('primaryEmail') && identity.primary_email) ||
-      (vioneUser && vioneUser.email) ||
+      cardRow?.email ||
+      memRow?.email ||
+      vioneUser?.email ||
+      userProfile?.email ||
       null;
 
     const primaryPhone =
       (identity && isVisible('primaryPhone') && identity.primary_phone) ||
+      cardRow?.phone ||
+      memRow?.phone ||
+      userProfile?.phone ||
       null;
 
     const bio =
       (identity && isVisible('bio') && identity.bio) ||
-      (userProfile && userProfile.bio) ||
+      cardRow?.bio ||
+      userProfile?.bio ||
+      memRow?.bio ||
       null;
 
     const headline =
       (identity && isVisible('headline') && identity.headline) ||
+      cardRow?.headline ||
       `${jobTitle} tại ${companyName}`;
 
     const website =
       (identity && isVisible('website') && identity.website) ||
+      cardRow?.website ||
+      userProfile?.website ||
       'https://vione.viconnect.vn';
 
     const address =
       (identity && isVisible('address') && identity.address) ||
+      cardRow?.address ||
+      memRow?.address ||
+      userProfile?.address ||
       null;
 
     const city =
       (identity && isVisible('city') && identity.city) ||
-      (userProfile && userProfile.region) ||
+      cardRow?.city ||
+      userProfile?.region ||
       'Hà Nội';
 
     const industry =
-      (userProfile && userProfile.industry) ||
+      userProfile?.industry ||
+      cardRow?.industry ||
       'Chuyển đổi số & Quản trị doanh nghiệp';
 
     const code =
-      resolvedUserId === '00000000-0000-4000-8000-000000000002'
+      memRow?.code ||
+      cardRow?.slug ||
+      (resolvedUserId === '00000000-0000-4000-8000-000000000002'
         ? 'ADM-001'
         : resolvedUserId === 'a0000000-0000-4000-8000-000000000002'
         ? 'CRM-001'
         : resolvedUserId
         ? `VIONE-${resolvedUserId.substring(0, 6).toUpperCase()}`
-        : 'VIONE-VIP';
+        : 'VIONE-VIP');
 
     return {
       state: 'public',
       card: {
-        id: identity?.id || resolvedUserId,
+        id: identity?.id || cardRow?.id || resolvedUserId,
         userId: resolvedUserId,
         code,
         displayName,

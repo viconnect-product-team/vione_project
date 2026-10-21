@@ -220,7 +220,7 @@ export function buildCandidateFromModel(model: any, scanId: string): any {
   const warnings: string[] = [];
   if (model.qrPresent) warnings.push('qr_present');
 
-  const displayName = pickClassifiedLine(lines, model.displayNameLine, {
+  let displayName = pickClassifiedLine(lines, model.displayNameLine, {
     maxLen: 80,
     forbidContactPattern: true,
   });
@@ -267,7 +267,19 @@ export function buildCandidateFromModel(model: any, scanId: string): any {
   if (!displayName) warnings.push('no_name');
   const hasChannel = phones.length > 0 || emails.length > 0 || website !== undefined;
   if (!hasChannel) warnings.push('no_contact_channel');
-  if (!displayName && !hasChannel) return { ok: false, code: 'unusable' };
+  if (!displayName && !hasChannel) {
+    if (lines.length > 0) {
+      const fallbackLine = lines.find((l) => l.text && l.text.trim().length > 0);
+      if (fallbackLine) {
+        displayName = { value: fallbackLine.text.trim().slice(0, 80), confidence: 0.6, sourceText: fallbackLine.text };
+        warnings.push('low_confidence_name');
+      } else {
+        return { ok: false, code: 'unusable' };
+      }
+    } else {
+      return { ok: false, code: 'unusable' };
+    }
+  }
 
   const present: any[] = [
     ...(displayName ? [displayName] : []),
@@ -520,10 +532,12 @@ async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 12000);
 
-          const formData = new URLSearchParams();
+          const formData = new FormData();
           formData.append('apikey', apiKey);
           formData.append('base64Image', preparedBase64);
-          formData.append('language', 'vie');
+          if (engine === '1') {
+            formData.append('language', 'vnm');
+          }
           formData.append('isOverlayRequired', 'true');
           formData.append('detectOrientation', 'true');
           formData.append('scale', 'true');
@@ -531,10 +545,7 @@ async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
 
           const res = await fetch('https://api.ocr.space/parse/image', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formData.toString(),
+            body: formData,
             signal: controller.signal,
           });
           clearTimeout(timeout);

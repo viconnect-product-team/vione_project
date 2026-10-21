@@ -55,11 +55,12 @@ export type PublicProfileData = {
   shareUrl?: string;
 };
 
-export const Route = createFileRoute("/p/$identifier")({
+export const Route = createFileRoute("/p/$identifier" as any)({
   ssr: false,
-  loader: async ({ params }): Promise<{ state: "public" | "unavailable"; card?: PublicProfileData }> => {
+  loader: async ({ params }: { params: any }): Promise<{ state: "public" | "unavailable"; card?: PublicProfileData }> => {
     try {
-      const res = await fetch(getNestApiUrl(`/public/profile/${encodeURIComponent(params.identifier)}`));
+      const identifier = params?.identifier || "";
+      const res = await fetch(getNestApiUrl(`/public/profile/${encodeURIComponent(identifier)}`));
       if (!res.ok) {
         return { state: "unavailable" };
       }
@@ -70,7 +71,7 @@ export const Route = createFileRoute("/p/$identifier")({
       return { state: "unavailable" };
     }
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData }: any) => {
     const card = loaderData?.card;
     const name = card?.displayName || "Doanh Nhân ViOne";
     const company = card?.companyName || "Hệ sinh thái Doanh nhân ViOne";
@@ -97,9 +98,30 @@ export const Route = createFileRoute("/p/$identifier")({
 });
 
 function PublicExecutiveProfilePage() {
-  const { state, card } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const rawParams = (Route.useParams() as { identifier?: string }) || {};
+  const identifier = rawParams.identifier || "";
+  const [profileData, setProfileData] = useState<{ state: "public" | "unavailable"; card?: PublicProfileData }>(loaderData);
   const [copied, setCopied] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+
+  // Client-side fallback retry if initial SSR/loader had a transient network delay
+  useEffect(() => {
+    if (loaderData.state !== "public" || !loaderData.card) {
+      fetch(getNestApiUrl(`/public/profile/${encodeURIComponent(identifier)}`))
+        .then((res) => (res.ok ? res.json() : { state: "unavailable" }))
+        .then((data) => {
+          if (data && data.state === "public" && data.card) {
+            setProfileData(data);
+          }
+        })
+        .catch(() => {});
+    } else {
+      setProfileData(loaderData);
+    }
+  }, [loaderData, identifier]);
+
+  const { state, card } = profileData;
 
   if (state !== "public" || !card) {
     return (
@@ -109,15 +131,23 @@ function PublicExecutiveProfilePage() {
         </div>
         <h1 className="text-xl font-bold text-[#F5E6D3]">Hồ sơ không khả dụng hoặc đã thay đổi</h1>
         <p className="mt-2 max-w-sm text-sm text-slate-400">
-          Mã định danh hoặc đường dẫn danh thiếp này không còn hiệu lực trên hệ thống ViOne.
+          Mã định danh hoặc đường dẫn danh thiếp này không còn hiệu lực hoặc đang cập nhật trên hệ thống ViOne.
         </p>
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
           <a
-            href="https://vione.viconnect.vn"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#D8B282] to-[#B38E5D] px-5 py-2.5 text-xs font-bold text-[#050A14] shadow-lg shadow-[#D8B282]/20 transition-all hover:brightness-110"
+            href="https://vione.viconnect.vn/connect-app"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#D8B282] to-[#B38E5D] px-5 py-2.5 text-xs font-black uppercase text-[#050A14] shadow-lg shadow-[#D8B282]/20 transition-all hover:brightness-110"
           >
-            Về Trang chủ ViOne
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Về App ViOne</span>
           </a>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/10"
+          >
+            Thử Tải Lại
+          </button>
         </div>
       </main>
     );
@@ -188,7 +218,7 @@ function PublicExecutiveProfilePage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#060911] text-slate-100 flex flex-col items-center justify-start pb-12 selection:bg-[#D8B282]/30">
+    <div className="min-h-screen bg-[#060911] text-slate-100 flex flex-col items-center justify-start pb-24 selection:bg-[#D8B282]/30">
       {/* Background ambient lighting */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-[#D8B282]/15 via-[#B38E5D]/5 to-transparent blur-3xl rounded-full" />
@@ -213,18 +243,21 @@ function PublicExecutiveProfilePage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <a
+              href="https://vione.viconnect.vn/connect-app"
+              className="flex items-center gap-1.5 rounded-full border border-[#D8B282]/50 bg-gradient-to-r from-[#D8B282]/20 to-[#B38E5D]/20 px-3 py-1 text-[11px] font-bold text-[#F5E8D3] hover:from-[#D8B282]/30 hover:to-[#B38E5D]/30 transition shadow-sm"
+            >
+              <ExternalLink className="h-3 w-3 text-[#DFB76C]" />
+              <span>Về App ViOne</span>
+            </a>
             <button
               type="button"
               onClick={() => setShowQrModal(true)}
-              className="flex items-center gap-1.5 rounded-full border border-[#D8B282]/40 bg-[#D8B282]/15 px-3 py-1 text-[11px] font-bold text-[#D8B282] hover:bg-[#D8B282]/25 transition cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-slate-300 hover:bg-white/10 transition cursor-pointer"
             >
               <QrIcon className="h-3.5 w-3.5" />
-              <span>Mã QR</span>
+              <span>QR</span>
             </button>
-            <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10.5px] text-slate-300">
-              <Crown className="h-3 w-3 text-[#D8B282]" />
-              <span>VIP</span>
-            </div>
           </div>
         </header>
 
@@ -328,6 +361,27 @@ function PublicExecutiveProfilePage() {
             https://vione.viconnect.vn
           </a>
         </footer>
+      </div>
+
+      {/* Mobile Sticky Floating Bottom CTA Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#060911]/95 backdrop-blur-xl border-t border-[#D8B282]/30 px-4 py-2.5 pb-[max(0.65rem,env(safe-area-inset-bottom))] shadow-2xl">
+        <div className="mx-auto flex max-w-md items-center gap-2.5">
+          <a
+            href="https://vione.viconnect.vn/connect-app"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#F2D7B3] to-[#B38E5D] py-3 text-xs font-black uppercase tracking-wider text-[#0A0703] shadow-lg shadow-[#DFB76C]/25 hover:brightness-105 active:scale-[0.98] transition cursor-pointer"
+          >
+            <ExternalLink className="h-3.5 w-3.5 stroke-[2.5]" />
+            <span>Về App ViOne</span>
+          </a>
+          <button
+            type="button"
+            onClick={handleDownloadVcard}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 py-3 text-xs font-bold text-slate-200 hover:bg-white/10 active:scale-[0.98] transition cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5 text-[#DFB76C]" />
+            <span>Lưu Danh Bạ</span>
+          </button>
+        </div>
       </div>
 
       {/* QR Modal for easy full-screen presentation */}

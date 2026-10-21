@@ -36,8 +36,11 @@ export const Route = createFileRoute("/connect-app/me/card")({
 
 /** Canonical public URL the QR encodes — fully qualified, /p/<slug> public digital profile. */
 export function canonicalPublicCardUrl(origin: string, slug: string): string {
-  const base = origin || "https://vione.viconnect.vn";
-  return `${base}/p/${encodeURIComponent(slug)}`;
+  let base = "https://vione.viconnect.vn";
+  if (origin && origin.includes("vione.viconnect.vn")) {
+    base = origin;
+  }
+  return `${base.replace(/\/+$/, "")}/p/${encodeURIComponent(slug)}`;
 }
 
 function PresentQrPage() {
@@ -65,10 +68,12 @@ function PresentQrPage() {
   const list = cards ?? [];
   const selected = useMemo(() => list.find((c) => c.id === selectedId) ?? null, [list, selectedId]);
   const published = selected?.status === "published";
-  const qrValue = selected ? canonicalPublicCardUrl(window.location.origin, selected.slug) : "";
+  const origin = typeof window !== "undefined" && window.location.origin.includes("vione.viconnect.vn")
+    ? window.location.origin
+    : "https://vione.viconnect.vn";
+  const qrValue = selected ? canonicalPublicCardUrl(origin, selected.slug) : "";
 
   const identity = myIdentity.data?.identity;
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://vione.viconnect.vn";
   const fallbackQrValue = identity?.ownerUserId
     ? `${origin}/p/${identity.ownerUserId}`
     : `${origin}/p/VIONE-VIP`;

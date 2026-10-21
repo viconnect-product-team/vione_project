@@ -14,8 +14,11 @@ import { reportIdentityMetric } from "@/lib/business-connect/mobile/identity.tel
 import type { IdentityShareLinkInfo } from "@/lib/business-connect/mobile/identity.types";
 
 export function identityShareUrl(token: string): string {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://vione.viconnect.vn";
-  return `${origin}/p/${token}`;
+  let base = "https://vione.viconnect.vn";
+  if (typeof window !== "undefined" && window.location.origin.includes("vione.viconnect.vn")) {
+    base = window.location.origin;
+  }
+  return `${base.replace(/\/+$/, "")}/p/${encodeURIComponent(token)}`;
 }
 
 export function IdentityQrSheet({

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Query, UseGuards, Request } from '@
 import { ConnectAppService } from './connect-app.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('public')
+@Controller(['public', 'connect-app/public'])
 export class PublicController {
   constructor(private readonly connectAppService: ConnectAppService) {}
 
@@ -16,12 +16,12 @@ export class PublicController {
     return this.connectAppService.resolveAssociationByHost(host);
   }
 
-  @Get('identity/:token')
+  @Get(['identity/:token', 'p/:token'])
   async getPublicIdentityByToken(@Param('token') token: string) {
     return this.connectAppService.getPublicProfile(token);
   }
 
-  @Get('profile/:identifier')
+  @Get(['profile/:identifier', 'p/:identifier', 'identity/:identifier'])
   async getPublicProfile(@Param('identifier') identifier: string) {
     return this.connectAppService.getPublicProfile(identifier);
   }

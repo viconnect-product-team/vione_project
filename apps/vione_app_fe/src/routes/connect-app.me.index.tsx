@@ -737,8 +737,8 @@ function ConnectAppMePage() {
                     strokeWidth={1.8}
                   />
                   <span className="min-w-0">
-                    <span className="block font-semibold text-white">Thiết lập hiển thị quét QR & Thẻ VIP</span>
-                    <span className="block truncate text-[12px] font-normal text-[#D4C3A3]">
+                    <span className="block font-semibold text-[var(--bc-mobile-text)]">Thiết lập hiển thị quét QR & Thẻ VIP</span>
+                    <span className="block truncate text-[12px] font-normal text-[var(--bc-mobile-muted)]">
                       Chọn mẫu thẻ Mạ Vàng / Mạ Bạc và tùy chỉnh trường hiển thị
                     </span>
                   </span>

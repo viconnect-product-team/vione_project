@@ -595,6 +595,42 @@ export function CardScanFlow() {
     setStage("capture");
   }
 
+  function startManualReview() {
+    const fallbackCandidate: BusinessCardCandidate = {
+      schemaVersion: 1,
+      scanId: safeRandomUUID(),
+      status: "candidate",
+      fields: {
+        phones: [],
+        emails: [],
+      },
+      warnings: ["name_needs_review"],
+      overallConfidence: 1,
+    };
+    const nextDraft: ScanReviewDraft = {
+      displayName: "",
+      title: "",
+      companyName: "",
+      phones: [],
+      primaryPhone: -1,
+      emails: [],
+      primaryEmail: -1,
+      website: "",
+      address: "",
+    };
+    setCandidate(fallbackCandidate);
+    setDraft(nextDraft);
+    setDraftErrors({});
+    setResolution(null);
+    setSaveError(null);
+    setSaveOutcome(null);
+    clientTokenRef.current = safeRandomUUID();
+    reviewStartedAtRef.current = Date.now();
+    sessionExpiredRef.current = false;
+    setSessionExpired(false);
+    setStage("review");
+  }
+
   function cancelReview() {
     reportCardScanMetric("OCR_REVIEW_CANCELLED");
     retake();
@@ -940,6 +976,13 @@ export function CardScanFlow() {
                 {t("bc.mobile.cardScan.chooseOther")}
               </button>
             </div>
+            <button
+              type="button"
+              onClick={startManualReview}
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#DFB76C]/50 bg-[#DFB76C]/10 px-4 text-[13.5px] font-bold text-[#B38E5D] dark:text-[#FFE8C2] hover:bg-[#DFB76C]/20 transition cursor-pointer"
+            >
+              <span>Tự nhập thông tin danh thiếp</span>
+            </button>
           </div>
         </div>
       ) : null}
@@ -965,6 +1008,13 @@ export function CardScanFlow() {
                 <span className="text-slate-950 font-bold">{t("bc.mobile.cardScan.retry")}</span>
               </button>
             ) : null}
+            <button
+              type="button"
+              onClick={startManualReview}
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#DFB76C]/50 bg-[#DFB76C]/10 px-4 text-[13.5px] font-bold text-[#B38E5D] dark:text-[#FFE8C2] hover:bg-[#DFB76C]/20 transition cursor-pointer"
+            >
+              <span>Tự nhập thông tin danh thiếp</span>
+            </button>
             <button
               type="button"
               onClick={retake}

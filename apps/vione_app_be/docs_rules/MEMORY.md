@@ -7,3 +7,20 @@
   - Bổ sung endpoint cập nhật tiến độ công việc `PATCH /connect-app/community/:communityId/tasks/:taskId/progress`: Cập nhật % tiến độ, ghi chú, trạng thái `in_progress` / `done`, phát socket realtime tới quản lý/sếp và người giao việc.
   - Bổ sung endpoint import Excel `POST /connect-app/community/:communityId/tasks/import-excel`: Cho phép nạp hàng loạt công việc chia theo phòng ban (Kinh doanh, Kỹ thuật, Marketing, Kế toán, Nhân sự) vào hệ thống.
   - Bổ sung Realtime Gateway thông báo khi giao việc mới (`task_assigned`), nhận việc (`task_accepted`) và cập nhật tiến độ (`task_progress_updated`).
+
+- **Ngày 21/10/2026**:
+  - **Sửa triệt để luồng quét mã QR ViOne qua Zalo & Bổ sung nút "Về App ViOne"**:
+    - Chuẩn hóa link mã QR cá nhân và chia sẻ danh thiếp sang URL canonical production công khai: `https://vione.viconnect.vn/p/{identifier}` (tránh URL nội bộ/dev cổng 5445 hoặc IP loopback khiến trình duyệt Zalo chặn SSL hoặc báo lỗi trang).
+    - Cải tiến Backend `getPublicProfile`: Hỗ trợ đa dạng định dạng identifier (UUID, clean token, full URL), tổng hợp và fallback qua 6 bảng (`identity_share_links`, `business_identities`, `member_business_cards`, `members`, `user_profiles`, `vione_users`) để đảm bảo quét mã là load được đầy đủ hồ sơ thành viên mà không bao giờ bị trả về "Hồ sơ không khả dụng".
+    - Mở rộng controller và route aliases cho endpoint public profile: `@Controller(['public', 'connect-app/public'])`, `@Get(['profile/:identifier', 'p/:identifier', 'identity/:identifier'])`.
+    - Bổ sung nút bấm CTA "Về App ViOne" (dẫn đến `https://vione.viconnect.vn/connect-app`) cả ở Header trên cùng và thanh điều hướng nổi cố định (sticky bottom bar) phía dưới trên trang `p.$identifier.tsx`, giúp người dùng Zalo sau khi xem hồ sơ có thể 1 chạm chuyển tiếp ngay về ứng dụng ViOne hoặc lưu danh bạ.
+  - **Khắc phục lỗi nhận diện thẻ danh thiếp (Card visit)**:
+    - Sửa lỗi nghiêm trọng trong tích hợp OCR.space tại `connect-helpers.ts`: tham số ngôn ngữ tiếng Việt của OCR.space là `'vnm'`, trước đây truyền nhầm `'vie'` dẫn đến OCR.space luôn trả về mã lỗi 99 `E201: Value for parameter 'language' is invalid` khiến 100% lần quét thẻ thất bại.
+    - Chuyển đổi payload gửi sang OCR.space từ chuỗi URL-encoded sang `FormData` multipart nhằm tránh tình trạng URL base64 bị phình to làm đứt kết nối HTTP.
+    - Cải thiện hàm trích xuất `buildCandidateFromModel`: khi thẻ scan thiếu trường nhưng vẫn có dòng text nhận diện được, tự động fallback lấy dòng text đầu tiên làm họ tên (confidence 0.6 kèm warning `low_confidence_name`) thay vì hủy bỏ kết quả (`unusable`).
+    - Bổ sung tính năng cứu cánh tại Frontend: nút "Tự nhập thông tin danh thiếp" hiển thị ngay trên màn hình khi quét thẻ bị mờ hoặc không nhận diện được, đưa người dùng vào form điền thông tin danh thiếp trực tiếp mà không bị gián đoạn công việc.
+  - **Sửa lỗi màu giao diện theme sáng (bị màu đen) ở chức năng chỉnh sửa thông tin mã QR**:
+    - Sửa biến CSS `--bc-mobile-ivory` trong `styles.css` từ `#000000` thành `#FFFFFF` khi ở chế độ sáng (`html:not(.dark)`), giải quyết triệt để lỗi khung thẻ QR bị đen đặc trong theme sáng.
+    - Thay thế toàn bộ mã màu cố định nền đen / chữ trắng (`bg-[#0B0F19]`, `text-white`, `border-white/10`, `bg-white/[0.02]`) trong `QrPresetSetupModal.tsx` và màn hình `connect-app.me.index.tsx` thành các biến theme linh hoạt (`--bc-mobile-surface`, `--bc-mobile-text`, `--bc-mobile-border`, `--bc-mobile-surface-soft`), giúp giao diện chuyển đổi mượt mà, sang trọng và chuẩn màu vàng Champagne Gold trên cả 2 theme Sáng và Tối.
+    - Đảm bảo đồng bộ kiến trúc giữa PWA ViOne (`vione_app_fe`) và Native ViOne (`mobile_vione`).
+
