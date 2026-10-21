@@ -2,8 +2,8 @@
 // Public-facing digital card opened from external QR scans (Zalo, Camera, WeChat, etc.)
 // DOES NOT require authentication and NEVER redirects to CRM or login.
 
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   Phone,
   Mail,
@@ -26,6 +26,10 @@ import { QrCanvas } from "@/components/member/QrCanvas";
 import { getNestApiUrl } from "@/lib/api-client";
 import { getImageUrl } from "@/lib/image";
 import { toast } from "sonner";
+import {
+  VipBusinessCard,
+  type VipCardStyle,
+} from "@/components/business-connect/mobile/me/VipBusinessCard";
 
 export type PublicProfileData = {
   id: string;
@@ -175,6 +179,14 @@ function PublicExecutiveProfilePage() {
     }
   };
 
+  const [cardStyle, setCardStyle] = useState<VipCardStyle>(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search).get("style");
+      if (p === "silver") return "silver";
+    }
+    return (card as any)?.cardStyle === "silver" ? "silver" : "gold";
+  });
+
   return (
     <div className="min-h-screen bg-[#060911] text-slate-100 flex flex-col items-center justify-start pb-12 selection:bg-[#D8B282]/30">
       {/* Background ambient lighting */}
@@ -200,273 +212,96 @@ function PublicExecutiveProfilePage() {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full border border-[#D8B282]/30 bg-[#D8B282]/10 px-3 py-1 text-[11px] font-medium text-[#D8B282]">
-            <Crown className="h-3 w-3 text-[#D8B282]" />
-            <span>Doanh nhân ViOne</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowQrModal(true)}
+              className="flex items-center gap-1.5 rounded-full border border-[#D8B282]/40 bg-[#D8B282]/15 px-3 py-1 text-[11px] font-bold text-[#D8B282] hover:bg-[#D8B282]/25 transition cursor-pointer"
+            >
+              <QrIcon className="h-3.5 w-3.5" />
+              <span>Mã QR</span>
+            </button>
+            <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10.5px] text-slate-300">
+              <Crown className="h-3 w-3 text-[#D8B282]" />
+              <span>VIP</span>
+            </div>
           </div>
         </header>
 
-        {/* Profile Digital Card Container */}
-        <div className="overflow-hidden rounded-3xl border border-[#D8B282]/25 bg-gradient-to-b from-[#0F1626] to-[#0A0E18] shadow-2xl shadow-black/80 backdrop-blur-xl">
-          {/* Cover Photo */}
-          <div className="relative h-36 sm:h-44 w-full bg-gradient-to-r from-[#182338] via-[#243350] to-[#121A2A] overflow-hidden">
-            {card.coverUrl ? (
-              <img
-                src={getImageUrl(card.coverUrl)}
-                alt="Cover"
-                className="w-full h-full object-cover object-center"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                <span className="font-serif text-9xl font-black text-[#D8B282]">V</span>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0F1626] via-transparent to-black/30" />
-            
-            {/* Verified Floating Badge */}
-            <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 text-[10.5px] font-semibold text-emerald-400">
-              <ShieldCheck className="h-3.5 w-3.5" />
+        {/* Cover Photo Header */}
+        {card.coverUrl && (
+          <div className="relative h-28 sm:h-36 w-full rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+            <img
+              src={getImageUrl(card.coverUrl)}
+              alt="Cover"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#060911] via-transparent to-black/30" />
+            <div className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+              <ShieldCheck className="h-3 w-3" />
               <span>Đã xác thực</span>
             </div>
           </div>
+        )}
 
-          {/* Avatar & Core Identity */}
-          <div className="relative px-6 pb-6 pt-0">
-            {/* Overlapping Avatar */}
-            <div className="relative -mt-16 sm:-mt-20 mb-4 flex items-end justify-between">
-              <div className="relative">
-                <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-full p-1 bg-gradient-to-b from-[#F2D7B3] via-[#D8B282] to-[#8C653B] shadow-xl shadow-black/60">
-                  <div className="h-full w-full rounded-full overflow-hidden bg-[#0A0E18]">
-                    {card.avatarUrl ? (
-                      <img
-                        src={getImageUrl(card.avatarUrl)}
-                        alt={card.displayName}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-[#151D2F] text-2xl sm:text-3xl font-bold text-[#D8B282]">
-                        {card.displayName.slice(0, 2).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#D8B282] to-[#F2D7B3] text-[#050A14] shadow-md border-2 border-[#0A0E18]">
-                  <Sparkles className="h-3.5 w-3.5 fill-current" />
-                </div>
-              </div>
-
-              {/* Code Badge & QR Trigger */}
-              <div className="flex flex-col items-end gap-2 pb-1">
-                <button
-                  type="button"
-                  onClick={() => setShowQrModal(true)}
-                  className="flex items-center gap-1.5 rounded-xl border border-[#D8B282]/30 bg-[#D8B282]/10 px-3 py-1.5 text-xs font-semibold text-[#D8B282] hover:bg-[#D8B282]/20 transition"
-                >
-                  <QrIcon className="h-3.5 w-3.5" />
-                  <span>Mã QR</span>
-                </button>
-                <div className="text-[10px] font-mono font-medium text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
-                  {card.code || "VIONE-VIP"}
-                </div>
-              </div>
-            </div>
-
-            {/* Name & Titles */}
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                <span>{card.displayName}</span>
-              </h1>
-              {card.jobTitle && (
-                <p className="text-[15px] font-bold text-[#D8B282] flex items-center gap-1.5">
-                  <Briefcase className="h-4 w-4 shrink-0 text-[#D8B282]" />
-                  <span>{card.jobTitle}</span>
-                </p>
-              )}
-              {card.companyName && (
-                <p className="text-[14px] font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Building2 className="h-4 w-4 shrink-0 text-slate-400" />
-                  <span>{card.companyName}</span>
-                </p>
-              )}
-              {card.headline && (
-                <p className="mt-1 text-xs text-slate-400 italic">
-                  "{card.headline}"
-                </p>
-              )}
-            </div>
-
-            {/* Action Buttons Row */}
-            <div className="mt-6 flex flex-col gap-2.5">
-              {/* Primary Action: Save to Phone Contacts (vCard) */}
-              <button
-                type="button"
-                onClick={handleDownloadVcard}
-                className="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#D8B282] via-[#E2C39B] to-[#B38E5D] py-3.5 px-4 font-bold text-[#070B14] shadow-lg shadow-[#D8B282]/25 hover:brightness-105 active:scale-[0.99] transition-all"
-              >
-                <Download className="h-5 w-5" />
-                <span className="text-[15px]">Lưu danh bạ vào điện thoại (.vcf)</span>
-              </button>
-
-              {/* Quick Communication Grid */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {card.primaryPhone ? (
-                  <a
-                    href={`tel:${cleanPhone}`}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 px-3 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition"
-                  >
-                    <Phone className="h-4 w-4" />
-                    <span>Gọi điện thoại</span>
-                  </a>
-                ) : (
-                  <button
-                    disabled
-                    className="flex items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] py-2.5 px-3 text-xs font-medium text-slate-500 cursor-not-allowed"
-                  >
-                    <Phone className="h-4 w-4" />
-                    <span>Chưa có SĐT</span>
-                  </button>
-                )}
-
-                {card.primaryPhone ? (
-                  <a
-                    href={`https://zalo.me/${cleanPhone}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl border border-sky-500/20 bg-sky-500/10 py-2.5 px-3 text-xs font-semibold text-sky-400 hover:bg-sky-500/20 transition"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>Nhắn qua Zalo</span>
-                  </a>
-                ) : (
-                  <button
-                    disabled
-                    className="flex items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] py-2.5 px-3 text-xs font-medium text-slate-500 cursor-not-allowed"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>Chưa có Zalo</span>
-                  </button>
-                )}
-
-                {card.primaryEmail ? (
-                  <a
-                    href={`mailto:${card.primaryEmail}`}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 px-3 text-xs font-semibold text-slate-200 hover:bg-white/10 transition"
-                  >
-                    <Mail className="h-4 w-4 text-[#D8B282]" />
-                    <span className="truncate">Gửi Email</span>
-                  </a>
-                ) : null}
-
-                <button
-                  type="button"
-                  onClick={handleShare}
-                  className="flex items-center justify-center gap-2 rounded-xl border border-[#D8B282]/30 bg-[#D8B282]/10 py-2.5 px-3 text-xs font-semibold text-[#D8B282] hover:bg-[#D8B282]/20 transition"
-                >
-                  {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-                  <span>{copied ? "Đã chép link" : "Chia sẻ hồ sơ"}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Detailed Information Accordion / Cards */}
-            <div className="mt-6 flex flex-col gap-3.5 border-t border-white/10 pt-5">
-              {/* Bio */}
-              {card.bio && (
-                <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-[#D8B282] mb-1.5">
-                    Về Doanh Nhân
-                  </h2>
-                  <p className="text-[13.5px] leading-relaxed text-slate-300 whitespace-pre-line">
-                    {card.bio}
-                  </p>
-                </div>
-              )}
-
-              {/* Contact Info List */}
-              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 flex flex-col gap-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#D8B282]">
-                  Thông tin kết nối
-                </h2>
-
-                {card.primaryPhone && (
-                  <div className="flex items-center gap-3 text-[13px]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
-                      <Phone className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-[11px] text-slate-400 block">Số điện thoại</span>
-                      <a href={`tel:${cleanPhone}`} className="font-semibold text-white hover:underline">
-                        {card.primaryPhone}
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {card.primaryEmail && (
-                  <div className="flex items-center gap-3 text-[13px]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-[#D8B282]">
-                      <Mail className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-[11px] text-slate-400 block">Hộp thư điện tử</span>
-                      <a href={`mailto:${card.primaryEmail}`} className="font-semibold text-white hover:underline truncate block">
-                        {card.primaryEmail}
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {card.website && (
-                  <div className="flex items-center gap-3 text-[13px]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
-                      <Globe className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-[11px] text-slate-400 block">Trang web doanh nghiệp</span>
-                      <a
-                        href={card.website.startsWith("http") ? card.website : `https://${card.website}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-semibold text-blue-400 hover:underline flex items-center gap-1 truncate"
-                      >
-                        <span className="truncate">{card.website}</span>
-                        <ExternalLink className="h-3 w-3 shrink-0" />
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {(card.address || card.city) && (
-                  <div className="flex items-center gap-3 text-[13px]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400">
-                      <MapPin className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-[11px] text-slate-400 block">Trụ sở / Địa chỉ hoạt động</span>
-                      <span className="font-medium text-slate-200">
-                        {[card.address, card.city].filter(Boolean).join(", ")}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {card.industry && (
-                  <div className="flex items-center gap-3 text-[13px]">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/10 text-purple-400">
-                      <Briefcase className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-[11px] text-slate-400 block">Ngành nghề & Lĩnh vực thế mạnh</span>
-                      <span className="font-medium text-slate-200">
-                        {card.industry}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Card Style Switcher (Mạ Vàng vs Mạ Bạc) */}
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-1.5 backdrop-blur-md">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 pl-2">
+            Phong cách thẻ:
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setCardStyle("gold")}
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                cardStyle === "gold"
+                  ? "bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-[#0A0703] shadow-md shadow-[#DFB76C]/20"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Crown className="h-3 w-3" />
+              <span>Mạ Vàng VIP</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCardStyle("silver")}
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                cardStyle === "silver"
+                  ? "bg-gradient-to-r from-slate-200 to-slate-400 text-[#0A0703] shadow-md shadow-white/10"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Sparkles className="h-3 w-3" />
+              <span>Mạ Bạc VIP</span>
+            </button>
           </div>
         </div>
+
+        {/* The Luxury VIP Business Card with Quick Actions & Profile */}
+        <VipBusinessCard
+          profile={{
+            displayName: card.displayName,
+            jobTitle: card.jobTitle,
+            companyName: card.companyName,
+            primaryPhone: card.primaryPhone,
+            primaryEmail: card.primaryEmail,
+            website: card.website,
+            avatarUrl: card.avatarUrl,
+            coverUrl: card.coverUrl,
+            bio: card.bio,
+            headline: card.headline,
+            address: card.address,
+            city: card.city,
+            industry: card.industry,
+            code: card.code,
+            zaloUrl: (card as any)?.zaloUrl,
+          }}
+          style={cardStyle}
+          showActions={true}
+          onDownloadVcf={handleDownloadVcard}
+          onShare={handleShare}
+          copied={copied}
+        />
 
         {/* CTA Banner: Connect on ViOne Network */}
         <div className="rounded-2xl border border-[#D8B282]/20 bg-[#D8B282]/5 p-4 flex items-center justify-between gap-3">

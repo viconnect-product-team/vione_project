@@ -206,9 +206,9 @@ export function BusinessCardCropper({
           onClick={() => void apply()}
           disabled={busy}
           aria-label={t("bc.mobile.cardScan.crop.apply")}
-          className="grid h-11 w-11 place-items-center rounded-full bg-white text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:opacity-50"
+          className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-slate-950 font-bold border border-[#DFB76C]/60 shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DFB76C] disabled:opacity-50"
         >
-          <Check aria-hidden="true" className="h-5 w-5" strokeWidth={2} />
+          <Check aria-hidden="true" className="h-5 w-5 stroke-[2.5]" />
         </button>
       </header>
 
@@ -263,8 +263,8 @@ export function BusinessCardCropper({
               onClick={() => applyAspect(a.key)}
               disabled={busy}
               aria-pressed={aspectKey === a.key}
-              className={`min-h-10 rounded-full px-4 text-[13px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:opacity-50 ${
-                aspectKey === a.key ? "bg-white text-black" : "bg-white/10 text-white"
+              className={`min-h-10 rounded-full px-4 text-[13px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DFB76C] disabled:opacity-50 ${
+                aspectKey === a.key ? "bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-slate-950 font-bold shadow-md" : "bg-white/10 text-white"
               }`}
             >
               {t(`bc.mobile.cardScan.crop.aspect.${a.key}` as TKey)}

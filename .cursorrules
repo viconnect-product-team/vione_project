@@ -47,6 +47,18 @@
     - Cổng 5446 được dành RIÊNG cho CRM Quản trị ViOne. TUYỆT ĐỐI KHÔNG được mở hay duy trì `/connect-app` tại cổng 5446.
     - Cấu hình Nginx (`location /connect-app { return 301 https://vione.viconnect.vn/connect-app; }`) và React Router guard tại `__root.tsx` & `connect-app.tsx` lập tức chuyển hướng bất kỳ truy cập nào từ cổng 5446 sang subdomain chính thức `https://vione.viconnect.vn`.
     - Subdomain chính thức của PWA ViOne là `https://vione.viconnect.vn/`. Mọi mã QR, đường link chia sẻ, script deploy (`deploy-ssl.ps1`, `nginx.conf`) đều đồng bộ trỏ vào subdomain này.
+- **Quy Chuẩn Thẻ VIP Doanh Nhân Mạ Vàng/Bạc & Cài Đặt Preset Mã QR (VIP Business Card & QR Preset Rule)**:
+    - Khi quét mã QR hoặc bấm xem trước danh thiếp tại màn "Tôi", hệ thống BẮT BUỘC hiển thị Thẻ VIP Doanh nhân cao cấp (`VipBusinessCard.tsx`) với 2 tùy chọn mạ vàng Champagne Gold (`#DFB76C`) hoặc mạ bạc Platinum sang trọng.
+    - Trên thẻ hiển thị đầy đủ: Ảnh đại diện avatar viền mạ vàng/bạc, Chip kim loại thông minh, Biểu tượng sóng NFC contactless, Họ tên, Chức vụ, Số điện thoại, Tên công ty.
+    - Bên dưới thẻ hiển thị cụm nút hành động nhanh: Gọi điện thoại trực tiếp, Nhắn tin Zalo, Mở Website, Tải danh bạ (.vcf) 1-chạm chuẩn 3 trường, Chia sẻ hồ sơ, kèm khối hồ sơ cá nhân (Tiểu sử, Trụ sở).
+    - Màn hình "Tôi" BẮT BUỘC có tính năng Cài đặt cấu hình QR (`QrPresetSetupModal.tsx`) cho phép doanh nhân lựa chọn các preset hiển thị (Gold VIP - chia sẻ đầy đủ, Silver VIP - đối tác, Quick Connect) và bật/tắt từng trường thông tin theo nhu cầu kết nối.
+- **Quy Chuẩn Tắt Trợ Lý AI Ẩn Hoàn Toàn Khỏi Giao Diện (AI Assistant Zero-Tab Floating Rule)**:
+    - Khi người dùng tắt Quả Cầu AI ViOne (ấn nút đóng hoặc tắt trong cài đặt), giao diện BẮT BUỘC phải ẩn hoàn toàn 100%, TUYỆT ĐỐI KHÔNG để lại tab mép hoặc thanh mini cạnh màn hình.
+    - Muốn bật lại Trợ lý AI, người dùng vào Section "Trợ lý Doanh Nhân ViOne AI" tại màn hình "Tôi" để bật Switch.
+    - Đồng bộ đồng nhất 100% giữa PWA (`ViOneVoiceAssistant.tsx`) và Native Mobile (`DraggableFloatingAiOrb.tsx`).
+- **Quy Chuẩn Màu Thương Hiệu ViOne Gold (Brand Color Compliance Rule)**:
+    - Tất cả các nút hành động, nút tải ảnh bìa, nút chụp/xác nhận quét danh thiếp và nút đóng tin story 24h BẮT BUỘC sử dụng màu thương hiệu Vàng Champagne Gold (`#DFB76C` / `#D8B282` / `#F6E1C3`) với chữ đen Obsidian `#0A0703` tương phản cao.
+    - Tuyệt đối không dùng các nút nền đen trơn (`bg-black/60`, `bg-black/40`) gây tối và sai lệch bộ nhận diện thương hiệu.
 - **Quy Chuẩn Phân Tách Quy Trình Triển Khai: Server Dev (.ps1) vs Subdomain Production (Subdomain .ps1 & GitHub Actions) (Subdomain & Environment Deployment Isolation Rule)**:
     - **1. Phân Tách Subdomain Production (Cổng Chuẩn 80 & 443 SSL)**:
       * **Subdomain ViOne PWA App (`https://vione.viconnect.vn/`)**: Điều phối bằng `.\deploy-subdomain-vione.ps1` hoặc `.\deploy-subdomain.ps1 -Subdomain vione`. Tự động kích hoạt khi push Git lên `main` qua GitHub Actions `.github/workflows/deploy-vione.yml`. Đóng gói Docker `vione-standalone-frontend:latest` -> `vione-frontend:latest` kết nối upstream `vione-frontend-prod:8080`.

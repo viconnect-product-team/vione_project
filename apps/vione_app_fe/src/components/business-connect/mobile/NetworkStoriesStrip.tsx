@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Plus, X, ChevronLeft, ChevronRight, Heart, Sparkles, Send, Briefcase, MapPin, Building2, Eye, Camera, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useViewerUserId } from "@/hooks/use-viewer-user-id";
 import { avatarOrDemo } from "@/lib/business-connect/mobile/demo-avatars";
-import { resolveMediaUrl } from "@/lib/api-client";
+import { resolveMediaUrl, uploadFileToNest } from "@/lib/api-client";
 import { toast } from "sonner";
 
 export interface EntrepreneurStory {
@@ -230,32 +230,9 @@ export function NetworkStoriesStrip({ onOpenCreateStory, connectedPartnerIds }: 
 
     if (selectedFile) {
       try {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-
-        const token =
-          localStorage.getItem("vibe_token") ||
-          localStorage.getItem("token") ||
-          localStorage.getItem("access_token") ||
-          localStorage.getItem("sb-access-token") ||
-          "";
-
-        const headers: Record<string, string> = {};
-        if (token) {
-          headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        const res = await fetch("/api/upload/file", {
-          method: "POST",
-          headers,
-          body: formData,
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.url) {
-            finalImageUrl = data.url;
-          }
+        const uploadedUrl = await uploadFileToNest(selectedFile, selectedFile.name);
+        if (uploadedUrl) {
+          finalImageUrl = uploadedUrl;
         }
       } catch (err) {
         console.warn("Upload file failed, falling back to local preview", err);
@@ -373,7 +350,7 @@ export function NetworkStoriesStrip({ onOpenCreateStory, connectedPartnerIds }: 
             >
               {/* Background Cover */}
               <img
-                src={story.storyImage}
+                src={resolveMediaUrl(story.storyImage) || story.storyImage}
                 alt={story.authorName}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
@@ -476,7 +453,7 @@ export function NetworkStoriesStrip({ onOpenCreateStory, connectedPartnerIds }: 
                     <button
                       type="button"
                       onClick={stopLiveCamera}
-                      className="px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-semibold hover:bg-black"
+                      className="px-3 py-1 rounded-full bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-[#0A0703] border border-[#DFB76C]/60 text-xs font-bold shadow hover:opacity-90 transition"
                     >
                       Đóng
                     </button>
@@ -636,7 +613,7 @@ export function NetworkStoriesStrip({ onOpenCreateStory, connectedPartnerIds }: 
           >
             {/* Background Story Image */}
             <img
-              src={activeStory.storyImage}
+              src={resolveMediaUrl(activeStory.storyImage) || activeStory.storyImage}
               alt="Story Content"
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -697,9 +674,10 @@ export function NetworkStoriesStrip({ onOpenCreateStory, connectedPartnerIds }: 
                   <button
                     type="button"
                     onClick={() => setActiveStoryIndex(null)}
-                    className="p-1.5 rounded-full bg-black/40 text-white hover:bg-white/20 transition"
+                    aria-label="Đóng tin 24h"
+                    className="p-1.5 rounded-full bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-[#0A0703] border border-[#DFB76C]/60 hover:opacity-90 shadow-md transition cursor-pointer"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-5 h-5 stroke-[2.5]" />
                   </button>
                 </div>
               </div>

@@ -8,8 +8,8 @@
 
 export const CARD_SCAN_ACCEPT = "image/jpeg,image/png,image/webp";
 export const CARD_SCAN_SOURCE_MAX_BYTES = 12 * 1024 * 1024; // 12MB source ceiling
-export const CARD_SCAN_MAX_EDGE = 2048; // practical OCR resolution, not raw 48MP
-export const CARD_SCAN_TARGET_BYTES = 2 * 1024 * 1024; // soft target for upload
+export const CARD_SCAN_MAX_EDGE = 1280; // optimal OCR resolution within API byte limits
+export const CARD_SCAN_TARGET_BYTES = 450 * 1024; // soft target under 500KB for OCR engines
 export const CARD_SCAN_MIME = "image/jpeg";
 
 const SUPPORTED = new Set(["image/jpeg", "image/png", "image/webp"]);

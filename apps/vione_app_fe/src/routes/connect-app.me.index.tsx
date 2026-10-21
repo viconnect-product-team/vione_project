@@ -64,6 +64,14 @@ import { NfcActionSheet } from "@/components/business-connect/mobile/me/NfcActio
 import { TapToConnectSheet } from "@/components/business-connect/mobile/TapToConnectSheet";
 import { DigitalBusinessCard } from "@/components/business-connect/mobile/me/DigitalBusinessCard";
 import {
+  VipBusinessCard,
+  type VipCardStyle,
+} from "@/components/business-connect/mobile/me/VipBusinessCard";
+import {
+  QrPresetSetupModal,
+  type QrPresetConfig,
+} from "@/components/business-connect/mobile/me/QrPresetSetupModal";
+import {
   bcIdentityGetMineFn,
   bcIdentityGetOrCreateShareLinkFn,
   bcIdentityRotateShareLinkFn,
@@ -110,6 +118,7 @@ type OpenSheet =
   | "tap-connect"
   | "business_area"
   | "client"
+  | "qr-setup"
   | null;
 
 const rowClass =
@@ -228,29 +237,66 @@ function ConnectAppMePage() {
   const [signingOut, setSigningOut] = useState(false);
   const [signOutFailed, setSignOutFailed] = useState(false);
 
-  // Trạng thái hiển thị Quả cầu AI ViOne nổi
+  // Trạng thái hiển thị Quả cầu AI ViOne nổi (đồng bộ triệt để mọi key)
   const [isAiFloatingEnabled, setIsAiFloatingEnabled] = useState(() => {
     if (typeof window === "undefined") return true;
     return (
+      localStorage.getItem("vione_ai_orb_hidden") !== "true" &&
       localStorage.getItem("vione_ai_assistant_visible") !== "false" &&
       localStorage.getItem("vione_ai_floating_visible") !== "false"
     );
   });
 
+  const handleToggleAi = (enabled: boolean) => {
+    setIsAiFloatingEnabled(enabled);
+    if (enabled) {
+      localStorage.removeItem("vione_ai_orb_hidden");
+      localStorage.setItem("vione_ai_assistant_visible", "true");
+      localStorage.setItem("vione_ai_floating_visible", "true");
+      window.dispatchEvent(new CustomEvent("vione_ai_toggled", { detail: { hidden: false } }));
+      window.dispatchEvent(new Event("vione_ai_visibility_changed"));
+      window.dispatchEvent(new Event("vione-ai-floating-changed"));
+      toast.success("Đã bật Trợ lý AI ViOne!");
+    } else {
+      localStorage.setItem("vione_ai_orb_hidden", "true");
+      localStorage.setItem("vione_ai_assistant_visible", "false");
+      localStorage.setItem("vione_ai_floating_visible", "false");
+      window.dispatchEvent(new CustomEvent("vione_ai_toggled", { detail: { hidden: true } }));
+      window.dispatchEvent(new Event("vione_ai_visibility_changed"));
+      window.dispatchEvent(new Event("vione-ai-floating-changed"));
+      toast.info("Đã tắt hẳn Trợ lý AI trên giao diện.");
+    }
+  };
+
   useEffect(() => {
     const handleVis = () => {
       setIsAiFloatingEnabled(
+        localStorage.getItem("vione_ai_orb_hidden") !== "true" &&
         localStorage.getItem("vione_ai_assistant_visible") !== "false" &&
         localStorage.getItem("vione_ai_floating_visible") !== "false"
       );
     };
     window.addEventListener("vione_ai_visibility_changed", handleVis);
     window.addEventListener("vione-ai-floating-changed", handleVis);
+    window.addEventListener("vione_ai_toggled", handleVis);
     return () => {
       window.removeEventListener("vione_ai_visibility_changed", handleVis);
       window.removeEventListener("vione-ai-floating-changed", handleVis);
+      window.removeEventListener("vione_ai_toggled", handleVis);
     };
   }, []);
+
+  // Trạng thái cấu hình Quét mã QR & Preview thẻ VIP
+  const [previewStyle, setPreviewStyle] = useState<VipCardStyle>("gold");
+  const [activePreset, setActivePreset] = useState<QrPresetConfig | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("vione_active_qr_preset");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return null;
+  });
 
   // Trạng thái cấp quyền thông báo hệ thống
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionState>(() =>
@@ -678,7 +724,32 @@ function ConnectAppMePage() {
               onAdd={() => setSheet("client")}
             />
 
-            <SectionCard title={t("bc.mobile.me.shareSection.title")}>
+            <SectionCard title="Danh thiếp & Quét mã QR">
+              <button
+                type="button"
+                onClick={() => setSheet("qr-setup")}
+                className={rowClass}
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <QrCode
+                    aria-hidden="true"
+                    className="h-4.5 w-4.5 shrink-0 text-[#DFB76C]"
+                    strokeWidth={1.8}
+                  />
+                  <span className="min-w-0">
+                    <span className="block font-semibold text-white">Thiết lập hiển thị quét QR & Thẻ VIP</span>
+                    <span className="block truncate text-[12px] font-normal text-[#D4C3A3]">
+                      Chọn mẫu thẻ Mạ Vàng / Mạ Bạc và tùy chỉnh trường hiển thị
+                    </span>
+                  </span>
+                </span>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="h-4 w-4 text-[#DFB76C]"
+                  strokeWidth={1.8}
+                />
+              </button>
+
               <button
                 type="button"
                 onClick={() => setSheet("tap-connect")}
@@ -754,6 +825,30 @@ function ConnectAppMePage() {
                   strokeWidth={1.8}
                 />
               </button>
+            </SectionCard>
+
+            {/* Trợ lý AI ViOne Control */}
+            <SectionCard title="Trợ lý Doanh Nhân ViOne AI">
+              <div className="flex items-center justify-between py-2 px-1">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#DFB76C] to-[#F6E1C3] text-black font-bold shadow-md">
+                    <Sparkles className="h-4.5 w-4.5 fill-current" />
+                  </div>
+                  <div>
+                    <span className="block text-[14px] font-bold text-white">
+                      Trợ lý AI trên giao diện
+                    </span>
+                    <span className="block text-[12px] text-slate-400">
+                      {isAiFloatingEnabled ? "Đang bật (Quả cầu AI hiển thị trên màn hình)" : "Đã tắt hoàn toàn khỏi giao diện"}
+                    </span>
+                  </div>
+                </div>
+                <Switch
+                  checked={isAiFloatingEnabled}
+                  onCheckedChange={handleToggleAi}
+                  className="data-[state=checked]:bg-[#DFB76C]"
+                />
+              </div>
             </SectionCard>
 
             {/* 6C — V personalization settings (explicit, transparent). */}
@@ -1014,30 +1109,107 @@ function ConnectAppMePage() {
       )}
       {sheet === "preview" && identity && (
         <MeSheet
-          title={t("bc.mobile.me.previewTitle")}
-          subtitle={t("bc.mobile.me.previewSubtitle")}
+          title="Xem Trước Thẻ VIP & Hồ Sơ"
+          subtitle="Giao diện người khác nhìn thấy khi quét mã QR hoặc mở link của bạn"
           onClose={() => setSheet(null)}
         >
-          <div className="pb-1">
-            <DigitalBusinessCard
-              card={{
-                displayName: identity.displayName,
-                headline: identity.headline || identity.jobTitle,
+          <div className="pb-4 space-y-4">
+            {/* Quick Action to configure QR fields and toggle gold/silver */}
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-2">
+              <div className="flex items-center gap-1.5 pl-1">
+                <button
+                  type="button"
+                  onClick={() => setPreviewStyle("gold")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    previewStyle === "gold"
+                      ? "bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-black shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Mạ Vàng VIP
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewStyle("silver")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    previewStyle === "silver"
+                      ? "bg-gradient-to-r from-slate-200 to-slate-400 text-black shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Mạ Bạc VIP
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSheet("qr-setup")}
+                className="flex items-center gap-1.5 rounded-xl border border-[#DFB76C]/40 bg-[#DFB76C]/10 px-3 py-1.5 text-xs font-bold text-[#DFB76C] hover:bg-[#DFB76C]/20 transition cursor-pointer"
+              >
+                <QrCode className="h-3.5 w-3.5" />
+                <span>Cài đặt QR</span>
+              </button>
+            </div>
+
+            {/* The Luxury VIP Business Card */}
+            <VipBusinessCard
+              profile={{
+                displayName: identity.displayName || "Doanh nhân ViOne",
                 jobTitle: identity.jobTitle,
                 companyName: identity.companyName,
-                bio: identity.bio,
-                avatarUrl: identity.avatarUrl,
-                primaryEmail: identity.primaryEmail,
                 primaryPhone: identity.primaryPhone,
+                primaryEmail: identity.primaryEmail,
                 website: identity.website,
-                linkedinUrl: identity.linkedinUrl,
+                avatarUrl: identity.avatarUrl,
+                coverUrl: (identity as any)?.coverUrl,
+                bio: identity.bio,
+                headline: identity.headline,
                 address: identity.address,
                 city: identity.city,
+                code: shareLink?.token ? `VIONE-${shareLink.token.slice(0, 6).toUpperCase()}` : "VIONE-VIP",
+                zaloUrl: identity.primaryPhone ? `https://zalo.me/${identity.primaryPhone.replace(/[^\d+]/g, "")}` : null,
               }}
-              publicUrl={shareLink ? identityShareUrl(shareLink.token) : null}
+              style={previewStyle}
+              visibleFields={activePreset?.visibleFields}
+              showActions={true}
+              onDownloadVcf={() => {
+                toast.success("Bản xem trước: Đã tải file danh bạ mẫu (.vcf)");
+              }}
+              onShare={() => {
+                if (shareLink) {
+                  navigator.clipboard.writeText(identityShareUrl(shareLink.token));
+                  toast.success("Đã sao chép liên kết danh thiếp vào bộ nhớ tạm!");
+                }
+              }}
             />
           </div>
         </MeSheet>
+      )}
+
+      {sheet === "qr-setup" && identity && (
+        <QrPresetSetupModal
+          profile={{
+            displayName: identity.displayName || "Doanh nhân ViOne",
+            jobTitle: identity.jobTitle,
+            companyName: identity.companyName,
+            primaryPhone: identity.primaryPhone,
+            primaryEmail: identity.primaryEmail,
+            website: identity.website,
+            avatarUrl: identity.avatarUrl,
+            coverUrl: (identity as any)?.coverUrl,
+            bio: identity.bio,
+            headline: identity.headline,
+            address: identity.address,
+            city: identity.city,
+            code: shareLink?.token ? `VIONE-${shareLink.token.slice(0, 6).toUpperCase()}` : "VIONE-VIP",
+          }}
+          isOpen={true}
+          onClose={() => setSheet(null)}
+          onPresetChanged={(cfg) => {
+            setActivePreset(cfg);
+            setPreviewStyle(cfg.style);
+          }}
+        />
       )}
       {sheet === "nfc-choose" && (
         <NfcActionSheet

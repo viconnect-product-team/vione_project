@@ -82,6 +82,7 @@ import { AttendanceMobileSheet } from "./AttendanceMobileSheet";
 import { WorkflowMobileSheet } from "./WorkflowMobileSheet";
 import { ApprovalsMobileSheet } from "./ApprovalsMobileSheet";
 import { CreateCommunityModal } from "./community/CreateCommunityModal";
+import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
 
 export type CrmEvent = {
   id: string;
@@ -2344,42 +2345,72 @@ function QuickEditProfileModal({
   const [uploadingCover, setUploadingCover] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Crop / Pan state for Avatar & Cover
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropTarget, setCropTarget] = useState<"avatar" | "cover">("avatar");
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAvatarFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploadingAvatar(true);
-    try {
-      const url = await uploadFileToNest(file, file.name);
-      if (url) {
-        setAvatar(url);
-        toast.success("✓ Đã tải ảnh đại diện lên máy chủ thành công!");
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "Lỗi khi tải ảnh đại diện lên");
-    } finally {
-      setUploadingAvatar(false);
-      if (e.target) e.target.value = "";
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropTarget("avatar");
+      setCropImageSrc(reader.result as string);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    if (e.target) e.target.value = "";
   };
 
-  const handleCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploadingCover(true);
-    try {
-      const url = await uploadFileToNest(file, file.name);
-      if (url) {
-        setCover(url);
-        toast.success("✓ Đã tải ảnh bìa lên máy chủ thành công!");
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropTarget("cover");
+      setCropImageSrc(reader.result as string);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    if (e.target) e.target.value = "";
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropModalOpen(false);
+    if (cropTarget === "avatar") {
+      setUploadingAvatar(true);
+      try {
+        const file = new File([blob], `avatar-${Date.now()}.jpg`, { type: "image/jpeg" });
+        const url = await uploadFileToNest(file, file.name);
+        if (url) {
+          setAvatar(url);
+          toast.success("✓ Đã cập nhật ảnh đại diện!");
+        }
+      } catch (err: any) {
+        toast.error(err?.message || "Lỗi khi tải ảnh đại diện lên");
+      } finally {
+        setUploadingAvatar(false);
+        setCropImageSrc(null);
       }
-    } catch (err: any) {
-      toast.error(err?.message || "Lỗi khi tải ảnh bìa lên");
-    } finally {
-      setUploadingCover(false);
-      if (e.target) e.target.value = "";
+    } else {
+      setUploadingCover(true);
+      try {
+        const file = new File([blob], `cover-${Date.now()}.jpg`, { type: "image/jpeg" });
+        const url = await uploadFileToNest(file, file.name);
+        if (url) {
+          setCover(url);
+          toast.success("✓ Đã cập nhật ảnh bìa!");
+        }
+      } catch (err: any) {
+        toast.error(err?.message || "Lỗi khi tải ảnh bìa lên");
+      } finally {
+        setUploadingCover(false);
+        setCropImageSrc(null);
+      }
     }
   };
 
@@ -2480,17 +2511,17 @@ function QuickEditProfileModal({
                   Chưa có ảnh bìa
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/45 transition-colors flex items-center justify-center">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md text-white text-xs font-semibold shadow-md">
+              <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-[#0A0703] border border-[#DFB76C]/60 text-xs font-bold shadow-md">
                   {uploadingCover ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-400" />
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0A0703]" />
                       <span>Đang tải ảnh bìa lên...</span>
                     </>
                   ) : (
                     <>
-                      <Camera className="h-3.5 w-3.5 text-amber-400" />
-                      <span>Đổi ảnh bìa</span>
+                      <Camera className="h-3.5 w-3.5 text-[#0A0703]" />
+                      <span>Đổi ảnh bìa & căn chỉnh</span>
                     </>
                   )}
                 </span>
@@ -2528,22 +2559,22 @@ function QuickEditProfileModal({
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={uploadingAvatar}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[var(--bc-mobile-border-gold)] bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold text-amber-700 dark:text-[#D8B282] cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#DFB76C]/80 bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-[#0A0703] font-bold text-xs shadow-md hover:opacity-95 cursor-pointer transition-all disabled:opacity-60"
                 >
                   {uploadingAvatar ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0A0703]" />
                       <span>Đang tải lên...</span>
                     </>
                   ) : (
                     <>
-                      <Camera className="h-3.5 w-3.5" />
-                      <span>Đổi ảnh đại diện</span>
+                      <Camera className="h-3.5 w-3.5 text-[#0A0703]" />
+                      <span>Đổi avatar & căn chỉnh</span>
                     </>
                   )}
                 </button>
                 <p className="mt-1 text-[11px] text-[var(--bc-mobile-muted)] truncate">
-                  Định dạng JPG, PNG, WEBP tự động đồng bộ.
+                  Hỗ trợ kéo thả căn chỉnh vùng hiển thị 1:1.
                 </p>
               </div>
             </div>
@@ -2656,6 +2687,20 @@ function QuickEditProfileModal({
           </button>
         </div>
       </div>
+
+      {/* Interactive Crop / Pan Modal */}
+      <ImagePanCropModal
+        isOpen={cropModalOpen}
+        imageSrc={cropImageSrc}
+        aspectRatio={cropTarget === "avatar" ? "1:1" : "16:9"}
+        circular={cropTarget === "avatar"}
+        title={cropTarget === "avatar" ? "Căn chỉnh vùng hiển thị Ảnh đại diện" : "Căn chỉnh vùng hiển thị Ảnh bìa (16:9)"}
+        onConfirm={handleCropConfirm}
+        onCancel={() => {
+          setCropModalOpen(false);
+          setCropImageSrc(null);
+        }}
+      />
     </div>
   );
 }

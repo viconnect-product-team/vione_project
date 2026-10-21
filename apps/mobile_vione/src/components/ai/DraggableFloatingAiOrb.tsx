@@ -45,13 +45,16 @@ export const DraggableFloatingAiOrb: React.FC<DraggableFloatingAiOrbProps> = ({
 
   const loadSettings = async () => {
     try {
-      const [savedPos, savedHidden] = await Promise.all([
+      const [savedPos, savedHidden, savedFloatingVisible] = await Promise.all([
         AsyncStorage.getItem(STORAGE_POS_KEY),
         AsyncStorage.getItem(STORAGE_HIDDEN_KEY),
+        AsyncStorage.getItem("vione_ai_floating_visible"),
       ]);
 
-      if (savedHidden === "true") {
+      if (savedHidden === "true" || savedFloatingVisible === "false") {
         setIsHidden(true);
+      } else {
+        setIsHidden(false);
       }
 
       if (savedPos) {
@@ -76,10 +79,12 @@ export const DraggableFloatingAiOrb: React.FC<DraggableFloatingAiOrbProps> = ({
     setIsHidden(true);
     try {
       await AsyncStorage.setItem(STORAGE_HIDDEN_KEY, "true");
+      await AsyncStorage.setItem("vione_ai_floating_visible", "false");
+      await AsyncStorage.setItem("vione_ai_floating_closed", "true");
     } catch {}
     Alert.alert(
-      "Đã ẩn Quả Cầu AI",
-      "Bạn có thể chạm vào tab [✨ AI] ở mép phải màn hình bất kỳ lúc nào để bật lại Trợ lý AI ViOne.",
+      "Đã tắt Trợ lý AI ViOne",
+      "Quả cầu AI đã được ẩn hoàn toàn khỏi màn hình. Để bật lại bất cứ lúc nào, vui lòng vào màn hình 'Tôi' để kích hoạt.",
       [{ text: "Đã hiểu", style: "default" }]
     );
   };
@@ -147,27 +152,9 @@ export const DraggableFloatingAiOrb: React.FC<DraggableFloatingAiOrbProps> = ({
 
   if (!visible) return null;
 
-  // Mini edge tab when orb is hidden
+  // Completely hidden when user disables AI: no edge tab, re-enable via Me screen
   if (isHidden) {
-    return (
-      <View style={styles.edgeTabContainer} pointerEvents="box-none">
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={handleRestoreOrb}
-          style={styles.edgeTabButton}
-        >
-          <LinearGradient
-            colors={["#F6E1C3", "#DFB76C", "#C29B69", "#8C653B"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.edgeTabGradient}
-          >
-            <Sparkles size={13} color="#0B0F17" />
-            <Text style={styles.edgeTabText}>AI</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    );
+    return null;
   }
 
   return (

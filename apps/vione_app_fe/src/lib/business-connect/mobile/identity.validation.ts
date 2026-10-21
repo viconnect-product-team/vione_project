@@ -53,8 +53,12 @@ export function normalizeIdentityPhone(raw: string): string | null {
  * Returns the normalized URL string or null.
  */
 export function normalizeIdentityUrl(raw: string, maxLen: number): string | null {
-  const trimmed = raw.trim();
+  let trimmed = raw.trim();
   if (trimmed.length > maxLen) return null;
+  if (trimmed.startsWith("/")) return trimmed;
+  if (!/^https?:\/\//i.test(trimmed)) {
+    trimmed = `https://${trimmed}`;
+  }
   try {
     const url = new URL(trimmed);
     if (url.protocol !== "https:" && url.protocol !== "http:") return null;
@@ -117,9 +121,8 @@ const optionalPhone = z
   .nullable();
 
 /**
- * Owner identity update payload. STRICT: unknown keys (e.g. a forged
- * owner_user_id, id, status, created_at) are REJECTED — never silently
- * mapped to columns. Every value is normalized server-side.
+ * Owner identity update payload. Passthrough allows harmless extra metadata
+ * (e.g. coverUrl, theme presets) without breaking saving.
  */
 export const identityUpdateSchema = z
   .object({
@@ -144,11 +147,31 @@ export const identityUpdateSchema = z
         if (s.startsWith("/")) return s;
         return normalizeIdentityUrl(s, IDENTITY_LIMITS.website);
       })
-      .nullable(),
+      .nullable()
+      .optional(),
+    coverUrl: z
+      .string()
+      .max(IDENTITY_LIMITS.website + 200)
+      .transform((s) => s.trim())
+      .refine(
+        (s) =>
+          s === "" ||
+          s.startsWith("/") ||
+          normalizeIdentityUrl(s, IDENTITY_LIMITS.website) !== null,
+        "invalid or unsafe URL"
+      )
+      .transform((s) => {
+        if (s === "") return null;
+        if (s.startsWith("/")) return s;
+        return normalizeIdentityUrl(s, IDENTITY_LIMITS.website);
+      })
+      .nullable()
+      .optional(),
     primaryEmail: optionalEmail,
     primaryPhone: optionalPhone,
     website: optionalUrl(IDENTITY_LIMITS.website),
     linkedinUrl: optionalUrl(IDENTITY_LIMITS.linkedinUrl),
+    facebookUrl: optionalUrl(IDENTITY_LIMITS.website).optional(),
     address: optionalText(IDENTITY_LIMITS.address),
     city: optionalText(IDENTITY_LIMITS.city),
     countryCode: z
@@ -157,10 +180,11 @@ export const identityUpdateSchema = z
       .transform((s) => s.trim())
       .refine((s) => s === "" || normalizeCountryCode(s) !== null, "invalid country code")
       .transform((s) => (s === "" ? null : normalizeCountryCode(s)))
-      .nullable(),
-    preferredLocale: optionalText(IDENTITY_LIMITS.preferredLocale),
+      .nullable()
+      .optional(),
+    preferredLocale: optionalText(IDENTITY_LIMITS.preferredLocale).optional(),
   })
-  .strict();
+  .passthrough();
 
 export type IdentityUpdateInput = z.infer<typeof identityUpdateSchema>;
 

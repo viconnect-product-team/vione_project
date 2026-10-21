@@ -158,8 +158,18 @@ export function ViOneVoiceAssistant() {
       setIsOrbHidden(false);
       setIsOpen(true);
     };
+    const handleToggle = (e: any) => {
+      const hidden = e?.detail?.hidden !== undefined ? e.detail.hidden : localStorage.getItem("vione_ai_orb_hidden") === "true";
+      setIsOrbHidden(hidden);
+    };
     window.addEventListener("vione-open-ai-assistant", handleOpenAi);
-    return () => window.removeEventListener("vione-open-ai-assistant", handleOpenAi);
+    window.addEventListener("vione_ai_toggled", handleToggle);
+    window.addEventListener("storage", handleToggle);
+    return () => {
+      window.removeEventListener("vione-open-ai-assistant", handleOpenAi);
+      window.removeEventListener("vione_ai_toggled", handleToggle);
+      window.removeEventListener("storage", handleToggle);
+    };
   }, []);
 
   const loadSessions = () => {
@@ -434,14 +444,16 @@ export function ViOneVoiceAssistant() {
     setIsOrbHidden(true);
     try {
       localStorage.setItem("vione_ai_orb_hidden", "true");
+      window.dispatchEvent(new CustomEvent("vione_ai_toggled", { detail: { hidden: true } }));
     } catch {}
-    toast.info("Đã ẩn Quả cầu Trợ lý AI ViOne. Bạn có thể bấm tab [✨ AI] ở mép màn hình để hiện lại.");
+    toast.info("Đã tắt Trợ lý AI trên giao diện. Khi muốn bật lại, vui lòng vào màn Tôi để bật.");
   };
 
   const handleRestoreOrb = () => {
     setIsOrbHidden(false);
     try {
       localStorage.removeItem("vione_ai_orb_hidden");
+      window.dispatchEvent(new CustomEvent("vione_ai_toggled", { detail: { hidden: false } }));
     } catch {}
   };
 
@@ -704,20 +716,9 @@ export function ViOneVoiceAssistant() {
   // FAB Trigger Button (Khi modal đóng)
   if (!isOpen) {
     if (isOrbHidden) {
-      // Mini edge tab để người dùng chạm là hiện lại Quả cầu AI
-      return (
-        <div className="fixed bottom-24 right-0 z-[9999]">
-          <button
-            type="button"
-            onClick={handleRestoreOrb}
-            className="flex items-center gap-1 py-1.5 px-2.5 rounded-l-full bg-[linear-gradient(135deg,#F6E1C3_0%,#DFB76C_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-bold text-[11px] shadow-lg border-y border-l border-[#F6E1C3]/80 cursor-pointer active:scale-95 transition"
-            title="Bật lại Trợ lý AI ViOne"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>AI</span>
-          </button>
-        </div>
-      );
+      // Khi người dùng tắt AI: Tắt hẳn trên toàn bộ giao diện (không hiện orb, không hiện tab mép)
+      // Người dùng có thể bật lại bất cứ lúc nào trong màn "Tôi"
+      return null;
     }
 
     return (

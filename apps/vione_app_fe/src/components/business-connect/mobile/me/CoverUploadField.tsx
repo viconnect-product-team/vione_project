@@ -114,12 +114,12 @@ export function CoverUploadField({ value, onChange, disabled }: CoverUploadField
             type="button"
             disabled={disabled || busy}
             onClick={() => inputRef.current?.click()}
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/20 px-3.5 text-xs font-semibold text-white shadow-lg transition hover:bg-black/90 disabled:opacity-60"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#DFB76C] via-[#F2D7B3] to-[#B38E5D] text-[#0A0703] border border-[#DFB76C]/70 px-3.5 text-xs font-black shadow-md shadow-[#DFB76C]/25 transition hover:brightness-105 active:scale-95 disabled:opacity-60 cursor-pointer"
           >
             {busy ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-[#D8B282]" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0A0703]" />
             ) : (
-              <ImagePlus className="h-3.5 w-3.5 text-[#D8B282]" />
+              <ImagePlus className="h-3.5 w-3.5 text-[#0A0703]" />
             )}
             <span>{busy ? "Đang tải..." : value ? "Đổi ảnh bìa" : "Tải ảnh bìa"}</span>
           </button>
@@ -132,7 +132,7 @@ export function CoverUploadField({ value, onChange, disabled }: CoverUploadField
                 onChange("");
                 if (inputRef.current) inputRef.current.value = "";
               }}
-              className="inline-flex min-h-9 items-center justify-center rounded-xl bg-black/70 backdrop-blur-md border border-white/20 p-2 text-rose-400 hover:bg-rose-500/20"
+              className="inline-flex min-h-9 items-center justify-center rounded-xl bg-[#0A0703]/80 backdrop-blur-md border border-[#DFB76C]/40 p-2 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/40 cursor-pointer"
               title="Xóa ảnh bìa"
             >
               <Trash2 className="h-3.5 w-3.5" />

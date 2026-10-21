@@ -362,9 +362,9 @@ export function LiveCardAutoCapture({
           <button
             type="button"
             onClick={onCancel}
-            className="mx-auto flex h-11 min-w-[220px] items-center justify-center gap-2 rounded-full border border-white/25 px-10 text-[14px] font-medium text-white"
+            className="mx-auto flex h-11 min-w-[220px] items-center justify-center gap-2 rounded-full border border-[#DFB76C]/60 bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] px-10 text-[14px] font-bold text-slate-950 shadow-md hover:opacity-90 transition cursor-pointer"
           >
-            <X className="h-4 w-4" strokeWidth={1.8} aria-hidden />
+            <X className="h-4 w-4 stroke-[2.5]" aria-hidden />
             {t("bc.mobile.cardScan.auto.close")}
           </button>
         </div>

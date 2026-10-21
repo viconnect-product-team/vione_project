@@ -201,8 +201,15 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
     AsyncStorage.getItem("vione_app_language").then((val) => {
       if (val) setSelectedLang(val);
     });
-    AsyncStorage.getItem("vione_ai_floating_visible").then((val) => {
-      if (val !== null) setIsAiFloatingEnabled(val === "true");
+    Promise.all([
+      AsyncStorage.getItem("@vione_ai_orb_hidden"),
+      AsyncStorage.getItem("vione_ai_floating_visible"),
+    ]).then(([orbHidden, floatingVisible]) => {
+      if (orbHidden === "true" || floatingVisible === "false") {
+        setIsAiFloatingEnabled(false);
+      } else if (floatingVisible === "true") {
+        setIsAiFloatingEnabled(true);
+      }
     });
   }, [loadProfileAndShowcase]);
 
@@ -227,12 +234,16 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
     await AsyncStorage.setItem("vione_ai_floating_visible", val ? "true" : "false");
     if (val) {
       await AsyncStorage.removeItem("vione_ai_floating_closed");
+      await AsyncStorage.removeItem("@vione_ai_orb_hidden");
     } else {
       await AsyncStorage.setItem("vione_ai_floating_closed", "true");
+      await AsyncStorage.setItem("@vione_ai_orb_hidden", "true");
     }
     Alert.alert(
       "Trợ lý AI ViOne",
-      val ? "Đã bật quả cầu AI ViOne nổi trên màn hình!" : "Đã ẩn quả cầu AI ViOne nổi trên màn hình."
+      val
+        ? "Đã bật quả cầu AI ViOne nổi trên màn hình!"
+        : "Đã tắt hoàn toàn quả cầu AI khỏi giao diện. Khi muốn bật lại, bạn vào màn hình 'Tôi' để kích hoạt bất cứ lúc nào."
     );
   };
 

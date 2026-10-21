@@ -14,6 +14,7 @@ import { useInvalidateMyIdentity } from "@/hooks/use-my-identity";
 import { AvatarUploadField } from "@/components/business-connect/mobile/me/AvatarUploadField";
 import { CoverUploadField } from "@/components/business-connect/mobile/me/CoverUploadField";
 import { identityUpdateSchema } from "@/lib/business-connect/mobile/identity.validation";
+import { toast } from "sonner";
 
 type FieldKey =
   | "displayName"
@@ -169,10 +170,19 @@ export function IdentityEditPage() {
 
   async function handleSave() {
     if (saving) return;
+
+    const sanitizedValues = { ...values };
+    if (sanitizedValues.website && !/^https?:\/\//i.test(sanitizedValues.website.trim()) && !sanitizedValues.website.trim().startsWith("/")) {
+      sanitizedValues.website = `https://${sanitizedValues.website.trim()}`;
+    }
+    if (sanitizedValues.linkedinUrl && !/^https?:\/\//i.test(sanitizedValues.linkedinUrl.trim()) && !sanitizedValues.linkedinUrl.trim().startsWith("/")) {
+      sanitizedValues.linkedinUrl = `https://${sanitizedValues.linkedinUrl.trim()}`;
+    }
+
     const parsed = identityUpdateSchema.safeParse({
-      ...values,
-      countryCode: meta.countryCode,
-      preferredLocale: meta.preferredLocale,
+      ...sanitizedValues,
+      countryCode: meta.countryCode || "VN",
+      preferredLocale: meta.preferredLocale || "vi",
     });
     if (!parsed.success) {
       const fieldErrors: Partial<Record<FieldKey, boolean>> = {};
@@ -186,6 +196,7 @@ export function IdentityEditPage() {
       }
       setErrors(fieldErrors);
       setSaveFailed(!mapped);
+      toast.error("Vui lòng kiểm tra lại các trường thông tin chưa hợp lệ!");
       return;
     }
     setSaving(true);
@@ -212,6 +223,7 @@ export function IdentityEditPage() {
         localStorage.setItem("vba_custom_profile", JSON.stringify({
           ...existing,
           avatar: parsed.data.avatarUrl || existing.avatar,
+          cover: parsed.data.coverUrl || existing.cover,
           name: parsed.data.displayName || existing.name,
           phone: parsed.data.primaryPhone || existing.phone,
           jobTitle: parsed.data.jobTitle || existing.jobTitle,
@@ -222,9 +234,11 @@ export function IdentityEditPage() {
         window.dispatchEvent(new Event("vba_member_avatar_updated"));
       } catch {}
       setSaved(true);
+      toast.success("Đã lưu thông tin danh tính thành công!");
       void navigate({ to: "/connect-app/me" });
     } catch {
       setSaveFailed(true);
+      toast.error("Không thể lưu danh tính. Vui lòng thử lại!");
     } finally {
       setSaving(false);
     }

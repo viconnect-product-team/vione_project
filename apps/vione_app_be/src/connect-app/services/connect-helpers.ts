@@ -52,28 +52,32 @@ export function composePersonId(
   return '';
 }
 
-export const OCR_MODEL_MAX_LINES = 40;
+export const OCR_MODEL_MAX_LINES = 100;
 export const ocrModelOutputSchema = z
   .object({
-    isBusinessCard: z.boolean(),
-    unusableReason: z.string().max(120).nullish(),
+    isBusinessCard: z.boolean().default(true),
+    unusableReason: z.string().max(250).nullish(),
     lines: z
       .array(
-        z
-          .object({
-            text: z.string().min(1).max(200),
-            confidence: z.number().min(0).max(1),
-          })
-          .strict(),
+        z.object({
+          text: z.string().min(1).max(500),
+          confidence: z
+            .number()
+            .nullish()
+            .transform((v) => {
+              if (v === null || v === undefined) return 0.9;
+              return v > 1 ? Math.min(1, v / 100) : Math.max(0, v);
+            }),
+        }),
       )
       .max(OCR_MODEL_MAX_LINES),
-    displayNameLine: z.number().int().min(0).nullable(),
-    titleLine: z.number().int().min(0).nullable(),
-    companyNameLine: z.number().int().min(0).nullable(),
-    addressLine: z.number().int().min(0).nullable(),
+    displayNameLine: z.number().int().min(0).nullish(),
+    titleLine: z.number().int().min(0).nullish(),
+    companyNameLine: z.number().int().min(0).nullish(),
+    addressLine: z.number().int().min(0).nullish(),
     qrPresent: z.boolean().nullish(),
   })
-  .strict();
+  .passthrough();
 
 export function normalizeText(s: string): string {
   return s.normalize('NFC').replace(/\s+/g, ' ').trim();
@@ -301,9 +305,61 @@ export function buildCandidateFromModel(model: any, scanId: string): any {
 }
 
 export function candidateFromRawModelOutput(raw: unknown, scanId: string): any {
+  let dataToUse: any = null;
   const parsed = ocrModelOutputSchema.safeParse(raw);
-  if (!parsed.success) return { ok: false, code: 'invalid_output' };
-  const built = buildCandidateFromModel(parsed.data, scanId);
+  if (parsed.success) {
+    dataToUse = { ...parsed.data };
+  } else if (raw && typeof raw === 'object') {
+    const rawObj = raw as any;
+    const lines = Array.isArray(rawObj.lines)
+      ? rawObj.lines
+          .map((l: any) => ({
+            text: String(l?.text || l || '').trim(),
+            confidence: typeof l?.confidence === 'number' ? (l.confidence > 1 ? l.confidence / 100 : l.confidence) : 0.85,
+          }))
+          .filter((l: any) => l.text.length > 0)
+      : [];
+
+    if (lines.length > 0) {
+      dataToUse = {
+        isBusinessCard: true,
+        unusableReason: null,
+        lines,
+        displayNameLine: typeof rawObj.displayNameLine === 'number' ? rawObj.displayNameLine : null,
+        titleLine: typeof rawObj.titleLine === 'number' ? rawObj.titleLine : null,
+        companyNameLine: typeof rawObj.companyNameLine === 'number' ? rawObj.companyNameLine : null,
+        addressLine: typeof rawObj.addressLine === 'number' ? rawObj.addressLine : null,
+        qrPresent: Boolean(rawObj.qrPresent),
+      };
+    }
+  }
+
+  if (!dataToUse || !Array.isArray(dataToUse.lines) || dataToUse.lines.length === 0) {
+    return { ok: false, code: 'unusable' };
+  }
+
+  // Tự động phân tích thực thể tiếng Việt nếu chưa có dòng xác định
+  if (
+    dataToUse.displayNameLine === null ||
+    dataToUse.titleLine === null ||
+    dataToUse.companyNameLine === null
+  ) {
+    const enriched = extractVietnameseCardEntities(dataToUse.lines.map((l: any) => l.text));
+    if (dataToUse.displayNameLine === null && enriched.displayNameLine !== null) {
+      dataToUse.displayNameLine = enriched.displayNameLine;
+    }
+    if (dataToUse.titleLine === null && enriched.titleLine !== null) {
+      dataToUse.titleLine = enriched.titleLine;
+    }
+    if (dataToUse.companyNameLine === null && enriched.companyNameLine !== null) {
+      dataToUse.companyNameLine = enriched.companyNameLine;
+    }
+    if (dataToUse.addressLine === null && enriched.addressLine !== null) {
+      dataToUse.addressLine = enriched.addressLine;
+    }
+  }
+
+  const built = buildCandidateFromModel(dataToUse, scanId);
   if (!built.ok) return { ok: false, code: 'unusable' };
   return { ok: true, candidate: built.candidate };
 }
@@ -459,52 +515,55 @@ async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
     ].filter(Boolean) as string[];
 
     for (const apiKey of apiKeys) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
+      for (const engine of ['2', '1']) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 12000);
 
-        const formData = new URLSearchParams();
-        formData.append('apikey', apiKey);
-        formData.append('base64Image', preparedBase64);
-        formData.append('isOverlayRequired', 'true');
-        formData.append('detectOrientation', 'true');
-        formData.append('scale', 'true');
-        formData.append('OCREngine', '2');
+          const formData = new URLSearchParams();
+          formData.append('apikey', apiKey);
+          formData.append('base64Image', preparedBase64);
+          formData.append('language', 'vie');
+          formData.append('isOverlayRequired', 'true');
+          formData.append('detectOrientation', 'true');
+          formData.append('scale', 'true');
+          formData.append('OCREngine', engine);
 
-        const res = await fetch('https://api.ocr.space/parse/image', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: formData.toString(),
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
+          const res = await fetch('https://api.ocr.space/parse/image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData.toString(),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
 
-        if (!res.ok) continue;
-        const json = (await res.json()) as any;
-        if (json.IsErroredOnProcessing || !Array.isArray(json.ParsedResults)) continue;
+          if (!res.ok) continue;
+          const json = (await res.json()) as any;
+          if (json.IsErroredOnProcessing || !Array.isArray(json.ParsedResults)) continue;
 
-        const parsed = json.ParsedResults[0];
-        const extractedLines: string[] = [];
+          const parsed = json.ParsedResults[0];
+          const extractedLines: string[] = [];
 
-        if (parsed.TextOverlay && Array.isArray(parsed.TextOverlay.Lines)) {
-          for (const lineObj of parsed.TextOverlay.Lines) {
-            const lineStr = (lineObj.LineText || '').trim();
-            if (lineStr) extractedLines.push(lineStr);
+          if (parsed.TextOverlay && Array.isArray(parsed.TextOverlay.Lines)) {
+            for (const lineObj of parsed.TextOverlay.Lines) {
+              const lineStr = (lineObj.LineText || '').trim();
+              if (lineStr) extractedLines.push(lineStr);
+            }
           }
-        }
 
-        if (extractedLines.length === 0 && parsed.ParsedText) {
-          const splitLines = parsed.ParsedText.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
-          extractedLines.push(...splitLines);
-        }
+          if (extractedLines.length === 0 && parsed.ParsedText) {
+            const splitLines = parsed.ParsedText.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
+            extractedLines.push(...splitLines);
+          }
 
-        if (extractedLines.length > 0) {
-          return extractedLines;
+          if (extractedLines.length > 0) {
+            return extractedLines;
+          }
+        } catch (keyErr: any) {
+          console.warn(`[callOcrSpaceApi] Engine ${engine} with key failed:`, keyErr?.message || keyErr);
         }
-      } catch (keyErr: any) {
-        console.warn(`[callOcrSpaceApi] Key failed, trying next:`, keyErr?.message || keyErr);
       }
     }
 

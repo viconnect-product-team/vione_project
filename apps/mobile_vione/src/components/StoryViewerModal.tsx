@@ -103,7 +103,7 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
           </View>
 
           <TouchableOpacity style={styles.closeBtn} onPress={onClose} activeOpacity={0.8}>
-            <X size={20} color="#FFFFFF" />
+            <X size={20} color="#0A0703" strokeWidth={2.5} />
           </TouchableOpacity>
         </View>
 
@@ -233,11 +233,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(10, 10, 11, 0.6)",
+    backgroundColor: "#DFB76C",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
+    borderColor: "#F6E1C3",
   },
   bottomSection: {
     position: "absolute",
