@@ -191,7 +191,8 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
       let photoUri = "";
       let base64Data = "";
       if (cameraRef.current) {
-        const photo = await cameraRef.current.takePictureAsync({ quality: 0.85, base64: true });
+        // Giảm quality xuống 0.4 để payload base64 chỉ ~300KB-400KB, tối ưu tốc độ và không bị vượt ngưỡng 1MB của OCR engine
+        const photo = await cameraRef.current.takePictureAsync({ quality: 0.4, base64: true });
         photoUri = photo?.uri || "";
         base64Data = photo?.base64 || "";
       }
@@ -214,14 +215,30 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
               return String(val || "").trim();
             };
 
+            const isDummy = (str: string): boolean => {
+              if (!str) return true;
+              const lower = str.trim().toLowerCase();
+              const digits = lower.replace(/\D/g, "");
+              return (
+                lower === "đối tác mới" ||
+                lower === "doi tac moi" ||
+                lower === "thông tin danh thiếp" ||
+                lower === "thong tin danh thiep" ||
+                lower === "đối tác liên hệ" ||
+                lower === "doi tac lien he" ||
+                digits === "0900000000" ||
+                /^090{7,}$/.test(digits)
+              );
+            };
+
             const extractedName = extractText(fields.displayName) || extractText(fields.name);
-            if (extractedName && extractedName !== "Đối tác mới") setName(extractedName);
+            if (extractedName && !isDummy(extractedName)) setName(extractedName);
 
             const extractedTitle = extractText(fields.title) || extractText(fields.role);
-            if (extractedTitle) setTitle(extractedTitle);
+            if (extractedTitle && !isDummy(extractedTitle)) setTitle(extractedTitle);
 
             const extractedCompany = extractText(fields.companyName) || extractText(fields.company);
-            if (extractedCompany) setCompany(extractedCompany);
+            if (extractedCompany && !isDummy(extractedCompany)) setCompany(extractedCompany);
 
             let extractedPhone = "";
             if (Array.isArray(fields.phones) && fields.phones.length > 0) {
@@ -229,7 +246,7 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
             } else {
               extractedPhone = extractText(fields.phone) || extractText(fields.mobile);
             }
-            if (extractedPhone) setPhone(extractedPhone);
+            if (extractedPhone && !isDummy(extractedPhone)) setPhone(extractedPhone);
 
             let extractedEmail = "";
             if (Array.isArray(fields.emails) && fields.emails.length > 0) {
@@ -237,13 +254,13 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
             } else {
               extractedEmail = extractText(fields.email);
             }
-            if (extractedEmail) setEmail(extractedEmail);
+            if (extractedEmail && !isDummy(extractedEmail)) setEmail(extractedEmail);
 
             const extractedAddress = extractText(fields.address);
-            if (extractedAddress) setAddress(extractedAddress);
+            if (extractedAddress && !isDummy(extractedAddress)) setAddress(extractedAddress);
 
             const extractedWebsite = extractText(fields.website);
-            if (extractedWebsite) setWebsite(extractedWebsite);
+            if (extractedWebsite && !isDummy(extractedWebsite)) setWebsite(extractedWebsite);
           }
         } catch (ocrErr) {
           console.warn("OCR API error, keeping recognized values:", ocrErr);
@@ -269,7 +286,8 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
     setIsSaving(true);
 
     const cleanPhone = phone.replace(/\D/g, "");
-    const zaloUrl = cleanPhone ? `https://zalo.me/${cleanPhone}` : undefined;
+    const isDummyPhone = cleanPhone === "0900000000" || /^090{7,}$/.test(cleanPhone);
+    const zaloUrl = cleanPhone && !isDummyPhone ? `https://zalo.me/${cleanPhone}` : undefined;
     const contactId = "ocr-" + Date.now();
 
     const newContact: ConnectionPerson = {

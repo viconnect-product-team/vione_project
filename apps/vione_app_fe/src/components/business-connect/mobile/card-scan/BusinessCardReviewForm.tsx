@@ -316,7 +316,9 @@ export const BusinessCardReviewForm = forwardRef<
         {/* Tác vụ nhanh: Kết bạn Zalo & Lưu danh bạ điện thoại */}
         {(() => {
           const rawP = draft.phones[draft.primaryPhone]?.value || draft.phones[0]?.value || "";
-          const cleanP = rawP.replace(/\D/g, "");
+          const digits = rawP.replace(/\D/g, "");
+          const isDummyPhone = digits === "0900000000" || /^090{7,}$/.test(digits);
+          const cleanP = isDummyPhone ? "" : digits;
           return (
             <div className="rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] p-3.5 space-y-2.5">
               <div className="flex items-center justify-between text-xs">

@@ -51,15 +51,32 @@ export type ScanReviewDraft = {
   address: string;
 };
 
+function isDummyField(val?: string | null): boolean {
+  if (!val) return true;
+  const lower = val.trim().toLowerCase();
+  const digits = lower.replace(/\D/g, "");
+  return (
+    lower === "thông tin danh thiếp" ||
+    lower === "thong tin danh thiep" ||
+    lower === "đối tác liên hệ" ||
+    lower === "doi tac lien he" ||
+    lower === "đối tác mới" ||
+    lower === "doi tac moi" ||
+    digits === "0900000000" ||
+    /^090{7,}$/.test(digits)
+  );
+}
+
 /**
  * Builds the initial Review draft from a 4A candidate. Fax-labeled numbers
  * are excluded from saveable phones (they are not a personal contact
  * channel; the candidate preview still showed them as OCR evidence).
+ * Strips out any dummy placeholder data completely.
  */
 export function draftFromCandidate(candidate: BusinessCardCandidate): ScanReviewDraft {
   const { fields } = candidate;
   const phones: ScanReviewPhone[] = fields.phones
-    .filter((p) => p.label !== "fax")
+    .filter((p) => p.label !== "fax" && !isDummyField(p.value))
     .slice(0, SCAN_REVIEW_MAX_PHONES)
     .map((p) => ({ value: p.value, ...(p.label ? { label: p.label } : {}) }));
   const primaryPhone =
@@ -69,17 +86,27 @@ export function draftFromCandidate(candidate: BusinessCardCandidate): ScanReview
           0,
           phones.findIndex((p) => p.label === "mobile"),
         );
-  const emails = fields.emails.slice(0, SCAN_REVIEW_MAX_EMAILS).map((e: any) => e.value);
+  const emails = fields.emails
+    .filter((e: any) => !isDummyField(e.value))
+    .slice(0, SCAN_REVIEW_MAX_EMAILS)
+    .map((e: any) => e.value);
+
+  const displayName = isDummyField(fields.displayName?.value) ? "" : (fields.displayName?.value ?? "");
+  const title = isDummyField(fields.title?.value) ? "" : (fields.title?.value ?? "");
+  const companyName = isDummyField(fields.companyName?.value) ? "" : (fields.companyName?.value ?? "");
+  const website = isDummyField(fields.website?.value) ? "" : (fields.website?.value ?? "");
+  const address = isDummyField(fields.address?.value) ? "" : (fields.address?.value ?? "");
+
   return {
-    displayName: fields.displayName?.value ?? "",
-    title: fields.title?.value ?? "",
-    companyName: fields.companyName?.value ?? "",
+    displayName,
+    title,
+    companyName,
     phones,
     primaryPhone,
     emails,
     primaryEmail: emails.length > 0 ? 0 : -1,
-    website: fields.website?.value ?? "",
-    address: fields.address?.value ?? "",
+    website,
+    address,
   };
 }
 

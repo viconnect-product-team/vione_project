@@ -18,6 +18,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronLeft, Camera, ImagePlus, RefreshCw } from "lucide-react";
+import { decodeQrFromImage } from "@/lib/qr-image-decoder";
 import { useT } from "@/lib/i18n";
 import { safeRandomUUID } from "@/lib/utils";
 import { fetchNestApi } from "@/lib/api-client";
@@ -284,6 +285,81 @@ export function CardScanFlow() {
     setStage("processing");
     setScanError(null);
     try {
+      // 1. Quét tức thì mã QR vCard trên danh thiếp giấy nếu có
+      try {
+        const qrContent = await decodeQrFromImage(image.dataUrl);
+        if (
+          qrContent &&
+          (qrContent.includes("VCARD") || qrContent.includes("FN:") || qrContent.includes("TEL:"))
+        ) {
+          let parsedName = "";
+          let parsedTitle = "";
+          let parsedOrg = "";
+          let parsedPhone = "";
+          let parsedEmail = "";
+          let parsedUrl = "";
+          let parsedAdr = "";
+
+          const lines = qrContent.split(/\r?\n/);
+          for (const rawLine of lines) {
+            const line = rawLine.trim();
+            if (line.startsWith("FN:")) parsedName = line.slice(3).trim();
+            else if (line.startsWith("N:") && !parsedName) {
+              const parts = line.slice(2).split(";").filter(Boolean);
+              parsedName = parts.reverse().join(" ").trim();
+            } else if (line.startsWith("ORG:")) parsedOrg = line.slice(4).trim();
+            else if (line.startsWith("TITLE:")) parsedTitle = line.slice(6).trim();
+            else if (line.startsWith("TEL") && !parsedPhone) {
+              parsedPhone = line.split(":")[1]?.trim() || "";
+            } else if (line.startsWith("EMAIL") && !parsedEmail) {
+              parsedEmail = line.split(":")[1]?.trim() || "";
+            } else if (line.startsWith("URL:") && !parsedUrl) {
+              parsedUrl = line.slice(4).trim();
+            } else if (line.startsWith("ADR") && !parsedAdr) {
+              parsedAdr = (line.split(":")[1] || "").replace(/;/g, " ").trim();
+            }
+          }
+
+          if (parsedName || parsedPhone) {
+            const qrCandidate: BusinessCardCandidate = {
+              schemaVersion: 1,
+              scanId: safeRandomUUID(),
+              status: "candidate",
+              fields: {
+                ...(parsedName ? { displayName: { value: parsedName, confidence: 1.0, sourceText: parsedName } } : {}),
+                ...(parsedTitle ? { title: { value: parsedTitle, confidence: 0.95, sourceText: parsedTitle } } : {}),
+                ...(parsedOrg ? { companyName: { value: parsedOrg, confidence: 0.95, sourceText: parsedOrg } } : {}),
+                phones: parsedPhone ? [{ value: parsedPhone, confidence: 1.0, label: "mobile", sourceText: parsedPhone }] : [],
+                emails: parsedEmail ? [{ value: parsedEmail, confidence: 1.0, sourceText: parsedEmail }] : [],
+                ...(parsedUrl ? { website: { value: parsedUrl, confidence: 0.95, sourceText: parsedUrl } } : {}),
+                ...(parsedAdr ? { address: { value: parsedAdr, confidence: 0.9, sourceText: parsedAdr } } : {}),
+              },
+              warnings: [],
+              overallConfidence: 0.98,
+            };
+
+            const nextDraft = draftFromCandidate(qrCandidate);
+            setCandidate(qrCandidate);
+            setDraft(nextDraft);
+            setDraftErrors({});
+            setResolution(null);
+            setSaveError(null);
+            setSaveOutcome(null);
+            clientTokenRef.current = safeRandomUUID();
+            reviewStartedAtRef.current = Date.now();
+            sessionExpiredRef.current = false;
+            setSessionExpired(false);
+            setStage("review");
+            reportCardScanMetric("OCR_REVIEW_OPENED");
+            void refreshResolution(nextDraft);
+            return;
+          }
+        }
+      } catch (qrErr) {
+        console.warn("Client QR decoding skipped, proceeding to OCR:", qrErr);
+      }
+
+      // 2. Gọi OCR Backend NestJS
       let result: any;
       try {
         result = await Promise.race([
@@ -300,7 +376,7 @@ export function CardScanFlow() {
         });
       }
 
-      if (result && result.ok) {
+      if (result && result.ok && result.candidate) {
         const nextDraft = draftFromCandidate(result.candidate);
         setCandidate(result.candidate);
         setDraft(nextDraft);

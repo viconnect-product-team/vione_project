@@ -382,8 +382,8 @@ const TITLE_REGEX = /(?:giám đốc|tổng giám đốc|chủ tịch|hđqt|phó
 // Từ khóa công ty / doanh nghiệp
 const COMPANY_REGEX = /(?:công ty|tnhh|cổ phần|cp\b|tập đoàn|corporation|group|holdings|chi nhánh|doanh nghiệp|viện|xây dựng|thương mại|dịch vụ|invest|jsc|ltd|co\.,?ltd)/i;
 
-// Từ khóa địa chỉ
-const ADDRESS_REGEX = /(?:địa chỉ|trụ sở|tầng|tòa nhà|số\s+\d+|đường|phố|ngõ|ngách|phường|quận|huyện|thành phố|tp\.?|tỉnh|hà nội|hồ chí minh|đà nẵng|hải phòng|bình dương|đồng nai|cần thơ|việt nam|address|floor|bldg|building|street|ward|dist)/i;
+// Từ khóa địa chỉ (sử dụng word boundary \b cho tp để không nhầm với http trong URL)
+const ADDRESS_REGEX = /(?:địa chỉ|trụ sở|tầng|tòa nhà|số\s+\d+|đường|phố|ngõ|ngách|phường|quận|huyện|\bthành phố\b|\btp\.?\b|tỉnh|hà nội|hồ chí minh|đà nẵng|hải phòng|bình dương|đồng nai|cần thơ|việt nam|address|floor|bldg|building|street|ward|dist)/i;
 
 // Họ người Việt Nam phổ biến
 const VN_SURNAMES_REGEX = /^(?:nguyễn|trần|lê|phạm|hoàng|huỳnh|phan|vũ|võ|đặng|bùi|đỗ|hồ|ngô|dương|lý|đào|đoàn|đinh|lâm|mai|trịnh|cao|lưu|lương|thái|châu|tạ|phùng|vương|tô)\b/i;
@@ -442,9 +442,10 @@ export function extractVietnameseCardEntities(rawLines: string[]): any {
     }
   }
 
-  // 4. Tìm dòng Địa chỉ (Address)
+  // 4. Tìm dòng Địa chỉ (Address) - Bỏ qua URL và Email
   for (let i = 0; i < lines.length; i++) {
     const text = lines[i].text;
+    if (EMAIL_RE.test(text) || URL_RE.test(text)) continue;
     if (ADDRESS_REGEX.test(text) && i !== companyNameLine && i !== titleLine) {
       addressLine = i;
       break;
@@ -500,37 +501,23 @@ export function extractVietnameseCardEntities(rawLines: string[]): any {
 
 async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
   try {
-    let preparedBase64 = imageDataUrl;
-
-    // Nén ảnh tự động bằng sharp nếu base64 quá lớn (> 300KB) để tránh timeout hoặc OCR.space reject
-    try {
-      const sharpModule = require('sharp');
-      if (imageDataUrl.includes('data:')) {
-        const parts = imageDataUrl.split(',');
-        if (parts[1] && parts[1].length > 300000) {
-          const rawBuffer = Buffer.from(parts[1], 'base64');
-          const compressedBuffer = await sharpModule(rawBuffer)
-            .resize({ width: 1200, withoutEnlargement: true })
-            .jpeg({ quality: 85 })
-            .toBuffer();
-          preparedBase64 = `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
-        }
-      }
-    } catch {
-      // sharp fallback pass through
-    }
+    const preparedBase64 = imageDataUrl;
 
     const apiKeys = [
       process.env['OCR_SPACE_API_KEY'],
       'K88533814688957',
       'helloworld',
+      'K87899142388957',
+      'K83478988988957',
+      'K82729916888957',
     ].filter(Boolean) as string[];
 
+    // Ưu tiên Engine 1 (hỗ trợ tiếng Việt với language: 'vnm') trước Engine 2
     for (const apiKey of apiKeys) {
-      for (const engine of ['2', '1']) {
+      for (const engine of ['1', '2']) {
         try {
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 12000);
+          const timeout = setTimeout(() => controller.abort(), 10000);
 
           const formData = new FormData();
           formData.append('apikey', apiKey);
@@ -557,16 +544,19 @@ async function callOcrSpaceApi(imageDataUrl: string): Promise<string[] | null> {
           const parsed = json.ParsedResults[0];
           const extractedLines: string[] = [];
 
-          if (parsed.TextOverlay && Array.isArray(parsed.TextOverlay.Lines)) {
+          // Ưu tiên ParsedText vì giữ nguyên định dạng ngắt dòng tự nhiên của danh thiếp
+          if (parsed.ParsedText && typeof parsed.ParsedText === 'string') {
+            const splitLines = parsed.ParsedText.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
+            if (splitLines.length > 0) {
+              extractedLines.push(...splitLines);
+            }
+          }
+
+          if (extractedLines.length === 0 && parsed.TextOverlay && Array.isArray(parsed.TextOverlay.Lines)) {
             for (const lineObj of parsed.TextOverlay.Lines) {
               const lineStr = (lineObj.LineText || '').trim();
               if (lineStr) extractedLines.push(lineStr);
             }
-          }
-
-          if (extractedLines.length === 0 && parsed.ParsedText) {
-            const splitLines = parsed.ParsedText.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
-            extractedLines.push(...splitLines);
           }
 
           if (extractedLines.length > 0) {
@@ -639,9 +629,10 @@ export function parseCardHeuristicFallback(imageDataUrl: string): any {
     }
   }
 
+  // Tuyệt đối không gán dữ liệu dummy cứng! Nếu không tìm thấy chữ, trả về unusable truthfully
   return {
-    isBusinessCard: true,
-    unusableReason: null,
+    isBusinessCard: lines.length > 0,
+    unusableReason: lines.length === 0 ? 'no_text_detected' : null,
     lines,
     displayNameLine,
     titleLine,
@@ -652,7 +643,86 @@ export function parseCardHeuristicFallback(imageDataUrl: string): any {
 }
 
 export async function runCardOcrVision(imageDataUrl: string): Promise<unknown> {
-  // Bỏ phần AI đọc theo yêu cầu người dùng: trực tiếp đọc và bóc tách toàn bộ trường trên thẻ qua OCR tiếng Việt
+  // 1. Thử gọi Cloud AI Vision nếu có cấu hình API Key (Gemini Flash / OpenAI GPT-4o-mini)
+  const apiKey =
+    process.env['GEMINI_API_KEY'] ||
+    process.env['OPENAI_API_KEY'] ||
+    process.env['LOVABLE_API_KEY'] ||
+    process.env['ANTHROPIC_API_KEY'];
+
+  if (apiKey) {
+    try {
+      let endpoint = 'https://ai.gateway.lovable.dev/v1/chat/completions';
+      let model = 'google/gemini-2.5-flash';
+
+      if (apiKey.startsWith('AIza') || process.env['GEMINI_API_KEY']) {
+        endpoint = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+        model = process.env['AI_MODEL'] || 'gemini-1.5-flash';
+      } else if (process.env['OPENAI_API_KEY'] && !process.env['LOVABLE_API_KEY']) {
+        endpoint = 'https://api.openai.com/v1/chat/completions';
+        model = 'gpt-4o-mini';
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 9000);
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          temperature: 0.1,
+          response_format: { type: 'json_object' },
+          messages: [
+            {
+              role: 'system',
+              content: `You are a high-accuracy Vietnamese business card OCR parser.
+Accurately read and extract all text from the business card image (Full Name, Job Title, Company Name, Phones, Emails, Website, Address).
+Return STRICT JSON only matching this schema:
+{
+  "isBusinessCard": true,
+  "unusableReason": null,
+  "lines": [ { "text": string, "confidence": number } ],
+  "displayNameLine": number | null,
+  "titleLine": number | null,
+  "companyNameLine": number | null,
+  "addressLine": number | null,
+  "qrPresent": boolean
+}`,
+            },
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: 'Extract business card data accurately into JSON.' },
+                { type: 'image_url', image_url: { url: imageDataUrl } },
+              ],
+            },
+          ],
+        }),
+      });
+
+      clearTimeout(timeout);
+
+      if (response.ok) {
+        const json = (await response.json()) as any;
+        const content = json?.choices?.[0]?.message?.content;
+        if (content) {
+          const parsed = JSON.parse(content.replace(/```json/gi, '').replace(/```/g, '').trim());
+          if (parsed && Array.isArray(parsed.lines) && parsed.lines.length > 0) {
+            return parsed;
+          }
+        }
+      }
+    } catch (err: any) {
+      console.warn('[runCardOcrVision] Cloud AI vision call error, falling back to OCR engine:', err?.message || err);
+    }
+  }
+
+  // 2. Nhận diện trực tiếp qua OCR.space Tiếng Việt (Engine 1 với language: 'vnm')
   try {
     const ocrLines = await callOcrSpaceApi(imageDataUrl);
     if (ocrLines && ocrLines.length > 0) {
@@ -663,7 +733,7 @@ export async function runCardOcrVision(imageDataUrl: string): Promise<unknown> {
     console.warn('[runCardOcrVision] OCR engine error, falling back to local heuristic:', ocrErr?.message || ocrErr);
   }
 
-  // Fallback Heuristic cục bộ nếu có dữ liệu vCard/text nhúng
+  // 3. Fallback Heuristic cục bộ nếu có dữ liệu vCard/text nhúng
   return parseCardHeuristicFallback(imageDataUrl);
 }
 

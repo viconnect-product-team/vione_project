@@ -35,7 +35,11 @@ services:
     depends_on:
       - minio
     networks:
-      - vione-network
+      vione-network:
+        aliases:
+          - backend
+          - vione-backend
+          - vione-backend-prod
 
   minio:
     image: minio/minio:latest

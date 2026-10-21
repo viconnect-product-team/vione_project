@@ -82,6 +82,7 @@ jobs:
             docker tag vione-standalone-frontend:latest vione-frontend:latest 2>/dev/null || true
             rm -f vione-frontend.tar.gz
             docker compose up -d --force-recreate frontend
+            docker compose up -d backend minio 2>/dev/null || true
 
             # Reload or recreate Nginx SSL proxy
             cd ~/ssl-proxy

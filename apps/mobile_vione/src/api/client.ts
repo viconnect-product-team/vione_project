@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Máy chủ chính thức của ViOne Connect Platform (cổng HTTPS 5445 và cổng phụ 5001)
-export const DEFAULT_API_BASE_URL = "https://14.225.217.232:5445/api";
-export const FALLBACK_API_BASE_URL = "http://14.225.217.232:5001/api";
+// Máy chủ chính thức của ViOne Connect Platform (Subdomain Production https://vione.viconnect.vn/api)
+export const DEFAULT_API_BASE_URL = "https://vione.viconnect.vn/api";
+export const FALLBACK_API_BASE_URL = "https://dev-vione.14-225-217-232.sslip.io:5445/api";
 
 export const STORAGE_KEYS = {
   TOKEN: "vione_access_token",
