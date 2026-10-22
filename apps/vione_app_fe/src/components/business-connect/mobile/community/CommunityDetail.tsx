@@ -20,6 +20,7 @@ import {
   Briefcase,
   CheckCircle2,
   Settings,
+  Camera,
 } from "lucide-react";
 import { useFmt, useT } from "@/lib/i18n";
 import { useCommunityDetail, useCommunityMembers } from "@/hooks/use-community";
@@ -134,6 +135,19 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                   <span>🌐 CỘNG ĐỒNG DOANH NGHIỆP VIONE</span>
                 </span>
               </div>
+
+              {/* Nút chỉnh sửa / căn chỉnh ảnh nổi trên banner cho Quản trị viên */}
+              {(detail.community.viewerRole === "admin" || (detail.community as any).canEdit) ? (
+                <button
+                  type="button"
+                  onClick={() => setEditCommunityOpen(true)}
+                  className="absolute top-3 right-4 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-black/75 hover:bg-black text-[#F6E1C3] border border-[#DFB76C]/60 backdrop-blur-md shadow-md transition active:scale-95 cursor-pointer"
+                  title="Chỉnh sửa & Căn chỉnh ảnh bìa / logo"
+                >
+                  <Camera className="w-3.5 h-3.5 text-[#DFB76C]" />
+                  <span>Chỉnh sửa ảnh</span>
+                </button>
+              ) : null}
             </div>
 
             {/* Header with Overlapping Floating Avatar */}

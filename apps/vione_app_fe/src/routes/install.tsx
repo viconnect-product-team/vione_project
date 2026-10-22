@@ -17,7 +17,7 @@ import {
 import { QrCanvas } from "@/components/member/QrCanvas";
 import { resolvePwaInstallUrl, CANONICAL_PWA_URL } from "@/lib/tenant";
 
-const appIcon = "/apple-touch-icon.png?v=vione_gold_crown";
+const appIcon = "/apple-touch-icon.png?v=vione_balanced_20261022";
 
 export const Route = createFileRoute("/install")({
   head: () => ({

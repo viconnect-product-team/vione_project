@@ -30,6 +30,7 @@ import {
   VipBusinessCard,
   type VipCardStyle,
 } from "@/components/business-connect/mobile/me/VipBusinessCard";
+import { saveContactDirectly } from "@/lib/save-contact-native";
 
 export type PublicProfileData = {
   id: string;
@@ -191,34 +192,19 @@ function PublicExecutiveProfilePage() {
   const currentUrl = typeof window !== "undefined" ? window.location.href : card.shareUrl || `https://vione.viconnect.vn/p/${card.code || card.id}`;
   const cleanPhone = (card.primaryPhone || "").replace(/[^\d+]/g, "");
 
-  const handleDownloadVcard = () => {
-    const lines = [
-      "BEGIN:VCARD",
-      "VERSION:3.0",
-      `FN:${card.displayName || "Doanh Nhân ViOne"}`,
-      `N:${card.displayName || "Doanh Nhân ViOne"};;;;`,
-    ];
-    if (card.companyName) lines.push(`ORG:${card.companyName}`);
-    if (card.jobTitle) lines.push(`TITLE:${card.jobTitle}`);
-    if (card.primaryPhone) lines.push(`TEL;TYPE=WORK,VOICE:${card.primaryPhone}`);
-    if (card.primaryEmail) lines.push(`EMAIL;TYPE=PREF,INTERNET:${card.primaryEmail}`);
-    if (card.website) lines.push(`URL:${card.website}`);
-    if (card.address) lines.push(`ADR;TYPE=WORK:;;${card.address};${card.city || ""};;;VN`);
-    if (card.headline || card.bio) lines.push(`NOTE:${(card.headline || card.bio || "").replace(/\n/g, " ")}`);
-    lines.push(`URL;TYPE=ViOne:${currentUrl}`);
-    lines.push("END:VCARD");
-
-    const vcfString = lines.join("\r\n");
-    const blob = new Blob([vcfString], { type: "text/vcard;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `${(card.displayName || "contact").replace(/\s+/g, "_")}.vcf`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    toast.success("Đã tải tệp danh bạ (.vcf). Bấm mở để lưu vào điện thoại!");
+  const handleDownloadVcard = async () => {
+    await saveContactDirectly({
+      displayName: card.displayName || "Doanh Nhân ViOne",
+      phone: card.primaryPhone,
+      jobTitle: card.jobTitle,
+      companyName: card.companyName,
+      email: card.primaryEmail,
+      website: card.website,
+      address: card.address,
+      note: card.headline || card.bio,
+      shareUrl: currentUrl,
+      avatarUrl: card.avatarUrl,
+    });
   };
 
   const handleShare = async () => {

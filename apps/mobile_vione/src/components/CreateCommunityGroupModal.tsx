@@ -8,12 +8,25 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { X, Users, Award, ShieldCheck, Sparkles, Building2 } from "lucide-react-native";
+import {
+  X,
+  Users,
+  Award,
+  ShieldCheck,
+  Sparkles,
+  Building2,
+  Camera,
+  Move,
+  Image as ImageIcon,
+} from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import * as ImagePicker from "expo-image-picker";
 import { CommunityItem } from "../types";
 import { communityApi } from "../api/services";
+import { ImagePanCropModal } from "./ImagePanCropModal";
 
 interface CreateCommunityGroupModalProps {
   visible: boolean;
@@ -37,6 +50,52 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
+
+  // Kéo di chuyển ảnh Facebook
+  const [cropVisible, setCropVisible] = useState(false);
+  const [cropImageUri, setCropImageUri] = useState<string | null>(null);
+  const [cropTarget, setCropTarget] = useState<"logo" | "banner">("banner");
+
+  const handlePickImage = async (target: "logo" | "banner") => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert("Quyền truy cập", "Vui lòng cấp quyền truy cập thư viện ảnh để chọn ảnh!");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: false,
+        quality: 0.9,
+      });
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setCropTarget(target);
+        setCropImageUri(result.assets[0].uri);
+        setCropVisible(true);
+      }
+    } catch {
+      Alert.alert("Lỗi", "Không thể chọn ảnh từ thiết bị. Vui lòng thử lại!");
+    }
+  };
+
+  const handleReposition = (target: "logo" | "banner") => {
+    const current = target === "banner" ? bannerUrl : logoUrl;
+    if (!current) return;
+    setCropTarget(target);
+    setCropImageUri(current);
+    setCropVisible(true);
+  };
+
+  const handleCropConfirm = (result: { uri: string; panX: number; panY: number; zoom: number }) => {
+    if (cropTarget === "banner") {
+      setBannerUrl(result.uri);
+    } else {
+      setLogoUrl(result.uri);
+    }
+    setCropVisible(false);
+  };
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -48,6 +107,8 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
       id: "c-" + Date.now(),
       name: name.trim(),
       description: description.trim() || `Liên minh doanh nghiệp ${category} kết nối hợp tác & chia sẻ giá trị bền vững.`,
+      logoUrl: logoUrl.trim() || null,
+      coverUrl: bannerUrl.trim() || null,
       memberCount: 1,
       isMember: true,
       role: "Ban Điều Hành",
@@ -67,7 +128,9 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
         name: name.trim(),
         description: description.trim() || undefined,
         category,
-      });
+        logoUrl: logoUrl.trim() || undefined,
+        bannerUrl: bannerUrl.trim() || undefined,
+      } as any);
     } catch (err) {
       console.warn("Lỗi tạo community lên API:", err);
     }
@@ -130,6 +193,82 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
               onChangeText={setName}
             />
 
+            {/* Ảnh bìa / Cover Banner (16:9) */}
+            <Text style={[styles.inputLabel, { marginTop: 14 }]}>ẢNH BÌA CỘNG ĐỒNG (16:9)</Text>
+            <View style={styles.bannerPreviewContainer}>
+              {bannerUrl ? (
+                <Image source={{ uri: bannerUrl }} style={styles.bannerPreviewImg} resizeMode="cover" />
+              ) : (
+                <View style={styles.bannerPlaceholder}>
+                  <ImageIcon size={26} color="#64748B" />
+                  <Text style={styles.placeholderText}>Chưa có ảnh bìa</Text>
+                </View>
+              )}
+              <View style={styles.bannerActionRow}>
+                {bannerUrl ? (
+                  <TouchableOpacity
+                    style={styles.repositionBtn}
+                    onPress={() => handleReposition("banner")}
+                    activeOpacity={0.8}
+                  >
+                    <Move size={12} color="#050811" />
+                    <Text style={styles.repositionBtnText}>Kéo căn chỉnh</Text>
+                  </TouchableOpacity>
+                ) : null}
+                <TouchableOpacity
+                  style={styles.pickImageBtn}
+                  onPress={() => handlePickImage("banner")}
+                  activeOpacity={0.8}
+                >
+                  <Camera size={12} color="#DFB76C" />
+                  <Text style={styles.pickImageBtnText}>
+                    {bannerUrl ? "Đổi ảnh bìa" : "Chọn ảnh bìa"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Logo / Ảnh đại diện (1:1) */}
+            <Text style={[styles.inputLabel, { marginTop: 14 }]}>ẢNH ĐẠI DIỆN / LOGO (1:1)</Text>
+            <View style={styles.logoRow}>
+              <View style={styles.logoPreviewContainer}>
+                {logoUrl ? (
+                  <Image source={{ uri: logoUrl }} style={styles.logoPreviewImg} />
+                ) : (
+                  <View style={styles.logoPlaceholder}>
+                    <Building2 size={24} color="#DFB76C" />
+                  </View>
+                )}
+              </View>
+              <View style={styles.logoActionsCol}>
+                <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                  <TouchableOpacity
+                    style={styles.pickImageSmallBtn}
+                    onPress={() => handlePickImage("logo")}
+                    activeOpacity={0.8}
+                  >
+                    <Camera size={12} color="#DFB76C" />
+                    <Text style={styles.pickImageSmallBtnText}>
+                      {logoUrl ? "Đổi Logo" : "Chọn Logo"}
+                    </Text>
+                  </TouchableOpacity>
+                  {logoUrl ? (
+                    <TouchableOpacity
+                      style={styles.repositionSmallBtn}
+                      onPress={() => handleReposition("logo")}
+                      activeOpacity={0.8}
+                    >
+                      <Move size={12} color="#050811" />
+                      <Text style={styles.repositionSmallBtnText}>Kéo căn chỉnh</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+                <Text style={styles.helperText}>
+                  Kéo di chuyển, xoay và phóng to/thu nhỏ như Facebook
+                </Text>
+              </View>
+            </View>
+
             <Text style={[styles.inputLabel, { marginTop: 14 }]}>LĨNH VỰC HOẠT ĐỘNG</Text>
             <View style={styles.catWrap}>
               {CATEGORIES.map((cat) => (
@@ -183,6 +322,21 @@ export const CreateCommunityGroupModal: React.FC<CreateCommunityGroupModalProps>
           </View>
         </View>
       </View>
+
+      {/* Modal Kéo di chuyển ảnh phong cách Facebook */}
+      <ImagePanCropModal
+        visible={cropVisible}
+        imageUri={cropImageUri}
+        aspectRatio={cropTarget === "logo" ? "1:1" : "16:9"}
+        circular={cropTarget === "logo"}
+        title={
+          cropTarget === "logo"
+            ? "Căn chỉnh & Di chuyển Logo (1:1)"
+            : "Căn chỉnh & Di chuyển Ảnh bìa (16:9)"
+        }
+        onConfirm={handleCropConfirm}
+        onCancel={() => setCropVisible(false)}
+      />
     </Modal>
   );
 };
@@ -345,5 +499,143 @@ const styles = StyleSheet.create({
     color: "#E2E8F0",
     fontSize: 11,
     lineHeight: 15,
+  },
+  bannerPreviewContainer: {
+    height: 120,
+    width: "100%",
+    borderRadius: 14,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.3)",
+    backgroundColor: "#050811",
+    position: "relative",
+    marginTop: 6,
+    marginBottom: 6,
+  },
+  bannerPreviewImg: {
+    width: "100%",
+    height: "100%",
+  },
+  bannerPlaceholder: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    gap: 4,
+  },
+  placeholderText: {
+    fontSize: 11,
+    color: "#64748B",
+  },
+  bannerActionRow: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    flexDirection: "row",
+    gap: 6,
+  },
+  repositionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#DFB76C",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  repositionBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#050811",
+  },
+  pickImageBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(5, 8, 17, 0.85)",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.5)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  pickImageBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#F6E1C3",
+  },
+  logoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 6,
+    marginBottom: 6,
+  },
+  logoPreviewContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    overflow: "hidden",
+    borderWidth: 2,
+    borderColor: "#DFB76C",
+    backgroundColor: "#050811",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoPreviewImg: {
+    width: 64,
+    height: 64,
+  },
+  logoPlaceholder: {
+    width: 64,
+    height: 64,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(216, 178, 130, 0.15)",
+  },
+  logoActionsCol: {
+    flex: 1,
+    gap: 6,
+  },
+  pickImageSmallBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.4)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  pickImageSmallBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#F6E1C3",
+  },
+  repositionSmallBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#DFB76C",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  repositionSmallBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#050811",
+  },
+  helperText: {
+    fontSize: 10.5,
+    color: "#94A3B8",
+    lineHeight: 14,
   },
 });

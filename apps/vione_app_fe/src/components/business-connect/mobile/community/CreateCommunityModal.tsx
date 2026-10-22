@@ -1,11 +1,10 @@
-// BC-Mobile — Modal Tạo Cộng Đồng / Hiệp Hội Mới (Executive Minimal Luxury)
-
-import { useState, useRef } from "react";
-import { X, Upload, Plus, Building2, Sparkles, Loader2, Image as ImageIcon, Trash2, Users, Briefcase } from "lucide-react";
+import { useState, useRef, useContext } from "react";
+import { X, Upload, Plus, Building2, Sparkles, Loader2, Image as ImageIcon, Trash2, Users, Briefcase, Move } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi, uploadFileToNest } from "@/lib/api-client";
-import { useQueryClient } from "@tanstack/react-query";
+import { QueryClientContext } from "@tanstack/react-query";
 import { communityKeys } from "@/hooks/use-community";
+import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
 
 type Props = {
   open: boolean;
@@ -14,7 +13,7 @@ type Props = {
 };
 
 export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
-  const queryClient = useQueryClient();
+  const queryClient = useContext(QueryClientContext);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,6 +27,12 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // Modal kéo thả di chuyển ảnh phong cách Facebook
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropTarget, setCropTarget] = useState<"logo" | "banner">("banner");
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cropOriginalFileName, setCropOriginalFileName] = useState("image.jpg");
 
   if (!open) return null;
 
@@ -49,7 +54,8 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
       .replace(/(^-|-$)/g, "");
   }
 
-  const handleLogoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Chọn ảnh logo -> Mở modal kéo thả căn chỉnh (1:1 tròn như Facebook)
+  const handleLogoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -58,53 +64,108 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Ảnh quá lớn (tối đa 10MB)");
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("Ảnh quá lớn (tối đa 15MB)");
       return;
     }
 
-    setUploadingLogo(true);
-    try {
-      const url = await uploadFileToNest(file, file.name || "logo.png");
-      if (url) {
-        setLogoUrl(url);
-        toast.success("Tải logo thành công");
+    setCropOriginalFileName(file.name || "logo.png");
+    setCropTarget("logo");
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setCropImageSrc(dataUrl);
+        setCropModalOpen(true);
       }
-    } catch {
-      toast.error("Không thể tải ảnh lên. Vui lòng thử lại");
-    } finally {
-      setUploadingLogo(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Chọn ảnh bìa -> Mở modal kéo thả căn chỉnh (16:9 như Facebook)
+  const handleBannerFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Vui lòng chọn tệp hình ảnh");
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("Ảnh quá lớn (tối đa 15MB)");
+      return;
+    }
+
+    setCropOriginalFileName(file.name || "banner.jpg");
+    setCropTarget("banner");
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setCropImageSrc(dataUrl);
+        setCropModalOpen(true);
+      }
+    };
+    reader.readAsDataURL(file);
+    if (bannerInputRef.current) bannerInputRef.current.value = "";
+  };
+
+  // Xử lý sau khi người dùng kéo di chuyển và xác nhận căn chỉnh ảnh
+  const handleCropConfirm = async (croppedBlob: Blob) => {
+    setCropModalOpen(false);
+    if (cropTarget === "banner") {
+      setUploadingBanner(true);
+      try {
+        const file = new File([croppedBlob], cropOriginalFileName, { type: "image/jpeg" });
+        const url = await uploadFileToNest(file, cropOriginalFileName);
+        if (url) {
+          setBannerUrl(url);
+          toast.success("Đã căn chỉnh và tải ảnh bìa thành công!");
+        }
+      } catch {
+        toast.error("Không thể tải ảnh bìa lên. Vui lòng thử lại");
+      } finally {
+        setUploadingBanner(false);
+        setCropImageSrc(null);
+      }
+    } else {
+      setUploadingLogo(true);
+      try {
+        const file = new File([croppedBlob], cropOriginalFileName, { type: "image/jpeg" });
+        const url = await uploadFileToNest(file, cropOriginalFileName);
+        if (url) {
+          setLogoUrl(url);
+          toast.success("Đã căn chỉnh và tải logo thành công!");
+        }
+      } catch {
+        toast.error("Không thể tải logo lên. Vui lòng thử lại");
+      } finally {
+        setUploadingLogo(false);
+        setCropImageSrc(null);
+      }
     }
   };
 
-  const handleBannerFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Mở lại chế độ kéo căn chỉnh vị trí cho ảnh bìa hiện tại
+  const handleRepositionBanner = () => {
+    if (!bannerUrl) return;
+    setCropOriginalFileName("banner-repositioned.jpg");
+    setCropTarget("banner");
+    setCropImageSrc(bannerUrl);
+    setCropModalOpen(true);
+  };
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Vui lòng chọn tệp hình ảnh");
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Ảnh quá lớn (tối đa 10MB)");
-      return;
-    }
-
-    setUploadingBanner(true);
-    try {
-      const url = await uploadFileToNest(file, file.name || "banner.jpg");
-      if (url) {
-        setBannerUrl(url);
-        toast.success("Tải ảnh bìa thành công");
-      }
-    } catch {
-      toast.error("Không thể tải ảnh bìa lên. Vui lòng thử lại");
-    } finally {
-      setUploadingBanner(false);
-      if (bannerInputRef.current) bannerInputRef.current.value = "";
-    }
+  // Mở lại chế độ kéo căn chỉnh vị trí cho logo hiện tại
+  const handleRepositionLogo = () => {
+    if (!logoUrl) return;
+    setCropOriginalFileName("logo-repositioned.png");
+    setCropTarget("logo");
+    setCropImageSrc(logoUrl);
+    setCropModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -196,7 +257,7 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
       } catch {}
 
       toast.success(`✓ Chúc mừng! Bạn đã kích hoạt Gói Cộng Đồng dùng thử 30 ngày miễn phí và tạo "${cleanName}" thành công!`);
-      void queryClient.invalidateQueries({ queryKey: communityKeys.root });
+      void queryClient?.invalidateQueries({ queryKey: communityKeys.root });
       
       // Reset form
       setName("");
@@ -308,21 +369,29 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
               className="hidden"
             />
             {bannerUrl ? (
-              <div className="relative h-28 w-full rounded-2xl overflow-hidden border border-[var(--bc-mobile-border)] group">
+              <div className="relative h-32 w-full rounded-2xl overflow-hidden border border-[#DFB76C]/40 group shadow-md">
                 <img src={bannerUrl} alt="Banner preview" className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-wrap items-center justify-center gap-2 p-2">
+                  <button
+                    type="button"
+                    onClick={handleRepositionBanner}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-slate-950 text-xs font-black shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Move className="h-3.5 w-3.5" />
+                    <span>Kéo căn chỉnh vị trí</span>
+                  </button>
                   <button
                     type="button"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploadingBanner}
-                    className="px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-medium hover:bg-white/30 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-semibold hover:bg-white/30 transition-colors cursor-pointer"
                   >
-                    Thay đổi ảnh bìa
+                    Thay đổi ảnh
                   </button>
                   <button
                     type="button"
                     onClick={() => setBannerUrl("")}
-                    className="p-1.5 rounded-xl bg-rose-500/80 text-white hover:bg-rose-600 transition-colors"
+                    className="p-1.5 rounded-xl bg-rose-500/80 text-white hover:bg-rose-600 transition-colors cursor-pointer"
                     title="Xóa ảnh bìa"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -345,10 +414,10 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
                   <>
                     <ImageIcon className="h-5 w-5 text-[var(--bc-mobile-muted)]" />
                     <span className="text-xs font-medium text-[var(--bc-mobile-accent)]">
-                      Tải ảnh bìa background lên
+                      Tải ảnh bìa background lên (Có thể kéo di chuyển như Facebook)
                     </span>
                     <span className="text-[10.5px] text-[var(--bc-mobile-muted)]">
-                      Khuyến nghị ảnh ngang tỉ lệ 16:9 hoặc 3:1 (PNG, JPG, tối đa 10MB)
+                      Khuyến nghị ảnh ngang tỉ lệ 16:9 hoặc 3:1 (PNG, JPG, tối đa 15MB)
                     </span>
                   </>
                 )}
@@ -362,7 +431,7 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
               Ảnh đại diện / Logo cộng đồng
             </label>
             <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 shrink-0 rounded-2xl border border-dashed border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] overflow-hidden flex items-center justify-center group">
+              <div className="relative h-16 w-16 shrink-0 rounded-2xl border border-dashed border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] overflow-hidden flex items-center justify-center group shadow-sm">
                 {logoUrl ? (
                   <img src={logoUrl} alt="Logo preview" className="h-full w-full object-cover" />
                 ) : (
@@ -374,7 +443,7 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
                   </div>
                 )}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 space-y-1.5">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -382,17 +451,31 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
                   onChange={handleLogoFile}
                   className="hidden"
                 />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingLogo}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] text-xs font-medium text-[var(--bc-mobile-accent)] hover:bg-[var(--bc-mobile-accent)]/10 transition-colors cursor-pointer"
-                >
-                  <Upload className="h-3.5 w-3.5" />
-                  {logoUrl ? "Thay đổi logo" : "Tải ảnh logo lên"}
-                </button>
-                <p className="mt-1 text-[11px] text-[var(--bc-mobile-muted)]">
-                  Khuyến nghị ảnh vuông tỉ lệ 1:1 (PNG, JPG, tối đa 10MB)
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingLogo}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] text-xs font-medium text-[var(--bc-mobile-accent)] hover:bg-[var(--bc-mobile-accent)]/10 transition-colors cursor-pointer"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    {logoUrl ? "Đổi logo khác" : "Tải ảnh logo lên"}
+                  </button>
+
+                  {logoUrl ? (
+                    <button
+                      type="button"
+                      onClick={handleRepositionLogo}
+                      disabled={uploadingLogo}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-slate-950 text-xs font-black shadow-sm hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Move className="h-3.5 w-3.5" />
+                      <span>Kéo căn chỉnh</span>
+                    </button>
+                  ) : null}
+                </div>
+                <p className="text-[11px] text-[var(--bc-mobile-muted)]">
+                  Khuyến nghị ảnh vuông tỉ lệ 1:1, kéo căn chỉnh tự do như Facebook
                 </p>
               </div>
             </div>
@@ -484,6 +567,20 @@ export function CreateCommunityModal({ open, onClose, onCreated }: Props) {
             </button>
           </div>
         </form>
+
+        {/* Modal căn chỉnh và di chuyển ảnh như Facebook (1:1 tròn cho Logo, 16:9 cho Ảnh bìa) */}
+        <ImagePanCropModal
+          isOpen={cropModalOpen}
+          imageSrc={cropImageSrc}
+          aspectRatio={cropTarget === "logo" ? "1:1" : "16:9"}
+          circular={cropTarget === "logo"}
+          title={cropTarget === "logo" ? "Căn chỉnh & Di chuyển Logo (1:1)" : "Căn chỉnh & Di chuyển Ảnh bìa (16:9)"}
+          onConfirm={handleCropConfirm}
+          onCancel={() => {
+            setCropModalOpen(false);
+            setCropImageSrc(null);
+          }}
+        />
       </div>
     </div>
   );

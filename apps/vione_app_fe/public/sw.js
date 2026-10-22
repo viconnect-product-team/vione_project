@@ -1,9 +1,12 @@
-const CACHE_NAME = "vione-connect-pwa-v3";
+const CACHE_NAME = "vione-connect-pwa-v4";
 const STATIC_ASSETS = [
   "/manifest.webmanifest",
   "/manifest.json",
+  "/manifest-bc.webmanifest",
   "/apple-touch-icon.png",
   "/favicon.png",
+  "/vione-maskable-192.png",
+  "/vione-maskable-512.png",
   "/vione-gold-192.png",
   "/vione-gold-512.png",
   "/vione-wordmark.png"

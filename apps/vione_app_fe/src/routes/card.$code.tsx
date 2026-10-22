@@ -23,6 +23,7 @@ import { QrCanvas } from "@/components/member/QrCanvas";
 import { getPublicCard, type PublicCard } from "@/lib/card.functions";
 import { getImageUrl } from "@/lib/image";
 import { toast } from "sonner";
+import { saveContactDirectly } from "@/lib/save-contact-native";
 
 const appIcon = "/landing_web_vione/vione-logo.png";
 
@@ -216,38 +217,19 @@ function PublicCardView() {
   const hasEmail = Boolean(member.email && !member.email.includes("ẩn"));
   const cleanPhone = hasPhone ? member.phone!.replace(/[^0-9+]/g, "") : "";
 
-  // Dynamic vCard download for 1-tap phone address book import
-  const handleDownloadVCard = () => {
-    try {
-      const vcardContent = [
-        "BEGIN:VCARD",
-        "VERSION:3.0",
-        `FN:${primaryName}`,
-        `ORG:${secondaryCompany}`,
-        `TITLE:${primaryTitle}`,
-        hasPhone ? `TEL;TYPE=CELL:${member.phone}` : "",
-        hasEmail ? `EMAIL;TYPE=WORK:${member.email}` : "",
-        member.website ? `URL:${member.website}` : "URL:https://vione.vn",
-        member.address ? `ADR;TYPE=WORK:;;${member.address};;;;` : "",
-        `NOTE:Tài khoản chính thức ViOne Connect - Mã: ${code}`,
-        "END:VCARD",
-      ]
-        .filter(Boolean)
-        .join("\r\n");
-
-      const blob = new Blob([vcardContent], { type: "text/vcard;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `DanhThiep_${primaryName.replace(/\s+/g, "_")}.vcf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success("Đã tải tệp danh bạ! Mở tệp để lưu vào điện thoại.");
-    } catch {
-      toast.error("Không thể tạo danh thiếp điện tử.");
-    }
+  // Lưu trực tiếp danh bạ vào điện thoại (nhanh, 1-chạm, không qua file PDF)
+  const handleDownloadVCard = async () => {
+    await saveContactDirectly({
+      displayName: primaryName,
+      companyName: secondaryCompany,
+      jobTitle: primaryTitle,
+      phone: hasPhone ? member.phone : undefined,
+      email: hasEmail ? member.email : undefined,
+      website: member.website || "https://vione.vn",
+      address: member.address || undefined,
+      note: `Tài khoản chính thức ViOne Connect - Mã: ${code}`,
+      shareUrl: typeof window !== "undefined" ? window.location.href : `https://vione.vn/card/${code}`,
+    });
   };
 
   const handleShare = async () => {

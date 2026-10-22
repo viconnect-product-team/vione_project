@@ -17,8 +17,8 @@ export const Route = createFileRoute("/association")({
     ],
     links: [
       { rel: "manifest", href: MEMBER_MANIFEST_HREF },
-      { rel: "icon", type: "image/png", sizes: "64x64", href: "/vione-gold-192.png?v=vione_gold_crown" },
-      { rel: "apple-touch-icon", href: "/vione-gold-192.png?v=vione_gold_crown" },
+      { rel: "icon", type: "image/png", sizes: "64x64", href: "/vione-gold-64.png?v=vione_balanced_20261022" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png?v=vione_balanced_20261022" },
     ],
   }),
   beforeLoad: async ({ location }) => {

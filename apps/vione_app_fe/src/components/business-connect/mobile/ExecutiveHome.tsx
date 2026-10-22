@@ -83,6 +83,7 @@ import { WorkflowMobileSheet } from "./WorkflowMobileSheet";
 import { ApprovalsMobileSheet } from "./ApprovalsMobileSheet";
 import { CreateCommunityModal } from "./community/CreateCommunityModal";
 import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
+import { HomeHeaderInstallButton, HomeInstallBannerCard } from "@/components/pwa/HomeOneTapInstall";
 
 export type CrmEvent = {
   id: string;
@@ -621,6 +622,7 @@ export function ExecutiveHome() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <HomeHeaderInstallButton />
           <button
             type="button"
             onClick={toggleTheme}
@@ -646,6 +648,9 @@ export function ExecutiveHome() {
         ) : (
           <div className="bc-home-enter">
             <Greeting identity={data.identity} />
+
+            {/* Banner cài đặt PWA 1-chạm sang trọng */}
+            <HomeInstallBannerCard />
 
             {/* Trạng thái chia sẻ vị trí AI & Định vị xung quanh */}
             <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] p-3 shadow-xs">

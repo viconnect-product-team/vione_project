@@ -30,3 +30,19 @@
   * Mô tả hoặc hướng dẫn nhẹ nhàng để người dùng biết bước tiếp theo.
   * Nút hành động kêu gọi tạo mới (CTA) nếu người dùng có quyền tương ứng.
 - Không sử dụng các hàm giả lập chỉ số (`Math.max(..., 33)`) để phóng đại số liệu khi CSDL trống.
+
+## 5. Quy Chuẩn Nút Bấm: CẤM DÙNG NÚT MÀU KHÁC NGOÀI NÚT GRADIENT (STRICT GRADIENT-ONLY BUTTON RULE)
+- **ĐIỀU CẤM TUYỆT ĐỐI**:
+  * CẤM dùng các nút màu đơn sắc trơn: xám `bg-gray-*`, xanh `bg-blue-*`, đen trơn `bg-black`, trắng trơn `bg-white`, đỏ trơn `bg-red-*`.
+- **100% NÚT BẤM (BUTTONS / CTAs / ACTION CHIPS) BẮT BUỘC PHẢI DÙNG GRADIENT CHUẨN THƯƠNG HIỆU**:
+  1. **Primary Action**: Gradient Vàng Hoàng Gia Champagne Gold (`.bc-cta-gold` hoặc variant `gradient-gold`):
+     - CSS: `background-image: linear-gradient(135deg, #F6E1C3 0%, #D8B282 45%, #C29B69 85%, #8C653B 100%) !important;`
+     - Text: Chữ đen Obsidian `#050C15` font-bold tương phản cao tuyệt đối.
+     - Shadow: `0 4px 20px rgba(216, 178, 130, 0.45)`.
+  2. **Secondary Action**: Gradient Đen Thạch Anh Mạ Vàng (`.bc-cta-gold-soft` hoặc variant `gradient-secondary`):
+     - CSS: `background-image: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #080D1A 100%) !important; border: 1px solid rgba(216, 178, 130, 0.45) !important;`
+     - Text: Vàng đồng sáng `#F6E1C3`.
+  3. **Danger Action**: Gradient Đỏ Ruby (`gradient-destructive`):
+     - CSS: `linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #991B1B 100%)`, chữ Trắng `#FFFFFF`.
+  4. **Success Action**: Gradient Ngọc Lục Bảo (`gradient-success`):
+     - CSS: `linear-gradient(135deg, #34D399 0%, #10B981 50%, #047857 100%)`, chữ Trắng `#FFFFFF`.

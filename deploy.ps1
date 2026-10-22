@@ -1,5 +1,5 @@
-﻿param (
-    [ValidateSet("subdomain-vione", "subdomain-crm", "subdomain-all", "dev-vione", "dev-crm", "dev-all", "all", "vione", "crm")]
+param (
+    [ValidateSet("subdomain-vione", "subdomain-crm", "subdomain-all", "dev-vione", "dev-crm", "dev-all", "all", "vione", "crm", "mobile-apk", "mobile-ipa", "apk", "ipa")]
     [string]$Target = "subdomain-vione",
     [switch]$SkipBuild,
     [switch]$SkipWebBuild,
@@ -19,6 +19,7 @@ chcp 65001 > $null
 # =========================================================================
 # VIONE MASTER DEPLOYMENT HUB (ĐIỀU PHỐI TRIỂN KHAI TOÀN DIỆN)
 # Phân tách rõ ràng giữa MÔI TRƯỜNG DEV (Port 5445/5446) và SUB DOMAIN (Port 80/443)
+# Đóng gói Mobile Native riêng (deploy/mobile)
 # =========================================================================
 
 Write-Host "=================================================================" -ForegroundColor Magenta
@@ -59,6 +60,14 @@ switch ($Target) {
         Write-Host ">>> ĐIỀU PHỐI: Triển khai Toàn Bộ Server DEV (Port 5445 & 5446)..." -ForegroundColor Magenta
         & "$PSScriptRoot/deploy-vione.ps1" @bound
         & "$PSScriptRoot/deploy-crm.ps1" @bound
+    }
+    { $_ -in @("mobile-apk", "apk") } {
+        Write-Host ">>> ĐIỀU PHỐI: Biên dịch Android APK (deploy/mobile/build-apk.ps1)..." -ForegroundColor Cyan
+        & "$PSScriptRoot/deploy/mobile/build-apk.ps1"
+    }
+    { $_ -in @("mobile-ipa", "ipa") } {
+        Write-Host ">>> ĐIỀU PHỐI: Biên dịch iOS IPA (deploy/mobile/build-ipa.ps1)..." -ForegroundColor Cyan
+        & "$PSScriptRoot/deploy/mobile/build-ipa.ps1"
     }
     "all" {
         Write-Host ">>> ĐIỀU PHỐI: Triển khai Toàn Diện (Cả Subdomain lẫn Server Dev)..." -ForegroundColor Magenta

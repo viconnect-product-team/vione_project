@@ -3,7 +3,8 @@
 // UI MUST use these hooks. No component imports runtime/*, repositories, raw
 // tables or the worker endpoint. Query keys are frozen and PII-free.
 
-import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useContext } from "react";
+import { useMutation, useQuery, QueryClientContext, keepPreviousData } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { NotificationOrchestrationSDK } from "@/lib/business-connect/notification-orchestration/sdk";
 import type {
@@ -37,6 +38,10 @@ export function useNotifications(
   filters: Pick<NotificationListFilters, "status" | "unreadOnly" | "limit" | "cursor"> = {},
 ) {
   const list = useServerFn(NotificationOrchestrationSDK.listNotifications);
+  const client = useContext(QueryClientContext);
+  if (!client) {
+    return { data: { items: [], total: 0 }, isPending: false, isError: false, refetch: () => {} } as any;
+  }
   return useQuery<NotificationListDTO>({
     queryKey: [...notificationKeys.list(filters), filters.cursor ?? null] as const,
     queryFn: () =>
@@ -55,6 +60,10 @@ export function useNotifications(
 
 export function useUnreadNotificationCount() {
   const count = useServerFn(NotificationOrchestrationSDK.getUnreadCount);
+  const client = useContext(QueryClientContext);
+  if (!client) {
+    return { data: { count: 0 }, isPending: false, isError: false, refetch: () => {} } as any;
+  }
   return useQuery<{ count: number }>({
     queryKey: notificationKeys.unreadCount(),
     queryFn: () => count({}),
@@ -66,11 +75,11 @@ export function useUnreadNotificationCount() {
 // ── Mutations ───────────────────────────────────────────────────────────────
 
 function useInvalidateAll() {
-  const qc = useQueryClient();
+  const qc = useContext(QueryClientContext);
   return () => {
-    void qc.invalidateQueries({ queryKey: notificationKeys.root });
-    void qc.invalidateQueries({ queryKey: ["bc-mobile", "home"] });
-    void qc.invalidateQueries({ queryKey: ["bc-notifications"] });
+    void qc?.invalidateQueries({ queryKey: notificationKeys.root });
+    void qc?.invalidateQueries({ queryKey: ["bc-mobile", "home"] });
+    void qc?.invalidateQueries({ queryKey: ["bc-notifications"] });
   };
 }
 
@@ -120,6 +129,10 @@ export function useDeleteNotification() {
 
 export function useNotificationPreferences() {
   const fn = useServerFn(NotificationOrchestrationSDK.getPreferences);
+  const client = useContext(QueryClientContext);
+  if (!client) {
+    return { data: { preferences: {}, overrides: [] }, isPending: false, isError: false, refetch: () => {} } as any;
+  }
   return useQuery<{
     preferences: NotificationPreferencesDTO;
     overrides: NotificationPreferenceOverrideDTO[];
@@ -132,18 +145,18 @@ export function useNotificationPreferences() {
 
 export function useUpdateNotificationPreferences() {
   const fn = useServerFn(NotificationOrchestrationSDK.updatePreferences);
-  const qc = useQueryClient();
+  const qc = useContext(QueryClientContext);
   return useMutation<NotificationPreferencesDTO, Error, Partial<NotificationPreferencesDTO>>({
     mutationFn: (data) => fn({ data }),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: notificationKeys.preferences() });
+      void qc?.invalidateQueries({ queryKey: notificationKeys.preferences() });
     },
   });
 }
 
 export function useUpdateNotificationOverride() {
   const fn = useServerFn(NotificationOrchestrationSDK.updateOverride);
-  const qc = useQueryClient();
+  const qc = useContext(QueryClientContext);
   return useMutation<
     NotificationPreferenceOverrideDTO,
     Error,
@@ -157,18 +170,18 @@ export function useUpdateNotificationOverride() {
   >({
     mutationFn: (data) => fn({ data }),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: notificationKeys.preferences() });
+      void qc?.invalidateQueries({ queryKey: notificationKeys.preferences() });
     },
   });
 }
 
 export function useClearNotificationOverride() {
   const fn = useServerFn(NotificationOrchestrationSDK.clearOverride);
-  const qc = useQueryClient();
+  const qc = useContext(QueryClientContext);
   return useMutation<{ ok: true }, Error, { notificationKind: NotificationKind }>({
     mutationFn: (data) => fn({ data }),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: notificationKeys.preferences() });
+      void qc?.invalidateQueries({ queryKey: notificationKeys.preferences() });
     },
   });
 }

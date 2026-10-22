@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { useQrScanner } from "@/hooks/use-qr-scanner";
 import { fetchNestApi } from "@/lib/api-client";
+import { saveContactDirectly } from "@/lib/save-contact-native";
 
 export interface AssociationCardCaptureModalProps {
   open: boolean;
@@ -391,13 +392,12 @@ export function AssociationCardCaptureModal({
         }),
       }).catch(() => {});
 
-      // 3. Tải file vCard .vcf CHỈ CHỨA TÊN VÀ SỐ ĐIỆN THOẠI (Không có TITLE, không có NOTE/mô tả)
-      const vcardContent = `BEGIN:VCARD\nVERSION:3.0\nFN:${cleanName}\nTEL:${cleanPhone}\nEND:VCARD`;
-      const blob = new Blob([vcardContent], { type: "text/vcard;charset=utf-8" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${cleanName.replace(/\s+/g, "_")}.vcf`;
-      link.click();
+      // 3. Lưu danh bạ trực tiếp vào điện thoại (nhanh, 1-chạm, không qua file PDF)
+      await saveContactDirectly({
+        displayName: cleanName,
+        phone: cleanPhone,
+        note: `Hội viên CEO 1983 - Mã: ${memberCode || "M1983"}`,
+      });
 
       toast.success(`Đã thêm ${cleanName} (${cleanPhone}) vào danh bạ số thành công!`);
       onSuccessSaveContact?.({

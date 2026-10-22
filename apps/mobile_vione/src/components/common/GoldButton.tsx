@@ -19,7 +19,7 @@ interface GoldButtonProps {
   icon?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
-  variant?: "solid" | "outline" | "secondary";
+  variant?: "solid" | "primary" | "secondary" | "danger" | "success" | "outline";
 }
 
 export const GoldButton: React.FC<GoldButtonProps> = ({
@@ -58,16 +58,77 @@ export const GoldButton: React.FC<GoldButtonProps> = ({
         onPress={onPress}
         disabled={disabled || loading}
         activeOpacity={0.75}
-        style={[styles.secondaryBtn, disabled && styles.disabled, style]}
+        style={[styles.solidWrapper, disabled && styles.disabled, style]}
       >
-        {loading ? (
-          <ActivityIndicator color={Colors.textPrimary} size="small" />
-        ) : (
-          <View style={styles.contentRow}>
-            {icon && <View style={styles.iconMargin}>{icon}</View>}
-            <Text style={[styles.secondaryText, textStyle]}>{title}</Text>
-          </View>
-        )}
+        <LinearGradient
+          colors={["#1E293B", "#0F172A", "#080D1A"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.gradient, styles.secondaryGradientBorder]}
+        >
+          {loading ? (
+            <ActivityIndicator color="#F6E1C3" size="small" />
+          ) : (
+            <View style={styles.contentRow}>
+              {icon && <View style={styles.iconMargin}>{icon}</View>}
+              <Text style={[styles.secondaryText, textStyle]}>{title}</Text>
+            </View>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+
+  if (variant === "danger") {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.75}
+        style={[styles.solidWrapper, disabled && styles.disabled, style]}
+      >
+        <LinearGradient
+          colors={["#EF4444", "#DC2626", "#991B1B"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <View style={styles.contentRow}>
+              {icon && <View style={styles.iconMargin}>{icon}</View>}
+              <Text style={[styles.whiteText, textStyle]}>{title}</Text>
+            </View>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+
+  if (variant === "success") {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.75}
+        style={[styles.solidWrapper, disabled && styles.disabled, style]}
+      >
+        <LinearGradient
+          colors={["#34D399", "#10B981", "#047857"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <View style={styles.contentRow}>
+              {icon && <View style={styles.iconMargin}>{icon}</View>}
+              <Text style={[styles.whiteText, textStyle]}>{title}</Text>
+            </View>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
     );
   }
@@ -143,20 +204,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
-  secondaryBtn: {
-    backgroundColor: Colors.surfaceLight,
+  secondaryGradientBorder: {
     borderWidth: 1,
-    borderColor: Colors.surfaceBorder,
+    borderColor: "rgba(216, 178, 130, 0.45)",
     borderRadius: 14,
-    paddingVertical: 13,
-    paddingHorizontal: 18,
-    alignItems: "center",
-    justifyContent: "center",
   },
   secondaryText: {
-    color: Colors.textPrimary,
+    color: "#F6E1C3",
     fontSize: 15,
     fontWeight: "600",
+  },
+  whiteText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
   },
   disabled: {
     opacity: 0.5,

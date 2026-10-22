@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Contacts from "expo-contacts";
 import {
   X,
   Camera,
@@ -152,6 +153,67 @@ export const CardScanReviewModal: React.FC<CardScanReviewModalProps> = ({
   };
 
   const handleSaveToDeviceContacts = async () => {
+    if (!name.trim()) {
+      Alert.alert("Thiếu thông tin", "Vui lòng nhập họ và tên đối tác trên danh thiếp.");
+      return;
+    }
+    if (!phone.trim()) {
+      Alert.alert("Thiếu thông tin", "Vui lòng nhập số điện thoại để lưu vào danh bạ.");
+      return;
+    }
+
+    try {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status === "granted") {
+        const nameParts = name.trim().split(" ");
+        const lastName = nameParts.length > 1 ? nameParts[0] : "";
+        const firstName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : name.trim();
+
+        const contactData: any = {
+          [Contacts.Fields.FirstName]: firstName || name.trim(),
+          [Contacts.Fields.LastName]: lastName,
+          [Contacts.Fields.Company]: company.trim() || undefined,
+          [Contacts.Fields.JobTitle]: title.trim() || undefined,
+          [Contacts.Fields.PhoneNumbers]: phone.trim()
+            ? [{ label: "mobile", number: phone.trim() }]
+            : [],
+          [Contacts.Fields.Emails]: email.trim()
+            ? [{ label: "work", email: email.trim() }]
+            : [],
+          [Contacts.Fields.UrlAddresses]: website.trim()
+            ? [{ label: "work", url: website.trim() }]
+            : [],
+          [Contacts.Fields.Addresses]: address.trim()
+            ? [{ label: "work", street: address.trim(), country: "VN" }]
+            : [],
+          [Contacts.Fields.Note]: "Lưu từ Danh thiếp số ViOne",
+        };
+
+        try {
+          if (typeof (Contacts as any).presentFormAsync === "function") {
+            await (Contacts as any).presentFormAsync(null, contactData, { isNew: true });
+            Alert.alert(
+              "Thành công",
+              `Đã mở giao diện Danh bạ máy để lưu thông tin ${name.trim()}!`,
+              [{ text: "OK" }]
+            );
+            return;
+          }
+        } catch (presentErr) {
+          console.warn("presentFormAsync error, fallback to addContactAsync:", presentErr);
+        }
+
+        await Contacts.addContactAsync(contactData);
+        Alert.alert(
+          "Thành công",
+          `Đã thêm ${name.trim()} (${phone.trim()}) trực tiếp vào Danh bạ điện thoại của bạn!`
+        );
+        return;
+      }
+    } catch (contactErr) {
+      console.warn("Lỗi lưu trực tiếp danh bạ expo-contacts:", contactErr);
+    }
+
     const vcard = [
       "BEGIN:VCARD",
       "VERSION:3.0",

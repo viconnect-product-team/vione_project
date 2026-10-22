@@ -34,7 +34,7 @@ export function ViOnePwaInstallPrompt() {
 
     // 2. Kiểm tra thiết bị có đang chạy ở chế độ Standalone (PWA đã cài) hay không
     const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
+      (typeof window !== "undefined" && window.matchMedia?.("(display-mode: standalone)")?.matches) ||
       (window.navigator as any).standalone === true ||
       document.referrer.includes("android-app://");
 
@@ -70,6 +70,7 @@ export function ViOnePwaInstallPrompt() {
     // 5. Bắt sự kiện beforeinstallprompt (Android / Chrome / Edge)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
+      (window as any).__vione_deferred_pwa_prompt = e;
       setDeferredPrompt(e);
       setShowBanner(true);
     };
@@ -141,7 +142,7 @@ export function ViOnePwaInstallPrompt() {
                 <div className="relative h-12 w-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#FAF3DD] via-[#D8B282] to-[#996515] p-[1.5px] shadow-lg">
                   <div className="h-full w-full rounded-[14px] bg-[#1A130D] flex items-center justify-center overflow-hidden">
                     <img
-                      src="/apple-touch-icon.png?v=vione_gold_crown"
+                      src="/apple-touch-icon.png?v=vione_balanced_20261022"
                       alt="ViOne App"
                       className="h-full w-full object-cover"
                       onError={(e) => {
@@ -234,7 +235,7 @@ export function ViOnePwaInstallPrompt() {
               <div className="flex items-center gap-3">
                 <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#D8B282] to-[#996515] p-0.5 shadow-md shrink-0">
                   <img
-                    src="/apple-touch-icon.png?v=vione_gold_crown"
+                    src="/apple-touch-icon.png?v=vione_balanced_20261022"
                     alt="ViOne App"
                     className="h-full w-full rounded-[14px] object-cover"
                     onError={(e) => {

@@ -1,5 +1,30 @@
 # Vibe App Monorepo - Cursor Rules
 
+## -1. Quy Tắc Bắt Buộc: Pre-Code Check, Tra Cứu Node & SRS Không Clear Text Cũ (STRICT PRE-CODE PROTOCOL)
+- **ĐỌC KỸ TÀI LIỆU TRƯỚC KHI CODE KHI CÓ YÊU CẦU MỚI**:
+  - Trước khi triển khai code, Agent BẮT BUỘC phải tra cứu `FEATURE_FLOW_NODE_MAP.md` để lấy mã Node ID và các file liên quan trên cả PWA, Native, Backend, DB.
+  - Phân hệ được chia riêng biệt, bắt buộc đọc đúng thư mục:
+    * **Web CRM ViOne riêng**: `docs/crm/SRS_CRM.md`, `docs/crm/TECHSPEC_CRM.md`, `docs/crm/QUY_CHUAN_UIUX_CRM.md`.
+    * **App ViOne riêng**: `docs/app_vione/SRS_APP.md`, `docs/app_vione/TECHSPEC_APP.md`, `docs/app_vione/QUY_CHUAN_UIUX_APP.md`.
+- **CẬP NHẬT SRS KHI THAY ĐỔI LUỒNG - CẤM CLEAR TEXT CŨ**:
+  - Khi có yêu cầu thay đổi luồng hoặc chỉnh sửa tính năng, PHẢI tìm đúng Use Case (`UC-CRM-xxx` hoặc `UC-APP-xxx`) trong tài liệu SRS để cập nhật.
+  - **TUYỆT ĐỐI KHÔNG XÓA NỘI DUNG CŨ**: Luôn bổ sung phần điều chỉnh luồng và ghi nhận phiên bản/lịch sử thay đổi.
+
+## -0.1. Quy Tắc Bắt Buộc: Dữ Liệu Thực & Cấm Tự Ý Fake/Mock (STRICT ZERO-MOCK DATA RULE)
+- **CẤM TỰ Ý FAKE DỮ LIỆU, MOCK ẢNH DỮ LIỆU**:
+  - Tuyệt đối không tạo mảng dữ liệu tĩnh (mock/dummy data) trong components giao diện trừ khi có yêu cầu bằng văn bản rõ ràng từ người dùng.
+  - Mọi dữ liệu phải phản ánh trung thực từ API NestJS và CSDL PostgreSQL.
+  - Khi database rỗng: BẮT BUỘC hiển thị `EmptyState` chuẩn mực với icon Lucide viền vàng và nút CTA gradient.
+
+## -0.2. Quy Tắc Bắt Buộc: Giao Diện App ViOne Cấm Nút Màu Khác Ngoài Nút Gradient (STRICT GRADIENT-ONLY BUTTON RULE)
+- **CẤM DÙNG NÚT ĐƠN SẮC TRÊN VIONE APP (PWA & NATIVE)**:
+  - Hiện tại ViOne App có các nút màu lệch quy chuẩn UI/UX -> CẤM DÙNG NÚT MÀU ĐƠN SẮC TRƠN (`bg-gray-*`, `bg-blue-*`, `bg-black`, `bg-white`, `bg-red-*`).
+  - **100% NÚT BẤM TRÊN APP VIONE BẮT BUỘC DÙNG NÚT GRADIENT**:
+    1. Primary CTA: **Gradient Vàng Hoàng Gia Champagne Gold** (`.bc-cta-gold` / `gradient-gold` / expo-linear-gradient `["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]`), chữ đen `#050C15` font-bold.
+    2. Secondary CTA: **Gradient Đen Thạch Anh Mạ Vàng** (`.bc-cta-gold-soft` / `gradient-secondary` viền vàng `#D8B282/40`), chữ vàng sáng `#F6E1C3`.
+    3. Danger CTA: **Gradient Đỏ Ruby** (`gradient-destructive`), chữ trắng `#FFFFFF`.
+    4. Success CTA: **Gradient Ngọc Lục Bảo** (`gradient-success`), chữ trắng `#FFFFFF`.
+
 ## 0. Quy Tắc Bắt Buộc: Đồng Bộ Hai Bản App Native ViOne & PWA ViOne (STRICT DUAL-APP PARITY)
 - **BẮT BUỘC SỬA ĐỒNG BỘ CẢ 2 BẢN KHI CHỈNH SỬA APP (Giống như quy tắc cấm tự động push git)**:
   - Khi có bất kỳ yêu cầu sửa lỗi, nâng cấp tính năng, chỉnh sửa giao diện hay luồng nghiệp vụ trên ứng dụng ViOne, BẮT BUỘC phải thực hiện đồng thời trên **CẢ 2 BẢN**: Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).
@@ -34,12 +59,16 @@
     - Nghiêm cấm tuyệt đối việc hardcode hoặc tự động thêm thành viên tùy tiện khi tạo mới cộng đồng.
     - Cộng đồng CHỈ ĐƯỢC PHÉP mời những người đã kết nối (`public.connections` / `public.user_connections`) thông qua API `POST /connect-app/community/:communityId/invites`.
     - Người được mời BẮT BUỘC phải nhận được thông báo thời gian thực (`public.business_notifications`) kèm WebSocket và có 2 nút hành động rõ ràng: "Đồng ý tham gia" (`POST /connect-app/community/invites/:inviteRef/accept`) hoặc "Từ chối" (`POST /connect-app/community/invites/:inviteRef/decline`).
-- **Quy Chuẩn Xuất Danh Bạ Điện Thoại Từ Danh Thiếp & Nút Zalo (Card Visit Contacts Export Rule)**:
-    - Tệp vCard `.vcf` tải xuống danh bạ điện thoại từ danh thiếp đã quét BẮT BUỘC chỉ lưu đúng 3 thông tin: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại di động (`TEL;TYPE=CELL,VOICE`).
+- **Quy Chuẩn Xuất & Lưu Danh Bạ Điện Thoại 1-Chạm Khử Lỗi PDF & Nút Zalo (Native Contact Saving Rule)**:
+    - Khi người dùng bấm "Lưu danh bạ", hệ thống BẮT BUỘC lưu nhanh 1-chạm đi thẳng vào ứng dụng Danh bạ của điện thoại (Contacts / Contact Picker), TUYỆT ĐỐI KHÔNG để rơi vào trình đọc tài liệu hay mở PDF:
+      * Trên Web/PWA di động: Sử dụng Web Share API Level 2 với chuẩn MIME `text/x-vcard` (`navigator.share({ files: [vcardFile] })`) để Android mở trực tiếp hộp thoại thêm vào Danh bạ; Trên iOS Safari điều hướng Data URI `data:text/x-vcard` mở popup native "Thêm vào Danh bạ" không tải file.
+      * Trên Native Mobile (`apps/mobile_vione`): BẮT BUỘC dùng thư viện native `expo-contacts` (`Contacts.presentFormAsync` / `Contacts.addContactAsync`) lưu trực tiếp vào máy.
+      * Tệp vCard `.vcf` chỉ lưu đúng 3 thông tin cốt lõi: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại di động (`TEL;TYPE=CELL,VOICE`).
     - Nút liên kết Zalo BẮT BUỘC phải là nền vàng Champagne Gold (`#D8B282`), chữ đen đậm (`#000000` / `text-slate-950 font-bold`) đạt chuẩn WCAG.
-- **Quy Chuẩn Kéo Thả Di Chuyển & Căn Chỉnh Vùng Hiển Thị Ảnh (Image Pan & Zoom Crop Rule)**:
-    - Khi người dùng tải lên hình ảnh (ảnh đại diện Avatar 1:1, ảnh bìa Cover 16:9), hệ thống BẮT BUỘC cung cấp công cụ căn chỉnh vùng hiển thị (`ImagePanCropModal`) cho phép kéo thả (drag/pan) di chuyển ảnh theo mọi hướng, thanh trượt zoom phóng to/thu nhỏ, xoay ảnh trước khi lưu.
-    - Đồng bộ 100% trên cả PWA (`src/components/common/ImagePanCropModal.tsx`) dùng Canvas HTML5 và Native Mobile (`src/components/ImagePanCropModal.tsx`) dùng `PanResponder` và `Animated`.
+- **Quy Chuẩn Kéo Thả Di Chuyển & Căn Chỉnh Vùng Hiển Thị Ảnh Như Facebook (Facebook-Style Image Pan & Zoom Crop Rule)**:
+    - Khi người dùng tải lên hoặc căn chỉnh hình ảnh cá nhân hay cộng đồng (ảnh đại diện Avatar/Logo 1:1 tròn, ảnh bìa Cover 16:9), hệ thống BẮT BUỘC cung cấp công cụ căn chỉnh vùng hiển thị (`ImagePanCropModal`) cho phép kéo thả (drag/pan) di chuyển tọa độ ảnh mượt mà như Facebook, thanh trượt zoom phóng to/thu nhỏ, xoay 90 độ trước khi lưu.
+    - Áp dụng đồng bộ cho cả luồng Tạo mới cộng đồng (`CreateCommunityModal`, `CreateCommunityGroupModal`) và Chỉnh sửa / Quản trị cộng đồng (`EditCommunityModal`, `CommunityDetail`, `CommunityDetailView`). Cung cấp sẵn nút "Kéo căn chỉnh" trực tiếp trên Banner/Logo preview cho phép Admin tinh chỉnh lại vị trí bất kỳ lúc nào mà không cần chọn lại file.
+    - Đồng bộ 100% trên cả PWA (`src/components/common/ImagePanCropModal.tsx`) dùng Canvas HTML5 và Native Mobile (`src/components/ImagePanCropModal.tsx`) dùng `PanResponder`, `Animated` kết hợp `expo-image-picker`.
 - **Quy Chuẩn Quét Mã QR Mở Trang Profile Công Khai Không Qua App/CRM (Public Digital Card QR Rule)**:
     - Khi quét mã QR danh tính số từ ứng dụng bên ngoài (Camera iOS/Android, Zalo, ứng dụng QR code bất kỳ), đường dẫn mở ra TUYỆT ĐỐI KHÔNG được đá vào app nội bộ hay màn đăng nhập CRM (`/auth?portal=crm`).
     - Đường dẫn mã QR bắt buộc trỏ về trang hồ sơ số công khai: `https://vione.viconnect.vn/p/:identifier` (với `:identifier` là public token, mã người dùng, UUID, hoặc user code).
@@ -52,8 +81,31 @@
 - **Quy Chuẩn Thẻ VIP Doanh Nhân Mạ Vàng/Bạc & Cài Đặt Preset Mã QR (VIP Business Card & QR Preset Rule)**:
     - Khi quét mã QR hoặc bấm xem trước danh thiếp tại màn "Tôi", hệ thống BẮT BUỘC hiển thị Thẻ VIP Doanh nhân cao cấp (`VipBusinessCard.tsx`) với 2 tùy chọn mạ vàng Champagne Gold (`#DFB76C`) hoặc mạ bạc Platinum sang trọng.
     - Trên thẻ hiển thị đầy đủ: Ảnh đại diện avatar viền mạ vàng/bạc, Chip kim loại thông minh, Biểu tượng sóng NFC contactless, Họ tên, Chức vụ, Số điện thoại, Tên công ty.
-    - Bên dưới thẻ hiển thị cụm nút hành động nhanh: Gọi điện thoại trực tiếp, Nhắn tin Zalo, Mở Website, Tải danh bạ (.vcf) 1-chạm chuẩn 3 trường, Chia sẻ hồ sơ, kèm khối hồ sơ cá nhân (Tiểu sử, Trụ sở).
-    - Màn hình "Tôi" BẮT BUỘC có tính năng Cài đặt cấu hình QR (`QrPresetSetupModal.tsx`) cho phép doanh nhân lựa chọn các preset hiển thị (Gold VIP - chia sẻ đầy đủ, Silver VIP - đối tác, Quick Connect) và bật/tắt từng trường thông tin theo nhu cầu kết nối.
+- **Quy Chuẩn Icon Ứng Dụng PWA & Safe Zone Chuẩn W3C / Apple (PWA Maskable & Touch Icon Rule)**:
+    - **Tỉ Lệ Vàng Icon Cân Đối (55% - 60%)**:
+      * Biểu tượng logo thương hiệu ViOne (vương miện hoàng gia mạ vàng và biểu tượng chữ ViOne) nằm chính giữa canvas, kích thước chiếm từ 55% đến 60% diện tích canvas (tỉ lệ vàng chuẩn mực ~58.8% trên nền đen Thạch Anh Obsidian `#05070E` / `#050C15`).
+      * TUYỆT ĐỐI KHÔNG để logo chiếm tràn sát mép (> 80% hoặc 95%-100%) và TUYỆT ĐỐI KHÔNG để nền transparent trong maskable icon khiến launcher phóng đại (scale-up) làm logo bị zoom to đùng hoặc vỡ hình.
+    - **W3C Web App Manifest Maskable Icon (Android)**:
+      * Icon maskable (`/vione-maskable-512.png`, `/vione-maskable-192.png`) bắt buộc có nền solid full-bleed (`#05070E`), logo nằm 100% bên trong vòng tròn Safe Zone đường kính 80% (bán kính 40% tính từ tâm) với biên độ đệm an toàn >= 40px để khi Android launcher cắt theo hình tròn (Pixel), squircle (Samsung One UI, Xiaomi HyperOS, Oppo ColorOS) không bao giờ bị cắt mép hoặc bị zoom to đùng.
+      * Phân định rõ ràng trong các file manifest (`manifest-bc.webmanifest`, `manifest.webmanifest`, `manifest.json`): `purpose: "maskable"` trỏ vào `/vione-maskable-512.png` và `/vione-maskable-192.png`; `purpose: "any"` trỏ vào `/vione-gold-512.png` và `/vione-gold-192.png`.
+    - **Apple Touch Icon (iOS)**:
+      * `/apple-touch-icon.png` (180x180) BẮT BUỘC có nền solid (`#05070E`), TUYỆT ĐỐI KHÔNG có alpha transparency theo chuẩn Apple Human Interface Guidelines, logo ở giữa có padding an toàn để khi iOS bo tròn góc squircle 22.5%, icon hiển thị cân đối và sang trọng.
+    - **Cache Busting**:
+      * Khi cập nhật icon, bắt buộc bump version trong `src/lib/pwa-manifest.ts` (`BC_MANIFEST_VERSION`, `MEMBER_MANIFEST_VERSION`), `public/sw.js` (`CACHE_NAME`), và query string trên link `apple-touch-icon`, `manifest`, `icon` trong `__root.tsx`.
+- **Quy Chuẩn Cài Đặt 1-Chạm PWA ViOne App Cho Cả Android & iOS (One-Tap PWA Install Rule)**:
+    - **Trên Android (Chrome, Edge, Samsung Internet, v.v.)**:
+      * Bắt và lưu giữ sự kiện native `beforeinstallprompt` vào biến toàn cục `window.__vione_deferred_pwa_prompt` và hook `useOneTapPwaInstall()`.
+      * Nút cài đặt trên Sticky Header (`HomeHeaderInstallButton`) và Thẻ Banner VIP (`HomeInstallBannerCard`) ở đầu Trang Chủ kích hoạt trực tiếp `deferredPrompt.prompt()`, bung ngay hộp thoại thêm vào màn hình chính chỉ với 1 chạm.
+    - **Trên iOS (Safari WebKit)**:
+      * Do Safari WebKit không hỗ trợ sự kiện `beforeinstallprompt`, hệ thống nhận diện iOS và kích hoạt modal hướng dẫn trực quan 2 bước (`OneTapInstallGuideModal`):
+        1. Kích hoạt trực tiếp Web Share API (`navigator.share`) mở action sheet của Safari.
+        2. Cung cấp nút tải cấu hình Apple WebClip Profile (`/vione_ios_install.mobileconfig`) trỏ chuẩn xác subdomain chính thức `https://vione.viconnect.vn/connect-app`, cho phép người dùng cài đặt thẳng icon ViOne Connect ra màn hình chính mà không cần thao tác thêm thủ công.
+        3. Hướng dẫn trực quan 2 bước với icon nút Chia sẻ và "Thêm vào MH chính".
+    - **Tự Động Ẩn Khi Chạy Ở Chế Độ Standalone**:
+      * Khi ứng dụng đang chạy ở chế độ Standalone PWA (`isStandalonePwa() === true`), toàn bộ nút cài đặt và thẻ banner trên Trang Chủ tự động ẩn để giữ trọn vẹn trải nghiệm ứng dụng đẳng cấp.
+    - **Khả Năng Tương Thích Môi Trường Kiểm Thử (Test Harness Resilience)**:
+      * Tất cả các vị trí truy cập `window.matchMedia` bắt buộc dùng optional chaining `window.matchMedia?.` và fallback an toàn tránh gây lỗi `TypeError: window.matchMedia is not a function` khi chạy trong jsdom.
+      * Các query hooks (`useUnreadNotificationCount`, `useNotifications`, `useNotificationPreferences`, v.v.) bắt buộc dùng `useContext(QueryClientContext)` với safe fallback khi render trong môi trường test không có `QueryClientProvider` để tránh lỗi `No QueryClient set`.
 - **Quy Chuẩn Tắt Trợ Lý AI Ẩn Hoàn Toàn Khỏi Giao Diện (AI Assistant Zero-Tab Floating Rule)**:
     - Khi người dùng tắt Quả Cầu AI ViOne (ấn nút đóng hoặc tắt trong cài đặt), giao diện BẮT BUỘC phải ẩn hoàn toàn 100%, TUYỆT ĐỐI KHÔNG để lại tab mép hoặc thanh mini cạnh màn hình.
     - Muốn bật lại Trợ lý AI, người dùng vào Section "Trợ lý Doanh Nhân ViOne AI" tại màn hình "Tôi" để bật Switch.

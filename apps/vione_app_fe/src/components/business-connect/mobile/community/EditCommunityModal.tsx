@@ -11,9 +11,11 @@ import {
   Upload,
   Globe,
   FileText,
+  Move,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi, uploadFile } from "@/lib/api-client";
+import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
 
 export interface EditCommunityModalProps {
   open?: boolean;
@@ -67,43 +69,114 @@ export function EditCommunityModal({
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
 
+  // Kéo thả di chuyển ảnh phong cách Facebook
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropTarget, setCropTarget] = useState<"logo" | "banner">("banner");
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cropOriginalFileName, setCropOriginalFileName] = useState("image.jpg");
+
   const logoFileRef = useRef<HTMLInputElement>(null);
   const bannerFileRef = useRef<HTMLInputElement>(null);
 
   if (!isModalOpen) return null;
 
-  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setIsUploadingLogo(true);
-    try {
-      const url = await uploadFile(file, file.name || "logo.png");
-      if (url) {
-        setLogoUrl(url);
-        toast.success("Tải ảnh đại diện cộng đồng thành công!");
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Vui lòng chọn tệp hình ảnh");
+      return;
+    }
+
+    setCropOriginalFileName(file.name || "logo.png");
+    setCropTarget("logo");
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setCropImageSrc(dataUrl);
+        setCropModalOpen(true);
       }
-    } catch {
-      toast.error("Không thể tải ảnh. Vui lòng thử lại!");
-    } finally {
-      setIsUploadingLogo(false);
+    };
+    reader.readAsDataURL(file);
+    if (logoFileRef.current) logoFileRef.current.value = "";
+  };
+
+  const handleUploadBanner = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Vui lòng chọn tệp hình ảnh");
+      return;
+    }
+
+    setCropOriginalFileName(file.name || "banner.jpg");
+    setCropTarget("banner");
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setCropImageSrc(dataUrl);
+        setCropModalOpen(true);
+      }
+    };
+    reader.readAsDataURL(file);
+    if (bannerFileRef.current) bannerFileRef.current.value = "";
+  };
+
+  const handleCropConfirm = async (croppedBlob: Blob) => {
+    setCropModalOpen(false);
+    if (cropTarget === "banner") {
+      setIsUploadingBanner(true);
+      try {
+        const file = new File([croppedBlob], cropOriginalFileName, { type: "image/jpeg" });
+        const url = await uploadFile(file, cropOriginalFileName);
+        if (url) {
+          setBannerUrl(url);
+          toast.success("Đã căn chỉnh và tải ảnh bìa cộng đồng thành công!");
+        }
+      } catch {
+        toast.error("Không thể tải ảnh bìa. Vui lòng thử lại!");
+      } finally {
+        setIsUploadingBanner(false);
+        setCropImageSrc(null);
+      }
+    } else {
+      setIsUploadingLogo(true);
+      try {
+        const file = new File([croppedBlob], cropOriginalFileName, { type: "image/jpeg" });
+        const url = await uploadFile(file, cropOriginalFileName);
+        if (url) {
+          setLogoUrl(url);
+          toast.success("Đã căn chỉnh và tải logo cộng đồng thành công!");
+        }
+      } catch {
+        toast.error("Không thể tải ảnh. Vui lòng thử lại!");
+      } finally {
+        setIsUploadingLogo(false);
+        setCropImageSrc(null);
+      }
     }
   };
 
-  const handleUploadBanner = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploadingBanner(true);
-    try {
-      const url = await uploadFile(file, file.name || "banner.jpg");
-      if (url) {
-        setBannerUrl(url);
-        toast.success("Tải ảnh bìa cộng đồng thành công!");
-      }
-    } catch {
-      toast.error("Không thể tải ảnh bìa. Vui lòng thử lại!");
-    } finally {
-      setIsUploadingBanner(false);
-    }
+  const handleRepositionBanner = () => {
+    if (!bannerUrl) return;
+    setCropOriginalFileName("banner-repositioned.jpg");
+    setCropTarget("banner");
+    setCropImageSrc(bannerUrl);
+    setCropModalOpen(true);
+  };
+
+  const handleRepositionLogo = () => {
+    if (!logoUrl) return;
+    setCropOriginalFileName("logo-repositioned.png");
+    setCropTarget("logo");
+    setCropImageSrc(logoUrl);
+    setCropModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -188,20 +261,32 @@ export function EditCommunityModal({
                 </div>
               )}
 
-              {/* Upload Banner Button */}
-              <button
-                type="button"
-                onClick={() => bannerFileRef.current?.click()}
-                disabled={isUploadingBanner}
-                className="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-black/70 hover:bg-black text-[#F6E1C3] border border-[#DFB76C]/50 backdrop-blur-md shadow-md transition active:scale-95 cursor-pointer"
-              >
-                {isUploadingBanner ? (
-                  <Loader2 className="h-3 w-3 animate-spin text-[#DFB76C]" />
-                ) : (
-                  <Camera className="h-3 w-3 text-[#DFB76C]" />
+              {/* Upload & Reposition Banner Buttons */}
+              <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
+                {bannerUrl && (
+                  <button
+                    type="button"
+                    onClick={handleRepositionBanner}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-[#DFB76C] hover:bg-[#F6E1C3] text-black shadow-md transition active:scale-95 cursor-pointer"
+                  >
+                    <Move className="h-3 w-3" />
+                    <span>Kéo căn chỉnh</span>
+                  </button>
                 )}
-                <span>Đổi ảnh bìa</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => bannerFileRef.current?.click()}
+                  disabled={isUploadingBanner}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-black/70 hover:bg-black text-[#F6E1C3] border border-[#DFB76C]/50 backdrop-blur-md shadow-md transition active:scale-95 cursor-pointer"
+                >
+                  {isUploadingBanner ? (
+                    <Loader2 className="h-3 w-3 animate-spin text-[#DFB76C]" />
+                  ) : (
+                    <Camera className="h-3 w-3 text-[#DFB76C]" />
+                  )}
+                  <span>Đổi ảnh bìa</span>
+                </button>
+              </div>
               <input
                 ref={bannerFileRef}
                 type="file"
@@ -246,14 +331,27 @@ export function EditCommunityModal({
                 </div>
               </div>
             </div>
-            <div className="mt-7 text-right">
-              <button
-                type="button"
-                onClick={() => logoFileRef.current?.click()}
-                className="text-[11px] font-semibold text-[#DFB76C] hover:underline cursor-pointer"
-              >
-                + Bấm vào đây để đổi ảnh đại diện (Logo)
-              </button>
+            <div className="mt-7 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400">Ảnh đại diện (Logo 1:1)</span>
+              <div className="flex items-center gap-2">
+                {logoUrl && (
+                  <button
+                    type="button"
+                    onClick={handleRepositionLogo}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#DFB76C] hover:underline cursor-pointer"
+                  >
+                    <Move className="h-3 w-3" />
+                    <span>Kéo căn chỉnh Logo</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => logoFileRef.current?.click()}
+                  className="text-[11px] font-semibold text-slate-300 hover:text-white cursor-pointer"
+                >
+                  + Đổi Logo
+                </button>
+              </div>
             </div>
           </div>
 
@@ -364,6 +462,20 @@ export function EditCommunityModal({
             </button>
           </div>
         </form>
+
+        {/* Modal căn chỉnh và di chuyển ảnh như Facebook (1:1 tròn cho Logo, 16:9 cho Ảnh bìa) */}
+        <ImagePanCropModal
+          isOpen={cropModalOpen}
+          imageSrc={cropImageSrc}
+          aspectRatio={cropTarget === "logo" ? "1:1" : "16:9"}
+          circular={cropTarget === "logo"}
+          title={cropTarget === "logo" ? "Căn chỉnh & Di chuyển Logo (1:1)" : "Căn chỉnh & Di chuyển Ảnh bìa (16:9)"}
+          onConfirm={handleCropConfirm}
+          onCancel={() => {
+            setCropModalOpen(false);
+            setCropImageSrc(null);
+          }}
+        />
       </div>
     </div>
   );

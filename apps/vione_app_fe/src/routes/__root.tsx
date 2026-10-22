@@ -165,12 +165,14 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "manifest", href: "/manifest.webmanifest?v=vione_gold_crown" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png?v=vione_gold_crown" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/vione-gold-192.png?v=vione_gold_crown" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.png?v=vione_gold_crown" },
-      { rel: "icon", type: "image/svg+xml", href: "/vione-gold-icon.svg?v=vione_gold_crown" },
-      { rel: "shortcut icon", href: "/favicon.ico?v=vione_gold_crown" },
+      { rel: "manifest", href: "/manifest.webmanifest?v=vione_balanced_20261022" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png?v=vione_balanced_20261022" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/vione-gold-512.png?v=vione_balanced_20261022" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/vione-gold-192.png?v=vione_balanced_20261022" },
+      { rel: "icon", type: "image/png", sizes: "64x64", href: "/vione-gold-64.png?v=vione_balanced_20261022" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.png?v=vione_balanced_20261022" },
+      { rel: "icon", type: "image/svg+xml", href: "/vione-gold-icon.svg?v=vione_balanced_20261022" },
+      { rel: "shortcut icon", href: "/favicon.ico?v=vione_balanced_20261022" },
       // Web fonts for Business Card industry templates.
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -383,8 +385,8 @@ function RootComponent() {
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const targetFavicon = "/vione-gold-192.png?v=vione_gold_crown";
-    const targetApple = "/vione-gold-192.png?v=vione_gold_crown";
+    const targetFavicon = "/vione-gold-192.png?v=vione_balanced_20261022";
+    const targetApple = "/apple-touch-icon.png?v=vione_balanced_20261022";
 
     const iconLinks = document.querySelectorAll<HTMLLinkElement>("link[rel~='icon']");
     if (iconLinks.length > 0) {

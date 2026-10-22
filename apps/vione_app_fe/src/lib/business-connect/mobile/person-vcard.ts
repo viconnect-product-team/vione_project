@@ -95,15 +95,30 @@ export function buildPersonVCard(person: BcMobilePersonDetail, origin?: string):
 
 /** Shared blob → anchor download trigger. Client-only. */
 export function triggerVcfDownload(vcf: string, filename: string): void {
-  const blob = new Blob([vcf], { type: "text/vcard;charset=utf-8" });
+  const isIos =
+    typeof navigator !== "undefined" &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent || "") &&
+    !(window as any).MSStream;
+
+  if (isIos) {
+    try {
+      window.location.href = `data:text/x-vcard;charset=utf-8,${encodeURIComponent(vcf)}`;
+      return;
+    } catch {
+      // Fallback to blob download
+    }
+  }
+
+  const blob = new Blob([vcf], { type: "text/x-vcard;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  a.style.display = "none";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
 /**
@@ -122,7 +137,7 @@ export async function shareOrDownloadVcf(
   vcf: string,
   filename: string,
 ): Promise<"shared" | "downloaded" | "cancelled"> {
-  const file = new File([vcf], filename, { type: "text/vcard" });
+  const file = new File([vcf], filename, { type: "text/x-vcard" });
   const nav = typeof navigator === "undefined" ? undefined : navigator;
   const canShareFiles =
     typeof nav?.share === "function" &&

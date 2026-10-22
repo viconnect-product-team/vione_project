@@ -17,6 +17,17 @@
   - Sử dụng: Văn bản nội dung, thanh phân cách, nền màn hình.
 
 ## 3. Quy chuẩn Icon & Tương tác
-- Tuyệt đối không gắn logo hoặc icon cứng từ bên thứ ba.
-- Sử dụng đồng bộ `lucide-react-native` với kích thước 16-24px, màu sắc chuẩn theo chủ đề.
 - Hiệu ứng phản hồi chạm (`activeOpacity={0.7}`) rõ ràng, phản hồi tức thì.
+
+## 4. Quy Chuẩn Nút Bấm: CẤM DÙNG NÚT MÀU KHÁC NGOÀI NÚT GRADIENT (STRICT GRADIENT-ONLY BUTTON RULE)
+- **ĐIỀU CẤM TUYỆT ĐỐI**:
+  * CẤM dùng các nút màu đơn sắc trơn (xám, xanh trơn, đen trơn, trắng trơn, đỏ trơn).
+- **100% NÚT BẤM (BUTTONS / CTAs / ACTION CHIPS) BẮT BUỘC PHẢI DÙNG GRADIENT BỌC `expo-linear-gradient`**:
+  1. **Primary Action (Nút chính)**: `<ViOneGradientButton variant="primary">` hoặc `<LinearGradient colors={['#F6E1C3', '#D8B282', '#C29B69', '#8C653B']} start={{x:0, y:0}} end={{x:1, y:1}}>`.
+     - Text: Chữ đen than `#050C15` font-bold/font-extrabold.
+     - Shadow: `shadowColor: '#D8B282', shadowOpacity: 0.45, elevation: 8`.
+  2. **Secondary Action (Nút phụ)**: `<ViOneGradientButton variant="secondary">` hoặc `<LinearGradient colors={['#1E293B', '#0F172A', '#080D1A']}>`.
+     - Viền: `borderWidth: 1, borderColor: 'rgba(216, 178, 130, 0.45)'`.
+     - Text: Vàng đồng `#F6E1C3`.
+  3. **Danger Action (Nút xóa/hủy)**: `<ViOneGradientButton variant="danger">` hoặc `<LinearGradient colors={['#EF4444', '#DC2626', '#991B1B']}>`, chữ trắng `#FFFFFF`.
+  4. **Success Action (Nút thành công/kết nối)**: `<ViOneGradientButton variant="success">` hoặc `<LinearGradient colors={['#34D399', '#10B981', '#047857']}>`, chữ trắng `#FFFFFF`.

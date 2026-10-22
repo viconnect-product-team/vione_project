@@ -41,6 +41,7 @@ import {
   Eye,
   Video,
   ArrowRightLeft,
+  Camera,
 } from "lucide-react-native";
 import { B2BEvent } from "../../../types";
 import { CommunityOpportunityItem } from "../../../components/OpportunityDetailModal";
@@ -250,6 +251,18 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   <Text style={styles.b2bPillText}>🌐 CỘNG ĐỒNG DOANH NGHIỆP VIONE</Text>
                 </View>
               </View>
+
+              {/* Nút chỉnh sửa / căn chỉnh ảnh nổi trên banner cho Quản trị viên */}
+              {(currentCommunity.viewerRole === "admin" || currentCommunity.canEdit) && (
+                <TouchableOpacity
+                  style={styles.bannerQuickEditBtn}
+                  onPress={() => onOpenEdit()}
+                  activeOpacity={0.8}
+                >
+                  <Camera size={12} color="#DFB76C" />
+                  <Text style={styles.bannerQuickEditText}>Chỉnh sửa ảnh</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Overlapping Floating Avatar & Header Info */}

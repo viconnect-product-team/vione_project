@@ -110,7 +110,7 @@ function IosInstallPage() {
           <div className="relative mb-3 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#FAF3DD] via-[#D8B282] to-[#996515] p-[2px] shadow-[0_12px_40px_rgba(216,178,130,0.4)]">
             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[22px] bg-[#120E0A]">
               <img
-                src="/apple-touch-icon.png?v=vione_gold_crown"
+                src="/apple-touch-icon.png?v=vione_balanced_20261022"
                 alt="ViOne App Icon"
                 className="h-full w-full object-cover"
                 width={96}

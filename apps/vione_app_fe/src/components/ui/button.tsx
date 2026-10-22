@@ -9,13 +9,24 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        default:
+          "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-bold shadow-[0_4px_20px_rgba(216,178,130,0.45)] hover:brightness-105 active:scale-[0.99] border border-white/20",
+        destructive:
+          "bg-gradient-to-r from-[#EF4444] via-[#DC2626] to-[#991B1B] text-white font-bold shadow-[0_4px_16px_rgba(220,38,38,0.4)] border border-red-300/30 hover:brightness-105 active:scale-[0.99]",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        secondary:
+          "bg-gradient-to-r from-[#1E293B] to-[#0F172A] text-[#F6E1C3] border border-[#D8B282]/40 shadow-sm hover:border-[#D8B282] active:scale-[0.99]",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        "gradient-gold":
+          "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-bold shadow-[0_4px_20px_rgba(216,178,130,0.45)] hover:brightness-105 active:scale-[0.99] border border-white/20",
+        "gradient-secondary":
+          "bg-gradient-to-r from-[#1E293B] to-[#0F172A] text-[#F6E1C3] border border-[#D8B282]/40 shadow-sm hover:border-[#D8B282] active:scale-[0.99]",
+        "gradient-destructive":
+          "bg-gradient-to-r from-[#EF4444] via-[#DC2626] to-[#991B1B] text-white font-bold shadow-[0_4px_16px_rgba(220,38,38,0.4)] border border-red-300/30 hover:brightness-105 active:scale-[0.99]",
+        "gradient-success":
+          "bg-gradient-to-r from-[#34D399] via-[#10B981] to-[#047857] text-white font-bold shadow-[0_4px_16px_rgba(16,185,129,0.4)] border border-emerald-300/30 hover:brightness-105 active:scale-[0.99]",
       },
       size: {
         default: "h-9 px-4 py-2",

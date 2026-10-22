@@ -13,7 +13,7 @@ export function IosInstallPrompt() {
 
     // Check if already running in standalone mode (installed PWA)
     const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
+      (typeof window !== "undefined" && window.matchMedia?.("(display-mode: standalone)")?.matches) ||
       (window.navigator as any).standalone === true;
 
     // Check if previously dismissed in this session or week
