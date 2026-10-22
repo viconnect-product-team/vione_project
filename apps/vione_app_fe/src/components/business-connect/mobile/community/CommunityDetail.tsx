@@ -3,7 +3,7 @@
 // opportunities surfaces (max 2 rows each), backed by canonical data only.
 // No CRUD, no settings, no fake social metrics, no feed.
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ChevronRight,
@@ -76,7 +76,29 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
     detail?.community?.name?.toLowerCase().includes("công ty") ||
     detail?.community?.name?.toLowerCase().includes("tập đoàn");
 
-  const isMember = detail?.community?.isMember ?? true;
+  // Tự động nhận diện nếu người dùng hiện tại là người tạo cộng đồng này
+  const isLocalCreator = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const stored = localStorage.getItem("vione_created_community");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.id === communityId || parsed.communityId === communityId) {
+          return true;
+        }
+      }
+    } catch {}
+    return false;
+  }, [communityId]);
+
+  const canEdit = Boolean(
+    isLocalCreator ||
+    detail?.community?.viewerRole === "admin" ||
+    (detail?.community as any)?.canEdit
+  );
+
+  const isMember = Boolean(isLocalCreator || detail?.community?.isMember || canEdit);
+  const effectiveRole = (canEdit || detail?.community?.viewerRole === "admin") ? "admin" : (detail?.community?.viewerRole || "member");
 
   const handleJoin = () => {
     requestJoin.mutate(
@@ -175,14 +197,14 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
                 <span className="rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-3 py-1 text-[12px] font-medium text-[var(--bc-mobile-muted)]">
                   {t("bc.mobile.community.yourRole")}:{" "}
                   {isMember
-                    ? detail.community.viewerRole === "admin"
+                    ? effectiveRole === "admin"
                       ? t("bc.mobile.community.role.admin")
                       : t("bc.mobile.community.role.member")
                     : "Chưa tham gia"}
                 </span>
                 {detail.community.memberCount !== null ? (
                   <span className="rounded-full border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] px-3 py-1 text-[12px] font-medium text-[var(--bc-mobile-muted)]">
-                    {t("bc.mobile.community.memberCount", { count: detail.community.memberCount })}
+                    {t("bc.mobile.community.memberCount", { count: detail.community.memberCount || 1 })}
                   </span>
                 ) : null}
                 <span className="rounded-full border border-[#DFB76C]/30 bg-[#DFB76C]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#DFB76C]">
@@ -191,11 +213,11 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
               </div>
 
               {/* Nút Quản Trị Viên: Chỉnh sửa tên, ảnh, thông tin cộng đồng */}
-              {(detail.community.viewerRole === "admin" || (detail.community as any).canEdit) ? (
+              {canEdit ? (
                 <button
                   type="button"
                   onClick={() => setEditCommunityOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DFB76C] bg-[#DFB76C]/15 text-[#DFB76C] text-[12px] font-bold hover:bg-[#DFB76C]/25 active:scale-95 transition-all shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DFB76C] bg-[linear-gradient(135deg,rgba(223,183,108,0.2)_0%,rgba(179,142,93,0.1)_100%)] text-[#DFB76C] text-[12px] font-bold hover:brightness-110 active:scale-95 transition-all shadow-xs cursor-pointer"
                 >
                   <Settings className="w-3.5 h-3.5" />
                   <span>Chỉnh sửa cộng đồng</span>
@@ -203,31 +225,23 @@ export function CommunityDetail({ communityId }: { communityId: string }) {
               ) : null}
             </section>
 
-            {/* Các Nút Hành Động Nghiệp Vụ Toàn Diện */}
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setCreateOppModalOpen(true)}
-                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
-              >
-                <PlusCircle className="w-3.5 h-3.5 text-slate-950" />
-                <span>Đăng cơ hội</span>
-              </button>
+            {/* Các Nút Hành Động Tinh Gọn - Bỏ nút "Đăng cơ hội" theo yêu cầu người dùng */}
+            <div className="mt-4 grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => setCreateNewsModalOpen(true)}
-                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-2 py-3 px-3 rounded-2xl font-black text-[13px] bg-[linear-gradient(135deg,#FAF3DD_0%,#F6E1C3_25%,#D8B282_60%,#C29B69_100%)] text-slate-950 border border-[#FFE5B4]/60 shadow-[0_4px_16px_rgba(216,178,130,0.3)] hover:brightness-105 active:scale-98 transition-all cursor-pointer"
               >
-                <Newspaper className="w-3.5 h-3.5 text-slate-950" />
-                <span>Đăng bài</span>
+                <Newspaper className="w-4 h-4 text-slate-950" />
+                <span>Đăng bài viết</span>
               </button>
               <button
                 type="button"
                 onClick={() => setShareEventOpen(true)}
-                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl font-bold text-[12px] bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 border border-[#D8B282]/50 shadow-md hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-2 py-3 px-3 rounded-2xl font-bold text-[13px] bg-[linear-gradient(135deg,#1E2738_0%,#0F172A_100%)] text-[#F6E1C3] border border-[#D8B282]/50 shadow-[0_4px_16px_rgba(0,0,0,0.5)] hover:border-[#D8B282] active:scale-98 transition-all cursor-pointer"
               >
-                <Calendar className="w-3.5 h-3.5 text-slate-950" />
-                <span>Chia sẻ SK</span>
+                <Calendar className="w-4 h-4 text-[#D8B282]" />
+                <span>Chia sẻ sự kiện</span>
               </button>
             </div>
 

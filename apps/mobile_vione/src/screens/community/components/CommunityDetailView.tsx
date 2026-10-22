@@ -349,47 +349,36 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
               )}
             </View>
 
-            {/* Nút Hành Động Toàn Diện Cho Cộng Đồng ViOne */}
+            {/* Nút Hành Động Tinh Gọn - Bỏ nút Đăng cơ hội theo yêu cầu */}
             <View style={styles.actionButtons3Col}>
-              <TouchableOpacity
-                style={styles.primaryActionButton}
-                onPress={() => onOpenCreateOpp()}
-              >
-                <LinearGradient
-                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
-                  style={styles.actionBtnGrad}
-                >
-                  <Target size={14} color="#050C15" />
-                  <Text style={styles.actionBtnText}>Đăng cơ hội</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
               <TouchableOpacity
                 style={styles.primaryActionButton}
                 onPress={() => {
                   onChangeDetailTab("news");
                   onOpenCreateNews();
                 }}
+                activeOpacity={0.85}
               >
                 <LinearGradient
-                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                  colors={["#FAF3DD", "#F6E1C3", "#D8B282", "#C29B69"]}
                   style={styles.actionBtnGrad}
                 >
-                  <Newspaper size={14} color="#050C15" />
-                  <Text style={styles.actionBtnText}>Đăng bài</Text>
+                  <Newspaper size={15} color="#050C15" />
+                  <Text style={styles.actionBtnText}>Đăng bài viết</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.primaryActionButton}
                 onPress={() => onOpenShareEvent()}
+                activeOpacity={0.85}
               >
                 <LinearGradient
-                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
-                  style={styles.actionBtnGrad}
+                  colors={["#1E2738", "#121724", "#090D15"]}
+                  style={[styles.actionBtnGrad, { borderWidth: 1, borderColor: "rgba(216, 178, 130, 0.45)" }]}
                 >
-                  <Calendar size={14} color="#050C15" />
-                  <Text style={styles.actionBtnText}>Chia sẻ SK</Text>
+                  <Calendar size={15} color="#D8B282" />
+                  <Text style={[styles.actionBtnText, { color: "#F6E1C3" }]}>Chia sẻ sự kiện</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>

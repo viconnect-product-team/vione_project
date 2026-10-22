@@ -213,7 +213,8 @@ export class CommunityController {
   // --- Parameterized :communityId Routes ---
   @Get(':communityId')
   async getCommunityDetail(@Request() req, @Param('communityId') communityId: string) {
-    return this.connectAppService.getCommunityDetail(req.user.id, cleanCommunityId(communityId));
+    const userId = req.user?.id || '00000000-0000-0000-0000-000000000000';
+    return this.connectAppService.getCommunityDetail(userId, cleanCommunityId(communityId));
   }
 
   @Patch(':communityId')

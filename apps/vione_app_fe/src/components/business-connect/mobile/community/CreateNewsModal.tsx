@@ -252,7 +252,7 @@ export function CreateNewsModal({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-all cursor-pointer"
+              className="flex-1 py-3 rounded-xl border border-[#D8B282]/40 bg-[linear-gradient(135deg,#1E293B_0%,#0F172A_100%)] text-[#F6E1C3] hover:border-[#D8B282]/70 text-xs font-bold shadow-xs transition-all cursor-pointer"
             >
               Hủy bỏ
             </button>

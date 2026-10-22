@@ -59,6 +59,20 @@
      - Chip kim loại 3D, sóng NFC, mã doanh nhân `VIONE-XXXX`.
   4. Người dùng bấm "Mã QR của tôi": Bung modal hiển thị mã QR kèm logo vương miện mạ vàng ở giữa.
   5. Đối tác quét mã QR hoặc chạm thẻ NFC vật lý vào mặt lưng điện thoại.
+* **Cập nhật Phiên bản v6.1.0 (Tháng 10/2026 - Tối giản Thẻ & Đa dạng Hồ sơ):**
+  - **Quy tắc Thẻ vật lý tối giản:** Trên bề mặt thẻ VIP (Thẻ Vàng Hoàng Gia / Thẻ Bạc Bạch Kim), hệ thống STRICTLY chỉ hiển thị 3 trường: **Họ và tên**, **Công ty**, và **Số điện thoại** ("chỉ thế thôi"). Loại bỏ chức danh và email khỏi mặt thẻ để tránh rối mắt, giữ trọn vẻ tinh tế sang trọng của thẻ kim loại.
+  - **Khu vực Hồ sơ Số bên dưới Thẻ:** Bên dưới thẻ là khu vực hiển thị Profile với bộ chuyển đổi linh hoạt:
+    + `Hồ sơ cá nhân`: Giới thiệu bản thân (Bio), Sứ mệnh, Email, Website, Địa chỉ và Mã định danh doanh nhân.
+    + `Hồ sơ doanh nghiệp`: Tên công ty, Lĩnh vực hoạt động, Năng lực hợp tác B2B, Trụ sở và Website.
+  - **Mẫu Bố cục Nền Đa dạng (Interactive Background Patterns):** Dựng sẵn 3 mẫu nền hình học tinh tế cho người dùng lựa chọn:
+    + `■ Vuông`: Bố cục lưới khối hình vuông chuẩn mực, thể hiện sự vững chắc, kỷ luật và minh bạch tư pháp.
+    + `▲ Tam giác`: Bố cục lưới đa diện hình tam giác, biểu trưng cho tăng trưởng, bứt phá và hợp tác đa chiều.
+    + `◆ Tinh thể`: Bố cục đa diện Obsidian sắc nét, tượng trưng cho vị thế C-Level và đẳng cấp thương hiệu.
+  - **Cụm nút Hành động Chuẩn Gradient (Rule 8):**
+    + Nút Gọi điện: Gradient Ngọc Lục Bảo (`linear-gradient(135deg,#059669_0%,#10B981_50%,#047857_100%)`).
+    + Nút Chat Zalo: Gradient Xanh Zalo Blue (`linear-gradient(135deg,#0088FF_0%,#0066CC_50%,#0052A3_100%)`).
+    + Nút Mã QR: Gradient Vàng Hoàng Gia (`linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)`).
+    + Nút Chia sẻ: Gradient Đen Thạch Anh Mạ Vàng (`linear-gradient(135deg,#1E293B_0%,#0F172A_100%)`).
 * **Quy chuẩn Giao diện Bắt buộc:**
   - Nút đóng, nút chuyển đổi màu thẻ hoặc chia sẻ bắt buộc sử dụng chuẩn nút Gradient.
 
@@ -124,3 +138,30 @@
   4. Giám đốc có thể bấm nút "Gọi trực tiếp" hoặc "Nhắc việc" 1-chạm.
 * **Quy tắc Giao diện:**
   - Toàn bộ các nút gọi, nhắc việc, bộ lọc đều tuân thủ nghiêm ngặt quy định Gradient của ViOne App.
+
+---
+
+### UC-APP-11: Tham gia Cộng đồng, Quyền Hạn Người Sáng Lập & Thao Tác Tối Giản
+* **Tác nhân:** Doanh nhân sáng lập cộng đồng (Owner/Creator), Thành viên ban điều hành, Hội viên.
+* **Luồng sự kiện chính:**
+  1. Người sáng lập tạo cộng đồng mới qua form `CreateCommunityModal.tsx`.
+  2. Backend lưu thông tin vào `public.associations`, ghi nhận chính xác `creator_id = userId`, đồng thời tạo bản ghi hội viên quản trị trong `public.memberships` và `public.members`.
+  3. Khi truy cập màn hình chi tiết cộng đồng (`CommunityDetail.tsx` / `CommunityDetailView.tsx`):
+     - Hệ thống kiểm tra đa tầng quyền sáng lập: cột `creator_id` trong `public.associations`, đăng ký trong `public.vione_community_subscriptions`, và `localStorage.vione_created_community`.
+     - Nếu nhận diện là Người sáng lập (`isCommunityCreator`), Backend & Client tự động cấp quyền Quản trị viên (`viewerRole: 'admin'`), `canEdit: true`, `isMember: true` và tự động kích hoạt cơ chế tự phục hồi (auto-repair) bản ghi hội viên nếu bị khuyết.
+     - Người sáng lập luôn thấy nút **"Chỉnh sửa cộng đồng"** (chuẩn Gradient Vàng Hoàng Gia) và các công cụ quản trị.
+  4. **Tối giản nút bấm (UI Minimalism):**
+     - Loại bỏ nút thừa `+ Đăng cơ hội` khỏi header chi tiết cộng đồng nhằm tập trung vào các hành động giao thương cốt lõi.
+     - Chỉ giữ 2 nút hành động tối giản: `Đăng bài viết` (Gradient Vàng Hoàng Gia) và `Chia sẻ sự kiện` (Gradient Đen Thạch Anh Mạ Vàng).
+* **Quy chuẩn Giao diện Bắt buộc:**
+  - Tuyệt đối không dùng nút màu trơn xám/xanh/đen phẳng. 100% nút bấm phải sử dụng Gradient chuẩn ViOne.
+
+---
+
+### UC-APP-16: Trải Nghiệm Cài Đặt PWA 1-Chạm (Home Install Banner Card Placement)
+* **Tác nhân:** Người dùng PWA ViOne trên trình duyệt Web/Mobile.
+* **Luồng sự kiện chính:**
+  1. Loại bỏ nút cài đặt khỏi thanh Header cố định trên Trang chủ (`ExecutiveHome.tsx`) để thanh tiêu đề giữ vẻ sang trọng, không che khuất các thông tin thương hiệu.
+  2. Khối thẻ **"Cài Đặt App ViOne (1-Chạm)"** (`HomeInstallBannerCard`) được di chuyển xuống vị trí dưới cùng của Trang chủ, trước các modal và thanh điều hướng đáy.
+  3. Người dùng cuộn xuống đáy trang chủ sẽ thấy thẻ kêu gọi cài đặt PWA viền mạ vàng, tích hợp nút "Cài Đặt Ngay" chuẩn Gradient Vàng Hoàng Gia với đầy đủ hướng dẫn thêm vào màn hình chính (Add to Home Screen).
+

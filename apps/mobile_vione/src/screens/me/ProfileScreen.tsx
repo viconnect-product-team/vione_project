@@ -424,21 +424,21 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
               </Text>
               <Text
                 style={[
-                  styles.cardJobTitle,
-                  { color: isDark ? "#D8B282" : "#8C653B" },
-                ]}
-                numberOfLines={1}
-              >
-                {userTitle}
-              </Text>
-              <Text
-                style={[
                   styles.cardCompany,
-                  { color: isDark ? "#94A3B8" : "#64748B" },
+                  { color: isDark ? "#D8B282" : "#8C653B" },
                 ]}
                 numberOfLines={2}
               >
                 {userCompany}
+              </Text>
+              <Text
+                style={[
+                  styles.cardCompany,
+                  { color: isDark ? "#FDE68A" : "#1E293B", fontWeight: "700" },
+                ]}
+                numberOfLines={1}
+              >
+                {userPhone}
               </Text>
             </View>
 

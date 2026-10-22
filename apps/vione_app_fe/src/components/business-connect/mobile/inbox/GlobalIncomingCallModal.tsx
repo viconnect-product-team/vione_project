@@ -266,7 +266,7 @@ export function GlobalIncomingCallModal() {
                   type="button"
                   onClick={handleDecline}
                   aria-label="Từ chối"
-                  className="w-14 h-14 rounded-full bg-red-600 hover:bg-red-500 active:scale-95 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(220,38,38,0.5)] transition-all cursor-pointer"
+                  className="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#EF4444_0%,#DC2626_50%,#B91C1C_100%)] border border-red-400/50 hover:brightness-110 active:scale-95 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(220,38,38,0.5)] transition-all cursor-pointer"
                 >
                   <PhoneOff className="w-6 h-6" />
                 </button>

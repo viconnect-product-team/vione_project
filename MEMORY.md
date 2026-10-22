@@ -1,6 +1,39 @@
 # System Memory & Architecture
 
-## 0. CẬP NHẬT KIẾN TRÚC TÀI LIỆU, FEATURE NODE MAP, GRADIENT BUTTONS & DEPLOY ISOLATION (THÁNG 10/2026)
+## 0. CẬP NHẬT TỐI ƯU CỘNG ĐỒNG, THẺ VIP ĐA DẠNG PROFILE & RÀ SOÁT NÚT GRADIENT (THÁNG 10/2026)
+- **1. Sửa Lỗi Quyền Người Sáng Lập Cộng Đồng (Community Creator Auto-Repair & Permissions)**:
+  * **Vấn đề**: Người dùng tạo cộng đồng (ví dụ "gia đình vione"), nhưng backend không ghi nhận `creator_id` vào `public.associations`, khiến API `getCommunityDetail` trả về `isMember: false`, `canEdit: false`, `viewerRole: 'member'`, hiển thị thẻ "Gia nhập cộng đồng" với 0 thành viên và không thể chỉnh sửa.
+  * **Giải pháp đa tầng**:
+    - Backend: Cập nhật `createCommunity` ghi nhận `creator_id`, tự động tạo bản ghi Admin trong cả `public.memberships` và `public.members`. Cập nhật `getCommunityDetail` kiểm tra `creator_id`, bảng `public.vione_community_subscriptions` và tự động kích hoạt cơ chế tự phục hồi (auto-repair) bản ghi hội viên nếu bị khuyết.
+    - Frontend PWA & Native: Thêm lớp kiểm tra `localStorage.vione_created_community`. Đảm bảo `canEdit: true`, `isMember: true` và hiển thị nút nổi bật **"Chỉnh sửa cộng đồng"** (Gradient Vàng Hoàng Gia).
+    - Tối giản nút bấm (UI Minimalism): Loại bỏ nút `+ Đăng cơ hội` khỏi header chi tiết cộng đồng. Thay thế bằng 2 nút sang trọng: `Đăng bài viết` (Gradient Vàng Hoàng Gia) và `Chia sẻ sự kiện` (Gradient Đen Thạch Anh Mạ Vàng).
+- **2. Chuyển Nút Cài Đặt App PWA Xuống Đáy Màn Hình Trang Chủ**:
+  * Đã loại bỏ `HomeHeaderInstallButton` khỏi header cố định trên `ExecutiveHome.tsx`.
+  * Khối thẻ **"Cài Đặt App ViOne (1-Chạm)"** (`HomeInstallBannerCard`) được đưa xuống vị trí dưới cùng của trang chủ, đảm bảo thanh header tinh tế và không che khuất nhận diện.
+- **3. Cải Tiến Thẻ VIP (Thẻ Vàng / Thẻ Bạc) & Dựng Sẵn Mẫu Hồ Sơ Đa Dạng**:
+  * **Quy chuẩn Thẻ vật lý**: Trên bề mặt thẻ VIP (cả PWA `VipBusinessCard.tsx` và Native `MemberCardBottomSheet.tsx`), strictly chỉ hiển thị **Họ và tên**, **Công ty** và **Số điện thoại** ("chỉ thế thôi"). Loại bỏ chức danh và email khỏi mặt thẻ để giữ trọn sự thanh lịch của thẻ kim loại.
+  * **Bộ chuyển đổi Thẻ Vàng / Thẻ Bạc**: Người dùng có thể chuyển đổi trực tiếp giữa Thẻ Vàng Hoàng Gia và Thẻ Bạc Bạch Kim với hiệu ứng chip kim loại 3D, sóng NFC và dập nổi viền mạ vàng/bạc.
+  * **Khu vực Hồ sơ Số bên dưới Thẻ**:
+    - Chuyển đổi giữa **Hồ sơ cá nhân** (Bio, sứ mệnh, chuyên môn, email, website, địa chỉ) và **Hồ sơ doanh nghiệp** (Tên công ty, lĩnh vực hoạt động trọng tâm, năng lực hợp tác B2B, trụ sở, website).
+    - **Dựng sẵn 3 mẫu bố cục nền hình học tinh tế**:
+      * `■ Vuông`: Bố cục lưới khối hình vuông chuẩn mực, thể hiện tính kỷ luật và minh bạch tư pháp.
+      * `▲ Tam giác`: Bố cục lưới đa diện hình tam giác, biểu trưng cho tăng trưởng và bứt phá.
+      * `◆ Tinh thể`: Bố cục tinh thể Obsidian đa diện sắc nét, tôn vinh đẳng cấp C-Level.
+    - Nút CTA lớn **"Kết Nối Giao Thương B2B"** chuẩn Gradient Vàng Hoàng Gia.
+- **4. Rà Soát & Chuẩn Hóa Toàn Diện Nút Bấm Gradient (Strict Rule 8)**:
+  * Đã thay thế toàn bộ nút màu đơn sắc trơn (nút Zalo trắng trơn, nút gọi điện nhạt màu trong `PersonalProfileBottomSheet.tsx`, nút từ chối cuộc gọi `GlobalIncomingCallModal.tsx`, các nút hủy modal `CreateNewsModal.tsx`, `CreateOpportunityModal.tsx`).
+  * 100% các nút hành động tuân thủ bảng màu Gradient:
+    - Gọi điện: Gradient Ngọc Lục Bảo Emerald Green (`#059669` -> `#10B981` -> `#047857`).
+    - Chat Zalo: Gradient Xanh Zalo Blue (`#0088FF` -> `#0066CC` -> `#0052A3`).
+    - Mã QR / Primary CTA: Gradient Vàng Hoàng Gia Champagne Gold (`#F6E1C3` -> `#D8B282` -> `#C29B69` -> `#8C653B`).
+    - Chia sẻ / Secondary: Gradient Đen Thạch Anh Mạ Vàng (`#1E293B` -> `#0F172A`).
+    - Từ chối / Xóa: Gradient Đỏ Ruby (`#EF4444` -> `#DC2626` -> `#B91C1C`).
+- **5. Kiểm Tra Typecheck Toàn Hệ Thống (Strict Rule 3)**:
+  * Backend (`apps/vione_app_be`): `tsc --noEmit` -> Exit code 0 (0 errors).
+  * PWA (`apps/vione_app_fe`): `tsc --noEmit` -> Exit code 0 (0 errors).
+  * Native (`apps/mobile_vione`): `tsc --noEmit` -> Exit code 0 (0 errors).
+
+## 0.1. CẬP NHẬT KIẾN TRÚC TÀI LIỆU, FEATURE NODE MAP, GRADIENT BUTTONS & DEPLOY ISOLATION (THÁNG 10/2026)
 - **1. Phân Tách Tài Liệu Độc Lập Giữa CRM ViOne & App ViOne**:
   * Thư mục `docs/crm/` dành riêng cho Web CRM ViOne Enterprise:
     - [docs/crm/BRD_CRM.md](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/docs/crm/BRD_CRM.md): Yêu cầu nghiệp vụ quản trị doanh nghiệp, BPMN 2.0, Workload, Attendance, Finance 3 cấp, VietQR Napas 24/7, CRM Lead Pipeline.

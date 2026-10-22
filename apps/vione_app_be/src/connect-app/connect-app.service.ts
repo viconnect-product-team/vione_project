@@ -1343,18 +1343,50 @@ export class ConnectAppService implements OnModuleInit {
     }
     const membership = memberships[0];
 
-    const associations = await this.prisma.$queryRaw<any[]>`
-      SELECT id, name, logo_url, banner_url, tagline, about FROM public.associations
+    let associations = await this.prisma.$queryRaw<any[]>`
+      SELECT id, name, logo_url, banner_url, tagline, about, creator_id FROM public.associations
       WHERE id = ${communityId}::uuid
       LIMIT 1
-    `.catch(() => []);
+    `.catch(async () => {
+      return await this.prisma.$queryRaw<any[]>`
+        SELECT id, name, logo_url, banner_url, tagline, about FROM public.associations
+        WHERE id = ${communityId}::uuid
+        LIMIT 1
+      `.catch(() => []);
+    });
     if (associations.length === 0) return null;
     const assoc = associations[0];
+
+    // Tự động nhận diện nếu người dùng hiện tại là người tạo cộng đồng này (qua creator_id hoặc subscriptions)
+    const isCreatorByAssoc = Boolean(assoc.creator_id && String(assoc.creator_id) === String(userId));
+    const isCreatorBySub = (await this.prisma.$queryRaw<any[]>`
+      SELECT id FROM public.vione_community_subscriptions
+      WHERE community_id = ${communityId}::uuid AND user_id = ${userId}::uuid
+      LIMIT 1
+    `.catch(() => [])).length > 0;
+    const isCommunityCreator = isCreatorByAssoc || isCreatorBySub;
+
+    if (isCommunityCreator) {
+      hasActualMembership = true;
+      memberships = [{ role: 'admin', is_default: true }];
+      // Tự động bù đắp bản ghi memberships / members vào CSDL nếu bị thiếu
+      this.prisma.$executeRaw`
+        INSERT INTO public.memberships (id, user_id, association_id, role, is_default, created_at, updated_at)
+        VALUES (gen_random_uuid(), ${userId}::uuid, ${communityId}::uuid, 'admin', true, NOW(), NOW())
+        ON CONFLICT DO NOTHING
+      `.catch(() => {});
+      this.prisma.$executeRaw`
+        INSERT INTO public.members (id, user_id, association_id, role, status, created_at, updated_at)
+        VALUES (gen_random_uuid(), ${userId}::uuid, ${communityId}::uuid, 'admin', 'active', NOW(), NOW())
+        ON CONFLICT DO NOTHING
+      `.catch(() => {});
+    }
 
     const isCommunityAdmin = 
       membership?.role === 'admin' || 
       membership?.role === 'owner' || 
       membership?.role === 'president' || 
+      isCommunityCreator ||
       isPlatformAdmin;
 
     const activeCountRes = await this.prisma.$queryRaw`
@@ -1407,7 +1439,7 @@ export class ConnectAppService implements OnModuleInit {
         viewerRole: isCommunityAdmin ? 'admin' : 'member',
         canEdit: isCommunityAdmin,
         isDefault: membership.is_default === true,
-        isMember: hasActualMembership,
+        isMember: hasActualMembership || isCommunityCreator,
         communityType: this.getCommunityType(assoc.id, assoc.name),
       },
       upcomingEvents,
@@ -6183,10 +6215,17 @@ export class ConnectAppService implements OnModuleInit {
     const determinedType = input.communityType || this.getCommunityType(communityId, name);
     this.communityTypesMap.set(communityId, determinedType);
 
-    await this.prisma.$executeRaw`
-      INSERT INTO public.associations (id, name, slug, tagline, about, logo_url, banner_url, created_at, updated_at)
-      VALUES (${communityId}::uuid, ${name}, ${slug}, ${tagline}, ${about}, ${logoUrl}, ${bannerUrl}, ${now}, ${now})
-    `;
+    try {
+      await this.prisma.$executeRaw`
+        INSERT INTO public.associations (id, name, slug, tagline, about, logo_url, banner_url, creator_id, created_at, updated_at)
+        VALUES (${communityId}::uuid, ${name}, ${slug}, ${tagline}, ${about}, ${logoUrl}, ${bannerUrl}, ${userId}::uuid, ${now}, ${now})
+      `;
+    } catch {
+      await this.prisma.$executeRaw`
+        INSERT INTO public.associations (id, name, slug, tagline, about, logo_url, banner_url, created_at, updated_at)
+        VALUES (${communityId}::uuid, ${name}, ${slug}, ${tagline}, ${about}, ${logoUrl}, ${bannerUrl}, ${now}, ${now})
+      `;
+    }
 
     // Đảm bảo tài khoản người dùng tồn tại trong auth.users trước khi liên kết membership (tránh lỗi khóa ngoại)
     try {
@@ -6197,11 +6236,20 @@ export class ConnectAppService implements OnModuleInit {
       `;
     } catch {}
 
-    // Gán người tạo làm quản trị viên (admin) của cộng đồng
+    // Gán người tạo làm quản trị viên (admin) của cộng đồng trong cả 2 bảng memberships và members
     try {
       await this.prisma.$executeRaw`
         INSERT INTO public.memberships (id, user_id, association_id, role, is_default, created_at, updated_at)
         VALUES (gen_random_uuid(), ${userId}::uuid, ${communityId}::uuid, 'admin', true, ${now}, ${now})
+        ON CONFLICT DO NOTHING
+      `;
+    } catch {}
+
+    try {
+      await this.prisma.$executeRaw`
+        INSERT INTO public.members (id, user_id, association_id, role, status, created_at, updated_at)
+        VALUES (gen_random_uuid(), ${userId}::uuid, ${communityId}::uuid, 'admin', 'active', ${now}, ${now})
+        ON CONFLICT DO NOTHING
       `;
     } catch {}
 
