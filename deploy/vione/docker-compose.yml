@@ -10,13 +10,19 @@ services:
       - PORT=8080
       - HOST=0.0.0.0
       - NITRO_HOST=0.0.0.0
-      - NEST_API_URL=http://backend:4000
+      - NEST_API_URL=http://vione-backend-prod:4000
+      - NODE_OPTIONS=--max-old-space-size=450
     ports:
       - "127.0.0.1:${TARGET_PROD_PORT_FRONTEND:-5000}:8080"
     depends_on:
       - backend
     networks:
       - vione-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
 
   backend:
     image: ${BACKEND_IMAGE_NAME:-vione-standalone-backend}:latest
@@ -27,6 +33,7 @@ services:
       - .env
     environment:
       - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=512
     user: "0:0"
     volumes:
       - vione-standalone-uploads-data:/app/uploads
@@ -37,9 +44,13 @@ services:
     networks:
       vione-network:
         aliases:
-          - backend
           - vione-backend
           - vione-backend-prod
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
 
   minio:
     image: minio/minio:latest
@@ -60,6 +71,11 @@ services:
           - minio
           - vione-standalone-minio-prod
           - vione-standalone-minio
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
 
 volumes:
   vione-standalone-minio-data:

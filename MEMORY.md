@@ -1,5 +1,32 @@
 # System Memory & Architecture
 
+## 0.0. KHẮC PHỤC TRIỆT ĐỂ LỖI HỆ THỐNG VIONE SẬP SAU 1-2 NGÀY, PHÂN LẬP HOÀN TOÀN KHỎI CEO 1983 & CỔNG 5446 (THÁNG 10/2026)
+- **1. Phân Tách Hoàn Toàn ViOne Khỏi CEO 1983 (Strict Decoupling from CEO 1983)**:
+  * **Xác định ranh giới sở hữu**:
+    - `ceo1983-ssl-proxy`: Container của riêng hiệp hội CEO 1983 (phục vụ các cổng 5443 CRM và 5444 App; tên miền `crm.ceo1983.viconnect.vn`, `ceo1983.viconnect.vn`).
+    - `vione-ssl-proxy`: Container proxy độc lập của riêng hệ thống ViOne (phục vụ các cổng 5445 ViOne App và 5446 ViOne CRM).
+    - **ViOne CRM Enterprise**: Chưa khai báo Subdomain chính thức (chỉ chạy Dev Port 5006 HTTP / 5446 HTTPS, tuyệt đối không có `crm.viconnect.vn`).
+    - **ViOne PWA App**: Subdomain chính thức `https://vione.viconnect.vn/` (cổng 80/443 được host Ubuntu Nginx proxy về `http://127.0.0.1:5010`).
+  * **Hành động tái cấu trúc Nginx ViOne (`deploy/ssl/`)**:
+    - Xóa bỏ 100% các server blocks của CEO 1983 (Port 5443, Port 5444, Subdomain `crm.ceo1983.viconnect.vn`) khỏi `deploy/ssl/nginx.conf`.
+    - Xóa bỏ toàn bộ cổng 5443 và 5444 khỏi `deploy/ssl/docker-compose.ssl.yml` (chỉ mở `5445` và `5446`).
+    - Tách biệt đường dẫn deploy: chuyển từ `~/ssl-proxy` sang `~/vione-ssl-proxy` trong `deploy-ssl.ps1` và `setup-ssl.sh`.
+    - Điều chỉnh firewall và test script `setup-ssl.sh` chỉ quản lý các cổng của ViOne (`5445`, `5446`, `5006`, `5007`, `5010`, `5011`).
+- **2. Kiểm Tra Thực Trạng Cổng 5446 (ViOne Enterprise CRM Dev HTTPS)**:
+  * **Hiện trạng**: Cổng 5006 (CRM Web HTTP) và 5007 (CRM API) vẫn hoạt động 200 OK. Riêng cổng 5446 báo `ECONNREFUSED`.
+  * **Nguyên nhân**: Trên server, container proxy hiện có là `ceo1983-ssl-proxy` chỉ map `5443-5445` (không có cổng 5446, đồng thời đang chiếm port 5445). `vione-ssl-proxy` chưa từng được khởi chạy độc lập trên server.
+  * **Giải pháp**: Người dùng trên terminal SSH chỉ cần giải phóng port 5445 từ `ceo1983-ssl-proxy` và kích hoạt container độc lập `vione-ssl-proxy` nghe riêng 5445 và 5446.
+- **3. Nguyên Nhân Gốc Rễ Khiến Hệ Thống Sập Sau 1 - 2 Ngày**:
+  * **Nguyên nhân 1 - Cạn kiệt RAM & Linux OOM Killer**: 6 container Node.js + MinIO + Nginx chạy không có giới hạn RAM trên VPS có nhiều dự án chạy song song. Sau 1-2 ngày, RAM đạt đỉnh, Linux OOM Killer gửi `SIGKILL` (exit code 137) giết chết tiến trình Node.js.
+    -> Đã bổ sung `NODE_OPTIONS=--max-old-space-size=450` (FE) và `512` (BE) trong `docker-compose.yml` của cả App và CRM.
+  * **Nguyên nhân 2 - Tràn ổ cứng do Docker JSON Logs**: Các container trước đây không đặt giới hạn `logging`. Socket.io và console logs ghi hàng GB logs mỗi ngày vào `/var/lib/docker/containers/*-json.log`, làm đầy 100% dung lượng đĩa sau 1-2 ngày khiến Docker và Node.js tê liệt.
+    -> Đã bổ sung `logging: driver: json-file, max-size: 20m, max-file: 3` cho toàn bộ container.
+  * **Nguyên nhân 3 - Tranh chấp Docker Network Alias `backend`**: Cả `vione-backend-prod` và `vione-crm-backend-prod` đều có alias `backend` trong cùng mạng `vione-network`. Docker DNS round-robin làm 50% request của ViOne App bay sang CRM Backend -> lỗi 404, JWT invalid.
+    -> Đã phân lập alias: `vione-backend` cho App và `vione-crm-backend` cho CRM.
+  * **Nguyên nhân 4 - Hàm probeTcp trong `main.ts` tự động đảo DB**: Trong `main.ts`, hàm `resolveDatabaseConfig` dùng `probeTcp` với timeout 1200ms. Khi mạng chập chờn > 1.2s, backend tự chuyển sang `127.0.0.1:6433` (không tồn tại trong container) gây crash ngay lập tức.
+    -> Đã chỉnh sửa `main.ts` bảo đảm khi `NODE_ENV === 'production'` luôn sử dụng `DATABASE_URL` thực tế.
+  * **Nguyên nhân 5 - Thiếu Unhandled Rejection Safety Net**: Bổ sung `process.on('unhandledRejection')` và `process.on('uncaughtException')` để tiến trình không bao giờ bị dừng đột ngột bởi lỗi async.
+
 ## 0. CẬP NHẬT TỐI ƯU CỘNG ĐỒNG, THẺ VIP ĐA DẠNG PROFILE & RÀ SOÁT NÚT GRADIENT (THÁNG 10/2026)
 - **1. Sửa Lỗi Quyền Người Sáng Lập Cộng Đồng (Community Creator Auto-Repair & Permissions)**:
   * **Vấn đề**: Người dùng tạo cộng đồng (ví dụ "gia đình vione"), nhưng backend không ghi nhận `creator_id` vào `public.associations`, khiến API `getCommunityDetail` trả về `isMember: false`, `canEdit: false`, `viewerRole: 'member'`, hiển thị thẻ "Gia nhập cộng đồng" với 0 thành viên và không thể chỉnh sửa.

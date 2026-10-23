@@ -1,4 +1,4 @@
-﻿param (
+param (
     [ValidateSet("all", "vione", "crm")]
     [string]$Subdomain = "all",
     [switch]$SkipBuild,
@@ -45,12 +45,12 @@ if ($Subdomain -in @("vione", "all")) {
     & "$ROOT_DIR/deploy/vione/fast-deploy.ps1" @bound
 }
 
-if ($Subdomain -in @("crm", "all")) {
+if ($Subdomain -in @("crm")) {
     Write-Host ""
     Write-Host "-----------------------------------------------------------------" -ForegroundColor Cyan
-    Write-Host ">>> [2/2] TRIỂN KHAI SUBDOMAIN CRM: https://crm.viconnect.vn <<<" -ForegroundColor Cyan
+    Write-Host "[LƯU Ý] ViOne CRM chưa khai báo Subdomain chính thức." -ForegroundColor Yellow
+    Write-Host "Để triển khai ViOne CRM, vui lòng sử dụng lệnh: .\deploy-crm.ps1 (Port 5446 HTTPS / 5006 HTTP)." -ForegroundColor White
     Write-Host "-----------------------------------------------------------------" -ForegroundColor Cyan
-    & "$ROOT_DIR/deploy/crm/fast-deploy.ps1" @bound
 }
 
 if ($EnableHttps) {
@@ -66,10 +66,10 @@ Write-Host "=================================================================" -
 Write-Host "TRIỂN KHAI HOÀN TẤT CHO CÁC SUB DOMAIN VIONE CHÍNH THỨC!" -ForegroundColor Green
 Write-Host "1. Subdomain ViOne PWA (HTTPS)   : https://vione.viconnect.vn" -ForegroundColor Yellow
 Write-Host "   -> Tuyến đường chính          : /connect-app (hoặc /p/:identifier)" -ForegroundColor Yellow
-Write-Host "2. Subdomain ViOne CRM (HTTPS)   : https://crm.viconnect.vn" -ForegroundColor Cyan
+Write-Host "2. ViOne CRM (Server Dev HTTPS)  : https://dev-vione-crm.14-225-217-232.sslip.io:5446 (hoặc :5006 HTTP)" -ForegroundColor Cyan
 Write-Host "   -> Tuyến đường chính          : / (Quản trị doanh nghiệp & B2B)" -ForegroundColor Cyan
-Write-Host "-----------------------------------------------------------------" -ForegroundColor DarkGray
+-----------------------------------------------------------------
 Write-Host "LƯU Ý PHÂN TÁCH MÔI TRƯỜNG:" -ForegroundColor White
 Write-Host "• Muốn deploy lên SERVER DEV (port 5445/5446) : Chạy .\deploy-vione.ps1 hoặc .\deploy-crm.ps1" -ForegroundColor DarkYellow
-Write-Host "• Muốn deploy lên SUB DOMAIN (port 80/443)    : Chạy .\deploy-subdomain.ps1 -Subdomain vione|crm|all" -ForegroundColor DarkYellow
+Write-Host "• Muốn deploy lên SUB DOMAIN (port 80/443)    : Chạy .\deploy-subdomain-vione.ps1" -ForegroundColor DarkYellow
 Write-Host "=================================================================" -ForegroundColor Green

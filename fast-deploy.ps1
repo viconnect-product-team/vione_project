@@ -1,4 +1,4 @@
-﻿param (
+param (
     [ValidateSet("all", "vione", "crm", "subdomain")]
     [string]$Target = "all",
     [switch]$SkipBuild,
@@ -63,6 +63,5 @@ if ($Target -eq "subdomain") {
     Write-Host '1. ViOne Connect App (HTTPS)    : https://dev-vione.14-225-217-232.sslip.io:5445 (hoặc :5445)' -ForegroundColor Yellow
     Write-Host '2. ViOne Enterprise CRM (HTTPS) : https://dev-vione-crm.14-225-217-232.sslip.io:5446 (hoặc :5446)' -ForegroundColor Yellow
     Write-Host '3. Subdomain PWA Chính thức     : https://vione.viconnect.vn' -ForegroundColor Cyan
-    Write-Host '4. Subdomain CRM Chính thức     : https://crm.viconnect.vn' -ForegroundColor Cyan
     Write-Host '=================================================================' -ForegroundColor Green
 }

@@ -74,10 +74,14 @@
     - Đường dẫn mã QR bắt buộc trỏ về trang hồ sơ số công khai: `https://vione.viconnect.vn/p/:identifier` (với `:identifier` là public token, mã người dùng, UUID, hoặc user code).
     - Khách vãng lai xem được đầy đủ thông tin: Họ tên, Chức vụ, Tên công ty, Avatar viền vàng, Ảnh bìa, nút Gọi điện thoại trực tiếp, nút Nhắn tin Zalo, nút Tải danh bạ (.vcf) 1-chạm vào danh bạ điện thoại, nút Gửi email, Chia sẻ, Tiểu sử, Trụ sở... mà hoàn toàn không cần đăng nhập.
     - Tuyến đường `/p/`, `/p`, `/c/`, `/b/`, `/card/`, `/profile/` bắt buộc được khai báo trong danh sách `isPublic` tại `__root.tsx` để bỏ qua AuthGate.
-- **Quy Chuẩn Phân Lập Tuyệt Đối Cổng 5445 (PWA) & Cổng 5446 (CRM) và Subdomain Chính Thức (Port Isolation & Subdomain Rule)**:
+- **Quy Chuẩn Phân Lập Tuyệt Đối Cổng 5445 (PWA) & Cổng 5446 (CRM), Proxy ViOne Độc Lập vs CEO 1983 (Port & Proxy Isolation Rule)**:
     - Cổng 5446 được dành RIÊNG cho CRM Quản trị ViOne. TUYỆT ĐỐI KHÔNG được mở hay duy trì `/connect-app` tại cổng 5446.
     - Cấu hình Nginx (`location /connect-app { return 301 https://vione.viconnect.vn/connect-app; }`) và React Router guard tại `__root.tsx` & `connect-app.tsx` lập tức chuyển hướng bất kỳ truy cập nào từ cổng 5446 sang subdomain chính thức `https://vione.viconnect.vn`.
     - Subdomain chính thức của PWA ViOne là `https://vione.viconnect.vn/`. Mọi mã QR, đường link chia sẻ, script deploy (`deploy-ssl.ps1`, `nginx.conf`) đều đồng bộ trỏ vào subdomain này.
+    - **Phân Tách Proxy Độc Lập Giữa CEO 1983 và ViOne (Strict Proxy Separation)**:
+      * `ceo1983-ssl-proxy`: Container proxy của riêng hiệp hội CEO 1983 (quản lý các cổng 5443 CRM và 5444 App).
+      * `vione-ssl-proxy`: Container proxy độc lập của riêng hệ sinh thái ViOne (quản lý các cổng 5445 ViOne App và 5446 ViOne CRM).
+      * CẤM DÙNG CHUNG PROXY: ViOne tách riêng hoàn toàn thư mục deploy (`deploy/ssl/` -> `~/vione-ssl-proxy`), compose, ports và upstream. Tuyệt đối không để `ceo1983-ssl-proxy` ôm cổng 5445/5446 của ViOne và ngược lại.
 - **Quy Chuẩn Thẻ VIP Doanh Nhân Mạ Vàng/Bạc & Cài Đặt Preset Mã QR (VIP Business Card & QR Preset Rule)**:
     - Khi quét mã QR hoặc bấm xem trước danh thiếp tại màn "Tôi", hệ thống BẮT BUỘC hiển thị Thẻ VIP Doanh nhân cao cấp (`VipBusinessCard.tsx`) với 2 tùy chọn mạ vàng Champagne Gold (`#DFB76C`) hoặc mạ bạc Platinum sang trọng.
     - Trên thẻ hiển thị đầy đủ: Ảnh đại diện avatar viền mạ vàng/bạc, Chip kim loại thông minh, Biểu tượng sóng NFC contactless, Họ tên, Chức vụ, Số điện thoại, Tên công ty.

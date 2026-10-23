@@ -66,9 +66,7 @@ try {
                 $env:NODE_OPTIONS = "--max-old-space-size=4096"
                 $env:VITE_APP_SCOPE = "crm_platform"
                 $env:VITE_APP_NAME = "ViOne Connect CRM 5.0"
-                if ($TargetEnv -eq "prod") {
-                    $env:VITE_PUBLIC_APP_URL = "https://crm.viconnect.vn"
-                } elseif ($EnableHttps) {
+                if ($EnableHttps) {
                     $env:VITE_PUBLIC_APP_URL = "https://dev-vione-crm.14-225-217-232.sslip.io:5446"
                 } else {
                     $env:VITE_PUBLIC_APP_URL = "http://14.225.217.232:5006"
@@ -188,12 +186,10 @@ try {
 
     Write-Host "=================================================================" -ForegroundColor Green
     Write-Host "TRIEN KHAI DOC LAP VIONE ENTERPRISE CRM THANH CONG!" -ForegroundColor Green
-    if ($TargetEnv -eq "prod") {
-        Write-Host "Subdomain ViOne CRM (HTTPS) : https://crm.viconnect.vn" -ForegroundColor Yellow
-        Write-Host "Cong truc tiep (Port 5446)  : https://${SERVER_IP}:5446" -ForegroundColor Cyan
-    } elseif ($EnableHttps) {
+    if ($EnableHttps) {
         Write-Host "URL ViOne CRM HTTPS         : https://${SERVER_IP}:5446" -ForegroundColor Yellow
         Write-Host "Domain Dev ViOne CRM        : https://dev-vione-crm.14-225-217-232.sslip.io:5446" -ForegroundColor Yellow
+        Write-Host "Cong HTTP truc tiep         : http://${SERVER_IP}:5006" -ForegroundColor DarkGray
     } else {
         Write-Host "URL ViOne CRM HTTP          : http://${SERVER_IP}:5006" -ForegroundColor Yellow
     }

@@ -27,8 +27,14 @@
 - **PHÂN ĐỊNH TUYỆT ĐỐI GIỮA HAI MÔI TRƯỜNG DEV VÀ SUBDOMAIN PRODUCTION**:
   - **Môi Trường Subdomain Production (Cổng Chuẩn 80 & 443 SSL)**:
     * **ViOne PWA App**: Subdomain chính thức `https://vione.viconnect.vn/`. Điều phối qua kịch bản `.\deploy-subdomain-vione.ps1` hoặc `.\deploy.ps1 -Target subdomain-vione`. Tự động kích hoạt khi push Git qua GitHub Actions `.github/workflows/deploy-vione.yml`.
-    * **ViOne CRM Enterprise**: Subdomain chính thức `https://crm.viconnect.vn/`. Điều phối qua kịch bản `.\deploy-subdomain-crm.ps1` hoặc `.\deploy.ps1 -Target subdomain-crm`. Kích hoạt CI/CD qua `.github/workflows/deploy-crm.yml`.
-    * **Phân Lập Tuyệt Đối**: Cổng 443 và Nginx phân luồng VirtualHost riêng biệt. Subdomain CRM (`crm.viconnect.vn`) cấm phục vụ `/connect-app` (tự động 301 Redirect sang `https://vione.viconnect.vn/connect-app`).
+    * **CEO 1983 Subdomains**:
+      - CRM CEO 1983: `https://crm.ceo1983.viconnect.vn/`
+      - App Hội viên CEO 1983: `https://ceo1983.viconnect.vn/`
+    * **ViOne CRM Enterprise**: Chưa khai báo Subdomain chính thức (chỉ chạy Dev Port 5006 / 5446).
+  - **Phân Tách Proxy Độc Lập Giữa CEO 1983 và ViOne (STRICT PROXY SEPARATION)**:
+    * `ceo1983-ssl-proxy`: Container proxy của riêng hiệp hội CEO 1983 (quản lý các cổng 5443, 5444).
+    * `vione-ssl-proxy`: Container proxy độc lập của riêng hệ sinh thái ViOne (quản lý các cổng 5445 ViOne App và 5446 ViOne CRM).
+    * **CẤM DÙNG CHUNG PROXY**: ViOne phải tách riêng hoàn toàn thư mục deploy (`deploy/ssl/` -> `~/vione-ssl-proxy`), compose, ports và upstream. Tuyệt đối không để `ceo1983-ssl-proxy` ôm cổng 5445/5446 của ViOne và ngược lại.
   - **Môi Trường Server Dev (Cổng Chuyên Biệt Kèm Port Trong URL)**:
     * **ViOne App Dev (Cổng 5445 HTTPS / 5010 HTTP)**: Triển khai qua `.\deploy-vione.ps1` trỏ URL `https://dev-vione.14-225-217-232.sslip.io:5445`.
     * **ViOne CRM Dev (Cổng 5446 HTTPS / 5006 HTTP)**: Triển khai qua `.\deploy-crm.ps1` trỏ URL `https://dev-vione-crm.14-225-217-232.sslip.io:5446`.

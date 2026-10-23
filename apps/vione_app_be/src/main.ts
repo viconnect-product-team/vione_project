@@ -49,8 +49,17 @@ function probeTcp(host: string, port: number, timeoutMs = 1200): Promise<boolean
 }
 
 async function resolveDatabaseConfig() {
+  // Trong môi trường production, tuyệt đối tuân thủ DATABASE_URL đã nạp từ biến môi trường/Docker compose
+  if (process.env.NODE_ENV === 'production') {
+    if (!process.env.DATABASE_URL && process.env.REMOTE_DATABASE_URL) {
+      process.env.DATABASE_URL = process.env.REMOTE_DATABASE_URL;
+    }
+    return;
+  }
+
   const remoteUrl =
     process.env.REMOTE_DATABASE_URL ||
+    process.env.DATABASE_URL ||
     'postgresql://app1:5%5ES0CEpvYwC1(%23YN1UoJ@113.20.107.184:6432/vione_project?schema=public&pgbouncer=true';
   const localUrl =
     process.env.LOCAL_DATABASE_URL ||
@@ -79,6 +88,15 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { createVietnameseValidationPipe } from './common/pipes/validation.pipe';
 
+// Bảo vệ tiến trình không bị crash đột ngột khi gặp lỗi async chưa bắt
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('⚠️ [CẢNH BÁO BẢO VỆ TIẾN TRÌNH] Unhandled Rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('⚠️ [CẢNH BÁO BẢO VỆ TIẾN TRÌNH] Uncaught Exception:', err);
+});
+
 async function bootstrap() {
   await resolveDatabaseConfig();
   const app = await NestFactory.create(AppModule);
@@ -100,4 +118,5 @@ async function bootstrap() {
   console.log(`Application is running on: http://0.0.0.0:${port}/api`);
 }
 void bootstrap();
+
 

@@ -13,12 +13,18 @@ services:
       - VITE_APP_SCOPE=crm_platform
       - VITE_APP_NAME="ViOne Connect CRM 5.0"
       - VITE_APP_DEFAULT_ROUTE=/
+      - NODE_OPTIONS=--max-old-space-size=450
     ports:
       - "${VIONE_CRM_PORT_FRONTEND:-5006}:8080"
     depends_on:
       - crm-backend
     networks:
       - vione-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
 
   crm-backend:
     image: ${VIONE_CRM_BE_IMAGE:-vione-crm-backend}:latest
@@ -30,6 +36,7 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - APP_SCOPE=crm_platform
+      - NODE_OPTIONS=--max-old-space-size=512
     user: "0:0"
     volumes:
       - vione-uploads-data:/app/uploads
@@ -38,8 +45,13 @@ services:
     networks:
       vione-network:
         aliases:
-          - backend
           - vione-crm-backend
+          - vione-crm-backend-prod
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
 
 volumes:
   vione-uploads-data:
