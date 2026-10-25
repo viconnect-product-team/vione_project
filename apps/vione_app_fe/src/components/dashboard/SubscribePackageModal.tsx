@@ -20,6 +20,8 @@ export function SubscribePackageModal({
 }: SubscribePackageModalProps) {
   const isVisible = open ?? isOpen ?? false;
   const [companyName, setCompanyName] = useState("Công Ty Cổ Phần Công Nghệ & Giải Pháp ViOne");
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<"annual" | "trial">("annual");
   const [submitting, setSubmitting] = useState(false);
 
@@ -38,6 +40,8 @@ export function SubscribePackageModal({
         method: "POST",
         body: JSON.stringify({
           companyName: companyName.trim(),
+          fullName: contactName.trim() || undefined,
+          email: contactEmail.trim() || undefined,
           isTrial: selectedPlan === "trial",
           plan: selectedPlan === "annual" ? "vione_platform_annual" : "vione_platform_trial_30d",
         }),
@@ -46,8 +50,8 @@ export function SubscribePackageModal({
       if (res && res.ok) {
         toast.success(
           selectedPlan === "annual"
-            ? "✓ Chúc mừng! Bạn đã đăng ký thành công Gói ViOne Platform 1 năm!"
-            : "✓ Đã kích hoạt dùng thử 30 ngày Gói ViOne Platform thành công!",
+            ? "✓ Chúc mừng! Bạn đã đăng ký thành công Gói ViOne Platform! Email thông tin lợi ích gói & link CRM đã được gửi tự động."
+            : "✓ Đã kích hoạt dùng thử 30 ngày thành công! Email thông tin lợi ích gói & link CRM đã được gửi tự động.",
         );
         window.dispatchEvent(new CustomEvent("subscription-changed"));
         window.dispatchEvent(new CustomEvent("companies-changed"));
@@ -123,7 +127,7 @@ export function SubscribePackageModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
               Tên Doanh Nghiệp Của Bạn <span className="text-amber-400">*</span>
@@ -134,9 +138,39 @@ export function SubscribePackageModal({
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="VD: Công Ty Cổ Phần Công Nghệ & Giải Pháp ViOne"
-              className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+              className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
             />
           </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Họ & Tên Đại Diện
+              </label>
+              <input
+                type="text"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder="VD: Nguyễn Văn A"
+                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Email Nhận Link CRM
+              </label>
+              <input
+                type="email"
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                placeholder="email@doanhnghiep.vn"
+                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none"
+              />
+            </div>
+          </div>
+          <p className="text-[11px] text-amber-300/90 -mt-1">
+            📧 Email tự động chứa thông tin lợi ích và link quản trị CRM sẽ gửi ngay khi kích hoạt.
+          </p>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">

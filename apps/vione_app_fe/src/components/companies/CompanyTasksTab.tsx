@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
 import type { CompanyEmployee } from "./CompanyEmployeesTab";
 import { UserMultiSelect } from "@/components/common/UserMultiSelect";
+import { useRole } from "@/hooks/use-role";
 
 export interface CompanyTask {
   id: string;
@@ -48,11 +49,21 @@ export function CompanyTasksTab({
   companyName,
   initialAssignee,
 }: CompanyTasksTabProps) {
+  const { isQuanTri, isPlatformAdmin, isAdmin, currentUser } = useRole();
   const [tasks, setTasks] = useState<CompanyTask[]>([]);
   const [employees, setEmployees] = useState<CompanyEmployee[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const canAssignTask = useMemo(() => {
+    if (isQuanTri || isPlatformAdmin || isAdmin) return true;
+    const currentEmp = employees.find(
+      (e) => (e.userId && e.userId === currentUser?.id) || (e.email && e.email === currentUser?.email)
+    );
+    if (!currentEmp) return true; // Fallback cho chủ doanh nghiệp
+    return Boolean(currentEmp.canAssignTasks || currentEmp.role === "manager" || currentEmp.role === "owner" || currentEmp.role === "admin");
+  }, [isQuanTri, isPlatformAdmin, isAdmin, currentUser, employees]);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -286,13 +297,15 @@ export function CompanyTasksTab({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-slate-950 font-bold text-sm shadow hover:opacity-95 transition-all cursor-pointer shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Giao Việc Mới</span>
-        </button>
+        {canAssignTask && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-slate-950 font-bold text-sm shadow hover:opacity-95 transition-all cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Giao Việc Mới</span>
+          </button>
+        )}
       </div>
 
       {/* KPI Cards */}

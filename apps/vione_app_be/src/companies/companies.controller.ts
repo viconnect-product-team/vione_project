@@ -54,6 +54,25 @@ export class CompaniesController {
   }
 
   /**
+   * SUPER ADMIN: GIÁM SÁT NỀN TẢNG & MỨC ĐỘ HOẠT ĐỘNG CÁC DOANH NGHIỆP CÓ GÓI VIONE
+   */
+  @Get('platform-monitoring')
+  async getPlatformMonitoring() {
+    return this.companiesService.getPlatformMonitoring();
+  }
+
+  /**
+   * SUPER ADMIN: CẬP NHẬT / GIA HẠN / MỞ KHÓA GÓI CƯỚC DOANH NGHIỆP
+   */
+  @Patch(':id/subscription')
+  async updateSubscription(
+    @Param('id') companyId: string,
+    @Body() body: any,
+  ) {
+    return this.companiesService.updateCompanySubscription(companyId, body);
+  }
+
+  /**
    * Lấy chi tiết hồ sơ một doanh nghiệp
    */
   @Get(':id')
@@ -81,6 +100,15 @@ export class CompaniesController {
   @Post(':id/employees')
   async addEmployee(@Param('id') companyId: string, @Body() body: any) {
     return this.companiesService.addCompanyEmployee(companyId, body);
+  }
+
+  @Patch(':id/employees/:employeeId')
+  async updateEmployee(
+    @Param('id') companyId: string,
+    @Param('employeeId') employeeId: string,
+    @Body() body: any,
+  ) {
+    return this.companiesService.updateCompanyEmployee(companyId, employeeId, body);
   }
 
   @Delete(':id/employees/:employeeId')

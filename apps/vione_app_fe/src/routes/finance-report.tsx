@@ -19,6 +19,7 @@ import {
   Coins,
   X,
   Printer,
+  Lock,
 } from "lucide-react";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { Card, PageHeader } from "@/components/dashboard/PageKit";
@@ -28,6 +29,7 @@ import { downloadCsv } from "@/lib/csv";
 import { toast } from "sonner";
 import { useTableControls } from "@/hooks/use-table-controls";
 import { Pagination } from "@/components/dashboard/DataTablePagination";
+import { useRole } from "@/hooks/use-role";
 
 const FALLBACK_TRANSACTIONS: Transaction[] = [
   {
@@ -167,6 +169,7 @@ function FinanceReport() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
   const [exportModalOpen, setExportModalOpen] = useState(false);
+  const { canExportReports } = useRole();
 
   // Filtered by search & type
   const transactions = useMemo(() => {
@@ -225,6 +228,10 @@ function FinanceReport() {
   const cashOut = expense.filter((tx) => tx.method === "cash").reduce((s, tx) => s + tx.amount, 0);
 
   const handleExportCsv = () => {
+    if (!canExportReports) {
+      toast.error("Tài khoản của bạn chưa được cấp quyền xuất báo cáo tài chính!");
+      return;
+    }
     downloadCsv("bao-cao-tai-chinh-chi-tiet", transactions, [
       { header: "Mã chứng từ", value: (tx) => tx.id },
       { header: "Ngày ghi sổ", value: (tx) => tx.date },
@@ -240,6 +247,10 @@ function FinanceReport() {
   };
 
   const handleExportPdf = () => {
+    if (!canExportReports) {
+      toast.error("Tài khoản của bạn chưa được cấp quyền xuất báo cáo tài chính!");
+      return;
+    }
     setExportModalOpen(true);
   };
 
@@ -251,22 +262,31 @@ function FinanceReport() {
         subtitle="Báo cáo thu chi thực tế, phân tích cơ cấu ngân quỹ, tỷ lệ thặng dư và sổ nhật ký kế toán minh bạch"
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={handleExportCsv}
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2 text-xs sm:text-sm font-semibold text-foreground shadow-sm hover:bg-muted cursor-pointer transition-all"
-            >
-              <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-              <span>Xuất Excel / CSV</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleExportPdf}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm hover:opacity-90 cursor-pointer transition-all"
-            >
-              <FileText className="h-4 w-4" />
-              <span>In / Xuất Báo Cáo PDF</span>
-            </button>
+            {canExportReports ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleExportCsv}
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2 text-xs sm:text-sm font-semibold text-foreground shadow-sm hover:bg-muted cursor-pointer transition-all"
+                >
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+                  <span>Xuất Excel / CSV</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportPdf}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] px-4 py-2 text-xs sm:text-sm font-bold text-[#050C15] shadow-sm hover:brightness-105 cursor-pointer transition-all"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>In / Xuất Báo Cáo PDF</span>
+                </button>
+              </>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-medium text-slate-400">
+                <Lock className="h-3.5 w-3.5 text-amber-400" />
+                <span>Yêu cầu quyền Báo Cáo Tài Chính</span>
+              </span>
+            )}
           </div>
         }
       />

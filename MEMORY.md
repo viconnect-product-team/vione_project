@@ -1,6 +1,174 @@
 # System Memory & Architecture
 
-## 0.000. NÂNG CẤP TOÀN DIỆN NỀN TẢNG SAAS VIONE: MULTI-LEVEL ADMIN, SLOT CONTROL, GRANULAR RBAC, STATISTICS HUB & BULK OPERATIONS (THÁNG 10/2026)
+## 0.0000000. CẤP TÀI KHOẢN NHÂN VIÊN NỘI BỘ VIONE, PHÂN QUYỀN ĐA NHÓM (MULTI-ROLE RBAC) & REACTIVE RERENDER TỰ ĐỘNG (THÁNG 10/2026)
+- **1. Bối cảnh & Yêu cầu Nghiệp Vụ Cốt Lõi**:
+  * **Cấp tài khoản CRM nội bộ dành riêng cho nhân viên ViOne**:
+    - Quản trị viên (Super Admin / Admin ViOne) được trang bị công cụ cấp tài khoản trực tiếp cho nhân viên công ty bằng Email hoặc Số điện thoại.
+    - Khi cấp tài khoản, hệ thống **tự động bắn email gửi thông tin tài khoản** (Tên đăng nhập, Mật khẩu khởi tạo, Danh sách các nhóm quyền hạn được gán, Nút link trực tiếp vào CRM).
+    - Email được thiết kế sang trọng theo phong cách thương hiệu Luxury Obsidian `#0B0F17` & Champagne Gold `#D8B282`.
+  * **Hiển thị chức năng theo Role phân quyền linh hoạt & Multi-Role**:
+    - Nhân viên ViOne khi đăng nhập sẽ chỉ nhìn thấy các chức năng thuộc nhóm quyền đã được cấp từ Quản trị viên.
+    - Hỗ trợ mô hình **Đa Nhóm Quyền (Multi-Role)**: Một tài khoản nhân sự có thể vừa thuộc nhóm Thống kê báo cáo tài chính (`platform_finance`), vừa thuộc nhóm Quản lý tài khoản & vận hành (`platform_operations`), hoặc Executive, Super Admin.
+  * **Chức năng tối thiểu bắt buộc**:
+    - Tất cả nhân sự nội bộ ViOne đều được kích hoạt quyền **Kết nối nhắn tin (`/messages`)** mặc định.
+    - Quyền **Xuất báo cáo (Excel / CSV / PDF)**: Được kích hoạt tự động theo nhóm quyền (nhân viên tài chính hoặc nhân sự có quyền `finance:export` / `statistics:view_platform` sẽ nhìn thấy và dùng được các nút xuất báo cáo tại `/finance-report`).
+  * **Cơ chế Phản ứng tức thì (Reactive Permission Rerendering)**:
+    - Khi Quản trị viên thay đổi phân quyền của một tài khoản, giao diện của tài khoản đó tự động cập nhật và rerender lại ngay tức khắc trên mọi tab trình duyệt mà không cần người dùng phải F5 (tải lại trang).
+- **2. Chi tiết Triển khai Kỹ thuật (Technical Implementation)**:
+  * **Cơ sở dữ liệu PostgreSQL (`vione_project`)**:
+    - Tạo bảng `public.platform_user_roles`:
+      * `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+      * `user_id UUID NOT NULL`
+      * `role_code TEXT NOT NULL`
+      * `assigned_by UUID`
+      * `assigned_at TIMESTAMPTZ DEFAULT now()`
+      * Ràng buộc UNIQUE `(user_id, role_code)` và Index trên `user_id`, `role_code`.
+    - Đồng bộ các tài khoản admin hiện có sang `public.platform_user_roles` với mã quyền `super_admin`.
+    - Khởi tạo 4 nhóm quyền nền tảng ViOne chuẩn: `super_admin` (Level 1), `platform_executive` (Level 2), `platform_operations` (Level 3), `platform_finance` (Level 3).
+  * **Backend (`apps/vione_app_be`)**:
+    - `mail.service.ts`: Bổ sung `sendStaffAccountCredentialsEmail(...)` gửi email cấp tài khoản nội bộ kèm bảng tổng hợp quyền và thông tin đăng nhập.
+    - `roles.module.ts`: Tích hợp `MailModule`.
+    - `roles.service.ts`:
+      * Khai báo DTO `ProvisionStaffDto` (fullName, email, phone, roleCodes, password, sendEmail).
+      * Nâng cấp `getUserEffectivePermissions(userId)`: Lấy các quyền từ `platform_user_roles`, `user_roles`, và `company_employees`; tự động nạp `chat:access` cho mọi tài khoản hợp lệ.
+      * Thêm `getUserRbacContext(userId)`: Trả về `roles`, `roleCodes`, `permissions`, `isSuperAdmin`, `isFinanceStaff`, `isOperationsStaff`, `isExecutiveStaff`, `canExportReports`, `canAccessChat`.
+      * Thêm `listStaffAccounts()`: Liệt kê danh sách tài khoản nhân sự nội bộ ViOne và các vai trò đã gán.
+      * Thêm `provisionStaffAccount(dto, assignedByUserId)`: Tạo người dùng trong `public.vione_users`, đồng bộ an toàn sang `auth.users` và `public.user_profiles`, gán nhiều quyền vào `public.platform_user_roles`, và tự động bắn email credentials.
+      * Thêm `updateStaffRoles(userId, roleCodes)`: Cho phép chỉnh sửa danh sách nhóm quyền đa nhiệm.
+      * Thêm `resendStaffCredentialsEmail(userId, newPassword)`: Đặt lại mật khẩu và gửi lại email thông tin đăng nhập.
+    - `roles.controller.ts`:
+      * `GET /roles/my-permissions`: Trả về ngữ cảnh RBAC đầy đủ của người dùng hiện tại.
+      * `GET /roles/staff-accounts`: Danh sách nhân sự ViOne.
+      * `POST /roles/staff-accounts`: Cấp tài khoản mới cho nhân viên.
+      * `PUT /roles/staff-accounts/:id/roles`: Cập nhật phân quyền đa nhóm.
+      * `POST /roles/staff-accounts/:id/resend-credentials`: Gửi lại email tài khoản.
+  * **Frontend (`apps/vione_app_fe`)**:
+    - `src/hooks/use-role.ts`:
+      * Mở rộng `RoleState`: `roleCodes`, `permissions`, `isFinanceStaff`, `isOperationsStaff`, `isExecutiveStaff`, `canAccessChat`, `canExportReports`, `hasPermission(perm)`.
+      * Cross-tab Reactivity: Tích hợp `BroadcastChannel('vione_rbac_sync')`, lắng nghe sự kiện `permissions-updated`, `role-changed`, và `focus`.
+      * Helper `notifyPermissionsUpdated(targetUserId)`: Phát tín hiệu tức thì đến mọi tab trình duyệt khi quyền hạn thay đổi.
+    - `PlatformStaffManagement.tsx`:
+      * Giao diện quản lý & cấp tài khoản nhân viên chuyên nghiệp dành riêng cho ViOne.
+      * Thống kê quân số nhân sự ViOne theo phòng ban/vai trò.
+      * Modal cấp tài khoản "+ Cấp Tài Khoản Nhân Viên Mới": Hỗ trợ nhập Email/SĐT, mật khẩu ngẫu nhiên an toàn, chọn đồng thời nhiều nhóm quyền qua Checkbox cards, tùy chọn tự động gửi email.
+      * Modal chỉnh sửa phân quyền đa nhóm và Modal cấp lại mật khẩu/gửi lại email.
+    - `Sidebar.tsx`:
+      * Suite "Kết Nối Nhắn Tin" (`/messages`): Tự động hiển thị cho mọi nhân viên nội bộ ViOne.
+      * Suite "Quản Trị Khách Hàng & Doanh Nghiệp": Hiển thị nếu có quyền `isSuperAdmin || isOperationsStaff || isExecutiveStaff`.
+      * Suite "Gói Dịch Vụ & Doanh Thu": Hiển thị nếu có quyền `isSuperAdmin || isFinanceStaff || isExecutiveStaff`.
+      * Nhân sự thuộc cả 2 nhóm (Finance + Operations) sẽ tự động nhìn thấy cả 2 suite menu!
+      * Thêm mục "Cấp Tài Khoản Nhân Viên" dẫn vào `/platform/admins`.
+    - `routes/platform.admins.tsx`: Nhúng `PlatformStaffManagement` trực tiếp vào khung điều hành nền tảng.
+    - `routes/platform.index.tsx`: Tích hợp tab chuyên biệt "Cấp & Quản Lý Tài Khoản Nhân Viên ViOne".
+    - `routes/finance-report.tsx`:
+      * Nút "Xuất Excel / CSV" và "In / Xuất Báo Cáo PDF" được bảo vệ bởi cờ `canExportReports` từ `useRole()`.
+- **3. Kiểm tra Chất lượng Mã nguồn & Xác thực (Strict Rule 3 & Verification)**:
+  * Backend: `npx tsc --noEmit` -> Exit code 0 (0 errors).
+  * Frontend: `npx tsc --noEmit` -> Exit code 0 (0 errors).
+  * E2E Verification (`test_staff_e2e.js`): Xác nhận thành công gán đa vai trò `platform_finance` + `platform_operations`, `isFinanceStaff: true`, `isOperationsStaff: true`, `canExportReports: true`, `canAccessChat: true`.
+  * Tuân thủ quy tắc 1: Tuyệt đối không commit/push Git.
+  * Tuân thủ quy tắc 7: 100% dữ liệu thực từ PostgreSQL.
+  * Tuân thủ quy tắc 8: 100% nút bấm gradient theo quy chuẩn thương hiệu Obsidian / Gold.
+
+## 0.000000. PHÂN QUYỀN HAI TẦNG VIONE: PHÂN QUYỀN NỘI BỘ DOANH NGHIỆP MUA GÓI & PHÂN QUYỀN CÁC BỘ PHẬN VIONE PLATFORM (THÁNG 10/2026)
+- **1. Bối cảnh & Yêu cầu Nghiệp Vụ**:
+  * **Phân quyền nội bộ Doanh nghiệp của khách hàng (Tenant Internal RBAC)**:
+    - Khi một doanh nghiệp mua gói ViOne Platform, cả công ty của họ sẽ cùng đăng nhập sử dụng hệ sinh thái ViOne.
+    - Cần phân định rõ ràng giữa nhân viên bình thường (chỉ thực hiện công việc được giao, chấm công, xem tài liệu dùng chung) và những người được cấp quyền quản trị, giao việc, phân quyền phòng ban, xem tài chính, quản lý tài liệu.
+    - Nhân viên không có quyền giao việc (`canAssignTasks = false`) sẽ bị ẩn nút giao việc, không được tự ý phân công việc cho người khác.
+    - Chủ doanh nghiệp và quản lý có công cụ phân quyền trực quan cho từng nhân sự (`CompanyEmployeesTab.tsx`).
+  * **Phân quyền các bộ phận nội bộ ViOne Platform (Platform Department RBAC)**:
+    - Hệ thống ViOne của chúng ta cũng chia quyền theo các bộ phận chuyên biệt vào quản trị:
+      * **Ban Quản Trị Hệ Thống (Super Admin)**: Toàn quyền, cấu hình ma trận RBAC, cấu hình gói cước, audit logs.
+      * **Ban Lãnh Đạo & Điều Hành (Platform Executive)**: Báo cáo thống kê toàn diện, theo dõi mức độ hoạt động doanh nghiệp, giám sát doanh thu tổng thể.
+      * **Bộ Phận Vận Hành & CSKH (Platform Operations & CSKH)**: Quản lý khách hàng, công ty/doanh nghiệp, mở khóa/khóa CRM, theo dõi hỗ trợ kỹ thuật và chăm sóc khách hàng.
+      * **Bộ Phận Kế Toán & Tài Chính Nền Tảng (Platform Finance & Accounting)**: Quản lý gói cước ViOne CRM, phê duyệt đơn hàng & gia hạn gói, đối soát thanh toán và báo cáo doanh thu tài chính platform.
+- **2. Chi tiết Triển khai Kỹ thuật (Technical Implementation)**:
+  * **Cơ sở dữ liệu PostgreSQL**:
+    - Nâng cấp bảng `public.company_employees`: Thêm các cột cờ quyền `can_assign_tasks`, `can_manage_members`, `can_manage_finance`, `can_manage_docs`, `can_manage_crm` và mảng `permissions JSONB`.
+    - Khởi tạo đầy đủ và seed dữ liệu bảng `public.platform_roles`, `public.platform_permissions`, `public.platform_role_permissions`.
+    - Seed 7 vai trò chuẩn và 27+ quyền hạt nhân bao quát toàn diện các phân hệ: `companies`, `tasks`, `employees`, `documents`, `finance`, `subscriptions`, `statistics`, `crm`, `roles`, `settings`.
+  * **Backend (`apps/vione_app_be`)**:
+    - `companies.service.ts`:
+      * `listCompanyEmployees`: Trả về đầy đủ các cờ quyền `canAssignTasks`, `canManageMembers`, `canManageFinance`, `canManageDocs`, `canManageCrm`, `permissions`.
+      * `addCompanyEmployee`: Hỗ trợ gán vai trò (`manager` vs `staff`) và các cờ quyền cụ thể.
+      * `updateCompanyEmployee`: Hỗ trợ cập nhật vai trò, chức danh, phòng ban và 5 cờ quyền của nhân viên.
+    - `companies.controller.ts`: Bổ sung endpoint `PATCH /companies/:id/employees/:employeeId`.
+    - `roles.service.ts`: Nâng cấp `getUserEffectivePermissions` kết hợp cả quyền từ vai trò nền tảng (`platform_roles`) và quyền chi tiết được gán từ `company_employees`.
+  * **Frontend (`apps/vione_app_fe`)**:
+    - `CompanyEmployeesTab.tsx`:
+      * Bảng nhân sự hiển thị Huy hiệu vai trò (`[Quản Trị Viên (Quản lý)]` viền mạ vàng vs `[Nhân Viên Thực Thi]`).
+      * Hiển thị chips quyền hạn trực quan: `📋 Giao việc`, `👥 Nhân sự`, `💰 Tài chính`, `📁 Tài liệu`, `🤝 CRM`.
+      * Nút "Phân Quyền" mở Modal chỉnh sửa vai trò và bật/tắt 5 quyền hạt nhân cho từng nhân sự.
+      * Form thêm mới nhân viên cho phép chọn vai trò Manager/Staff và tùy chọn các quyền tương ứng.
+    - `CompanyTasksTab.tsx`:
+      * Kiểm tra quyền `canAssignTask`: Nút `+ Giao Việc Mới` chỉ hiển thị đối với Admin, Quản trị viên hoặc nhân sự được cấp quyền `canAssignTasks`. Ẩn với nhân viên thông thường.
+    - `platform.permissions.tsx`:
+      * Ma trận phân quyền RBAC thời gian thực hiển thị đầy đủ các bộ phận của ViOne và cho phép toggle phân quyền lưu tức thì vào PostgreSQL.
+- **3. Kiểm tra Chất lượng Mã nguồn (Strict Rule 3)**:
+  * Backend: `tsc --noEmit` -> Exit code 0 (0 errors).
+  * Frontend: `tsc --noEmit` -> Exit code 0 (0 errors).
+  * Zero-Mock Data: 100% dữ liệu thực từ PostgreSQL.
+
+## 0.00000. TÁI THIẾT KẾ TOÀN DIỆN VIONE CRM THEO ROLE QUYỀN: EMAIL TỰ ĐỘNG LỢI ÍCH GÓI, GÓI GỌN VẬN HÀNH DOANH NGHIỆP, GIÁM SÁT MỨC ĐỘ HOẠT ĐỘNG VIONE PLATFORM (THÁNG 10/2026)
+- **1. Yêu cầu & Bối cảnh thiết kế lại ViOne CRM**:
+  * **Email tự động thông báo lợi ích gói**: Khi khách hàng mua hoặc kích hoạt gói ViOne Platform, backend tự động gửi email liệt kê chi tiết các lợi ích vượt trội mở khóa của gói và cung cấp liên kết trực tiếp (CTA) truy cập trang CRM để bắt đầu quản trị doanh nghiệp.
+  * **Tổ chức chức năng theo Role quyền & Gói gọn nghiệp vụ Doanh nghiệp**:
+    - **Doanh nghiệp mua gói & mở khóa CRM**:
+      * Gói gọn toàn bộ các tính năng vận hành doanh nghiệp vào nhóm chuyên biệt: **"QUY TRÌNH & VẬN HÀNH"** (Quản lý thành viên/nhân sự & thêm mới, Quản lý tài liệu số hóa, Quy trình & công việc Kanban, Chấm công, Phê duyệt chi tiền).
+      * Nhóm **"CHĂM SÓC KHÁCH HÀNG & DOANH THU"**: Chăm sóc khách hàng của công ty (CRM leads/clients), Thống kê doanh thu công ty, Trợ lý AI.
+      * Nhóm **"KẾT NỐI & TRUYỀN THÔNG"**: Đăng tin khoảnh khắc, Kết nối B2B, Thẻ danh thiếp số thông minh NFC & QR, Sàn sản phẩm & dịch vụ.
+      * Nhóm **"HỒ SƠ DOANH NGHIỆP"**: Cài đặt và hồ sơ pháp lý công ty.
+    - **Super Admin (Ban Quản trị Nền tảng ViOne)**:
+      * Quản trị khách hàng & doanh nghiệp toàn hệ thống, mở khóa/khóa CRM, gia hạn gói, điều chỉnh slot nhân sự.
+      * Thống kê lượng người tham gia mới (New members growth trend 6 tháng gần nhất).
+      * Giám sát chi tiết mức độ hoạt động của các công ty sở hữu gói ViOne Platform (tần suất hoạt động, điểm sức khỏe Health Score, số nhân sự, số tasks, tài liệu, khách hàng CRM).
+- **2. Chi tiết Triển khai Kỹ thuật (Technical Implementation)**:
+  * **Backend (`apps/vione_app_be`)**:
+    - `mail.service.ts`: Thêm `sendPackageSubscriptionEmail()` với giao diện HTML email cao cấp chuẩn phong cách Champagne Gold `#D8B282` & Obsidian `#0B0F17`, danh sách 9 lợi ích mở khóa, nút CTA đi thẳng vào CRM và fallback an toàn ghi nhật ký nếu SMTP chưa cấu hình.
+    - `companies.module.ts`: Tích hợp `MailModule` vào `CompaniesModule`.
+    - `companies.service.ts`:
+      * Tự động gửi email kích hoạt trong `subscribePlatformPackage()`.
+      * Thêm `getPlatformMonitoring()`: Truy vấn PostgreSQL tổng hợp toàn diện chỉ số nền tảng: tổng số doanh nghiệp, số gói active, người dùng mới trong tháng, biểu đồ tăng trưởng 6 tháng (`userGrowthTrend`), và bảng chi tiết mức độ hoạt động từng công ty kèm điểm sức khỏe (Health Score: Cực tốt, Tích cực, Cần cải thiện, Nguy cơ) tính theo tỷ trọng nhân sự, tasks, tài liệu và khách hàng CRM.
+      * Thêm `updateCompanySubscription()`: Hỗ trợ Super Admin gia hạn ngày hết hạn, chuyển gói cước, chỉnh sửa giới hạn slot (`max_slots`), và bật/tắt khóa truy cập CRM (`is_active`).
+    - `companies.controller.ts`: Khai báo 2 endpoints bảo vệ bởi JwtAuthGuard: `GET /companies/platform-monitoring` và `PATCH /companies/:id/subscription`.
+  * **Frontend (`apps/vione_app_fe`)**:
+    - `Sidebar.tsx`:
+      * Tích hợp `useRole()` nhận diện chính xác vai trò Super Admin (`isQuanTri || isPlatformAdmin`).
+      * Bộ chuyển đổi chế độ làm việc (Workspace Switcher) ở đầu Sidebar cho phép Super Admin chuyển đổi mượt mà giữa chế độ **Nền Tảng** và **Doanh Nghiệp**.
+      * Khi là tài khoản Doanh nghiệp (hoặc chế độ Doanh nghiệp): Render cấu trúc menu gọn gàng: Bảng điều khiển DN, Menu cây tổ chức DN (`EnterpriseTreeMenu`), Nhóm **"QUY TRÌNH & VẬN HÀNH"**, Nhóm **"CHĂM SÓC KHÁCH HÀNG & DOANH THU"**, Nhóm **"KẾT NỐI & TRUYỀN THÔNG"**, Nhóm **"HỒ SƠ DOANH NGHIỆP"**.
+      * Khi là chế độ Nền tảng: Render các nhóm: **"TỔNG QUAN & TĂNG TRƯỞNG"**, **"QUẢN TRỊ KHÁCH HÀNG & DN"**, **"GÓI DỊCH VỤ & DOANH THU"**, **"HỆ THỐNG & BẢO MẬT"**.
+    - `PlatformActivityMonitoring.tsx`:
+      * Component giám sát hoạt động doanh nghiệp thời gian thực dành cho Super Admin.
+      * 4 KPI cards cao cấp, Biểu đồ xu hướng tăng trưởng người dùng 6 tháng liên tiếp (Recharts Area Chart).
+      * Bảng theo dõi chi tiết sức khỏe hoạt động từng công ty kèm Modal trực tiếp quản trị / gia hạn / mở khóa gói dịch vụ.
+    - `platform.index.tsx`: Tích hợp tab chuyển đổi giữa "Giám Sát Doanh Nghiệp & Tăng Trưởng" và "Danh Mục Chức Năng Nền Tảng & RBAC".
+    - `SubscribePackageModal.tsx`: Bổ sung thông tin họ tên, email khách hàng và thông báo tự động gửi email onboarding kèm link truy cập CRM.
+- **3. Kiểm tra Chất lượng Mã nguồn (Strict Rule 3)**:
+  * Backend (`apps/vione_app_be`): `tsc --noEmit` -> Exit code 0 (0 errors).
+  * Frontend (`apps/vione_app_fe`): `tsc --noEmit` -> Exit code 0 (0 errors).
+  * Tuân thủ quy tắc 1: Tuyệt đối không tự động commit/push Git.
+  * Tuân thủ quy tắc 7: 100% dữ liệu thực từ PostgreSQL, không mock/fake data.
+
+## 0.0000. XUẤT BẢN HỒ SƠ ĐĂNG KÝ BẢN QUYỀN TÁC GIẢ PHẦN MỀM: HỆ SINH THÁI VIONE CRM & VIONE CONNECT APP (THÁNG 10/2026)
+- **1. Mục tiêu & Yêu cầu hoàn thành**:
+  * Biên soạn tài liệu đặc tả và trình bày tác phẩm nộp Cục Bản quyền tác giả (Bộ VHTTDL) dựa trên cấu trúc chuẩn của hồ sơ mẫu `[UNIWORK] 06. Trình bày tác phẩm.cop đĩa.docx`.
+  * Mở rộng cấu trúc để bao quát trọn vẹn cả hai phân hệ trụ cột: **Nền tảng Quản trị Doanh nghiệp ViOne CRM (Web)** và **Ứng dụng Kết nối Doanh nhân ViOne Connect App (Mobile Native & PWA)**.
+  * Bộ ảnh chụp màn hình CRM: Chụp thực tế 20 màn hình từ máy chủ phát triển (Dev Server `https://14.225.217.232:5446`).
+  * Bộ ảnh chụp màn hình Mobile App: Chụp thực tế 16 màn hình từ tên miền chính thức `https://vione.viconnect.vn/` (chuẩn giao diện Dark Luxury Obsidian & Gold).
+  * Phụ lục mã nguồn: Trích xuất 18 tệp kiến trúc trọng yếu của hệ thống (5,357 dòng mã nguồn ~ 150 trang in Word tiêu chuẩn).
+- **2. Kết quả xuất bản**:
+  * Tệp đã được tạo tự động qua script `scratch/build_master_doc.js` bằng thư viện `docx` của Node.js:
+    - Vị trí 1: `C:\Users\vumik\Downloads\[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (Dung lượng: ~6.97 MB, 5,974 paragraphs, 36 ảnh chụp thực tế nhúng trực tiếp, 6 ngắt trang section).
+    - Vị trí 2: `d:\download\VICONNECT\CEO_VIONE_PROJECT\vione_project\document\[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`.
+- **3. Thông tin Pháp nhân & Quyền sở hữu**:
+  * Tên tác phẩm: `HỆ SINH THÁI QUẢN TRỊ DOANH NGHIỆP VÀ MẠNG XÃ HỘI GIAO THƯƠNG DOANH NHÂN B2B VIONE (VIONE CRM & VIONE CONNECT APP)`
+  * Chủ sở hữu: `CÔNG TY CỔ PHẦN CÔNG NGHỆ VIO CONNECT` (Mã số DN: `0110826492`).
+  * Tác giả: `Phạm Văn Vũ`.
+- **4. Tuân thủ quy chuẩn nghiêm ngặt**:
+  * Không mock/fake data, 100% dữ liệu hiển thị từ API và CSDL thật.
+  * Không tự ý thực thi `git commit` hay `git push`.
+
 - **1. Kiến Trúc Phân Cấp 3 Tầng Quản Trị (Multi-level Admin Structure)**:
   * **Tầng 1 - Super Admin (Nền tảng tổng ViOne)**:
     - Quản trị toàn bộ hệ sinh thái, cấu hình các gói dịch vụ (`public.vione_subscription_packages`), cấp phép cộng đồng, giám sát doanh thu SaaS toàn hệ thống qua API `/analytics/platform`.

@@ -1,11 +1,26 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+
+export class ProvisionStaffDto {
+  fullName!: string;
+  email!: string;
+  phone?: string;
+  password?: string;
+  roleCodes!: string[];
+  sendEmail?: boolean;
+}
 
 @Injectable()
 export class RolesService {
   private readonly logger = new Logger(RolesService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   /**
    * 1. Lấy danh sách tất cả các vai trò trong hệ thống kèm số lượng thành viên thực tế
@@ -21,6 +36,11 @@ export class RolesService {
           r.level,
           r.is_system as "isSystem",
           r.created_at as "createdAt",
+          COALESCE((
+            SELECT COUNT(DISTINCT user_id)::int 
+            FROM public.platform_user_roles pur 
+            WHERE pur.role_code = r.code
+          ), 0) +
           COALESCE((
             SELECT COUNT(DISTINCT user_id)::int 
             FROM public.user_roles ur 
@@ -181,27 +201,436 @@ export class RolesService {
   }
 
   /**
-   * 5. Lấy danh sách quyền hiệu lực của người dùng
+   * 5. Lấy danh sách quyền hiệu lực của người dùng (kết hợp platform_user_roles, user_roles, company_employees)
    */
-  async getUserEffectivePermissions(userId: string) {
+  async getUserEffectivePermissions(userId: string): Promise<string[]> {
     if (!userId) return [];
     try {
+      // 1. Kiểm tra nếu là super_admin / platform_admin -> cấp toàn bộ quyền
+      const superCheck = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT 1 FROM public.platform_user_roles WHERE user_id = $1::uuid AND role_code = 'super_admin'
+        UNION
+        SELECT 1 FROM public.user_roles WHERE user_id = $1::uuid AND role IN ('admin', 'platform_admin')
+      `, userId);
+
+      if (superCheck.length > 0) {
+        const allPerms = await this.prisma.$queryRawUnsafe<any[]>(`
+          SELECT DISTINCT (module || ':' || action) as "key" FROM public.platform_permissions
+        `);
+        const set = new Set<string>(allPerms.map(p => p.key));
+        set.add('tasks:assign');
+        set.add('finance:export');
+        set.add('chat:access');
+        return Array.from(set);
+      }
+
+      // 2. Quyền từ platform roles
       const rows = await this.prisma.$queryRawUnsafe<any[]>(`
-        SELECT DISTINCT p.module, p.action, (p.module || ':' || p.action) as "key"
+        SELECT DISTINCT (p.module || ':' || p.action) as "key"
         FROM public.platform_permissions p
         JOIN public.platform_role_permissions rp ON rp.permission_id = p.id
         JOIN public.platform_roles r ON r.id = rp.role_id
         WHERE r.code IN (
+          SELECT role_code FROM public.platform_user_roles WHERE user_id = $1::uuid
+          UNION
           SELECT role::text FROM public.user_roles WHERE user_id = $1::uuid
           UNION
           SELECT role FROM public.company_employees WHERE user_id = $1::text
         )
       `, userId);
 
-      return rows.map(r => r.key);
+      const permsSet = new Set<string>(rows.map(r => r.key));
+
+      // 3. Quyền chi tiết theo cờ phân quyền nhân sự nội bộ công ty
+      const empFlags = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT can_assign_tasks, can_manage_members, can_manage_finance, can_manage_docs, can_manage_crm, permissions
+        FROM public.company_employees 
+        WHERE user_id = $1::text AND status = 'active'
+      `, userId);
+
+      for (const ef of empFlags) {
+        if (ef.can_assign_tasks) permsSet.add('tasks:assign');
+        if (ef.can_manage_members) permsSet.add('employees:manage');
+        if (ef.can_manage_finance) {
+          permsSet.add('finance:view');
+          permsSet.add('finance:approve');
+          permsSet.add('finance:export');
+        }
+        if (ef.can_manage_docs) permsSet.add('documents:manage');
+        if (ef.can_manage_crm) permsSet.add('crm:manage');
+        if (Array.isArray(ef.permissions)) {
+          ef.permissions.forEach((p: string) => permsSet.add(p));
+        }
+      }
+
+      // Mặc định mọi nhân viên / người dùng hợp lệ đều có quyền kết nối nhắn tin
+      permsSet.add('chat:access');
+
+      return Array.from(permsSet);
     } catch (err) {
       this.logger.error('Error getting user permissions:', err);
-      return [];
+      return ['chat:access'];
     }
   }
+
+  /**
+   * 6. Lấy ngữ cảnh phân quyền đầy đủ cho tài khoản người dùng
+   */
+  async getUserRbacContext(userId: string) {
+    if (!userId) {
+      return {
+        roles: [],
+        permissions: [],
+        isSuperAdmin: false,
+        isFinanceStaff: false,
+        isOperationsStaff: false,
+        isExecutiveStaff: false,
+        canExportReports: false,
+        canAccessChat: true,
+      };
+    }
+
+    try {
+      const roleRows = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT r.code, r.name, r.level
+        FROM public.platform_roles r
+        WHERE r.code IN (
+          SELECT role_code FROM public.platform_user_roles WHERE user_id = $1::uuid
+          UNION
+          SELECT role::text FROM public.user_roles WHERE user_id = $1::uuid
+        )
+      `, userId);
+
+      const roleCodes = roleRows.map(r => r.code);
+      const permissions = await this.getUserEffectivePermissions(userId);
+
+      const isSuperAdmin = roleCodes.includes('super_admin') || roleCodes.includes('admin') || roleCodes.includes('platform_admin');
+      const isFinanceStaff = isSuperAdmin || roleCodes.includes('platform_finance');
+      const isOperationsStaff = isSuperAdmin || roleCodes.includes('platform_operations');
+      const isExecutiveStaff = isSuperAdmin || roleCodes.includes('platform_executive');
+
+      const canExportReports = isSuperAdmin || isFinanceStaff || isExecutiveStaff || permissions.includes('finance:export') || permissions.includes('statistics:view_platform');
+
+      return {
+        roles: roleRows,
+        roleCodes,
+        permissions,
+        isSuperAdmin,
+        isFinanceStaff,
+        isOperationsStaff,
+        isExecutiveStaff,
+        canExportReports,
+        canAccessChat: true,
+      };
+    } catch (err) {
+      this.logger.error('Error getting user RBAC context:', err);
+      return {
+        roles: [],
+        roleCodes: [],
+        permissions: ['chat:access'],
+        isSuperAdmin: false,
+        isFinanceStaff: false,
+        isOperationsStaff: false,
+        isExecutiveStaff: false,
+        canExportReports: false,
+        canAccessChat: true,
+      };
+    }
+  }
+
+  /**
+   * 7. Danh sách tài khoản nhân viên nội bộ ViOne
+   */
+  async listStaffAccounts() {
+    try {
+      const users = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT 
+          u.id,
+          u.name as "fullName",
+          u.email,
+          u.username,
+          p.professional_title as "title",
+          p.account_status as "status",
+          p.company_name as "companyName",
+          u.created_at as "createdAt",
+          u.updated_at as "updatedAt",
+          COALESCE((
+            SELECT json_agg(json_build_object('code', r.code, 'name', r.name, 'level', r.level))
+            FROM public.platform_user_roles pur
+            JOIN public.platform_roles r ON r.code = pur.role_code
+            WHERE pur.user_id = u.id
+          ), '[]'::json) as "assignedRoles"
+        FROM public.vione_users u
+        LEFT JOIN public.user_profiles p ON p.user_id = u.id
+        WHERE u.id IN (
+          SELECT DISTINCT user_id FROM public.platform_user_roles
+          UNION
+          SELECT DISTINCT user_id FROM public.user_roles WHERE role IN ('admin', 'platform_admin')
+        )
+        OR p.company_name ILIKE '%ViOne%'
+        ORDER BY u.created_at DESC
+      `);
+
+      return {
+        ok: true,
+        items: users,
+        total: users.length,
+      };
+    } catch (err) {
+      this.logger.error('Error listing ViOne staff accounts:', err);
+      return { ok: false, items: [], total: 0 };
+    }
+  }
+
+  /**
+   * 8. Cấp tài khoản nhân viên ViOne mới (kèm multi-role & gửi email thông tin đăng nhập)
+   */
+  async provisionStaffAccount(dto: ProvisionStaffDto, assignedByUserId?: string) {
+    const { fullName, email, phone, roleCodes } = dto;
+    if (!fullName || !fullName.trim()) {
+      throw new BadRequestException('Họ và tên nhân viên không được để trống');
+    }
+    if (!email || !email.trim() || !email.includes('@')) {
+      throw new BadRequestException('Email nhân viên không hợp lệ');
+    }
+    if (!Array.isArray(roleCodes) || roleCodes.length === 0) {
+      throw new BadRequestException('Vui lòng chọn ít nhất một nhóm quyền cho nhân viên');
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = fullName.trim();
+    const cleanPhone = phone ? phone.trim() : null;
+
+    // Mật khẩu khởi tạo: nếu admin không chỉ định thì sinh ngẫu nhiên an toàn
+    const passwordRaw = dto.password && dto.password.trim().length >= 6 
+      ? dto.password.trim() 
+      : `ViOne@${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(passwordRaw, salt);
+
+    let userId: string;
+
+    // Kiểm tra xem email đã tồn tại trong vione_users chưa
+    const existing = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT id FROM public.vione_users WHERE email = $1 OR username = $1 LIMIT 1`,
+      cleanEmail,
+    );
+
+    if (existing.length > 0) {
+      userId = existing[0].id;
+      // Cập nhật tên và mật khẩu
+      await this.prisma.$executeRawUnsafe(
+        `UPDATE public.vione_users SET name = $1, password = $2, updated_at = now() WHERE id = $3::uuid`,
+        cleanName,
+        hashedPassword,
+        userId,
+      );
+      // Cập nhật profile
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO public.user_profiles (user_id, display_name, company_name, account_status, onboarding_status, created_at, updated_at)
+         VALUES ($1::uuid, $2, 'ViOne Corporation', 'active', 'completed', now(), now())
+         ON CONFLICT (user_id) DO UPDATE SET 
+           display_name = EXCLUDED.display_name,
+           company_name = 'ViOne Corporation',
+           account_status = 'active',
+           updated_at = now()`,
+        userId,
+        cleanName,
+      );
+    } else {
+      userId = crypto.randomUUID();
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO public.vione_users (id, username, email, password, name, email_verified, created_at, updated_at)
+         VALUES ($1::uuid, $2, $2, $3, $4, true, now(), now())`,
+        userId,
+        cleanEmail,
+        hashedPassword,
+        cleanName,
+      );
+
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO public.user_profiles (user_id, display_name, company_name, account_status, onboarding_status, created_at, updated_at)
+         VALUES ($1::uuid, $2, 'ViOne Corporation', 'active', 'completed', now(), now())
+         ON CONFLICT (user_id) DO UPDATE SET 
+           display_name = EXCLUDED.display_name,
+           company_name = 'ViOne Corporation',
+           account_status = 'active',
+           updated_at = now()`,
+        userId,
+        cleanName,
+      );
+    }
+
+    // Gán các nhóm quyền vào public.platform_user_roles (hỗ trợ 1 user có nhiều nhóm quyền cùng lúc)
+    // 1. Xóa các quyền cũ của nhân viên này
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM public.platform_user_roles WHERE user_id = $1::uuid`,
+      userId,
+    );
+
+    // 2. Chèn các nhóm quyền mới
+    for (const rCode of roleCodes) {
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO public.platform_user_roles (user_id, role_code, assigned_by, assigned_at)
+         VALUES ($1::uuid, $2, $3::uuid, now())
+         ON CONFLICT (user_id, role_code) DO NOTHING`,
+        userId,
+        rCode,
+        assignedByUserId || null,
+      );
+    }
+
+    // 3. Đảm bảo user_roles có quyền admin hoặc platform_admin để qua các tầng middleware auth
+    try {
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO auth.users (id, email, role)
+         VALUES ($1::uuid, $2, 'authenticated')
+         ON CONFLICT (id) DO NOTHING`,
+        userId,
+        cleanEmail,
+      );
+      const hasSuper = roleCodes.includes('super_admin');
+      const legacyRole = hasSuper ? 'platform_admin' : 'admin';
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO public.user_roles (user_id, role, created_at)
+         VALUES ($1::uuid, $2::app_role, now())
+         ON CONFLICT (user_id, role) DO NOTHING`,
+        userId,
+        legacyRole,
+      );
+    } catch (authErr) {
+      this.logger.warn(`Could not sync into auth.users/user_roles: ${authErr}`);
+    }
+
+    // 4. Lấy danh sách thông tin chi tiết các roles vừa gán
+    const assignedRoles = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT code, name FROM public.platform_roles WHERE code = ANY($1)`,
+      roleCodes,
+    );
+
+    // 5. Tự động bắn email gửi thông tin tài khoản và mật khẩu khởi tạo cho nhân viên
+    let emailSent = false;
+    let emailMessage = 'Bỏ qua gửi email theo cài đặt';
+
+    if (dto.sendEmail !== false) {
+      const emailRes = await this.mailService.sendStaffAccountCredentialsEmail({
+        to: cleanEmail,
+        fullName: cleanName,
+        username: cleanEmail,
+        passwordRaw,
+        phone: cleanPhone || undefined,
+        roles: assignedRoles,
+      });
+      emailSent = emailRes.ok;
+      emailMessage = emailRes.message || 'Đã gửi email thông tin tài khoản thành công';
+    }
+
+    return {
+      ok: true,
+      message: `Đã cấp tài khoản thành công cho nhân viên ${cleanName}!`,
+      userId,
+      email: cleanEmail,
+      fullName: cleanName,
+      passwordRaw,
+      roles: assignedRoles,
+      emailSent,
+      emailMessage,
+    };
+  }
+
+  /**
+   * 9. Cập nhật nhóm quyền cho nhân viên ViOne
+   */
+  async updateStaffRoles(userId: string, roleCodes: string[]) {
+    if (!userId) {
+      throw new BadRequestException('ID nhân viên không hợp lệ');
+    }
+    if (!Array.isArray(roleCodes) || roleCodes.length === 0) {
+      throw new BadRequestException('Vui lòng chọn ít nhất một nhóm quyền');
+    }
+
+    // Xóa các roles cũ
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM public.platform_user_roles WHERE user_id = $1::uuid`,
+      userId,
+    );
+
+    // Chèn các roles mới
+    for (const rCode of roleCodes) {
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO public.platform_user_roles (user_id, role_code, assigned_at)
+         VALUES ($1::uuid, $2, now())
+         ON CONFLICT (user_id, role_code) DO NOTHING`,
+        userId,
+        rCode,
+      );
+    }
+
+    const assignedRoles = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT code, name FROM public.platform_roles WHERE code = ANY($1)`,
+      roleCodes,
+    );
+
+    return {
+      ok: true,
+      message: 'Cập nhật phân quyền nhân viên thành công!',
+      userId,
+      roles: assignedRoles,
+    };
+  }
+
+  /**
+   * 10. Gửi lại email thông tin đăng nhập cho nhân viên ViOne
+   */
+  async resendStaffCredentialsEmail(userId: string, newPassword?: string) {
+    const userRows = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT u.id, u.name, u.email, p.company_name
+       FROM public.vione_users u
+       LEFT JOIN public.user_profiles p ON p.user_id = u.id
+       WHERE u.id = $1::uuid LIMIT 1`,
+      userId,
+    );
+
+    if (userRows.length === 0) {
+      throw new NotFoundException('Không tìm thấy tài khoản nhân viên');
+    }
+
+    const user = userRows[0];
+    const passwordRaw = newPassword || `ViOne@${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(passwordRaw, salt);
+
+    await this.prisma.$executeRawUnsafe(
+      `UPDATE public.vione_users SET password = $1, updated_at = now() WHERE id = $2::uuid`,
+      hashedPassword,
+      userId,
+    );
+
+    const assignedRoles = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT r.code, r.name 
+       FROM public.platform_roles r
+       JOIN public.platform_user_roles pur ON pur.role_code = r.code
+       WHERE pur.user_id = $1::uuid`,
+      userId,
+    );
+
+    const emailRes = await this.mailService.sendStaffAccountCredentialsEmail({
+      to: user.email,
+      fullName: user.name,
+      username: user.email,
+      passwordRaw,
+      roles: assignedRoles,
+    });
+
+    return {
+      ok: true,
+      message: `Đã cấp lại mật khẩu và gửi email thành công tới ${user.email}`,
+      email: user.email,
+      passwordRaw,
+      emailSent: emailRes.ok,
+    };
+  }
 }
+

@@ -44,8 +44,11 @@ import {
   IdCard,
   Bookmark,
   ShieldCheck,
+  CheckCircle2,
+  HeartHandshake,
   PanelLeftClose,
   PanelLeftOpen,
+  UserPlus,
   Sun,
   Moon,
   Contrast,
@@ -64,202 +67,85 @@ import { SubscribePackageModal } from "@/components/dashboard/SubscribePackageMo
 
 type Item = { key: TKey; icon: LucideIcon; to?: string; label?: string; badge?: string | number };
 
-// 4 Mục điều hướng cốt lõi theo thiết kế Vione CRM Figma
-const vioneCoreNav: Item[] = [
-  { key: "nav.dashboard", icon: LayoutDashboard, to: "/", label: "Tổng quan" },
-  { key: "nav.vioneMemberList" as TKey, icon: Users, to: "/members", label: "Khách hàng (CRM)" },
-  { key: "nav.vioneMessages" as TKey, icon: MessageSquare, to: "/messages", label: "Hộp thư đa kênh", badge: "12" },
-  { key: "nav.vioneAi" as TKey, icon: Sparkles, to: "/ai", label: "Tự động hóa", badge: "New" },
-];
-
-const overview: Item[] = [{ key: "nav.dashboard", icon: LayoutDashboard, to: "/", label: "Tổng quan" }];
-
-// 1. MẠNG LƯỚI VIONE CONNECT (Hệ sinh thái kết nối số)
-const vioneConnectSuite: Item[] = [
+// ── PHÂN HỆ QUẢN TRỊ NỀN TẢNG (SUPER ADMIN / PLATFORM ADMIN) ─────────────
+// Dành cho ban quản trị nền tảng ViOne điều hành và giám sát toàn hệ thống
+const superAdminOverview: Item[] = [
   {
-    key: "nav.vioneNfc" as TKey,
-    icon: IdCard,
-    to: "/admin/business-cards",
-    label: "Thẻ Thông Minh NFC & QR",
-  },
-  {
-    key: "nav.vioneMoments" as TKey,
-    icon: Sparkles,
-    to: "/news",
-    label: "Khoảnh Khắc Doanh Nhân",
-  },
-  {
-    key: "nav.vioneCommunities" as TKey,
-    icon: Building2,
+    key: "nav.platformOverview" as TKey,
+    icon: LayoutDashboard,
     to: "/platform",
-    label: "Cộng Đồng Doanh Nghiệp",
-  },
-  {
-    key: "nav.vioneIntroductions" as TKey,
-    icon: Handshake,
-    to: "/business-connect/connections",
-    label: "Kết Nối & Giới Thiệu Đối Tác",
-  },
-  {
-    key: "nav.vioneAi" as TKey,
-    icon: Sparkles,
-    to: "/ai",
-    label: "Trợ Lý Trí Tuệ Nhân Tạo AI",
-  },
-  {
-    key: "nav.vioneNetwork" as TKey,
-    icon: Users,
-    to: "/network",
-    label: "Mạng Lưới ViOne Connect",
-  },
-];
-
-// QUY TRÌNH & VẬN HÀNH DOANH NGHIỆP (BRD ViOne Platform 5.0)
-const vioneWorkflowSuite: Item[] = [
-  {
-    key: "nav.vioneWorkflow" as TKey,
-    icon: Kanban,
-    to: "/workflow",
-    label: "Quy Trình & Công Việc",
-    badge: "Tự động",
-  },
-  {
-    key: "nav.vioneWorkload" as TKey,
-    icon: Activity,
-    to: "/workload",
-    label: "Theo Dõi Nhân Viên & Tải Việc",
-    badge: "Tải việc",
-  },
-  {
-    key: "nav.vioneAttendance" as TKey,
-    icon: UserCheck,
-    to: "/attendance",
-    label: "Chấm Công & Ca Làm Việc",
-    badge: "Văn phòng",
-  },
-  {
-    key: "nav.vioneApprovals" as TKey,
-    icon: ShieldCheck,
-    to: "/payment-approvals",
-    label: "Phê Duyệt Chi Tiền 3 Cấp",
-    badge: "3 cấp",
-  },
-];
-
-// 2. GIAO THƯƠNG & HỢP TÁC DOANH NGHIỆP
-const vioneCommerce: Item[] = [
-  {
-    key: "nav.vioneMarketplace" as TKey,
-    icon: Store,
-    to: "/marketplace",
-    label: "Sàn Sản Phẩm & Dịch Vụ",
-  },
-  {
-    key: "nav.vioneOpportunities" as TKey,
-    icon: FileBarChart,
-    to: "/opportunities",
-    label: "Cơ Hội Giao Thương & Hợp Tác",
-  },
-  {
-    key: "nav.vioneQuotes" as TKey,
-    icon: ClipboardList,
-    to: "/marketplace/my-quotes",
-    label: "Yêu Cầu Báo Giá VIP",
-  },
-];
-
-// 3. DOANH NGHIỆP & HỘI VIÊN VIONE
-const vioneMembers: Item[] = [
-  {
-    key: "nav.vioneMemberList" as TKey,
-    icon: Users,
-    to: "/members",
-    label: "Doanh Nhân & Thành Viên",
-  },
-  {
-    key: "nav.vioneCompanyList" as TKey,
-    icon: Building2,
-    to: "/companies",
-    label: "Hồ Sơ Doanh Nghiệp",
-  },
-  {
-    key: "nav.vioneCardTiers" as TKey,
-    icon: Tags,
-    to: "/segments",
-    label: "Hạng Thẻ (Gold / Titanium)",
-  },
-  {
-    key: "nav.vioneRenew" as TKey,
-    icon: RefreshCw,
-    to: "/renewal",
-    label: "Gia Hạn Thẻ & Dịch Vụ",
-  },
-];
-
-// 4. SỰ KIỆN & XÚC TIẾN THƯƠNG MẠI
-const vioneEvents: Item[] = [
-  {
-    key: "nav.vioneEventList" as TKey,
-    icon: Calendar,
-    to: "/events",
-    label: "Lịch Sự Kiện",
-  },
-  {
-    key: "nav.vioneEventReg" as TKey,
-    icon: ClipboardList,
-    to: "/event-registrations",
-    label: "Đăng Ký & Khách Mời",
-  },
-  {
-    key: "nav.vioneMeetings" as TKey,
-    icon: Handshake,
-    to: "/business-connect/meetings",
-    label: "Quản Lý Cuộc Gặp",
-  },
-  {
-    key: "nav.vioneCheckin" as TKey,
-    icon: QrCodeIcon,
-    to: "/checkin-qr",
-    label: "Soát Vé NFC & QR Pass",
-  },
-];
-
-// 5. TÀI CHÍNH & TĂNG TRƯỞNG
-const vioneFinance: Item[] = [
-  {
-    key: "nav.vioneRevenue" as TKey,
-    icon: Wallet,
-    to: "/fees",
-    label: "Doanh Thu & Phí Dịch Vụ",
-  },
-  {
-    key: "nav.vioneCashflow" as TKey,
-    icon: ArrowDownCircle,
-    to: "/income",
-    label: "Sổ Quỹ Thu - Chi",
-  },
-  {
-    key: "nav.vioneGrowthReport" as TKey,
-    icon: PieChart,
-    to: "/finance-report",
-    label: "Báo Cáo Tăng Trưởng",
-  },
-  {
-    key: "nav.vioneStatistics" as TKey,
-    icon: FileBarChart,
-    to: "/statistics",
-    label: "Trung Tâm Thống Kê Toàn Diện",
+    label: "Tổng Quan & Tăng Trưởng",
     badge: "5.0",
   },
 ];
 
-// 6. CẤU HÌNH & BẢO MẬT
-const vioneSystem: Item[] = [
+const superAdminTenantsSuite: Item[] = [
   {
-    key: "nav.vioneSettings" as TKey,
-    icon: Settings,
-    to: "/settings",
-    label: "Cài Đặt Hệ Thống",
+    key: "nav.vioneCompanyList" as TKey,
+    icon: Building2,
+    to: "/companies",
+    label: "Quản Lý Khách Hàng & DN",
+  },
+  {
+    key: "nav.vionePlatformMonitoring" as TKey,
+    icon: Activity,
+    to: "/platform",
+    label: "Theo Dõi Mức Độ Hoạt Động",
+    badge: "Giám sát",
+  },
+  {
+    key: "nav.vionePlatformMembers" as TKey,
+    icon: Users,
+    to: "/members",
+    label: "Khách Hàng Nền Tảng (CRM)",
+  },
+];
+
+const superAdminPackagesSuite: Item[] = [
+  {
+    key: "nav.vioneCardTiers" as TKey,
+    icon: Package,
+    to: "/segments",
+    label: "Cấu Hình Gói ViOne CRM",
+  },
+  {
+    key: "nav.vioneApprovals" as TKey,
+    icon: CheckCircle2,
+    to: "/payment-approvals",
+    label: "Phê Duyệt Đơn Hàng & Gia Hạn",
+  },
+  {
+    key: "nav.vioneGrowthReport" as TKey,
+    icon: Wallet,
+    to: "/finance-report",
+    label: "Doanh Thu Toàn Nền Tảng",
+  },
+];
+
+const vioneInternalChatSuite: Item[] = [
+  {
+    key: "nav.vioneMessages" as TKey,
+    icon: MessageSquare,
+    to: "/messages",
+    label: "Kết Nối Nhắn Tin",
+    badge: "Chat",
+  },
+];
+
+const superAdminSystemSuite: Item[] = [
+  {
+    key: "nav.vioneStaffAccounts" as TKey,
+    icon: UserPlus,
+    to: "/platform/admins",
+    label: "Cấp Tài Khoản Nhân Viên",
+    badge: "ViOne",
+  },
+  {
+    key: "nav.platform" as TKey,
+    icon: ShieldCheck,
+    to: "/platform/permissions",
+    label: "Phân Quyền Ma Trận (RBAC)",
+    badge: "RBAC",
   },
   {
     key: "nav.vioneAudit" as TKey,
@@ -268,11 +154,112 @@ const vioneSystem: Item[] = [
     label: "Nhật Ký Kiểm Toán",
   },
   {
-    key: "nav.platform" as TKey,
+    key: "nav.vioneSettings" as TKey,
+    icon: Settings,
+    to: "/settings",
+    label: "Cài Đặt Nền Tảng",
+  },
+];
+
+// ── PHÂN HỆ DOANH NGHIỆP (COMPANY / BUSINESS ADMIN SUITE) ───────────────
+// Dành cho tài khoản mua gói ViOne Platform và được mở khóa CRM
+const companyOverview: Item[] = [
+  { key: "nav.dashboard", icon: LayoutDashboard, to: "/", label: "Bảng Điều Khiển Doanh Nghiệp" },
+];
+
+// NHÓM 1: QUY TRÌNH & VẬN HÀNH (Gói gọn toàn bộ vận hành doanh nghiệp vào 1 nhóm lớn theo BRD)
+const companyWorkflowSuite: Item[] = [
+  {
+    key: "nav.vioneMemberList" as TKey,
+    icon: Users,
+    to: "/companies",
+    label: "Quản Lý Thành Viên & Nhân Sự",
+  },
+  {
+    key: "nav.vioneDocuments" as TKey,
+    icon: FolderOpen,
+    to: "/documents",
+    label: "Quản Lý Tài Liệu Số Hóa",
+  },
+  {
+    key: "nav.vioneWorkflow" as TKey,
+    icon: Kanban,
+    to: "/workflow",
+    label: "Quy Trình & Công Việc",
+    badge: "Kanban",
+  },
+  {
+    key: "nav.vioneAttendance" as TKey,
+    icon: UserCheck,
+    to: "/attendance",
+    label: "Chấm Công & Ca Làm Việc",
+  },
+  {
+    key: "nav.vioneApprovals" as TKey,
     icon: ShieldCheck,
-    to: "/platform/permissions",
-    label: "Phân Quyền Ma Trận (RBAC)",
-    badge: "Ma trận",
+    to: "/payment-approvals",
+    label: "Phê Duyệt Chi Tiền",
+  },
+];
+
+// NHÓM 2: CHĂM SÓC KHÁCH HÀNG & DOANH THU (CRM & REVENUE)
+const companyCrmRevenueSuite: Item[] = [
+  {
+    key: "nav.vioneCrmCustomers" as TKey,
+    icon: HeartHandshake,
+    to: "/members",
+    label: "Chăm Sóc Khách Hàng (CRM)",
+    badge: "CRM",
+  },
+  {
+    key: "nav.vioneRevenue" as TKey,
+    icon: Wallet,
+    to: "/fees",
+    label: "Thống Kê Doanh Thu Công Ty",
+  },
+  {
+    key: "nav.vioneAi" as TKey,
+    icon: Sparkles,
+    to: "/ai",
+    label: "Trợ Lý Trí Tuệ Nhân Tạo AI",
+    badge: "AI",
+  },
+];
+
+// NHÓM 3: KẾT NỐI & TRUYỀN THÔNG (NETWORKING & PUBLIC PRESENCE)
+const companyConnectMediaSuite: Item[] = [
+  {
+    key: "nav.vioneMoments" as TKey,
+    icon: Newspaper,
+    to: "/news",
+    label: "Đăng Tin & Khoảnh Khắc",
+  },
+  {
+    key: "nav.vioneIntroductions" as TKey,
+    icon: Handshake,
+    to: "/business-connect/connections",
+    label: "Kết Nối Đối Tác B2B",
+  },
+  {
+    key: "nav.vioneNfc" as TKey,
+    icon: IdCard,
+    to: "/admin/business-cards",
+    label: "Thẻ Thông Minh NFC & QR",
+  },
+  {
+    key: "nav.vioneMarketplace" as TKey,
+    icon: Store,
+    to: "/marketplace",
+    label: "Sàn Sản Phẩm & Dịch Vụ",
+  },
+];
+
+const companySettingsSuite: Item[] = [
+  {
+    key: "nav.vioneSettings" as TKey,
+    icon: Settings,
+    to: "/settings",
+    label: "Hồ Sơ & Cài Đặt Doanh Nghiệp",
   },
 ];
 
@@ -435,7 +422,29 @@ export function Sidebar({
   onNavigate,
 }: { mobile?: boolean; onNavigate?: () => void } = {}) {
   const t = useT();
-  const { isPlatformAdmin, isAdmin, roles } = useRole();
+  const {
+    isPlatformAdmin,
+    isQuanTri,
+    isAdmin,
+    roles,
+    isSuperAdmin: isRbacSuperAdmin,
+    isFinanceStaff,
+    isOperationsStaff,
+    isExecutiveStaff,
+  } = useRole();
+
+  const isSuperAdmin = Boolean(isQuanTri || isPlatformAdmin || isRbacSuperAdmin);
+  const isViOneStaff = Boolean(isSuperAdmin || isFinanceStaff || isOperationsStaff || isExecutiveStaff);
+
+  const [workspaceView, setWorkspaceView] = useState<"platform" | "company">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("vione_crm_workspace_view");
+      if (saved === "platform" || saved === "company") return saved;
+    }
+    return isPlatformAdmin || isQuanTri || isRbacSuperAdmin || isViOneStaff ? "platform" : "company";
+  });
+  const effectiveView = (isSuperAdmin || isViOneStaff) ? workspaceView : "company";
+
   const isTongThuKy = roles.some((r) => String(r) === "tong_thu_ky");
   const isBanThanhVien = roles.some((r) => String(r) === "truong_ban_thanh_vien");
   const isBanTaiChinh = roles.some((r) => String(r) === "truong_ban_tai_chinh");
@@ -577,6 +586,61 @@ export function Sidebar({
           )}
         </div>
 
+        {/* Workspace Switcher for Super Admin */}
+        {isSuperAdmin && !isCollapsed && (
+          <div className="px-3 pt-2.5 pb-1 border-b border-slate-800/60 bg-slate-900/40">
+            <div className="flex items-center p-0.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <button
+                type="button"
+                onClick={() => {
+                  setWorkspaceView("platform");
+                  localStorage.setItem("vione_crm_workspace_view", "platform");
+                }}
+                className={`flex-1 py-1.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                  effectiveView === "platform"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>Nền Tảng</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setWorkspaceView("company");
+                  localStorage.setItem("vione_crm_workspace_view", "company");
+                }}
+                className={`flex-1 py-1.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                  effectiveView === "company"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Doanh Nghiệp</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isSuperAdmin && isCollapsed && (
+          <div className="flex justify-center py-2 border-b border-slate-800/60">
+            <button
+              type="button"
+              onClick={() => {
+                const next = effectiveView === "platform" ? "company" : "platform";
+                setWorkspaceView(next);
+                localStorage.setItem("vione_crm_workspace_view", next);
+              }}
+              title={`Chuyển chế độ: ${effectiveView === "platform" ? "Quản trị Nền tảng" : "Doanh nghiệp"}`}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400 hover:text-white transition-all shadow-sm"
+            >
+              {effectiveView === "platform" ? <ShieldCheck className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
+            </button>
+          </div>
+        )}
+
         {/* Collapsed expand button */}
         {!mobile && isCollapsed && (
           <div className="flex justify-center pt-2">
@@ -596,86 +660,144 @@ export function Sidebar({
           ref={scrollRef}
           className="sidebar-scroll flex-1 space-y-4 overflow-y-auto py-5"
         >
-          {/* Core 4 Vione CRM navigation items matching Figma design */}
-          <div className={isCollapsed ? "px-2" : "px-3"}>
-            {!isCollapsed && (
-              <div className="mb-2 px-3 flex items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400 select-none">
-                  NGHIỆP VỤ CỐT LÕI
-                </span>
+          {effectiveView === "platform" ? (
+            <>
+              {/* ── SUPER ADMIN: TỔNG QUAN & TĂNG TRƯỞNG ── */}
+              <div className={isCollapsed ? "px-2" : "px-3"}>
+                <div className="space-y-1">
+                  {superAdminOverview.map((it) => (
+                    <NavItem
+                      key={it.key}
+                      item={it}
+                      pathname={pathname}
+                      collapsed={isCollapsed}
+                      onNavigate={onNavigate}
+                    />
+                  ))}
+                </div>
               </div>
-            )}
-            <div className="space-y-1">
-              {vioneCoreNav.map((it) => (
-                <NavItem
-                  key={it.key}
-                  item={it}
+
+              {/* ── KẾT NỐI NHẮN TIN (CHỨC NĂNG TỐI THIỂU CHO MỌI NHÂN SỰ VIONE) ── */}
+              <Group
+                label="KẾT NỐI & LIÊN LẠC"
+                items={vioneInternalChatSuite}
+                pathname={pathname}
+                collapsed={isCollapsed}
+                onNavigate={onNavigate}
+                badges={badges}
+              />
+
+              {/* ── NHÓM VẬN HÀNH & QUẢN LÝ KHÁCH HÀNG / DN (platform_operations) ── */}
+              {(isSuperAdmin || isOperationsStaff || isExecutiveStaff) && (
+                <Group
+                  label="QUẢN TRỊ KHÁCH HÀNG & DN"
+                  items={superAdminTenantsSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
                   onNavigate={onNavigate}
+                  badges={badges}
                 />
-              ))}
-            </div>
-          </div>
+              )}
 
-          {/* Doanh nghiệp & Quản trị Doanh nghiệp (Tree Menu Sidebar) */}
-          <div className={isCollapsed ? "px-2" : "px-3"}>
-            <EnterpriseTreeMenu
-              collapsed={isCollapsed}
-              pathname={pathname}
-              onNavigate={onNavigate}
-              onRequestSubscribe={() => setSubscribeModalOpen(true)}
-            />
-          </div>
+              {/* ── NHÓM TÀI CHÍNH, DOANH THU & BÁO CÁO (platform_finance) ── */}
+              {(isSuperAdmin || isFinanceStaff || isExecutiveStaff) && (
+                <Group
+                  label="GÓI DỊCH VỤ & DOANH THU"
+                  items={superAdminPackagesSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
+              )}
 
-          {/* Divider */}
-          {!isCollapsed && (
-            <div className="px-6 pt-3 pb-1">
-              <div className="h-px w-full bg-slate-800/80" />
-            </div>
+              {/* ── HỆ THỐNG & BẢO MẬT (Chỉ Super Admin & Ban Quản Trị) ── */}
+              {(isSuperAdmin || isQuanTri) && (
+                <Group
+                  label="HỆ THỐNG & BẢO MẬT"
+                  items={superAdminSystemSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              {/* ── DOANH NGHIỆP: BẢNG ĐIỀU KHIỂN DOANH NGHIỆP ── */}
+              <div className={isCollapsed ? "px-2" : "px-3"}>
+                <div className="space-y-1">
+                  {companyOverview.map((it) => (
+                    <NavItem
+                      key={it.key}
+                      item={it}
+                      pathname={pathname}
+                      collapsed={isCollapsed}
+                      onNavigate={onNavigate}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Doanh nghiệp & Quản trị Doanh nghiệp (Tree Menu Sidebar) */}
+              <div className={isCollapsed ? "px-2" : "px-3"}>
+                <EnterpriseTreeMenu
+                  collapsed={isCollapsed}
+                  pathname={pathname}
+                  onNavigate={onNavigate}
+                  onRequestSubscribe={() => setSubscribeModalOpen(true)}
+                />
+              </div>
+
+              {/* Divider */}
+              {!isCollapsed && (
+                <div className="px-6 pt-2 pb-1">
+                  <div className="h-px w-full bg-slate-800/80" />
+                </div>
+              )}
+
+              {/* NHÓM 1: QUY TRÌNH & VẬN HÀNH (Gói gọn toàn bộ vận hành doanh nghiệp vào 1 nhóm lớn theo BRD) */}
+              <Group
+                label="QUY TRÌNH & VẬN HÀNH"
+                items={companyWorkflowSuite}
+                pathname={pathname}
+                collapsed={isCollapsed}
+                onNavigate={onNavigate}
+                badges={badges}
+              />
+
+              {/* NHÓM 2: CHĂM SÓC KHÁCH HÀNG & DOANH THU */}
+              <Group
+                label="CHĂM SÓC KHÁCH HÀNG & DOANH THU"
+                items={companyCrmRevenueSuite}
+                pathname={pathname}
+                collapsed={isCollapsed}
+                onNavigate={onNavigate}
+                badges={badges}
+              />
+
+              {/* NHÓM 3: KẾT NỐI & TRUYỀN THÔNG */}
+              <Group
+                label="KẾT NỐI & TRUYỀN THÔNG"
+                items={companyConnectMediaSuite}
+                pathname={pathname}
+                collapsed={isCollapsed}
+                onNavigate={onNavigate}
+                badges={badges}
+              />
+
+              {/* NHÓM 4: HỒ SƠ DOANH NGHIỆP */}
+              <Group
+                label="HỒ SƠ DOANH NGHIỆP"
+                items={companySettingsSuite}
+                pathname={pathname}
+                collapsed={isCollapsed}
+                onNavigate={onNavigate}
+                badges={badges}
+              />
+            </>
           )}
-
-          {/* BRD Quy Trình & Vận Hành Doanh Nghiệp */}
-          <Group
-            label="QUY TRÌNH & VẬN HÀNH"
-            items={vioneWorkflowSuite}
-            pathname={pathname}
-            collapsed={isCollapsed}
-            onNavigate={onNavigate}
-          />
-
-          {/* Additional CRM Modules */}
-          <Group
-            label="TIỆN ÍCH & GIAO THƯƠNG"
-            items={vioneCommerce}
-            pathname={pathname}
-            collapsed={isCollapsed}
-            onNavigate={onNavigate}
-          />
-
-          <Group
-            label="SỰ KIỆN & CHECK-IN B2B"
-            items={vioneEvents}
-            pathname={pathname}
-            collapsed={isCollapsed}
-            onNavigate={onNavigate}
-          />
-
-          <Group
-            label="TÀI CHÍNH & DOANH THU"
-            items={vioneFinance}
-            pathname={pathname}
-            collapsed={isCollapsed}
-            onNavigate={onNavigate}
-          />
-
-          <Group
-            label="CẤU HÌNH & HỆ THỐNG"
-            items={vioneSystem}
-            pathname={pathname}
-            collapsed={isCollapsed}
-            onNavigate={onNavigate}
-          />
         </div>
       </div>
 

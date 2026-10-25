@@ -7,7 +7,7 @@ import {
   Param,
   Request,
 } from '@nestjs/common';
-import { RolesService } from './roles.service';
+import { RolesService, ProvisionStaffDto } from './roles.service';
 
 @Controller('roles')
 export class RolesController {
@@ -49,16 +49,56 @@ export class RolesController {
   }
 
   /**
-   * Lấy quyền hiệu lực của người dùng hiện tại
+   * Danh sách tài khoản nhân viên nội bộ ViOne
+   */
+  @Get('staff-accounts')
+  async listStaffAccounts() {
+    return this.rolesService.listStaffAccounts();
+  }
+
+  /**
+   * Cấp tài khoản nhân viên ViOne mới (kèm multi-role & gửi email thông tin đăng nhập)
+   */
+  @Post('staff-accounts')
+  async provisionStaffAccount(@Body() dto: ProvisionStaffDto, @Request() req: any) {
+    const adminUserId = req.user?.id || req.headers?.['x-user-id'];
+    return this.rolesService.provisionStaffAccount(dto, adminUserId);
+  }
+
+  /**
+   * Cập nhật nhóm quyền cho nhân viên ViOne
+   */
+  @Put('staff-accounts/:id/roles')
+  async updateStaffRoles(
+    @Param('id') userId: string,
+    @Body('roleCodes') roleCodes: string[],
+  ) {
+    return this.rolesService.updateStaffRoles(userId, roleCodes);
+  }
+
+  /**
+   * Gửi lại email thông tin tài khoản và mật khẩu khởi tạo cho nhân viên ViOne
+   */
+  @Post('staff-accounts/:id/resend-credentials')
+  async resendStaffCredentials(
+    @Param('id') userId: string,
+    @Body('password') newPassword?: string,
+  ) {
+    return this.rolesService.resendStaffCredentialsEmail(userId, newPassword);
+  }
+
+  /**
+   * Lấy quyền hiệu lực và ngữ cảnh phân quyền đầy đủ của người dùng hiện tại
    */
   @Get('my-permissions')
   async getMyPermissions(@Request() req: any) {
     const userId = req.user?.id || req.headers?.['x-user-id'] || 'a0000000-0000-4000-8000-000000000002';
-    const permissions = await this.rolesService.getUserEffectivePermissions(userId);
+    const context = await this.rolesService.getUserRbacContext(userId);
     return {
       ok: true,
       userId,
-      permissions,
+      ...context,
     };
   }
 }
+

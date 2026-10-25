@@ -56,6 +56,51 @@
   * Dùng `UserMultiSelect.tsx` tìm kiếm nhân sự thực từ API.
   * Giao việc đồng loạt qua `POST /companies/:id/tasks/bulk` để phân công nhiều người cùng lúc.
 
+## -0.5. Quy Chuẩn Tái Thiết Kế ViOne CRM: Email Tự Động Lợi Ích Gói, Nhóm Quy Trình & Vận Hành, Giám Sát Hoạt Động (STRICT CRM ROLE-BASED NAVIGATION & MONITORING PROTOCOL)
+- **TỰ ĐỘNG GỬI EMAIL LỢI ÍCH GÓI VÀ LINK CRM KHI MUA GÓI**:
+  * Khi khách hàng đăng ký hoặc mua gói ViOne Platform, backend `CompaniesService.subscribePlatformPackage` BẮT BUỘC gọi `MailService.sendPackageSubscriptionEmail`.
+  * Email gửi bằng mẫu HTML chuẩn nhận diện Obsidian/Gold `#D8B282`, chi tiết toàn bộ các quyền lợi/lợi ích của gói và đính kèm nút CTA dẫn trực tiếp đến ViOne CRM để quản trị.
+- **PHÂN ĐỊNH GIAO DIỆN THEO ROLE QUYỀN TRÊN CRM VIONE**:
+  * **Role Super Admin (Nền tảng tổng ViOne)**:
+    - Sidebar trang bị bộ chuyển đổi chế độ `Nền Tảng` vs `Doanh Nghiệp` linh hoạt.
+    - Chế độ Nền tảng: Quản trị danh mục khách hàng & DN (`/companies`), Khách hàng nền tảng (`/members`), Theo dõi mức độ hoạt động của các công ty có gói ViOne Platform (`/platform`), Cấu hình gói & Duyệt gia hạn (`/segments`, `/payment-approvals`), Doanh thu toàn nền tảng (`/finance-report`), Ma trận RBAC (`/platform/permissions`).
+    - Phân hệ Giám sát (`PlatformActivityMonitoring.tsx`): 4 KPI cards, Biểu đồ xu hướng tăng trưởng người dùng 6 tháng gần nhất, Bảng theo dõi chi tiết điểm sức khỏe (Health Score), số nhân sự, tasks, tài liệu, CRM clients và modal gia hạn/mở khóa CRM trực tiếp.
+  * **Role Doanh Nghiệp (Tài khoản mua gói & mở khóa CRM)**:
+    - Gói gọn toàn bộ các chức năng vận hành nội bộ vào 1 nhóm lớn: **"QUY TRÌNH & VẬN HÀNH"** (Quản lý thành viên/nhân sự & thêm mới, Quản lý tài liệu số hóa, Quy trình & công việc Kanban, Chấm công, Phê duyệt chi tiền).
+    - Nhóm **"CHĂM SÓC KHÁCH HÀNG & DOANH THU"**: Chăm sóc khách hàng của công ty (CRM leads/clients), Thống kê doanh thu công ty, Trợ lý AI.
+    - Nhóm **"KẾT NỐI & TRUYỀN THÔNG"**: Đăng tin khoảnh khắc, Kết nối B2B, Thẻ danh thiếp số thông minh NFC & QR, Sàn sản phẩm & dịch vụ.
+    - Nhóm **"HỒ SƠ DOANH NGHIỆP"**: Cài đặt và hồ sơ pháp lý công ty.
+
+## -0.6. Quy Chuẩn Phân Quyền Hai Tầng ViOne: Phân Quyền Nội Bộ Doanh Nghiệp Mua Gói & Phân Quyền Các Bộ Phận ViOne Platform (STRICT TWO-TIER RBAC PROTOCOL)
+- **TẦNG 1: PHÂN QUYỀN NỘI BỘ DOANH NGHIỆP CỦA KHÁCH HÀNG (TENANT INTERNAL RBAC)**:
+  * Khi khách hàng mua gói ViOne Platform và đưa cả công ty vào dùng, hệ thống BẮT BUỘC phân định rõ giữa vai trò Quản trị viên/Quản lý (`role = 'manager'` / `owner`) và Nhân viên thực thi (`role = 'staff'`).
+  * **Nhân viên thực thi**: Mặc định chỉ nhận việc, chấm công, cập nhật tiến độ, xem tài liệu dùng chung. CẤM tự ý giao việc cho nhân viên khác (`canAssignTasks = false` -> ẩn nút `+ Giao Việc Mới`), cấm xem tài chính và duyệt chi.
+  * **Quản trị viên / Trưởng bộ phận**: Có quyền giao việc (`canAssignTasks = true`), quản lý tiến độ Kanban, quản lý thành viên phòng ban, quản lý tài liệu và khách hàng CRM.
+  * **Cấp quyền linh hoạt**: `CompanyEmployeesTab.tsx` phải cung cấp Modal chỉnh sửa phân quyền với 5 cờ quyền độc lập (`canAssignTasks`, `canManageMembers`, `canManageFinance`, `canManageDocs`, `canManageCrm`) lưu trực tiếp vào `public.company_employees`.
+- **TẦNG 2: PHÂN QUYỀN CÁC BỘ PHẬN NỘI BỘ VIONE PLATFORM (PLATFORM DEPARTMENT RBAC)**:
+  * Nền tảng ViOne chia rõ 4 nhóm bộ phận quản trị:
+    1. **Ban Quản Trị Hệ Thống (`super_admin`)**: Toàn quyền, cấu hình RBAC, cấu hình gói cước, audit logs.
+    2. **Ban Lãnh Đạo & Điều Hành (`platform_executive`)**: Giám sát báo cáo, thống kê tăng trưởng, theo dõi chi tiết mức độ hoạt động và điểm sức khỏe của tất cả các công ty có gói ViOne Platform.
+    3. **Bộ Phận Vận Hành & CSKH (`platform_operations`)**: Quản lý danh mục khách hàng, công ty/doanh nghiệp, mở khóa/khóa CRM, theo dõi hỗ trợ kỹ thuật.
+    4. **Bộ Phận Kế Toán & Tài Chính Nền Tảng (`platform_finance`)**: Quản lý gói cước, phê duyệt đơn hàng đăng ký/gia hạn, đối soát thanh toán và báo cáo doanh thu tài chính platform.
+  * Ma trận phân quyền 27+ quyền hạt nhân tại `/platform/permissions` kết nối 100% qua `public.platform_roles`, `public.platform_permissions`, `public.platform_role_permissions`.
+
+## -0.7. Quy Chuẩn Cấp Tài Khoản Nhân Viên ViOne, Multi-Role RBAC & Reactive Rerender Tức Thì (STRICT STAFF PROVISIONING & REACTIVE RBAC PROTOCOL)
+- **TÍNH NĂNG CẤP TÀI KHOẢN NỘI BỘ VIONE & TỰ ĐỘNG GỬI EMAIL CREDENTIALS**:
+  * Chỉ Super Admin hoặc Quản trị viên ViOne mới có quyền cấp tài khoản nội bộ trực thuộc công ty ViOne (`PlatformStaffManagement.tsx` tại `/platform/admins` hoặc Tab `Cấp & Quản Lý Tài Khoản Nhân Viên ViOne`).
+  * Quản trị viên nhập Email hoặc Số điện thoại của nhân viên trong công ty.
+  * Khi cấp thành công, hệ thống BẮT BUỘC gọi `MailService.sendStaffAccountCredentialsEmail` tự động gửi email thông báo thông tin tài khoản (Email, Mật khẩu, Bảng tổng hợp quyền hạn, Link truy cập trực tiếp CRM) với thiết kế Obsidian & Champagne Gold sang trọng.
+- **HIỂN THỊ CHỨC NĂNG THEO ROLE & MÔ HÌNH ĐA NHÓM (MULTI-ROLE RBAC)**:
+  * Nhân viên nội bộ ViOne khi đăng nhập CRM sẽ chỉ hiển thị các phân hệ/chức năng tương ứng với các vai trò được cấp.
+  * Hỗ trợ gán nhiều vai trò cùng lúc: Một tài khoản có thể vừa thuộc nhóm Thống kê báo cáo tài chính (`platform_finance`), vừa thuộc nhóm Quản lý tài khoản & vận hành (`platform_operations`).
+  * Khi sở hữu cả 2 nhóm quyền, Sidebar CRM sẽ tự động hiển thị đồng thời cả suite "Quản Trị Khách Hàng & Doanh Nghiệp" lẫn suite "Gói Dịch Vụ & Doanh Thu".
+- **CHỨC NĂNG CỐT LÕI BẮT BUỘC**:
+  * **Kết Nối Nhắn Tin (`/messages`)**: Tự động hiển thị và cấp quyền cho 100% nhân viên nội bộ ViOne.
+  * **Xuất Báo Cáo (Excel / CSV / PDF)**: Tự động kích hoạt cho nhân viên có nhóm quyền tài chính hoặc quyền `finance:export` / `statistics:view_platform` (các nút xuất báo cáo tại `/finance-report` tự động bật/tắt theo cờ `canExportReports`).
+- **CƠ CHẾ PHẢN ỨNG TỨC THÌ (REACTIVE PERMISSION RERENDERING)**:
+  * Khi quản trị viên thay đổi nhóm quyền của nhân viên, hệ thống phát tín hiệu qua `BroadcastChannel('vione_rbac_sync')` và `window.dispatchEvent(new CustomEvent('permissions-updated'))`.
+  * Mọi tab đang mở của tài khoản đó tự động re-fetch `GET /api/roles/my-permissions` và cập nhật state React tức thì, Sidebar và giao diện tự động rerender lại ngay mà không cần reload trang (F5).
+
 ## 0. Quy Tắc Bắt Buộc: Đồng Bộ Hai Bản App Native ViOne & PWA ViOne (STRICT DUAL-APP PARITY)
 - **BẮT BUỘC SỬA ĐỒNG BỘ CẢ 2 BẢN KHI CHỈNH SỬA APP (Giống như quy tắc cấm tự động push git)**:
   - Khi có bất kỳ yêu cầu sửa lỗi, nâng cấp tính năng, chỉnh sửa giao diện hay luồng nghiệp vụ trên ứng dụng ViOne, BẮT BUỘC phải thực hiện đồng thời trên **CẢ 2 BẢN**: Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).

@@ -52,6 +52,19 @@ export interface SendMemberApprovedEmailOptions {
   passwordRaw?: string;
 }
 
+export interface SendPackageSubscriptionEmailOptions {
+  to: string;
+  fullName: string;
+  companyName?: string;
+  planName: string;
+  isTrial?: boolean;
+  trialDaysLeft?: number;
+  expiresAt?: string;
+  maxSlots?: number;
+  portalUrl?: string;
+  username?: string;
+  passwordRaw?: string;
+}
 
 @Injectable()
 export class MailService {
@@ -677,6 +690,367 @@ export class MailService {
 
     this.logger.log(`[MEMBER_APPROVED_EMAIL_DISPATCHED] To: ${cleanTo} | Name: ${fullName} | Code: ${memberCode}`);
     return { ok: true, message: 'Member approved email logged to audit stream' };
+  }
+
+  /**
+   * Gửi email tự động khi khách hàng mua / kích hoạt gói ViOne Platform:
+   * Thông báo thông tin lợi ích của gói cước, thông tin tài khoản và link đi đến CRM để quản trị.
+   */
+  async sendPackageSubscriptionEmail(options: SendPackageSubscriptionEmailOptions): Promise<{ ok: boolean; message?: string }> {
+    const {
+      to,
+      fullName,
+      companyName,
+      planName,
+      isTrial,
+      trialDaysLeft,
+      expiresAt,
+      maxSlots,
+      portalUrl,
+      username,
+      passwordRaw,
+    } = options;
+
+    const cleanTo = (to || '').trim();
+    if (!cleanTo || !cleanTo.includes('@')) {
+      this.logger.warn(`Cannot send package subscription email: invalid destination email "${cleanTo}"`);
+      return { ok: false, message: 'Invalid recipient email' };
+    }
+
+    const crmUrl = portalUrl || 'https://dev-vione-crm.14-225-217-232.sslip.io:5446';
+    const cName = companyName || 'Doanh Nghiệp ViOne Platform';
+    const pName = planName || (isTrial ? 'Gói Dùng Thử ViOne Platform (30 Ngày)' : 'Gói ViOne Enterprise');
+    const slots = maxSlots || (isTrial ? 10 : 50);
+    const durationText = expiresAt
+      ? new Date(expiresAt).toLocaleDateString('vi-VN')
+      : isTrial
+      ? `${trialDaysLeft || 30} ngày trải nghiệm miễn phí`
+      : '12 tháng (Gói thường niên)';
+
+    const subject = `[ViOne Platform] Chúc Mừng Kích Hoạt Thành Công ${pName} — Cổng Quản Trị ViOne CRM`;
+
+    const html = `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0b0f17; margin: 0; padding: 24px; color: #f8fafc; }
+    .container { max-width: 650px; margin: 0 auto; background: #0f172a; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(216, 178, 130, 0.35); }
+    .header { background: linear-gradient(135deg, #050c15 0%, #1e1b18 50%, #0b132b 100%); padding: 40px 32px; text-align: center; color: #ffffff; border-bottom: 2px solid rgba(216, 178, 130, 0.4); position: relative; }
+    .gold-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(216, 178, 130, 0.15); border: 1px solid #D8B282; color: #F6E1C3; padding: 6px 18px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; box-shadow: 0 0 20px rgba(216, 178, 130, 0.2); }
+    .title { font-size: 24px; font-weight: 900; margin: 0 0 8px 0; color: #ffffff; letter-spacing: -0.5px; }
+    .title span { background: linear-gradient(135deg, #F6E1C3 0%, #D8B282 50%, #C29B69 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { font-size: 13.5px; color: #94a3b8; margin: 0; }
+    .content { padding: 34px 30px; }
+    .greeting { font-size: 16.5px; font-weight: 700; color: #f1f5f9; margin-bottom: 14px; line-height: 1.5; }
+    .intro { font-size: 14px; line-height: 1.7; color: #cbd5e1; margin-bottom: 26px; }
+    
+    .card-box { background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(216, 178, 130, 0.3); border-radius: 18px; padding: 22px 24px; margin-bottom: 28px; border-left: 5px solid #D8B282; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13.5px; border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 10px; }
+    .info-row:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+    .info-label { color: #94a3b8; font-weight: 500; }
+    .info-value { color: #f8fafc; font-weight: 700; text-align: right; }
+    .cred-badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #050c15; background: linear-gradient(135deg, #F6E1C3 0%, #D8B282 100%); padding: 3px 10px; border-radius: 6px; box-shadow: 0 2px 8px rgba(216, 178, 130, 0.3); }
+
+    .benefit-section { margin-bottom: 30px; }
+    .benefit-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #D8B282; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .benefit-card { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px; }
+    .benefit-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(216, 178, 130, 0.15); border: 1px solid rgba(216, 178, 130, 0.4); display: flex; align-items: center; justify-content: center; font-size: 17px; shrink-0; }
+    .benefit-info { flex: 1; }
+    .benefit-name { font-size: 13.5px; font-weight: 700; color: #f8fafc; margin-bottom: 3px; }
+    .benefit-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+
+    .btn-wrap { text-align: center; margin: 34px 0 20px 0; }
+    .btn-primary { display: inline-block; background: linear-gradient(135deg, #F6E1C3 0%, #D8B282 50%, #C29B69 100%); color: #050c15 !important; font-weight: 900; font-size: 15.5px; text-decoration: none; padding: 16px 38px; border-radius: 9999px; box-shadow: 0 8px 24px rgba(216, 178, 130, 0.4); text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.2s; }
+    
+    .note { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.6; color: #94a3b8; margin-top: 24px; }
+    .footer { background: #050c15; padding: 28px; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 11.5px; line-height: 1.7; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    .footer-brand { color: #D8B282; font-weight: 800; font-size: 13.5px; margin-bottom: 6px; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="gold-badge">✦ KÍCH HOẠT THÀNH CÔNG GÓI VIONE PLATFORM ✦</div>
+      <h1 class="title">Chào Mừng Đến Với <span>ViOne CRM</span></h1>
+      <p class="subtitle">Nền Tảng Quản Trị & Chuyển Đổi Số Doanh Nghiệp Toàn Diện 5.0</p>
+    </div>
+
+    <div class="content">
+      <div class="greeting">Kính gửi Anh/Chị <strong>${fullName}</strong>,</div>
+      <div class="intro">
+        Hệ thống <strong>ViOne Platform</strong> xin trân trọng thông báo: Gói dịch vụ quản trị doanh nghiệp của Anh/Chị đại diện cho <strong>${cName}</strong> đã được <strong>kích hoạt thành công</strong>. Toàn bộ các đặc quyền và quyền truy cập Cổng Quản Trị Doanh Nghiệp (ViOne CRM) đã sẵn sàng để quý doanh nghiệp vận hành.
+      </div>
+
+      <!-- Thông tin gói dịch vụ & tài khoản -->
+      <div class="card-box">
+        <div class="info-row">
+          <span class="info-label">🏢 Doanh nghiệp:</span>
+          <span class="info-value">${cName}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">📦 Gói dịch vụ đã đăng ký:</span>
+          <span class="info-value" style="color: #D8B282; font-weight: 800;">${pName}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">👥 Hạn mức nhân sự (Slots):</span>
+          <span class="info-value">${slots} tài khoản thành viên</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">⏳ Thời hạn hiệu lực:</span>
+          <span class="info-value">${durationText}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🔑 Tài khoản quản trị CRM:</span>
+          <span class="info-value" style="color: #60a5fa; font-family: monospace;">${username || cleanTo}</span>
+        </div>
+        ${passwordRaw ? `
+        <div class="info-row">
+          <span class="info-label">🔒 Mật khẩu khởi tạo:</span>
+          <span class="info-value cred-badge">${passwordRaw}</span>
+        </div>
+        ` : ''}
+        <div class="info-row">
+          <span class="info-label">⚡ Trạng thái kích hoạt:</span>
+          <span class="info-value" style="color: #10b981; font-weight: 800;">✓ Đã mở khóa toàn quyền CRM</span>
+        </div>
+      </div>
+
+      <!-- Danh sách lợi ích nổi bật của gói cước -->
+      <div class="benefit-section">
+        <div class="benefit-title">✦ Lợi ích độc quyền khi sở hữu Gói ViOne Platform:</div>
+        <div class="benefit-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">⚙️</div>
+            <div class="benefit-info">
+              <div class="benefit-name">Quy trình & Vận hành Doanh nghiệp</div>
+              <div class="benefit-desc">Bảng Kanban quy trình, giao việc thông minh, chấm công định vị văn phòng và phê duyệt chi tiền nội bộ.</div>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">👥</div>
+            <div class="benefit-info">
+              <div class="benefit-name">Quản lý Thành viên & Phân quyền Phòng ban</div>
+              <div class="benefit-desc">Thêm mới nhân sự, cấp quyền theo vai trò chức danh, quản lý sơ đồ tổ chức công ty linh hoạt.</div>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">📁</div>
+            <div class="benefit-info">
+              <div class="benefit-name">Kho Tài liệu Số hóa Bảo mật</div>
+              <div class="benefit-desc">Lưu trữ, tra cứu và phân loại tài liệu hợp đồng, văn bản quy chế, tài liệu đào tạo nội bộ.</div>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">💼</div>
+            <div class="benefit-info">
+              <div class="benefit-name">Chăm sóc Khách hàng & CRM Thông minh</div>
+              <div class="benefit-desc">Quản lý danh sách khách hàng của công ty, phễu bán hàng, lịch sử chăm sóc và AI gợi ý kịch bản tư vấn.</div>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">📈</div>
+            <div class="benefit-info">
+              <div class="benefit-name">Thống kê Doanh thu & Báo cáo Tăng trưởng</div>
+              <div class="benefit-desc">Báo cáo doanh số bán hàng, dòng tiền thu chi của công ty minh bạch, trực quan theo thời gian thực.</div>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🌐</div>
+            <div class="benefit-info">
+              <div class="benefit-name">Kết nối Mạng lưới & Truyền thông B2B</div>
+              <div class="benefit-desc">Đăng tin bài truyền thông doanh nghiệp, danh thiếp số thông minh NFC/QR và kết nối đối tác giao thương.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nút đi đến CRM -->
+      <div class="btn-wrap">
+        <a href="${crmUrl}" class="btn-primary" target="_blank">🚀 Truy Cập Hệ Thống Quản Trị ViOne CRM Ngay</a>
+      </div>
+
+      <div class="note">
+        <strong>* Hướng dẫn bắt đầu nhanh:</strong> Anh/Chị vui lòng click vào nút trên để truy cập Cổng Quản Trị ViOne CRM. Đăng nhập bằng email <strong>${username || cleanTo}</strong> để tiến hành thiết lập phòng ban, mời nhân sự và số hóa quy trình vận hành.
+        <br><br>
+        <strong>* Hỗ trợ kỹ thuật 24/7:</strong> Nếu cần trợ giúp trong quá trình vận hành, vui lòng liên hệ Hotline ViOne Platform: <strong>1900 6868</strong> hoặc gửi yêu cầu về email: <strong>hotro@vione.vn</strong>.
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">VIONE PLATFORM — ENTERPRISE DIGITAL TRANSFORMATION</div>
+      <div>Trung Tâm Hỗ Trợ Khách Hàng Doanh Nghiệp · Hotline: 1900 6868 · Email: hotro@vione.vn</div>
+      <div style="margin-top: 5px;">Cổng thông tin & Nền tảng: <a href="${crmUrl}" style="color: #D8B282; text-decoration: none;">${crmUrl}</a></div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    if (this.transporter) {
+      try {
+        const fromAddr = this.getCleanFromEmail();
+        const info = await this.transporter.sendMail({
+          from: `"ViOne Platform — Quản Trị Doanh Nghiệp" <${fromAddr}>`,
+          to: cleanTo,
+          subject,
+          html,
+        });
+        this.logger.log(`Package subscription email sent to ${cleanTo} via SMTP. MessageId: ${info.messageId}`);
+        return { ok: true, message: 'Package subscription email sent successfully via SMTP' };
+      } catch (err: any) {
+        this.logger.error(`Failed to send package subscription email to ${cleanTo}: ${err.message}`, err.stack);
+      }
+    }
+
+    this.logger.log(
+      `[PACKAGE_SUBSCRIPTION_EMAIL_DISPATCHED] To: ${cleanTo} | Company: ${cName} | Plan: ${pName} | CRM: ${crmUrl}`,
+    );
+    return { ok: true, message: 'Package subscription email logged to audit stream' };
+  }
+
+  /**
+   * Gửi email thông tin tài khoản đăng nhập (Email + Password + Phân quyền) cho nhân viên nội bộ ViOne
+   */
+  async sendStaffAccountCredentialsEmail(options: {
+    to: string;
+    fullName: string;
+    username: string;
+    passwordRaw: string;
+    phone?: string;
+    roles: { code: string; name: string }[];
+    crmUrl?: string;
+  }): Promise<{ ok: boolean; message?: string }> {
+    const { to, fullName, username, passwordRaw, phone, roles } = options;
+    const cleanTo = (to || '').trim();
+    if (!cleanTo || !cleanTo.includes('@')) {
+      this.logger.warn(`Cannot send staff account email: invalid destination email "${cleanTo}"`);
+      return { ok: false, message: 'Invalid recipient email' };
+    }
+
+    const crmUrl = options.crmUrl || process.env.CRM_PUBLIC_URL || 'https://dev-vione-crm.14-225-217-232.sslip.io:5446';
+    const subject = `[ViOne CRM] Cấp tài khoản nhân viên ViOne — Thông tin đăng nhập của Anh/Chị ${fullName}`;
+
+    const rolesListHtml = roles && roles.length > 0
+      ? roles.map(r => `<span style="display:inline-block;background:#F6E1C3;color:#8C653B;font-weight:700;padding:4px 10px;border-radius:6px;margin:2px 4px 2px 0;font-size:12px;border:1px solid #D8B282;">${r.name}</span>`).join(' ')
+      : '<span style="color:#64748b;font-style:italic;">Nhân viên nền tảng ViOne</span>';
+
+    const html = `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0b111e; margin: 0; padding: 24px; color: #e2e8f0; }
+    .container { max-width: 620px; margin: 0 auto; background: #0f172a; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(216, 178, 130, 0.35); }
+    .header { background: linear-gradient(135deg, #050C15 0%, #162438 50%, #0d1726 100%); padding: 40px 30px; text-align: center; color: #ffffff; border-bottom: 2px solid #D8B282; }
+    .badge { display: inline-block; background: rgba(216, 178, 130, 0.15); border: 1px solid #D8B282; color: #F6E1C3; padding: 5px 16px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+    .title { font-size: 23px; font-weight: 900; margin: 0 0 10px 0; color: #F6E1C3; letter-spacing: 0.5px; }
+    .subtitle { font-size: 13.5px; color: #cbd5e1; margin: 0; line-height: 1.6; }
+    .content { padding: 32px 30px; background: #0f172a; }
+    .greeting { font-size: 16px; font-weight: 600; color: #f8fafc; margin-bottom: 16px; }
+    .intro { font-size: 14px; line-height: 1.65; color: #94a3b8; margin-bottom: 24px; }
+    .card-box { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(216, 178, 130, 0.25); border-radius: 14px; padding: 24px; margin-bottom: 24px; border-left: 4px solid #D8B282; }
+    .card-title { font-size: 13px; font-weight: 800; text-transform: uppercase; color: #F6E1C3; margin-bottom: 16px; letter-spacing: 0.8px; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 8px; }
+    .info-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .info-label { color: #94a3b8; font-weight: 500; }
+    .info-value { color: #f8fafc; font-weight: 700; word-break: break-all; }
+    .cred-highlight { background: rgba(216, 178, 130, 0.15); color: #F6E1C3; padding: 5px 12px; border-radius: 8px; font-family: monospace; font-size: 15px; font-weight: 800; border: 1px solid rgba(216, 178, 130, 0.4); }
+    .roles-wrap { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(216, 178, 130, 0.2); }
+    .btn-wrap { text-align: center; margin: 32px 0 24px 0; }
+    .btn-primary { display: inline-block; background: linear-gradient(135deg, #F6E1C3 0%, #D8B282 50%, #C29B69 100%); color: #050C15; font-weight: 800; font-size: 15px; text-decoration: none; padding: 14px 36px; border-radius: 9999px; box-shadow: 0 6px 20px rgba(216, 178, 130, 0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+    .note { font-size: 12.5px; color: #94a3b8; line-height: 1.6; background: rgba(30, 41, 59, 0.5); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .footer { background: #050C15; padding: 24px 30px; text-align: center; color: rgba(255, 255, 255, 0.4); font-size: 11.5px; line-height: 1.6; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+    .footer-brand { color: #D8B282; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">✦ TÀI KHOẢN NHÂN SỰ NỘI BỘ VIONE ✦</div>
+      <h1 class="title">CHÀO MỪNG ĐẾN VỚI HỆ THỐNG VIONE</h1>
+      <p class="subtitle">Tài khoản quản trị vận hành dành riêng cho nhân sự trực thuộc ViOne Corporation</p>
+    </div>
+
+    <div class="content">
+      <div class="greeting">Kính gửi Anh/Chị <strong>${fullName}</strong>,</div>
+      <div class="intro">
+        Ban Quản Trị ViOne vừa thiết lập và kích hoạt tài khoản nhân sự nội bộ cho Anh/Chị trên hệ thống <strong>ViOne CRM Enterprise</strong>.
+        Anh/Chị được phân quyền thực thi các nghiệp vụ theo nhóm quyền phòng ban chuyên môn.
+        <br><br>
+        Dưới đây là thông tin tài khoản để đăng nhập vào Cổng Quản Trị:
+      </div>
+
+      <div class="card-box">
+        <div class="card-title">🔐 Thông Tin Đăng Nhập Hệ Thống</div>
+        <div class="info-row">
+          <span class="info-label">Tên đăng nhập (Email):</span>
+          <span class="info-value cred-highlight">${username || cleanTo}</span>
+        </div>
+        ${phone ? `
+        <div class="info-row">
+          <span class="info-label">Số điện thoại liên hệ:</span>
+          <span class="info-value">${phone}</span>
+        </div>
+        ` : ''}
+        <div class="info-row">
+          <span class="info-label">Mật khẩu khởi tạo:</span>
+          <span class="info-value cred-highlight">${passwordRaw}</span>
+        </div>
+        <div class="roles-wrap">
+          <div style="font-size: 12px; color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">Nhóm Quyền & Vai Trò Được Cấp:</div>
+          <div>${rolesListHtml}</div>
+        </div>
+      </div>
+
+      <div class="btn-wrap">
+        <a href="${crmUrl}" class="btn-primary" target="_blank">🚀 Đăng Nhập Cổng Quản Trị ViOne CRM Ngay</a>
+      </div>
+
+      <div class="note">
+        <strong>* Lưu ý bảo mật:</strong> Để đảm bảo an toàn thông tin nội bộ của ViOne, Anh/Chị vui lòng đăng nhập và đổi mật khẩu mới trong lần truy cập đầu tiên.
+        <br><br>
+        <strong>* Chức năng chuyên môn:</strong> Khi đăng nhập, giao diện ViOne CRM sẽ tự động hiển thị các tính năng theo đúng các nhóm quyền đã được cấp (kết nối tin nhắn, quản lý tài khoản khách hàng, thống kê và xuất báo cáo tài chính).
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">VIONE CORPORATION — HỆ THỐNG CRM ENTERPRISE</div>
+      <div>Phòng Công Nghệ & Vận Hành Hệ Thống · Trụ Sở ViOne</div>
+      <div style="margin-top: 5px;">Cổng CRM: <a href="${crmUrl}" style="color: #D8B282; text-decoration: none;">${crmUrl}</a></div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    if (this.transporter) {
+      try {
+        const fromAddr = this.getCleanFromEmail();
+        const info = await this.transporter.sendMail({
+          from: `"Ban Quản Trị ViOne — Nhân Sự" <${fromAddr}>`,
+          to: cleanTo,
+          subject,
+          html,
+        });
+        this.logger.log(`Staff credentials email sent to ${cleanTo} via SMTP. MessageId: ${info.messageId}`);
+        return { ok: true, message: 'Staff credentials email sent successfully via SMTP' };
+      } catch (err: any) {
+        this.logger.error(`Failed to send staff credentials email to ${cleanTo}: ${err.message}`, err.stack);
+      }
+    }
+
+    this.logger.log(
+      `[STAFF_CREDENTIALS_EMAIL_DISPATCHED] To: ${cleanTo} | Name: ${fullName} | Username: ${username} | CRM: ${crmUrl}`,
+    );
+    return { ok: true, message: 'Staff credentials email logged to audit stream' };
   }
 }
 

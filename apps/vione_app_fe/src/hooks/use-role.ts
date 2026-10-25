@@ -18,12 +18,26 @@ export type CurrentUserInfo = {
 
 export type RoleState = {
   roles: AppRole[];
+  roleCodes: string[];
+  permissions: string[];
   srsRole: SrsRole;
   currentUser: CurrentUserInfo | null;
   /** Role Quản trị - Vai trò cao nhất toàn hệ thống */
   isQuanTri: boolean;
   /** Role Admin - Vai trò cao thứ hai toàn hệ thống (bao gồm Quản trị và Admin) */
   isAdmin: boolean;
+  /** Super Admin nền tảng ViOne */
+  isSuperAdmin: boolean;
+  /** Nhân viên / Chuyên viên Kế toán & Báo cáo Tài chính Nền tảng */
+  isFinanceStaff: boolean;
+  /** Nhân viên / Chuyên viên Vận hành, Quản lý tài khoản & CSKH Nền tảng */
+  isOperationsStaff: boolean;
+  /** Ban Lãnh đạo & Điều hành Nền tảng ViOne */
+  isExecutiveStaff: boolean;
+  /** Quyền tối thiểu: Kết nối nhắn tin & đàm thoại (luôn khả dụng cho nhân sự ViOne) */
+  canAccessChat: boolean;
+  /** Quyền xuất báo cáo tài chính & thống kê doanh thu */
+  canExportReports: boolean;
   /** @deprecated Dùng isQuanTri thay thế. Giữ lại để tương thích các component cũ */
   isPlatformAdmin: boolean;
   isModerator: boolean;
@@ -40,6 +54,8 @@ export type RoleState = {
   canManageEvents: boolean;
   canScanQR: boolean;
   canManageSystem: boolean;
+  /** Kiểm tra quyền cụ thể theo module:action */
+  hasPermission: (perm: string) => boolean;
   /**
    * Phân quyền dữ liệu: Không cho tài khoản khác chỉnh sửa bản ghi do chính tài khoản đó tạo ra
    * TRỪ KHI có role Quản trị hoặc role Admin mới được chỉnh sửa bản ghi của tài khoản khác.
@@ -55,9 +71,37 @@ export type RoleState = {
   reloadRole: () => Promise<void>;
 };
 
+/**
+ * Phát tín hiệu toàn hệ thống (Cross-Tab BroadcastChannel + Window Event)
+ * Bất cứ khi nào quyền của một tài khoản thay đổi, các giao diện đang mở sẽ tự động fetch lại và re-render ngay!
+ */
+export function notifyPermissionsUpdated(targetUserId?: string) {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("permissions-updated", { detail: { targetUserId } }));
+    window.dispatchEvent(new Event("role-changed"));
+    try {
+      localStorage.setItem("vione_rbac_last_sync", Date.now().toString());
+    } catch {}
+    if ("BroadcastChannel" in window) {
+      try {
+        const bc = new BroadcastChannel("vione_rbac_sync");
+        bc.postMessage({ type: "PERMISSIONS_UPDATED", targetUserId, timestamp: Date.now() });
+        bc.close();
+      } catch {}
+    }
+  }
+}
+
 // Fetches current user's roles from NestJS /users/me and member profile per SRS specification.
 export function useRole(): RoleState {
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [roleCodes, setRoleCodes] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<string[]>([]);
+  const [isSuperAdminState, setIsSuperAdminState] = useState(false);
+  const [isFinanceStaffState, setIsFinanceStaffState] = useState(false);
+  const [isOperationsStaffState, setIsOperationsStaffState] = useState(false);
+  const [isExecutiveStaffState, setIsExecutiveStaffState] = useState(false);
+  const [canExportReportsState, setCanExportReportsState] = useState(false);
   const [srsRole, setSrsRole] = useState<SrsRole>("HVT");
   const [currentUser, setCurrentUser] = useState<CurrentUserInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -147,9 +191,16 @@ export function useRole(): RoleState {
     try {
       let me: any = null;
       let member: any = null;
+      let rbacCtx: any = null;
 
       try {
         me = await fetchNestApi("/users/me");
+      } catch {
+        // ignore
+      }
+
+      try {
+        rbacCtx = await fetchNestApi("/roles/my-permissions");
       } catch {
         // ignore
       }
@@ -168,11 +219,29 @@ export function useRole(): RoleState {
       if (me?.role) roleArr.push(me.role);
       if (member?.executiveRole) roleArr.push(member.executiveRole);
 
+      // Bổ sung roles từ RBAC context nếu có
+      if (rbacCtx?.roleCodes && Array.isArray(rbacCtx.roleCodes)) {
+        roleArr.push(...rbacCtx.roleCodes);
+        setRoleCodes(rbacCtx.roleCodes);
+      } else {
+        setRoleCodes(roleArr);
+      }
+
+      if (rbacCtx?.permissions && Array.isArray(rbacCtx.permissions)) {
+        setPermissions(rbacCtx.permissions);
+      }
+
+      setIsSuperAdminState(Boolean(rbacCtx?.isSuperAdmin));
+      setIsFinanceStaffState(Boolean(rbacCtx?.isFinanceStaff));
+      setIsOperationsStaffState(Boolean(rbacCtx?.isOperationsStaff));
+      setIsExecutiveStaffState(Boolean(rbacCtx?.isExecutiveStaff));
+      setCanExportReportsState(Boolean(rbacCtx?.canExportReports));
+
       const computedSrs = resolveSrsRole(roleArr, me, member);
       setSrsRole(computedSrs);
 
       const set = new Set<AppRole>(roleArr as AppRole[]);
-      if (computedSrs === "ADM") {
+      if (computedSrs === "ADM" || rbacCtx?.isSuperAdmin) {
         set.add("quan_tri");
         set.add("admin");
       } else if (computedSrs === "BQT") {
@@ -195,6 +264,8 @@ export function useRole(): RoleState {
       }
     } catch {
       setRoles([]);
+      setRoleCodes([]);
+      setPermissions([]);
       setSrsRole("HVT");
       setCurrentUser(null);
     } finally {
@@ -205,22 +276,44 @@ export function useRole(): RoleState {
   useEffect(() => {
     syncUserRoles();
 
-    // Lắng nghe sự kiện thay đổi quyền hoặc tài khoản để re-render và ẩn giao diện ngay lập tức
+    // Lắng nghe sự kiện thay đổi quyền hoặc tài khoản để re-render và ẩn/hiện giao diện ngay lập tức
     const handleRoleChanged = () => {
       syncUserRoles();
     };
 
+    // Cross-Tab Reactive RBAC sync qua BroadcastChannel
+    let rbacChannel: BroadcastChannel | null = null;
     if (typeof window !== "undefined") {
       window.addEventListener("role-changed", handleRoleChanged);
+      window.addEventListener("permissions-updated", handleRoleChanged);
       window.addEventListener("auth-changed", handleRoleChanged);
       window.addEventListener("storage", handleRoleChanged);
+      window.addEventListener("focus", handleRoleChanged);
+
+      if ("BroadcastChannel" in window) {
+        try {
+          rbacChannel = new BroadcastChannel("vione_rbac_sync");
+          rbacChannel.onmessage = (event) => {
+            if (event.data?.type === "PERMISSIONS_UPDATED") {
+              syncUserRoles();
+            }
+          };
+        } catch {}
+      }
     }
 
     return () => {
       if (typeof window !== "undefined") {
         window.removeEventListener("role-changed", handleRoleChanged);
+        window.removeEventListener("permissions-updated", handleRoleChanged);
         window.removeEventListener("auth-changed", handleRoleChanged);
         window.removeEventListener("storage", handleRoleChanged);
+        window.removeEventListener("focus", handleRoleChanged);
+      }
+      if (rbacChannel) {
+        try {
+          rbacChannel.close();
+        } catch {}
       }
     };
   }, [syncUserRoles]);
@@ -284,10 +377,19 @@ export function useRole(): RoleState {
 
   return {
     roles,
+    roleCodes,
+    permissions,
     srsRole,
     currentUser,
     isQuanTri,
     isAdmin,
+    isSuperAdmin: isSuperAdminState || isQuanTri,
+    isFinanceStaff: isFinanceStaffState || isQuanTri || isAdmin || canManageFinance,
+    isOperationsStaff: isOperationsStaffState || isQuanTri || isAdmin || canManageMembers,
+    isExecutiveStaff: isExecutiveStaffState || isQuanTri || isAdmin,
+    canAccessChat: true,
+    canExportReports: canExportReportsState || isQuanTri || isAdmin || canManageFinance || permissions.includes("finance:export") || permissions.includes("statistics:view_platform"),
+    hasPermission: (perm: string) => isQuanTri || isAdmin || permissions.includes(perm),
     isPlatformAdmin,
     isModerator,
     isBQT,

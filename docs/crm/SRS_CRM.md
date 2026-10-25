@@ -26,6 +26,11 @@
 | **UC-CRM-12** | Quản trị Giới hạn Nhân sự & Gói Cước Doanh nghiệp (Slot Control) | Super Admin, Community Admin | P0 - Bắt buộc | Hoạt động |
 | **UC-CRM-13** | Ma trận Phân quyền Động 4 cấp Nền tảng (Granular RBAC System) | Super Admin, Community Admin | P0 - Bắt buộc | Hoạt động |
 | **UC-CRM-14** | Trung tâm Thống kê Toàn diện 5 Phân hệ & Giao việc Đồng loạt | Ban Lãnh đạo, Quản lý, Super Admin | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-15** | Tự Động Gửi Email Thông Tin Lợi Ích Gói & Link Truy Cập CRM Khi Mua Gói | Khách hàng Doanh nghiệp, Hệ thống Mail | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-16** | Phân Định Giao Diện CRM Chuẩn Theo Role Quyền (Super Admin vs Doanh Nghiệp Mua Gói) | Doanh nghiệp mua gói, Ban Quản trị | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-17** | Giám Sát Chi Tiết Mức Độ Hoạt Động Doanh Nghiệp ViOne Platform & Quản Lý Khách Hàng Nền Tảng | Super Admin Nền tảng | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-18** | Phân Quyền Hai Tầng Hệ Sinh Thái ViOne (Tenant Internal RBAC & Platform Departments) | Chủ Doanh nghiệp, Nhân sự, Super Admin & Bộ phận ViOne | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-19** | Cấp Tài Khoản Nhân Viên Nội Bộ ViOne, Phân Quyền Đa Nhóm & Phản Ứng Rerender Tức Thì | Quản Trị Viên ViOne, Nhân Viên ViOne | P0 - Bắt buộc | Hoạt động |
 
 ---
 
@@ -172,3 +177,151 @@
 * **Giao việc Đa đối tượng (Bulk Task Assignment):**
   - Component `UserMultiSelect.tsx` hỗ trợ tìm kiếm nhân sự theo tên/email, chọn 1 hoặc nhiều người đồng thời, hỗ trợ chọn tất cả (Select All).
   - API `POST /api/companies/:id/tasks/bulk` tự động khởi tạo nhiệm vụ riêng lẻ đồng loạt cho tất cả các nhân sự được chọn, đảm bảo tính phân định trách nhiệm minh bạch.
+
+---
+
+### UC-CRM-15: Tự Động Gửi Email Thông Tin Lợi Ích Gói & Link Truy Cập CRM Khi Mua Gói ViOne Platform
+* **Tác nhân:** Khách hàng Doanh nghiệp mua gói ViOne Platform, Hệ thống Mail Service (`apps/vione_app_be`).
+* **Mục tiêu:** Khi khách hàng mua gói ViOne Platform, tự động gửi email chào mừng và giới thiệu toàn diện lợi ích của gói dịch vụ, cung cấp link trực tiếp truy cập phân hệ CRM để quản trị doanh nghiệp.
+* **Luồng sự kiện chính:**
+  1. Người dùng thực hiện đăng ký gói ViOne Platform trong `SubscribePackageModal.tsx` hoặc Super Admin phê duyệt kích hoạt gói.
+  2. Backend NestJS (`CompaniesService.subscribePlatformPackage`) lưu bản ghi vào `public.vione_community_subscriptions`.
+  3. Hệ thống kích hoạt `MailService.sendPackageSubscriptionEmail`:
+     - Thiết lập template email thương hiệu chuẩn phong cách Luxury Obsidian & Gold (`#D8B282`, `#0B0F17`).
+     - Nội dung thư liệt kê chi tiết các lợi ích vượt trội mở khóa:
+       * Hạn mức nhân sự & thành viên doanh nghiệp được cấp phép.
+       * Quản lý tài liệu số hóa bảo mật cao.
+       * Quản trị quy trình & công việc Kanban.
+       * Chấm công thông minh & quản lý ca làm việc.
+       * Phê duyệt chi tiền 3 cấp tích hợp VietQR.
+       * Quản lý chăm sóc khách hàng (CRM Leads & Clients).
+       * Báo cáo thống kê doanh thu và phân tích chuyên sâu.
+       * Trợ lý trí tuệ nhân tạo AI hỗ trợ vận hành.
+       * Mạng lưới kết nối giao thương B2B toàn quốc.
+     - Cung cấp nút CTA dẫn trực tiếp đến ViOne CRM (`https://vione.viconnect.vn/` hoặc URL dev server).
+     - Ghi nhận nhật ký gửi email (Audit logs) và SMTP fallback.
+  4. Khách hàng nhận email, bấm liên kết để đăng nhập và bắt đầu quản trị doanh nghiệp trên CRM.
+
+---
+
+### UC-CRM-16: Phân Định Giao Diện CRM Chuẩn Theo Role Quyền (Super Admin vs Doanh Nghiệp Mua Gói)
+* **Tác nhân:** Tài khoản Doanh nghiệp mua gói và được mở khóa CRM, Nhân viên công ty, Super Admin Nền tảng.
+* **Mục tiêu:** Thiết kế lại toàn bộ luồng hiển thị và điều hướng của CRM ViOne, phân định rạch ròi giữa quyền quản trị nền tảng tổng và quyền của doanh nghiệp thuê gói (Tenant), gói gọn các chức năng vận hành nội bộ vào một nhóm quy trình khoa học.
+* **Cấu trúc nhóm chức năng dành cho Doanh nghiệp Mua Gói & Mở Khóa CRM:**
+  1. **Bảng Điều Khiển Doanh Nghiệp (`/`):** Dashboard KPI thời gian thực của công ty.
+  2. **Menu Cây Tổ Chức Doanh Nghiệp (`EnterpriseTreeMenu.tsx`):** Quản lý nhân viên, giao việc, hồ sơ công ty.
+  3. **Nhóm 1: QUY TRÌNH & VẬN HÀNH (Gói gọn toàn bộ vận hành doanh nghiệp theo BRD):**
+     - Quản lý Thành viên & Nhân sự (`/companies`): Thêm mới nhân viên, phân bổ phòng ban/chức vụ.
+     - Quản lý Tài liệu Số hóa (`/documents`): Lưu trữ, phân quyền đọc/ghi hồ sơ tài liệu.
+     - Quy trình & Công việc (`/workflow`): Bảng Kanban tiến độ, hạn chót, checklist nghiệm thu.
+     - Chấm công & Ca làm việc (`/attendance`): Điểm danh thực tế, theo dõi chuyên cần.
+     - Phê duyệt Chi tiền (`/payment-approvals`): Quy trình duyệt chi Maker-Checker-Approver.
+  4. **Nhóm 2: CHĂM SÓC KHÁCH HÀNG & DOANH THU:**
+     - Chăm sóc Khách hàng CRM (`/members`): Danh bạ khách hàng/leads, lịch sử tiếp cận.
+     - Thống kê Doanh thu Công ty (`/fees`): Dòng tiền, hóa đơn, doanh số.
+     - Trợ lý Trí tuệ Nhân tạo AI (`/ai`): Phân tích dữ liệu và gợi ý quyết định.
+  5. **Nhóm 3: KẾT NỐI & TRUYỀN THÔNG:**
+     - Đăng tin & Khoảnh khắc (`/news`): Đăng tin nội bộ và tin tức truyền thông.
+     - Kết nối Đối tác B2B (`/business-connect/connections`): Mạng lưới giao thương liên doanh nghiệp.
+     - Thẻ Thông minh NFC & QR (`/admin/business-cards`): Danh thiếp điện tử số hóa.
+     - Sàn Sản phẩm & Dịch vụ (`/marketplace`): Gian hàng giới thiệu giải pháp sản phẩm.
+  6. **Nhóm 4: HỒ SƠ DOANH NGHIỆP:**
+     - Hồ sơ & Cài đặt Doanh nghiệp (`/settings`): Thông tin pháp nhân, thương hiệu, cấu hình.
+
+---
+
+### UC-CRM-17: Giám Sát Chi Tiết Mức Độ Hoạt Động Doanh Nghiệp ViOne Platform & Quản Lý Khách Hàng Nền Tảng
+* **Tác nhân:** Super Admin (Ban Quản trị Nền tảng ViOne).
+* **Mục tiêu:** Cung cấp bức tranh tổng thể về sức khỏe hệ thống, quản lý danh sách khách hàng doanh nghiệp, theo dõi số lượng người dùng mới và giám sát chi tiết mức độ hoạt động của các công ty sở hữu gói ViOne Platform.
+* **Luồng xử lý chính:**
+  1. Super Admin có quyền chuyển đổi chế độ xem Sidebar (`Nền Tảng` vs `Doanh Nghiệp`).
+  2. Tại giao diện Nền tảng (`/platform`), Super Admin quản lý 2 phân hệ qua tab điều hướng:
+     - **Tab 1: Giám Sát Doanh Nghiệp & Tăng Trưởng (`PlatformActivityMonitoring.tsx`):**
+       * 4 Thẻ KPI: Tổng số doanh nghiệp trên hệ thống, Số gói đang kích hoạt (Active Subscriptions), Người dùng mới tham gia tháng này, Số gói hết hạn/chờ gia hạn.
+       * Biểu đồ diện tích tăng trưởng người dùng 6 tháng liên tiếp (6-Month User Growth Trend Area Chart).
+       * Bảng theo dõi chi tiết mức độ hoạt động từng công ty: Tên doanh nghiệp, Trạng thái gói cước, Hạn sử dụng, Thước đo sức khỏe (Health Score: Cực tốt, Tích cực, Cần cải thiện, Nguy cơ), Số nhân sự, Số đầu việc (Tasks), Số tài liệu (Docs), Số khách hàng (CRM Clients).
+       * Modal quản trị gói cước trực tiếp: Cho phép gia hạn ngày hết hạn, đổi gói cước, điều chỉnh giới hạn slot nhân sự (`max_slots`), mở khóa/tạm khóa quyền truy cập CRM (`PATCH /api/companies/:id/subscription`).
+     - **Tab 2: Danh Mục Chức Năng Nền Tảng & RBAC (`platform.index.tsx`):**
+       * Ma trận phân quyền 27 quyền hạt nhân động và quản lý vai trò nền tảng.
+  3. Quản trị Khách hàng Nền tảng (`/members`): Tra cứu, phân loại và hỗ trợ khách hàng toàn hệ sinh thái.
+
+---
+
+### UC-CRM-18: Phân Quyền Hai Tầng Hệ Sinh Thái ViOne (Two-Tier RBAC: Tenant Internal Roles & Platform Department RBAC)
+* **Tác nhân:** Chủ Doanh nghiệp (Company Owner), Quản trị viên/Trưởng bộ phận Doanh nghiệp (Manager), Nhân viên (Staff), Ban Quản Trị Hệ Thống (Super Admin), Các bộ phận nghiệp vụ Nền tảng ViOne (Executive, Operations, Finance).
+* **Mục tiêu:** 
+  1. Đáp ứng phân quyền chặt chẽ nội bộ cho khách hàng khi mua gói ViOne Platform: Khi cả công ty vào dùng ViOne, phân biệt rõ người là nhân viên thực thi chỉ nhận việc và người có quyền quản trị, giao việc, phân quyền phòng ban, xem tài chính, quản lý tài liệu.
+  2. Phân định rõ ràng quyền hạn giữa các bộ phận nội bộ của ViOne Platform (Quản trị hệ thống, Ban lãnh đạo điều hành, Bộ phận Vận hành & CSKH, Bộ phận Kế toán & Tài chính nền tảng) qua ma trận phân quyền RBAC thời gian thực.
+* **Cấu trúc phân quyền:**
+  1. **Tầng 1: Phân quyền nội bộ công ty của khách hàng (Tenant Internal RBAC):**
+     - **Chủ Doanh Nghiệp (Company Owner / CEO)**:
+       * Nắm giữ tài khoản đăng ký gói cước, toàn quyền tối cao trong công ty.
+       * Quản lý thành viên, thêm mới nhân viên, thiết lập phòng ban, cấu hình hồ sơ công ty.
+       * Xem báo cáo doanh thu tài chính, phê duyệt các tờ trình chi tiền.
+       * Phân quyền quản trị cho các nhân sự cấp quản lý.
+     - **Quản Trị Viên / Trưởng Bộ Phận (Company Admin / Manager)**:
+       * Vai trò `role = 'manager'`.
+       * Được cấp các quyền quản trị: Giao việc cho nhân viên (`can_assign_tasks = true`), quản lý & phân công nhiệm vụ Kanban, quản lý thành viên phòng ban (`can_manage_members = true`), quản lý tài liệu số hóa (`can_manage_docs = true`), quản lý khách hàng CRM (`can_manage_crm = true`).
+       * Hiển thị nút `+ Giao Việc Mới` trên màn hình Công việc và nút `Giao việc` trên từng nhân sự.
+     - **Nhân Viên Thực Thi (Staff / Employee)**:
+       * Vai trò `role = 'staff'`.
+       * Nhận và thực hiện các nhiệm vụ được giao, cập nhật checklist tiến độ công việc, chấm công hàng ngày, xem tài liệu dùng chung.
+       * Mặc định **KHÔNG CÓ QUYỀN** giao việc cho nhân viên khác (`can_assign_tasks = false` -> ẩn nút `+ Giao Việc Mới`).
+       * Mặc định **KHÔNG CÓ QUYỀN** xem doanh thu, duyệt chi hay quản lý nhân sự khác trừ khi được Chủ doanh nghiệp tích chọn cấp quyền riêng lẻ.
+     - **Cơ chế cấp quyền linh hoạt cho từng nhân viên (`CompanyEmployeesTab.tsx`)**:
+       * Modal thêm nhân viên mới và Modal chỉnh sửa vai trò: Cung cấp 5 cờ quyền hạt nhân độc lập:
+         - `canAssignTasks`: Quyền giao việc cho nhân sự khác.
+         - `canManageMembers`: Quyền thêm và quản lý nhân viên công ty.
+         - `canManageFinance`: Quyền xem tài chính, doanh thu và duyệt chi tiền.
+         - `canManageDocs`: Quyền quản lý tài liệu số hóa.
+         - `canManageCrm`: Quyền quản lý danh bạ khách hàng CRM.
+       * Backend lưu trữ trong bảng `public.company_employees` và đồng bộ vào API quyền hiệu lực `GET /api/roles/my-permissions`.
+  2. **Tầng 2: Phân quyền các bộ phận nội bộ ViOne Platform (Platform Department RBAC):**
+     - **Ban Quản Trị Hệ Thống (`super_admin` - Level 1)**: Toàn quyền điều hành toàn hệ sinh thái ViOne, quản trị ma trận RBAC, cấu hình giá và slots gói cước, theo dõi audit logs kiểm toán.
+     - **Ban Lãnh Đạo & Điều Hành (`platform_executive` - Level 2)**: Giám sát toàn diện báo cáo thống kê tăng trưởng, biểu đồ người dùng mới, theo dõi chi tiết mức độ hoạt động và điểm sức khỏe của tất cả các công ty sở hữu gói ViOne Platform, giám sát doanh thu tổng thể.
+     - **Bộ Phận Vận Hành & CSKH (`platform_operations` - Level 3)**: Quản lý danh mục khách hàng, doanh nghiệp (`/companies`), hỗ trợ mở khóa CRM, kích hoạt dùng thử, tiếp nhận và hỗ trợ kỹ thuật khách hàng toàn hệ thống.
+     - **Bộ Phận Kế Toán & Tài Chính Nền Tảng (`platform_finance` - Level 3)**: Quản lý danh mục gói cước (`/segments`), phê duyệt đơn hàng đăng ký/gia hạn gói ViOne Platform (`/payment-approvals`), đối soát dòng tiền thanh toán và báo cáo doanh thu tài chính platform (`/finance-report`).
+     - **Ma trận phân quyền RBAC thời gian thực (`/platform/permissions`)**:
+       * Lưu trữ 100% trong PostgreSQL (`public.platform_roles`, `public.platform_permissions`, `public.platform_role_permissions`).
+       * Cho phép Quản trị viên ViOne xem và toggle bật/tắt tức thì từng quyền cho từng bộ phận với độ trễ 0 giây.
+
+---
+
+### UC-CRM-19: Cấp Tài Khoản Nhân Viên Nội Bộ ViOne, Phân Quyền Đa Nhóm & Phản Ứng Rerender Tức Thì
+* **Tác nhân:** Ban Quản Trị ViOne (Super Admin, Quản trị viên hệ thống), Nhân viên nội bộ ViOne.
+* **Mục tiêu:** 
+  1. Cung cấp tính năng cấp tài khoản CRM dành riêng cho nhân viên thuộc công ty ViOne: Quản trị viên nhập Email hoặc Số điện thoại của nhân viên, hệ thống tự động khởi tạo tài khoản và tự động gửi email thông báo thông tin tài khoản (Tên đăng nhập, Mật khẩu, Danh sách nhóm quyền, Link đăng nhập CRM).
+  2. Phân quyền đa nhóm linh hoạt (Multi-Role Support): Một tài khoản nhân viên có thể đồng thời thuộc nhiều nhóm quyền (ví dụ: vừa thuộc nhóm Thống kê báo cáo tài chính `platform_finance`, vừa thuộc nhóm Quản lý tài khoản & vận hành `platform_operations`).
+  3. Đảm bảo các chức năng tối thiểu cốt lõi: Mọi nhân viên hợp lệ đều có quyền Kết nối nhắn tin (`/messages`), quyền Xuất báo cáo được cấp tự động tương ứng theo nhóm quyền (ví dụ có quyền tài chính sẽ được phép xuất Excel/PDF báo cáo tài chính).
+  4. Cơ chế phản ứng tức thì (Reactive Rerendering): Khi quản trị viên thay đổi phân quyền của một tài khoản, giao diện của tài khoản đó tự động cập nhật và rerender lại ngay lập tức trên mọi tab trình duyệt mà không cần tải lại trang (F5).
+* **Cấu trúc lưu trữ CSDL:**
+  - Bảng gán đa quyền: `public.platform_user_roles (id uuid, user_id uuid, role_code text, assigned_by uuid, assigned_at timestamptz)` với ràng buộc UNIQUE `(user_id, role_code)`.
+  - Hỗ trợ 4 nhóm quyền chuyên biệt cho nhân sự ViOne:
+    * `super_admin`: Toàn quyền tối cao quản trị toàn hệ sinh thái.
+    * `platform_executive`: Ban Lãnh đạo & Điều hành (giám sát tăng trưởng, báo cáo KPI, giám sát doanh nghiệp).
+    * `platform_operations`: Bộ phận Vận hành & Quản lý tài khoản (quản lý doanh nghiệp, khách hàng, mở khóa CRM, quản lý nhân sự nền tảng).
+    * `platform_finance`: Bộ phận Kế toán & Tài chính (quản lý gói cước, đối soát dòng tiền, xuất báo cáo tài chính).
+* **Luồng xử lý chính:**
+  1. **Quản trị viên cấp tài khoản nhân viên (`PlatformStaffManagement.tsx`):**
+     - Quản trị viên truy cập `/platform/admins` hoặc Tab `Cấp & Quản Lý Tài Khoản Nhân Viên ViOne` tại `/platform`.
+     - Bấm nút "+ Cấp Tài Khoản Nhân Viên Mới".
+     - Nhập Họ và tên, Email (bắt buộc), Số điện thoại (tùy chọn), Mật khẩu (có nút sinh ngẫu nhiên an toàn hoặc tự đặt).
+     - Tích chọn một hoặc NHIỀU nhóm quyền đồng thời qua các thẻ Checkbox trực quan (`platform_finance`, `platform_operations`, `platform_executive`, `super_admin`).
+     - Tích chọn "Tự động gửi email thông tin đăng nhập cho nhân viên".
+     - Bấm "Xác Nhận & Cấp Tài Khoản": Gọi API `POST /api/roles/staff-accounts`.
+  2. **Xử lý Backend & Tự động gửi Email (`RolesService.provisionStaffAccount`):**
+     - Backend kiểm tra trùng lặp email, tạo hoặc cập nhật tài khoản trong `public.vione_users`, đồng bộ `auth.users` và `public.user_profiles`.
+     - Ghi nhận đồng thời các nhóm quyền vào `public.platform_user_roles`.
+     - Kích hoạt `MailService.sendStaffAccountCredentialsEmail`: Gửi email giao diện Obsidian & Gold sang trọng, cung cấp tên đăng nhập, mật khẩu tạm thời, bảng tổng hợp các quyền hạn được cấp và nút liên kết trực tiếp vào CRM.
+  3. **Hiển thị chức năng theo Role & Chức năng tối thiểu:**
+     - Khi nhân viên đăng nhập, `useRole` hook gọi `GET /api/roles/my-permissions` trả về ngữ cảnh RBAC:
+       * `roleCodes`: Danh sách tất cả các role nhân viên nắm giữ.
+       * `isSuperAdmin`, `isFinanceStaff`, `isOperationsStaff`, `isExecutiveStaff`.
+       * `canAccessChat = true`: Luôn mở phân hệ "Kết Nối Nhắn Tin" (`/messages`) trên Sidebar.
+       * `canExportReports`: True nếu tài khoản có nhóm quyền tài chính hoặc quyền xuất báo cáo. Nút xuất Excel/CSV và PDF tại `/finance-report` tự động bật/tắt theo cờ này.
+       * Sidebar hiển thị đồng thời cả suite "Quản trị Khách Hàng & Doanh Nghiệp" lẫn suite "Gói Dịch Vụ & Doanh Thu" nếu nhân viên có cả 2 nhóm quyền.
+  4. **Cơ chế Reactive Permission Rerendering:**
+     - Sử dụng `BroadcastChannel('vione_rbac_sync')` kết hợp `window.dispatchEvent(new CustomEvent('permissions-updated'))`.
+     - Khi admin thêm mới hoặc cập nhật quyền của nhân viên, hệ thống phát tín hiệu qua BroadcastChannel.
+     - Mọi tab đang mở của người dùng tự động bắt sự kiện, gọi lại `GET /api/roles/my-permissions` và cập nhật state React tức thì, giao diện và Sidebar tự động rerender tương ứng mà người dùng không cần reload trang.
+

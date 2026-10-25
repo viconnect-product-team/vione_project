@@ -183,9 +183,14 @@ const ACTION_LABELS: Record<string, string> = {
   export: "Xuất dữ liệu",
 };
 
+import { useState } from "react";
+import { PlatformActivityMonitoring } from "@/components/platform/PlatformActivityMonitoring";
+import { PlatformStaffManagement } from "@/components/platform/PlatformStaffManagement";
+
 function PlatformModulesPage() {
   const t = useT();
   const { isAdmin, loading: roleLoading } = useRole();
+  const [activeTab, setActiveTab] = useState<"monitoring" | "staff" | "modules">("monitoring");
 
   if (!roleLoading && !isAdmin) {
     return (
@@ -201,20 +206,76 @@ function PlatformModulesPage() {
   return (
     <PlatformShell>
       <PageHeader
-        title="Danh Mục Chức Năng Nền Tảng Doanh Nghiệp"
-        subtitle="Quản lý toàn diện các phân hệ cốt lõi ViOne Platform và thiết lập phân quyền thao tác RBAC chuẩn hóa theo từng chức năng"
+        title="Trung Tâm Điều Hành & Giám Sát Nền Tảng ViOne Platform"
+        subtitle="Quản trị khách hàng doanh nghiệp, theo dõi mức độ hoạt động của các công ty có gói ViOne, thống kê tăng trưởng người tham gia mới và phân quyền hệ thống."
         actions={
-          <Link
-            to="/platform/permissions"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] hover:brightness-105 transition-all"
-          >
-            <KeyRound className="h-4 w-4" /> Ma Trận Phân Quyền RBAC
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/companies"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-700 transition-all"
+            >
+              <Building2 className="h-4 w-4 text-amber-400" /> Quản Lý Doanh Nghiệp
+            </Link>
+            <Link
+              to="/platform/permissions"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-[var(--shadow-glow)] hover:brightness-105 transition-all"
+            >
+              <KeyRound className="h-4 w-4" /> Ma Trận RBAC
+            </Link>
+          </div>
         }
       />
 
-      {/* Thống kê nhanh nền tảng */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-4">
+      {/* Tabs navigation */}
+      <div className="flex items-center gap-2 border-b border-border mb-6">
+        <button
+          type="button"
+          onClick={() => setActiveTab("monitoring")}
+          className={`flex items-center gap-2 pb-3 px-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === "monitoring"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Activity className="h-4 w-4" />
+          <span>Giám Sát Doanh Nghiệp & Tăng Trưởng</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("staff")}
+          className={`flex items-center gap-2 pb-3 px-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === "staff"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Users className="h-4 w-4" />
+          <span>Cấp & Quản Lý Tài Khoản Nhân Viên ViOne</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("modules")}
+          className={`flex items-center gap-2 pb-3 px-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === "modules"
+              ? "border-amber-400 text-amber-400"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Boxes className="h-4 w-4" />
+          <span>Danh Mục Chức Năng Nền Tảng & RBAC</span>
+        </button>
+      </div>
+
+      {activeTab === "monitoring" ? (
+        <PlatformActivityMonitoring />
+      ) : activeTab === "staff" ? (
+        <PlatformStaffManagement />
+      ) : (
+        <>
+          {/* Thống kê nhanh nền tảng */}
+          <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <StatCard
           label="Chức Năng Nền Tảng"
           value={PLATFORM_MODULES.length}
@@ -330,6 +391,8 @@ function PlatformModulesPage() {
           );
         })}
       </div>
+      </>
+      )}
     </PlatformShell>
   );
 }
