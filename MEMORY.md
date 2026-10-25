@@ -1,5 +1,82 @@
 # System Memory & Architecture
 
+## 0.000. NÂNG CẤP TOÀN DIỆN NỀN TẢNG SAAS VIONE: MULTI-LEVEL ADMIN, SLOT CONTROL, GRANULAR RBAC, STATISTICS HUB & BULK OPERATIONS (THÁNG 10/2026)
+- **1. Kiến Trúc Phân Cấp 3 Tầng Quản Trị (Multi-level Admin Structure)**:
+  * **Tầng 1 - Super Admin (Nền tảng tổng ViOne)**:
+    - Quản trị toàn bộ hệ sinh thái, cấu hình các gói dịch vụ (`public.vione_subscription_packages`), cấp phép cộng đồng, giám sát doanh thu SaaS toàn hệ thống qua API `/analytics/platform`.
+  * **Tầng 2 - Community Admin / Chủ Doanh Nghiệp (B2B Enterprise Tenant)**:
+    - Quản lý nội bộ cộng đồng/doanh nghiệp, quản lý nhân viên (`public.company_employees`), phân quyền nội bộ theo gói đăng ký, theo dõi giới hạn slot thành viên (`max_slots`).
+  * **Tầng 3 - App User & Employee (Người dùng cuối / Nhân viên)**:
+    - Sử dụng App ViOne (PWA & Mobile) để nhận nhiệm vụ, chấm công, quét danh thiếp điện tử, kết nối đối tác.
+- **2. Cơ Chế Giới Hạn Thành Viên Theo Gói (License & Subscription / Slot Control)**:
+  * **Cơ sở dữ liệu**:
+    - Bảng `public.vione_subscription_packages`: Định nghĩa 3 gói chuẩn: Free Starter (10 slots), Business Pro (50 slots), Enterprise VIP (200 slots).
+    - Bảng `public.vione_community_subscriptions`: Bổ sung cột `max_slots` và `package_id`.
+  * **Backend Guard (`companies.service.ts`)**:
+    - Hàm `addCompanyEmployee`: Đếm số nhân sự hiện có trong `public.company_employees`. Nếu `currentCount >= maxSlots`, chặn thêm và ném lỗi `BadRequestException` với thông báo yêu cầu nâng cấp gói.
+    - Hàm `getCompanySlotUsage`: Trả về `usedSlots`, `maxSlots`, `remainingSlots`, `percentage`, `isFull`.
+    - API: `GET /companies/packages`, `GET /companies/:id/slot-usage`.
+  * **Giao diện (`CompanyEmployeesTab.tsx`)**:
+    - Hiển thị thanh tiến trình Thước đo Slot sử dụng, tỷ lệ phần trăm, số lượng nhân sự còn lại và cảnh báo nâng cấp khi sắp hết slot.
+- **3. Làm Mới Hoàn Toàn Hệ Thống Phân Quyền Hạt Nhân (Granular RBAC System - Zero-Mock Data)**:
+  * **Cơ sở dữ liệu PostgreSQL**:
+    - `public.platform_roles`: Bảng vai trò động (`super_admin`, `community_admin`, `manager`, `staff` và các custom roles).
+    - `public.platform_permissions`: Bảng 27 quyền hạt nhân chia làm 8 module chức năng (`tasks`, `attendance`, `employees`, `roles`, `finance`, `statistics`, `subscriptions`, `settings`).
+    - `public.platform_role_permissions`: Bảng liên kết ma trận n-n giữa vai trò và quyền hạn.
+  * **Backend Module (`RolesModule`)**:
+    - `GET /roles`: Danh sách vai trò.
+    - `GET /roles/permissions-matrix`: Ma trận phân quyền đầy đủ cho toàn bộ hệ thống.
+    - `PUT /roles/:id/permissions`: Cập nhật trực tiếp danh sách quyền hạn của một vai trò vào PostgreSQL.
+    - `POST /roles`: Tạo vai trò tùy chỉnh mới.
+    - `GET /roles/my-permissions`: Trả về danh sách mã quyền của người dùng hiện tại để kiểm tra phân quyền UI.
+  * **Giao diện (`platform.permissions.tsx`)**:
+    - Tải trực tiếp dữ liệu từ API CSDL. Tuyệt đối không dùng mảng mock static.
+    - Cho phép bật/tắt (toggle) tức thì từng ô trên ma trận lưới phân quyền.
+    - Hỗ trợ tạo vai trò mới và lưu ngay vào PostgreSQL.
+- **4. Trung Tâm Thống Kê Toàn Diện 5 Phân Hệ (Executive Statistics Hub)**:
+  * **Backend Module (`AnalyticsModule`)**:
+    - `GET /analytics/overview`: Tổng hợp nhanh toàn bộ các chỉ số vận hành, nhân sự, tài chính, CRM.
+    - `GET /analytics/operations`: Thống kê nhiệm vụ, tỷ lệ hoàn thành, việc trễ hạn, phân bổ theo độ ưu tiên.
+    - `GET /analytics/attendance`: Thống kê nhân sự, chấm công hôm nay, tỷ lệ đúng giờ, đi muộn, vắng mặt.
+    - `GET /analytics/finance`: Thống kê doanh thu tháng, dòng tiền thu-chi, tờ trình chi đang chờ duyệt.
+    - `GET /analytics/crm`: Khách hàng tiềm năng mới, các cuộc gặp B2B, tỷ lệ chốt deal.
+    - `GET /analytics/platform`: Thống kê nền tảng tổng dành riêng cho Super Admin (tổng cộng đồng, doanh nghiệp active, gói đăng ký, doanh thu).
+  * **Giao diện (`statistics.tsx`)**:
+    - Đặt tại đường dẫn `/statistics`, được liên kết trực tiếp trên Sidebar CRM (`Sidebar.tsx`).
+    - Tab điều hướng mượt mà giữa 5 phân hệ, hiển thị biểu đồ tiến độ, KPI cards sang trọng chuẩn nhận diện Obsidian/Gold.
+- **5. Thao Tác Đơn & Đa Đối Tượng (Bulk Operations & Dynamic User Multi-Select)**:
+  * Component `UserMultiSelect.tsx`: Cho phép tìm kiếm nhân sự theo tên/email từ CSDL qua API, hiển thị avatar ký tự viết tắt, badge số lượng đã chọn, hỗ trợ chọn đơn hoặc đa đối tượng (Multi-select), nút "Chọn tất cả" / "Bỏ chọn".
+  * Backend API `POST /companies/:id/tasks/bulk`: Tạo công việc hàng loạt cho toàn bộ các nhân sự được chọn chỉ trong 1 request.
+- **6. Kiểm Tra Code Quality Toàn Hệ Thống (Strict Rule 3)**:
+  * Backend (`apps/vione_app_be`): `tsc --noEmit` -> Exit code 0 (0 errors).
+  * PWA Frontend (`apps/vione_app_fe`): `tsc --noEmit` -> Exit code 0 (0 errors).
+  * Native Mobile (`apps/mobile_vione`): `tsc --noEmit` -> Exit code 0 (0 errors).
+
+## 0.00. QUY TRÌNH QUẢN TRỊ DOANH NGHIỆP THỰC TẾ TRÊN CRM VIONE: GÓI VIONE PLATFORM, TREE MENU SIDEBAR, QUẢN LÝ NHÂN VIÊN VÀ GIAO VIỆC (THÁNG 10/2026)
+- **1. Quy Tắc Gói ViOne Platform & Dữ Liệu Thực Tế**:
+  * **Điều kiện hiển thị Doanh nghiệp**: Chức năng doanh nghiệp CHỈ hiển thị dữ liệu khi người dùng đăng ký mua gói giải pháp ViOne Platform (bản ghi hợp lệ trong `public.vione_community_subscriptions` với `status = 'active'` và `expires_at > now()`).
+  * **Xử lý khi chưa có gói**: Backend API `/api/companies` trả về `{ hasSubscription: false, items: [] }`. Giao diện hiển thị trạng thái khóa cùng Empty State chỉ dẫn và nút CTA mở Modal đăng ký gói ViOne Platform (`SubscribePackageModal.tsx`), hỗ trợ kích hoạt dùng thử 30 ngày hoặc gói cước năm (ghi nhận trực tiếp vào CSDL).
+  * **Dữ liệu thực 100%**: Tuyệt đối không mock/dummy data. Các hồ sơ doanh nghiệp truy vấn từ `public.companies`, nhân sự từ `public.company_employees`, và đầu việc từ `public.company_tasks`.
+- **2. Tree Menu Sidebar Doanh Nghiệp (`EnterpriseTreeMenu.tsx`)**:
+  * Nhóm toàn bộ các doanh nghiệp của người dùng theo cấu trúc cây (Tree View) nằm trong Sidebar CRM.
+  * Mỗi doanh nghiệp gồm 3 nhánh nghiệp vụ con:
+    1. **Quản lý nhân viên**: Điều hướng đến `/companies/:companyId?tab=employees`.
+    2. **Giao việc**: Điều hướng đến `/companies/:companyId?tab=tasks`.
+    3. **Hồ sơ doanh nghiệp**: Điều hướng đến `/companies/:companyId?tab=overview`.
+- **3. Phân Hệ Quản Lý Nhân Sự Thực (`CompanyEmployeesTab.tsx`)**:
+  * Hiển thị bảng nhân sự thời gian thực: Họ tên, Chức vụ, Bộ phận, Email, SĐT, Trạng thái và số lượng công việc đang phụ trách.
+  * Form thêm mới nhân sự lưu vào PostgreSQL (`POST /api/companies/:id/employees`).
+  * Nút xóa nhân sự (`DELETE /api/companies/:id/employees/:employeeId`).
+  * Nút chuyển nhanh sang Giao việc ("Giao việc") tự động mở tab Giao việc và điền sẵn nhân sự phụ trách.
+- **4. Phân Hệ Giao Việc & Phân Công Nhiệm Vụ Thực (`CompanyTasksTab.tsx`)**:
+  * Thống kê trực quan: Tổng số việc, Chờ nhận việc, Đang triển khai, Đã hoàn thành.
+  * Bộ lọc tìm kiếm và lọc trạng thái/ưu tiên.
+  * Modal giao việc cho phép chọn nhân sự từ danh sách nhân viên thực, đặt deadline, mô tả công việc và thông tin khách hàng mục tiêu (`POST /api/companies/:id/tasks`).
+  * Thao tác cập nhật trạng thái làm việc tức thì (Chờ nhận -> Đang làm -> Hoàn thành) qua API `PATCH /api/companies/:id/tasks/:taskId/status`.
+- **5. Kiểm Tra Code Quality (Rule 3)**:
+  * Backend (`apps/vione_app_be`): `tsc --noEmit` -> 0 errors.
+  * Frontend (`apps/vione_app_fe`): `tsc --noEmit` -> 0 errors.
+
 ## 0.0. KHẮC PHỤC TRIỆT ĐỂ LỖI HỆ THỐNG VIONE SẬP SAU 1-2 NGÀY, PHÂN LẬP HOÀN TOÀN KHỎI CEO 1983 & CỔNG 5446 (THÁNG 10/2026)
 - **1. Phân Tách Hoàn Toàn ViOne Khỏi CEO 1983 (Strict Decoupling from CEO 1983)**:
   * **Xác định ranh giới sở hữu**:

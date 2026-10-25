@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -30,6 +30,7 @@ import {
   ExternalLink,
   Clock,
   ShieldCheck,
+  ListTodo,
 } from "lucide-react";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { SendEmailModal } from "@/components/dashboard/SendEmailModal";
@@ -38,6 +39,8 @@ import { useRole } from "@/hooks/use-role";
 import { useT, type TKey } from "@/lib/i18n";
 import { type Member, type MemberStatus } from "@/lib/members-data";
 import { fetchNestApi } from "@/lib/api-client";
+import { CompanyEmployeesTab, type CompanyEmployee } from "@/components/companies/CompanyEmployeesTab";
+import { CompanyTasksTab } from "@/components/companies/CompanyTasksTab";
 import {
   ACTIVITY_LABEL,
   EVENT_ROLE_LABEL,
@@ -53,12 +56,41 @@ import type { CompanyHistory } from "@/lib/companies.functions";
 
 export const Route = createFileRoute("/companies/$companyId")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>): { tab?: string } => ({
+    tab: (search.tab as string) || undefined,
+  }),
   loader: async ({ params }) => {
-    const company = await fetchNestApi<Member>(`/members/${params.companyId}`).catch(() => null);
+    let company: any = await fetchNestApi<any>(`/companies/${params.companyId}`).catch(() => null);
+    if (!company) {
+      company = await fetchNestApi<Member>(`/members/${params.companyId}`).catch(() => null);
+    }
     if (!company) throw notFound();
+
+    const normalizedCompany: Member = {
+      id: company.id,
+      name: company.name || "Doanh nghiệp",
+      contact: company.legal_representative || company.contact || "",
+      email: company.email || "",
+      phone: company.phone || "",
+      code: company.tax_code || company.code || "VN-" + company.id.slice(0, 6).toUpperCase(),
+      type: "company",
+      level: company.level || "memberLevel.large",
+      industry: company.industry || "ind.it",
+      region: company.region || "region.north",
+      status: (company.status === "active" ? "active" : company.status === "expired" ? "expired" : "pending") as MemberStatus,
+      joinedAt: company.created_at || company.joinedAt || new Date().toISOString(),
+      feePaid: company.feePaid ?? true,
+      feeYear: company.feeYear || new Date().getFullYear(),
+      address: company.address || "",
+      website: company.website || "",
+      taxCode: company.tax_code || company.taxCode || "",
+      employees: company.employee_count ?? company.employees ?? 0,
+      about: company.description || company.about || "",
+    };
+
     const history = await fetchNestApi<CompanyHistory>(`/members/${params.companyId}/history`).catch(() => null);
     return {
-      company,
+      company: normalizedCompany,
       history: history || { activities: [], events: [], payments: [] },
     };
   },
@@ -180,8 +212,24 @@ function CompanyDetailPage() {
     address: loaded.address,
   });
   const company: Member = { ...companyState, ...contact };
+  const search = Route.useSearch();
+  type CompanyTab = "overview" | "employees" | "tasks" | "activity" | "events" | "payments";
+  const [tab, setTab] = useState<CompanyTab>(() => {
+    const validTabs: CompanyTab[] = ["overview", "employees", "tasks", "activity", "events", "payments"];
+    if (search?.tab && validTabs.includes(search.tab as CompanyTab)) {
+      return search.tab as CompanyTab;
+    }
+    return "overview";
+  });
 
-  const [tab, setTab] = useState<"overview" | "activity" | "events" | "payments">("overview");
+  useEffect(() => {
+    const validTabs: CompanyTab[] = ["overview", "employees", "tasks", "activity", "events", "payments"];
+    if (search?.tab && validTabs.includes(search.tab as CompanyTab)) {
+      setTab(search.tab as CompanyTab);
+    }
+  }, [search?.tab]);
+
+  const [selectedEmployee, setSelectedEmployee] = useState<CompanyEmployee | null>(null);
 
   const fields: CrudField[] = [
     { name: "name", label: t("members.f.name"), type: "text", required: true },
@@ -378,23 +426,25 @@ function CompanyDetailPage() {
 
   const s = statusStyle[company.status] || statusStyle.pending;
 
-  const tabs: { key: typeof tab; label: TKey; Icon: typeof Activity; count?: number }[] = [
-    { key: "overview", label: "cdetail.tab.overview", Icon: Building2 },
+  const tabs: { key: CompanyTab; label: string; Icon: typeof Activity; count?: number }[] = [
+    { key: "overview", label: "Tổng quan hồ sơ", Icon: Building2 },
+    { key: "employees", label: "Quản lý nhân viên", Icon: Users },
+    { key: "tasks", label: "Giao việc & Tiến độ", Icon: ListTodo },
     {
       key: "activity",
-      label: "cdetail.tab.activity",
+      label: "Nhật ký hoạt động",
       Icon: Activity,
       count: activities.length,
     },
     {
       key: "events",
-      label: "cdetail.tab.events",
+      label: "Sự kiện",
       Icon: CalendarCheck2,
       count: events.length,
     },
     {
       key: "payments",
-      label: "cdetail.tab.payments",
+      label: "Hội phí & Giao dịch",
       Icon: Receipt,
       count: payments.length,
     },
@@ -523,7 +573,7 @@ function CompanyDetailPage() {
                 style={active ? { background: "var(--gradient-primary)" } : undefined}
               >
                 <tb.Icon className="h-4 w-4" />
-                {t(tb.label)}
+                <span>{tb.label}</span>
                 {tb.count != null && (
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
@@ -546,6 +596,23 @@ function CompanyDetailPage() {
           onSaveContact={handleSaveContact}
           onToggleFeePaid={isAdmin ? handleToggleFeePaid : undefined}
           submittingFee={submittingFee}
+        />
+      )}
+      {tab === "employees" && (
+        <CompanyEmployeesTab
+          companyId={company.id}
+          companyName={company.name}
+          onAssignTask={(emp) => {
+            setSelectedEmployee(emp);
+            setTab("tasks");
+          }}
+        />
+      )}
+      {tab === "tasks" && (
+        <CompanyTasksTab
+          companyId={company.id}
+          companyName={company.name}
+          initialAssignee={selectedEmployee}
         />
       )}
       {tab === "activity" && <ActivityTab entries={history.activities} />}

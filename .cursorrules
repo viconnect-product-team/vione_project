@@ -25,6 +25,37 @@
     3. Danger CTA: **Gradient Đỏ Ruby** (`gradient-destructive`), chữ trắng `#FFFFFF`.
     4. Success CTA: **Gradient Ngọc Lục Bảo** (`gradient-success`), chữ trắng `#FFFFFF`.
 
+## -0.3. Quy Chuẩn Quản Trị Doanh Nghiệp Trên CRM ViOne (STRICT ENTERPRISE TREE MENU & SUBSCRIPTION PROTOCOL)
+- **ĐIỀU KIỆN HIỂN THỊ DOANH NGHIỆP**:
+  * Chỉ khi người dùng đăng ký mua gói giải pháp ViOne Platform (kiểm tra bản ghi hoạt động trong `public.vione_community_subscriptions`) thì chức năng doanh nghiệp mới có dữ liệu.
+  * Nếu chưa có gói, API trả về `hasSubscription: false, items: []` và giao diện CRM hiển thị trạng thái khóa kèm modal đăng ký gói ViOne Platform.
+- **TREE MENU SIDEBAR DOANH NGHIỆP**:
+  * Doanh nghiệp được nhóm chung theo cấu trúc cây (`EnterpriseTreeMenu.tsx`) trên Sidebar CRM.
+  * Mỗi doanh nghiệp trên Tree Menu có 3 nhánh con:
+    1. Quản lý nhân viên (`/companies/:companyId?tab=employees` -> `CompanyEmployeesTab.tsx`)
+    2. Giao việc (`/companies/:companyId?tab=tasks` -> `CompanyTasksTab.tsx`)
+    3. Hồ sơ & Giới thiệu (`/companies/:companyId?tab=overview`)
+- **DỮ LIỆU THỰC 100% (ZERO MOCK RULE)**:
+  * Toàn bộ thông tin nhân sự và nhiệm vụ phân công được lưu trữ và truy vấn thực tế từ `public.company_employees` và `public.company_tasks` trong PostgreSQL.
+  * Nghiêm cấm tạo mock data hay dữ liệu giả lập.
+
+## -0.4. Quy Chuẩn Nền Tảng SaaS ViOne: Multi-Level Admin, Slot Control, Dynamic RBAC, Statistics Hub & Bulk Tasks
+- **PHÂN TẦNG QUẢN TRỊ 3 CẤP**:
+  1. Super Admin: Quản trị nền tảng tổng, gói dịch vụ (`vione_subscription_packages`), thống kê tăng trưởng toàn hệ thống (`/analytics/platform`).
+  2. Community Admin (Tenant Owner): Quản lý nội bộ cộng đồng/doanh nghiệp, quản lý nhân sự trong hạn mức slot gói (`max_slots`), phân quyền ma trận nội bộ.
+  3. App User & Employee: Dùng App ViOne chấm công, nhận việc, quét thẻ QR kết nối.
+- **KIỂM SOÁT HẠN MỨC SLOT GÓI (SLOT CONTROL)**:
+  * Khi thêm nhân sự mới (`POST /companies/:id/employees`), backend bắt buộc kiểm tra `currentCount >= maxSlots`. Nếu vượt quá giới hạn gói, chặn thêm và trả về thông báo nâng cấp.
+  * Giao diện `CompanyEmployeesTab.tsx` phải hiển thị thanh tiến trình thước đo slot sử dụng trực quan.
+- **MA TRẬN PHÂN QUYỀN ĐỘNG (GRANULAR DYNAMIC RBAC MATRIX)**:
+  * 100% vai trò và quyền hạn quản lý qua `public.platform_roles`, `public.platform_permissions`, `public.platform_role_permissions`.
+  * Cấm hardcode danh sách nhóm quyền tĩnh trong frontend. Giao diện `/platform/permissions` tải trực tiếp từ `GET /roles/permissions-matrix` và lưu qua `PUT /roles/:id/permissions`.
+- **TRUNG TÂM THỐNG KÊ TOÀN DIỆN (STATISTICS HUB)**:
+  * Truy cập tại `/statistics` qua Sidebar CRM, bao gồm 5 miền: Vận hành, Chấm công, Tài chính, CRM, Nền tảng.
+- **GIAO VIỆC ĐA ĐỐI TƯỢNG (BULK OPERATIONS)**:
+  * Dùng `UserMultiSelect.tsx` tìm kiếm nhân sự thực từ API.
+  * Giao việc đồng loạt qua `POST /companies/:id/tasks/bulk` để phân công nhiều người cùng lúc.
+
 ## 0. Quy Tắc Bắt Buộc: Đồng Bộ Hai Bản App Native ViOne & PWA ViOne (STRICT DUAL-APP PARITY)
 - **BẮT BUỘC SỬA ĐỒNG BỘ CẢ 2 BẢN KHI CHỈNH SỬA APP (Giống như quy tắc cấm tự động push git)**:
   - Khi có bất kỳ yêu cầu sửa lỗi, nâng cấp tính năng, chỉnh sửa giao diện hay luồng nghiệp vụ trên ứng dụng ViOne, BẮT BUỘC phải thực hiện đồng thời trên **CẢ 2 BẢN**: Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).

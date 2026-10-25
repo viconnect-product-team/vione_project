@@ -14,6 +14,7 @@ import { Route as WorkflowRouteImport } from './routes/workflow'
 import { Route as VotingRouteImport } from './routes/voting'
 import { Route as VioneAppRouteImport } from './routes/vione-app'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SponsorReportRouteImport } from './routes/sponsor-report'
 import { Route as SponsorPackagesRouteImport } from './routes/sponsor-packages'
@@ -271,6 +272,11 @@ const VioneAppRoute = VioneAppRouteImport.update({
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatisticsRoute = StatisticsRouteImport.update({
+  id: '/statistics',
+  path: '/statistics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SponsorsRoute = SponsorsRouteImport.update({
@@ -1544,6 +1550,7 @@ export interface FileRoutesByFullPath {
   '/sponsor-packages': typeof SponsorPackagesRoute
   '/sponsor-report': typeof SponsorReportRoute
   '/sponsors': typeof SponsorsRoute
+  '/statistics': typeof StatisticsRoute
   '/verify': typeof VerifyRoute
   '/vione-app': typeof VioneAppRoute
   '/voting': typeof VotingRoute
@@ -1772,6 +1779,7 @@ export interface FileRoutesByTo {
   '/sponsor-packages': typeof SponsorPackagesRoute
   '/sponsor-report': typeof SponsorReportRoute
   '/sponsors': typeof SponsorsRoute
+  '/statistics': typeof StatisticsRoute
   '/verify': typeof VerifyRoute
   '/vione-app': typeof VioneAppRoute
   '/voting': typeof VotingRoute
@@ -1994,6 +2002,7 @@ export interface FileRoutesById {
   '/sponsor-packages': typeof SponsorPackagesRoute
   '/sponsor-report': typeof SponsorReportRoute
   '/sponsors': typeof SponsorsRoute
+  '/statistics': typeof StatisticsRoute
   '/verify': typeof VerifyRoute
   '/vione-app': typeof VioneAppRoute
   '/voting': typeof VotingRoute
@@ -2236,6 +2245,7 @@ export interface FileRouteTypes {
     | '/sponsor-packages'
     | '/sponsor-report'
     | '/sponsors'
+    | '/statistics'
     | '/verify'
     | '/vione-app'
     | '/voting'
@@ -2464,6 +2474,7 @@ export interface FileRouteTypes {
     | '/sponsor-packages'
     | '/sponsor-report'
     | '/sponsors'
+    | '/statistics'
     | '/verify'
     | '/vione-app'
     | '/voting'
@@ -2685,6 +2696,7 @@ export interface FileRouteTypes {
     | '/sponsor-packages'
     | '/sponsor-report'
     | '/sponsors'
+    | '/statistics'
     | '/verify'
     | '/vione-app'
     | '/voting'
@@ -2926,6 +2938,7 @@ export interface RootRouteChildren {
   SponsorPackagesRoute: typeof SponsorPackagesRoute
   SponsorReportRoute: typeof SponsorReportRoute
   SponsorsRoute: typeof SponsorsRoute
+  StatisticsRoute: typeof StatisticsRoute
   VerifyRoute: typeof VerifyRoute
   VioneAppRoute: typeof VioneAppRoute
   VotingRoute: typeof VotingRoute
@@ -2995,6 +3008,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/statistics': {
+      id: '/statistics'
+      path: '/statistics'
+      fullPath: '/statistics'
+      preLoaderRoute: typeof StatisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sponsors': {
@@ -5342,6 +5362,7 @@ const rootRouteChildren: RootRouteChildren = {
   SponsorPackagesRoute: SponsorPackagesRoute,
   SponsorReportRoute: SponsorReportRoute,
   SponsorsRoute: SponsorsRoute,
+  StatisticsRoute: StatisticsRoute,
   VerifyRoute: VerifyRoute,
   VioneAppRoute: VioneAppRoute,
   VotingRoute: VotingRoute,

@@ -59,6 +59,8 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
 import { ProfileMenu } from "@/components/dashboard/ProfileMenu";
+import { EnterpriseTreeMenu } from "@/components/dashboard/EnterpriseTreeMenu";
+import { SubscribePackageModal } from "@/components/dashboard/SubscribePackageModal";
 
 type Item = { key: TKey; icon: LucideIcon; to?: string; label?: string; badge?: string | number };
 
@@ -242,6 +244,13 @@ const vioneFinance: Item[] = [
     to: "/finance-report",
     label: "Báo Cáo Tăng Trưởng",
   },
+  {
+    key: "nav.vioneStatistics" as TKey,
+    icon: FileBarChart,
+    to: "/statistics",
+    label: "Trung Tâm Thống Kê Toàn Diện",
+    badge: "5.0",
+  },
 ];
 
 // 6. CẤU HÌNH & BẢO MẬT
@@ -261,8 +270,9 @@ const vioneSystem: Item[] = [
   {
     key: "nav.platform" as TKey,
     icon: ShieldCheck,
-    to: "/platform",
-    label: "Chức Năng Nền Tảng & RBAC",
+    to: "/platform/permissions",
+    label: "Phân Quyền Ma Trận (RBAC)",
+    badge: "Ma trận",
   },
 ];
 
@@ -468,6 +478,7 @@ export function Sidebar({
 
   const unreadNotify = useUnreadNotifications();
   const badges: Record<string, number> = { "/notifications": unreadNotify };
+  const [subscribeModalOpen, setSubscribeModalOpen] = useState(false);
 
   useEffect(() => {
     const onChange = (e: any) => {
@@ -607,6 +618,16 @@ export function Sidebar({
             </div>
           </div>
 
+          {/* Doanh nghiệp & Quản trị Doanh nghiệp (Tree Menu Sidebar) */}
+          <div className={isCollapsed ? "px-2" : "px-3"}>
+            <EnterpriseTreeMenu
+              collapsed={isCollapsed}
+              pathname={pathname}
+              onNavigate={onNavigate}
+              onRequestSubscribe={() => setSubscribeModalOpen(true)}
+            />
+          </div>
+
           {/* Divider */}
           {!isCollapsed && (
             <div className="px-6 pt-3 pb-1">
@@ -662,6 +683,15 @@ export function Sidebar({
       <div className={`border-t border-slate-800/80 bg-slate-950 w-full shrink-0 ${isCollapsed ? "p-2" : "p-3"}`}>
         <ProfileMenu variant="sidebar" collapsed={isCollapsed} />
       </div>
+
+      <SubscribePackageModal
+        isOpen={subscribeModalOpen}
+        onClose={() => setSubscribeModalOpen(false)}
+        onSubscribed={() => {
+          setSubscribeModalOpen(false);
+          window.location.reload();
+        }}
+      />
     </aside>
   );
 }

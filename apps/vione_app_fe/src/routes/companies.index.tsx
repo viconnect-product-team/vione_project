@@ -19,9 +19,12 @@ import {
   Briefcase,
   Edit2,
   Trash2,
+  ShieldAlert,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/dashboard/AppShell";
+import { SubscribePackageModal } from "@/components/dashboard/SubscribePackageModal";
 import { CrudModal, type CrudField, type CrudValues } from "@/components/dashboard/CrudModal";
 import { TruncatedText } from "@/components/dashboard/TruncatedText";
 import { useT, type TKey } from "@/lib/i18n";
@@ -95,20 +98,56 @@ function initials(name: string) {
 function CompaniesPage() {
   const t = useT();
   const [MEMBERS, setMembers] = useState<Member[]>([]);
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+  const [subscribeModalOpen, setSubscribeModalOpen] = useState(false);
 
-  const loadMembers = async () => {
+  const loadCompanies = async () => {
     try {
-      const res = await fetchNestApi<Member[]>("/members?type=company");
-      if (Array.isArray(res)) {
-        setMembers(res);
+      const res = await fetchNestApi<{
+        hasSubscription: boolean;
+        subscription: any;
+        items: Array<any>;
+        total: number;
+      }>("/companies");
+
+      if (res) {
+        setHasSubscription(res.hasSubscription);
+        if (res.hasSubscription && Array.isArray(res.items)) {
+          const normalized: Member[] = res.items.map((c) => ({
+            id: c.id,
+            name: c.name || "Doanh nghiệp",
+            contact: c.legal_representative || "",
+            email: c.email || "",
+            phone: c.phone || "",
+            code: c.tax_code || "VN-" + c.id.slice(0, 6).toUpperCase(),
+            type: "company",
+            level: "memberLevel.large",
+            industry: "ind.it",
+            region: "region.north",
+            status: "active",
+            joinedAt: c.created_at || new Date().toISOString(),
+            feePaid: true,
+            address: c.address || "",
+            website: c.website || "",
+            taxCode: c.tax_code || "",
+            employees: c.employee_count ?? 0,
+            about: c.description || "",
+            taskCount: c.task_count ?? 0,
+          } as any));
+          setMembers(normalized);
+        } else {
+          setMembers([]);
+        }
       }
     } catch (err) {
       console.error("[Companies] Failed to load companies:", err);
+      setHasSubscription(false);
+      setMembers([]);
     }
   };
 
   useEffect(() => {
-    loadMembers();
+    loadCompanies();
   }, []);
 
   const { isAdmin, loading: roleLoading } = useRole();
@@ -272,7 +311,7 @@ function CompaniesPage() {
         setOpen(false);
       }
 
-      await loadMembers();
+      await loadCompanies();
       await router.invalidate({ sync: true });
     } catch (err: any) {
       console.error("[Companies] Submit error:", err);
@@ -551,7 +590,26 @@ function CompaniesPage() {
           </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {hasSubscription === false ? (
+          <div className="rounded-2xl border border-[#DFB76C]/30 bg-slate-950/80 backdrop-blur p-10 text-center shadow-xl">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#DFB76C]/20 to-[#8C653B]/20 border border-[#DFB76C]/30 flex items-center justify-center mx-auto mb-4">
+              <ShieldAlert className="w-8 h-8 text-[#DFB76C]" />
+            </div>
+            <h3 className="text-xl font-bold text-white">Chưa Kích Hoạt Gói Doanh Nghiệp ViOne Platform</h3>
+            <p className="mt-2 text-sm text-slate-300 max-w-lg mx-auto">
+              Chỉ khi người dùng đăng ký mua gói ViOne Platform thì chức năng doanh nghiệp mới có dữ liệu. Kích hoạt ngay gói dùng thử 30 ngày hoặc gói cước năm để quản lý nhân viên và phân công giao việc số.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => setSubscribeModalOpen(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-slate-950 font-bold text-sm shadow-lg hover:opacity-95 transition cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Đăng Ký Gói ViOne Platform Ngay</span>
+              </button>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center shadow-[var(--shadow-card)]">
             <Building2 className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <h3 className="mt-4 text-base font-bold text-foreground">{t("companies.empty")}</h3>
@@ -651,6 +709,15 @@ function CompaniesPage() {
           </div>
         </div>
       )}
+      {/* Modal đăng ký gói ViOne Platform */}
+      <SubscribePackageModal
+        isOpen={subscribeModalOpen}
+        onClose={() => setSubscribeModalOpen(false)}
+        onSubscribed={() => {
+          setSubscribeModalOpen(false);
+          loadCompanies();
+        }}
+      />
     </AppShell>
   );
 }
@@ -783,10 +850,33 @@ function CompanyCard({
           </span>
         </div>
 
-        <div className="mt-4 flex items-center gap-2">
+        {/* Quick actions for Employees and Tasks */}
+        <div className="mt-3 grid grid-cols-2 gap-2">
           <Link
             to="/companies/$companyId"
             params={{ companyId: m.id }}
+            search={{ tab: "employees" }}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700/60 bg-slate-900/80 py-1.5 text-xs font-medium text-slate-300 transition hover:border-[#DFB76C]/40 hover:text-[#DFB76C]"
+          >
+            <Users className="h-3.5 w-3.5 text-[#DFB76C]" />
+            <span>Nhân sự ({m.employees ?? 0})</span>
+          </Link>
+          <Link
+            to="/companies/$companyId"
+            params={{ companyId: m.id }}
+            search={{ tab: "tasks" }}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700/60 bg-slate-900/80 py-1.5 text-xs font-medium text-slate-300 transition hover:border-[#DFB76C]/40 hover:text-[#DFB76C]"
+          >
+            <Briefcase className="h-3.5 w-3.5 text-[#DFB76C]" />
+            <span>Giao việc ({(m as any).taskCount ?? 0})</span>
+          </Link>
+        </div>
+
+        <div className="mt-3 flex items-center gap-2">
+          <Link
+            to="/companies/$companyId"
+            params={{ companyId: m.id }}
+            search={{ tab: "overview" }}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background py-2 text-xs font-semibold text-foreground transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
           >
             {t("companies.viewProfile")}
@@ -977,6 +1067,27 @@ function CompanyTable({
                       <Link
                         to="/companies/$companyId"
                         params={{ companyId: m.id }}
+                        search={{ tab: "employees" }}
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-900/80 px-2 py-1 text-xs font-medium text-slate-300 transition hover:border-[#DFB76C]/40 hover:text-[#DFB76C]"
+                        title="Quản lý nhân sự"
+                      >
+                        <Users className="h-3 w-3 text-[#DFB76C]" />
+                        <span>NV ({m.employees ?? 0})</span>
+                      </Link>
+                      <Link
+                        to="/companies/$companyId"
+                        params={{ companyId: m.id }}
+                        search={{ tab: "tasks" }}
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-900/80 px-2 py-1 text-xs font-medium text-slate-300 transition hover:border-[#DFB76C]/40 hover:text-[#DFB76C]"
+                        title="Giao việc & Tiến độ"
+                      >
+                        <Briefcase className="h-3 w-3 text-[#DFB76C]" />
+                        <span>Việc ({(m as any).taskCount ?? 0})</span>
+                      </Link>
+                      <Link
+                        to="/companies/$companyId"
+                        params={{ companyId: m.id }}
+                        search={{ tab: "overview" }}
                         className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-foreground transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
                       >
                         {t("tbl.view")}

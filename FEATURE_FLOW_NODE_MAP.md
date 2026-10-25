@@ -208,3 +208,54 @@
 * **Luật Nghiệp Vụ:** `BR-FIN-06`.
 * **Backend Endpoint:** `GET /api/operations/finance/approvals/:id/qr`
 * **Bảng CSDL:** `public.payment_approvals`.
+
+---
+
+### 🔸 [NODE-CRM-SLOT-01]: Quản Trị Giới Hạn Thành Viên & Gói Cước Doanh Nghiệp (Slot Control)
+* **Tên luồng:** Kiểm soát số lượng nhân sự tối đa được phép thêm vào doanh nghiệp theo gói đăng ký.
+* **Mã SRS:** `UC-CRM-12`.
+* **Giao diện Web CRM (`apps/vione_app_fe`):**
+  - Component: `src/components/companies/CompanyEmployeesTab.tsx` (Thước đo Slot sử dụng, tỷ lệ %, cảnh báo đầy slot)
+  - Modal: `src/components/dashboard/SubscribePackageModal.tsx`
+* **Backend Controller & Service (`apps/vione_app_be`):**
+  - Service: `src/companies/companies.service.ts` (`addCompanyEmployee` slot guard, `getCompanySlotUsage`)
+  - Controller: `src/companies/companies.controller.ts` (`GET /companies/:id/slot-usage`, `GET /companies/packages`)
+* **Bảng CSDL:** `public.vione_subscription_packages`, `public.vione_community_subscriptions` (`max_slots`), `public.company_employees`.
+
+---
+
+### 🔸 [NODE-CRM-RBAC-01]: Ma Trận Phân Quyền Động Đa Cấp (Granular Dynamic RBAC System)
+* **Tên luồng:** Quản trị ma trận vai trò và quyền hạn trực tiếp từ cơ sở dữ liệu PostgreSQL (Zero-Mock Data).
+* **Mã SRS:** `UC-CRM-13`.
+* **Giao diện Web CRM (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/platform.permissions.tsx`
+  - Sidebar: `src/components/dashboard/Sidebar.tsx` (`/platform/permissions`)
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/roles/roles.controller.ts` (`GET /roles`, `GET /roles/permissions-matrix`, `PUT /roles/:id/permissions`, `POST /roles`)
+  - Service: `src/roles/roles.service.ts`
+* **Bảng CSDL:** `public.platform_roles`, `public.platform_permissions`, `public.platform_role_permissions`.
+
+---
+
+### 🔸 [NODE-CRM-STAT-01]: Trung Tâm Thống Kê Toàn Diện 5 Phân Hệ (Executive Statistics Hub)
+* **Tên luồng:** Bảng điều khiển số liệu thống kê thời gian thực theo 5 miền: Vận hành, Chấm công, Tài chính, CRM, Nền tảng.
+* **Mã SRS:** `UC-CRM-14`.
+* **Giao diện Web CRM (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/statistics.tsx`
+  - Sidebar: `src/components/dashboard/Sidebar.tsx` (`/statistics`)
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/analytics/analytics.controller.ts` (`/analytics/overview`, `/operations`, `/attendance`, `/finance`, `/crm`, `/platform`)
+  - Service: `src/analytics/analytics.service.ts`
+* **Bảng CSDL:** `public.company_tasks`, `public.attendance_records`, `public.payment_approvals`, `public.crm_customers`, `public.associations`.
+
+---
+
+### 🔸 [NODE-CRM-BULK-01]: Giao Việc Đa Đối Tượng & Tìm Kiếm Nhân Sự Động (Bulk Tasks & Multi-Select)
+* **Tên luồng:** Chọn nhiều nhân sự từ cơ sở dữ liệu và khởi tạo công việc đồng loạt chỉ bằng 1 thao tác.
+* **Mã SRS:** `UC-CRM-14`.
+* **Giao diện Web CRM (`apps/vione_app_fe`):**
+  - Component: `src/components/common/UserMultiSelect.tsx`, `src/components/companies/CompanyTasksTab.tsx`
+* **Backend Endpoint (`apps/vione_app_be`):**
+  - Controller & Service: `src/companies/companies.controller.ts`, `companies.service.ts` (`POST /companies/:id/tasks/bulk`)
+* **Bảng CSDL:** `public.company_tasks`, `public.company_employees`.
+

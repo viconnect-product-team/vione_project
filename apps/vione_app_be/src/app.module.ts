@@ -20,6 +20,9 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { VotingModule } from './voting/voting.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { OperationsModule } from './operations/operations.module';
+import { CompaniesModule } from './companies/companies.module';
+import { RolesModule } from './roles/roles.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -44,6 +47,9 @@ import { OperationsModule } from './operations/operations.module';
     ReviewsModule,
     VotingModule,
     OperationsModule,
+    CompaniesModule,
+    RolesModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
