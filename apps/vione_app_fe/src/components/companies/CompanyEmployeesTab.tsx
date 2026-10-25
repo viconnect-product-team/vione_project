@@ -100,6 +100,19 @@ export function CompanyEmployeesTab({
   const [editCanManageCrm, setEditCanManageCrm] = useState(false);
   const [savingPermissions, setSavingPermissions] = useState(false);
 
+  const [roleGroups, setRoleGroups] = useState<
+    Array<{
+      id: string;
+      name: string;
+      code: string;
+      description: string;
+      level: number;
+      permissionIds: string[];
+    }>
+  >([]);
+  const [selectedRoleGroupId, setSelectedRoleGroupId] = useState<string>("");
+  const [editRoleGroupId, setEditRoleGroupId] = useState<string>("");
+
   const handleRoleChange = (newRole: "staff" | "manager") => {
     setSelectedRole(newRole);
     if (newRole === "manager") {
@@ -115,6 +128,78 @@ export function CompanyEmployeesTab({
       setCanManageDocs(false);
       setCanManageCrm(false);
       if (roleTitle === "Quản trị viên / Trưởng bộ phận") setRoleTitle("Chuyên viên");
+    }
+  };
+
+  const handleSelectRoleGroup = (groupId: string) => {
+    setSelectedRoleGroupId(groupId);
+    if (!groupId) return;
+    const group = roleGroups.find((g) => g.id === groupId || g.code === groupId);
+    if (!group) return;
+
+    setRoleTitle(group.name);
+    const isMgr =
+      group.level >= 50 ||
+      group.code === "manager" ||
+      group.code === "admin" ||
+      group.code === "owner";
+    setSelectedRole(isMgr ? "manager" : "staff");
+
+    const pIds = group.permissionIds || [];
+    setCanAssignTasks(
+      pIds.some((p) => p.includes("tasks") || p.includes("task.create") || p === "*") || isMgr,
+    );
+    setCanManageMembers(
+      pIds.some((p) => p.includes("employees") || p.includes("employee.create") || p === "*") ||
+        isMgr,
+    );
+    setCanManageFinance(pIds.some((p) => p.includes("finance") || p === "*"));
+    setCanManageDocs(
+      pIds.some((p) => p.includes("documents") || p.includes("document.create") || p === "*") ||
+        isMgr,
+    );
+    setCanManageCrm(pIds.some((p) => p.includes("crm") || p === "*") || isMgr);
+  };
+
+  const handleSelectEditRoleGroup = (groupId: string) => {
+    setEditRoleGroupId(groupId);
+    if (!groupId) return;
+    const group = roleGroups.find((g) => g.id === groupId || g.code === groupId);
+    if (!group) return;
+
+    setEditRoleTitle(group.name);
+    const isMgr =
+      group.level >= 50 ||
+      group.code === "manager" ||
+      group.code === "admin" ||
+      group.code === "owner";
+    setEditRole(isMgr ? "manager" : "staff");
+
+    const pIds = group.permissionIds || [];
+    setEditCanAssignTasks(
+      pIds.some((p) => p.includes("tasks") || p.includes("task.create") || p === "*") || isMgr,
+    );
+    setEditCanManageMembers(
+      pIds.some((p) => p.includes("employees") || p.includes("employee.create") || p === "*") ||
+        isMgr,
+    );
+    setEditCanManageFinance(pIds.some((p) => p.includes("finance") || p === "*"));
+    setEditCanManageDocs(
+      pIds.some((p) => p.includes("documents") || p.includes("document.create") || p === "*") ||
+        isMgr,
+    );
+    setEditCanManageCrm(pIds.some((p) => p.includes("crm") || p === "*") || isMgr);
+  };
+
+  const loadRoleGroups = async () => {
+    try {
+      const res = await fetchNestApi<any>("/roles/groups");
+      const list = Array.isArray(res) ? res : res?.groups || [];
+      if (Array.isArray(list)) {
+        setRoleGroups(list);
+      }
+    } catch (err) {
+      console.warn("[CompanyEmployeesTab] Failed to load role groups:", err);
     }
   };
 
@@ -142,6 +227,7 @@ export function CompanyEmployeesTab({
   useEffect(() => {
     if (companyId) {
       loadEmployees();
+      loadRoleGroups();
     }
   }, [companyId]);
 
@@ -149,6 +235,12 @@ export function CompanyEmployeesTab({
     e.preventDefault();
     if (!fullName.trim()) {
       toast.error("Vui lòng nhập họ và tên nhân sự");
+      return;
+    }
+
+    const max = slotUsage?.maxSlots ?? 30;
+    if (employees.length >= max || slotUsage?.isFull) {
+      toast.error(`Gói của bạn chỉ có thể tạo được ${max} tài khoản`);
       return;
     }
 
@@ -160,7 +252,9 @@ export function CompanyEmployeesTab({
           fullName: fullName.trim(),
           email: email.trim() || undefined,
           phone: phone.trim() || undefined,
-          roleTitle: roleTitle.trim() || (selectedRole === "manager" ? "Quản trị viên / Trưởng bộ phận" : "Chuyên viên"),
+          roleTitle:
+            roleTitle.trim() ||
+            (selectedRole === "manager" ? "Quản trị viên / Trưởng bộ phận" : "Chuyên viên"),
           department: department.trim() || "Khối Vận Hành",
           role: selectedRole,
           canAssignTasks,
@@ -168,6 +262,14 @@ export function CompanyEmployeesTab({
           canManageFinance,
           canManageDocs,
           canManageCrm,
+          permissions: (selectedRoleGroupId &&
+            roleGroups.find((g) => g.id === selectedRoleGroupId)?.permissionIds) || [
+            ...(canAssignTasks ? ["tasks.create", "tasks.update"] : []),
+            ...(canManageMembers ? ["employees.create", "employees.update"] : []),
+            ...(canManageFinance ? ["finance.view", "finance.manage"] : []),
+            ...(canManageDocs ? ["documents.create", "documents.update"] : []),
+            ...(canManageCrm ? ["crm.view", "crm.create"] : []),
+          ],
         }),
       });
 
@@ -227,10 +329,20 @@ export function CompanyEmployeesTab({
           canManageFinance: editCanManageFinance,
           canManageDocs: editCanManageDocs,
           canManageCrm: editCanManageCrm,
+          permissions: (editRoleGroupId &&
+            roleGroups.find((g) => g.id === editRoleGroupId)?.permissionIds) || [
+            ...(editCanAssignTasks ? ["tasks.create", "tasks.update"] : []),
+            ...(editCanManageMembers ? ["employees.create", "employees.update"] : []),
+            ...(editCanManageFinance ? ["finance.view", "finance.manage"] : []),
+            ...(editCanManageDocs ? ["documents.create", "documents.update"] : []),
+            ...(editCanManageCrm ? ["crm.view", "crm.create"] : []),
+          ],
         }),
       });
 
-      toast.success(`Đã cập nhật vai trò & quyền hạn cho "${editingEmployee.fullName}" thành công!`);
+      toast.success(
+        `Đã cập nhật vai trò & quyền hạn cho "${editingEmployee.fullName}" thành công!`,
+      );
       setEmployees((prev) =>
         prev.map((emp) =>
           emp.id === editingEmployee.id
@@ -245,8 +357,8 @@ export function CompanyEmployeesTab({
                 canManageDocs: editCanManageDocs,
                 canManageCrm: editCanManageCrm,
               }
-            : emp
-        )
+            : emp,
+        ),
       );
       setEditingEmployee(null);
     } catch (err: any) {
@@ -291,12 +403,20 @@ export function CompanyEmployeesTab({
             Quản lý Đội ngũ & Phân Quyền — {companyName}
           </h3>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Tổng cộng: <strong className="text-foreground">{employees.length}</strong> nhân sự được cấp quyền trong doanh nghiệp.
+            Tổng cộng: <strong className="text-foreground">{employees.length}</strong> nhân sự được
+            cấp quyền trong doanh nghiệp.
           </p>
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            const max = slotUsage?.maxSlots ?? 30;
+            if (employees.length >= max || slotUsage?.isFull) {
+              toast.error(`Gói của bạn chỉ có thể tạo được ${max} tài khoản`);
+              return;
+            }
+            setIsModalOpen(true);
+          }}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-slate-950 font-bold text-sm shadow hover:opacity-95 transition-all cursor-pointer shrink-0"
         >
           <UserPlus className="w-4 h-4" />
@@ -347,13 +467,21 @@ export function CompanyEmployeesTab({
         <div className="p-4 rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
           <div className="text-xs text-muted-foreground font-medium">Quản trị viên / Giao việc</div>
           <div className="text-2xl font-bold text-[#DFB76C] mt-1">
-            {employees.filter((e) => e.role === "manager" || e.role === "owner" || e.canAssignTasks).length}
+            {
+              employees.filter(
+                (e) => e.role === "manager" || e.role === "owner" || e.canAssignTasks,
+              ).length
+            }
           </div>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
           <div className="text-xs text-muted-foreground font-medium">Nhân viên thực thi</div>
           <div className="text-2xl font-bold text-emerald-500 mt-1">
-            {employees.filter((e) => e.role !== "manager" && e.role !== "owner" && !e.canAssignTasks).length}
+            {
+              employees.filter(
+                (e) => e.role !== "manager" && e.role !== "owner" && !e.canAssignTasks,
+              ).length
+            }
           </div>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
@@ -368,12 +496,16 @@ export function CompanyEmployeesTab({
       {loading ? (
         <div className="p-12 text-center rounded-2xl border border-border bg-card">
           <Clock className="w-8 h-8 mx-auto text-[#DFB76C] animate-spin mb-3" />
-          <p className="text-sm text-muted-foreground">Đang tải danh sách nhân sự và phân quyền từ PostgreSQL...</p>
+          <p className="text-sm text-muted-foreground">
+            Đang tải danh sách nhân sự và phân quyền từ PostgreSQL...
+          </p>
         </div>
       ) : employees.length === 0 ? (
         <div className="p-12 text-center rounded-2xl border border-dashed border-border bg-card shadow-[var(--shadow-card)]">
           <Users className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
-          <h4 className="text-base font-bold text-foreground">Doanh nghiệp chưa có nhân viên nào</h4>
+          <h4 className="text-base font-bold text-foreground">
+            Doanh nghiệp chưa có nhân viên nào
+          </h4>
           <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
             Thêm nhân sự đầu tiên để bắt đầu phân công nhiệm vụ và quản lý vận hành số.
           </p>
@@ -401,7 +533,8 @@ export function CompanyEmployeesTab({
               </thead>
               <tbody className="divide-y divide-border/60">
                 {employees.map((emp) => {
-                  const isManager = emp.role === "manager" || emp.role === "owner" || emp.role === "admin";
+                  const isManager =
+                    emp.role === "manager" || emp.role === "owner" || emp.role === "admin";
                   return (
                     <tr key={emp.id} className="hover:bg-muted/30 transition-colors">
                       <td className="py-3.5 px-4">
@@ -411,7 +544,9 @@ export function CompanyEmployeesTab({
                           </div>
                           <div>
                             <div className="font-semibold text-foreground">{emp.fullName}</div>
-                            <div className="text-xs text-muted-foreground">Mã: NV-{emp.id.slice(0, 6).toUpperCase()}</div>
+                            <div className="text-xs text-muted-foreground">
+                              Mã: NV-{emp.id.slice(0, 6).toUpperCase()}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -432,27 +567,42 @@ export function CompanyEmployeesTab({
 
                           <div className="flex items-center gap-1 flex-wrap">
                             {emp.canAssignTasks && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20" title="Được quyền giao việc cho nhân viên khác">
+                              <span
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20"
+                                title="Được quyền giao việc cho nhân viên khác"
+                              >
                                 📋 Giao việc
                               </span>
                             )}
                             {emp.canManageMembers && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="Được quyền thêm và quản lý nhân viên">
+                              <span
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                title="Được quyền thêm và quản lý nhân viên"
+                              >
                                 👥 Nhân sự
                               </span>
                             )}
                             {emp.canManageFinance && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title="Được quyền xem tài chính và duyệt chi">
+                              <span
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                title="Được quyền xem tài chính và duyệt chi"
+                              >
                                 💰 Tài chính
                               </span>
                             )}
                             {emp.canManageDocs && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20" title="Được quyền số hóa và quản lý tài liệu">
+                              <span
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                                title="Được quyền số hóa và quản lý tài liệu"
+                              >
                                 📁 Tài liệu
                               </span>
                             )}
                             {emp.canManageCrm && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/20" title="Được quyền chăm sóc khách hàng CRM">
+                              <span
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/20"
+                                title="Được quyền chăm sóc khách hàng CRM"
+                              >
                                 🤝 CRM
                               </span>
                             )}
@@ -485,7 +635,9 @@ export function CompanyEmployeesTab({
                           </div>
                         )}
                         {!emp.email && !emp.phone && (
-                          <span className="text-xs text-muted-foreground/60 italic">Chưa cập nhật</span>
+                          <span className="text-xs text-muted-foreground/60 italic">
+                            Chưa cập nhật
+                          </span>
                         )}
                       </td>
 
@@ -541,7 +693,8 @@ export function CompanyEmployeesTab({
               <span>Thêm Nhân Viên & Phân Quyền</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Phân định vai trò rõ ràng giữa Quản trị viên (được quyền giao việc, quản trị) và Nhân viên thực thi.
+              Phân định vai trò rõ ràng giữa Quản trị viên (được quyền giao việc, quản trị) và Nhân
+              viên thực thi.
             </p>
 
             <form onSubmit={handleAddEmployee} className="space-y-4 mt-5">
@@ -557,6 +710,35 @@ export function CompanyEmployeesTab({
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                 />
+              </div>
+
+              {/* Lựa chọn Nhóm Quyền (Role Group) từ API */}
+              <div className="p-3.5 rounded-xl border border-[#DFB76C]/30 bg-slate-900/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#DFB76C] flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#DFB76C]" />
+                    Nhóm Quyền Phân Bổ (API RBAC)
+                  </label>
+                  <span className="text-[11px] text-slate-400">Tự động nạp mẫu quyền</span>
+                </div>
+                <select
+                  value={selectedRoleGroupId}
+                  onChange={(e) => handleSelectRoleGroup(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-sm text-white focus:outline-none focus:border-[#DFB76C] cursor-pointer"
+                >
+                  <option value="">-- Chọn nhóm quyền từ hệ thống --</option>
+                  {roleGroups.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name} (Cấp {g.level} • {g.permissionIds?.length || 0} quyền)
+                    </option>
+                  ))}
+                </select>
+                {selectedRoleGroupId && (
+                  <p className="text-[11px] text-[#DFB76C]/90 mt-1">
+                    {roleGroups.find((g) => g.id === selectedRoleGroupId)?.description ||
+                      "Đã áp dụng quyền từ nhóm"}
+                  </p>
+                )}
               </div>
 
               {/* Lựa chọn vai trò cốt lõi */}
@@ -613,7 +795,9 @@ export function CompanyEmployeesTab({
                     />
                     <div>
                       <span className="font-semibold text-white">Quyền Giao Việc Cho Nhân Sự</span>
-                      <p className="text-[11px] text-slate-400">Được phép tạo việc mới và phân công nhiệm vụ cho nhân viên khác</p>
+                      <p className="text-[11px] text-slate-400">
+                        Được phép tạo việc mới và phân công nhiệm vụ cho nhân viên khác
+                      </p>
                     </div>
                   </label>
 
@@ -626,7 +810,9 @@ export function CompanyEmployeesTab({
                     />
                     <div>
                       <span className="font-semibold text-white">Quyền Quản Lý & Thêm Nhân Sự</span>
-                      <p className="text-[11px] text-slate-400">Được phép thêm thành viên mới, phân quyền phòng ban</p>
+                      <p className="text-[11px] text-slate-400">
+                        Được phép thêm thành viên mới, phân quyền phòng ban
+                      </p>
                     </div>
                   </label>
 
@@ -638,8 +824,12 @@ export function CompanyEmployeesTab({
                       className="w-4 h-4 accent-[#DFB76C] rounded"
                     />
                     <div>
-                      <span className="font-semibold text-white">Quyền Tài Chính & Duyệt Chi Tiền</span>
-                      <p className="text-[11px] text-slate-400">Được phép xem thống kê doanh thu và phê duyệt tờ trình chi</p>
+                      <span className="font-semibold text-white">
+                        Quyền Tài Chính & Duyệt Chi Tiền
+                      </span>
+                      <p className="text-[11px] text-slate-400">
+                        Được phép xem thống kê doanh thu và phê duyệt tờ trình chi
+                      </p>
                     </div>
                   </label>
 
@@ -651,8 +841,12 @@ export function CompanyEmployeesTab({
                       className="w-4 h-4 accent-[#DFB76C] rounded"
                     />
                     <div>
-                      <span className="font-semibold text-white">Quyền Quản Lý Tài Liệu Số Hóa</span>
-                      <p className="text-[11px] text-slate-400">Được phép tải lên, biên tập và phân loại tài liệu công ty</p>
+                      <span className="font-semibold text-white">
+                        Quyền Quản Lý Tài Liệu Số Hóa
+                      </span>
+                      <p className="text-[11px] text-slate-400">
+                        Được phép tải lên, biên tập và phân loại tài liệu công ty
+                      </p>
                     </div>
                   </label>
 
@@ -664,8 +858,12 @@ export function CompanyEmployeesTab({
                       className="w-4 h-4 accent-[#DFB76C] rounded"
                     />
                     <div>
-                      <span className="font-semibold text-white">Quyền Chăm Sóc Khách Hàng CRM</span>
-                      <p className="text-[11px] text-slate-400">Được xem và cập nhật thông tin khách hàng, leads tiềm năng</p>
+                      <span className="font-semibold text-white">
+                        Quyền Chăm Sóc Khách Hàng CRM
+                      </span>
+                      <p className="text-[11px] text-slate-400">
+                        Được xem và cập nhật thông tin khách hàng, leads tiềm năng
+                      </p>
                     </div>
                   </label>
                 </div>
@@ -725,7 +923,9 @@ export function CompanyEmployeesTab({
                     <option value="Khối Vận Hành">Khối Vận Hành</option>
                     <option value="Phòng Kinh Doanh">Phòng Kinh Doanh</option>
                     <option value="Phòng Kỹ Thuật & Công Nghệ">Phòng Kỹ Thuật & Công Nghệ</option>
-                    <option value="Phòng Marketing & Truyền Thông">Phòng Marketing & Truyền Thông</option>
+                    <option value="Phòng Marketing & Truyền Thông">
+                      Phòng Marketing & Truyền Thông
+                    </option>
                     <option value="Phòng Tài Chính - Kế Toán">Phòng Tài Chính - Kế Toán</option>
                     <option value="Ban Giám Đốc">Ban Giám Đốc</option>
                   </select>
@@ -762,10 +962,40 @@ export function CompanyEmployeesTab({
               <span>Phân Quyền Cho Nhân Sự</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Điều chỉnh vai trò và cấp quyền trực tiếp cho: <strong className="text-white">{editingEmployee.fullName}</strong>
+              Điều chỉnh vai trò và cấp quyền trực tiếp cho:{" "}
+              <strong className="text-white">{editingEmployee.fullName}</strong>
             </p>
 
             <form onSubmit={handleSavePermissions} className="space-y-4 mt-5">
+              {/* Lựa chọn Nhóm Quyền (Role Group) từ API */}
+              <div className="p-3.5 rounded-xl border border-[#DFB76C]/30 bg-slate-900/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#DFB76C] flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#DFB76C]" />
+                    Đổi Nhóm Quyền Mẫu (API RBAC)
+                  </label>
+                  <span className="text-[11px] text-slate-400">Đồng bộ quyền tự động</span>
+                </div>
+                <select
+                  value={editRoleGroupId}
+                  onChange={(e) => handleSelectEditRoleGroup(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-sm text-white focus:outline-none focus:border-[#DFB76C] cursor-pointer"
+                >
+                  <option value="">-- Chọn nhóm quyền để cập nhật --</option>
+                  {roleGroups.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name} (Cấp {g.level} • {g.permissionIds?.length || 0} quyền)
+                    </option>
+                  ))}
+                </select>
+                {editRoleGroupId && (
+                  <p className="text-[11px] text-[#DFB76C]/90 mt-1">
+                    {roleGroups.find((g) => g.id === editRoleGroupId)?.description ||
+                      "Đã áp dụng quyền từ nhóm"}
+                  </p>
+                )}
+              </div>
+
               {/* Lựa chọn vai trò */}
               <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2">
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#DFB76C]">
@@ -828,7 +1058,9 @@ export function CompanyEmployeesTab({
                     />
                     <div>
                       <span className="font-semibold text-white">Quyền Giao Việc Cho Nhân Sự</span>
-                      <p className="text-[11px] text-slate-400">Cho phép tạo công việc và giao việc cho các nhân viên khác</p>
+                      <p className="text-[11px] text-slate-400">
+                        Cho phép tạo công việc và giao việc cho các nhân viên khác
+                      </p>
                     </div>
                   </label>
 
@@ -841,7 +1073,9 @@ export function CompanyEmployeesTab({
                     />
                     <div>
                       <span className="font-semibold text-white">Quyền Quản Lý & Thêm Nhân Sự</span>
-                      <p className="text-[11px] text-slate-400">Cho phép thêm mới và phân quyền cho nhân viên</p>
+                      <p className="text-[11px] text-slate-400">
+                        Cho phép thêm mới và phân quyền cho nhân viên
+                      </p>
                     </div>
                   </label>
 
@@ -853,8 +1087,12 @@ export function CompanyEmployeesTab({
                       className="w-4 h-4 accent-[#DFB76C] rounded"
                     />
                     <div>
-                      <span className="font-semibold text-white">Quyền Tài Chính & Duyệt Chi Tiền</span>
-                      <p className="text-[11px] text-slate-400">Cho phép xem doanh thu và duyệt chi tiền</p>
+                      <span className="font-semibold text-white">
+                        Quyền Tài Chính & Duyệt Chi Tiền
+                      </span>
+                      <p className="text-[11px] text-slate-400">
+                        Cho phép xem doanh thu và duyệt chi tiền
+                      </p>
                     </div>
                   </label>
 
@@ -866,8 +1104,12 @@ export function CompanyEmployeesTab({
                       className="w-4 h-4 accent-[#DFB76C] rounded"
                     />
                     <div>
-                      <span className="font-semibold text-white">Quyền Quản Lý Tài Liệu Số Hóa</span>
-                      <p className="text-[11px] text-slate-400">Cho phép tải lên và phân loại tài liệu doanh nghiệp</p>
+                      <span className="font-semibold text-white">
+                        Quyền Quản Lý Tài Liệu Số Hóa
+                      </span>
+                      <p className="text-[11px] text-slate-400">
+                        Cho phép tải lên và phân loại tài liệu doanh nghiệp
+                      </p>
                     </div>
                   </label>
 
@@ -879,8 +1121,12 @@ export function CompanyEmployeesTab({
                       className="w-4 h-4 accent-[#DFB76C] rounded"
                     />
                     <div>
-                      <span className="font-semibold text-white">Quyền Chăm Sóc Khách Hàng CRM</span>
-                      <p className="text-[11px] text-slate-400">Cho phép xem và cập nhật khách hàng tiềm năng</p>
+                      <span className="font-semibold text-white">
+                        Quyền Chăm Sóc Khách Hàng CRM
+                      </span>
+                      <p className="text-[11px] text-slate-400">
+                        Cho phép xem và cập nhật khách hàng tiềm năng
+                      </p>
                     </div>
                   </label>
                 </div>

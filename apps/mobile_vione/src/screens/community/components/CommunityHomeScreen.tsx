@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   Handshake,
   Building2,
+  Package,
 } from "lucide-react-native";
 import { StickyBrandHeader } from "../../../components/common/StickyBrandHeader";
 import { B2BEvent } from "../../../types";
@@ -47,6 +48,7 @@ export interface CommunityHomeScreenProps {
   refreshing: boolean;
   onRefresh: () => void;
   onOpenCreateCommunity: () => void;
+  onOpenPackageRegistration?: () => void;
   activeTab: CommunityTab;
   onChangeTab: (tab: CommunityTab) => void;
   hasAdmin: boolean;
@@ -60,6 +62,13 @@ export interface CommunityHomeScreenProps {
   opportunities: CommunityOpportunityItem[];
   onSelectOpportunity: (opp: CommunityOpportunityItem) => void;
   onProposeMeeting: (opp: CommunityOpportunityItem) => void;
+  subStatus?: {
+    hasSubscription: boolean;
+    isTrial: boolean;
+    trialDaysLeft: number;
+    plan?: string;
+  };
+  onActivateTrial?: () => void;
 }
 
 export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
@@ -69,6 +78,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
   refreshing,
   onRefresh,
   onOpenCreateCommunity,
+  onOpenPackageRegistration,
   activeTab,
   onChangeTab,
   hasAdmin,
@@ -82,6 +92,8 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
   opportunities,
   onSelectOpportunity,
   onProposeMeeting,
+  subStatus,
+  onActivateTrial,
 }) => {
   return (
     <>
@@ -134,21 +146,160 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                 </Text>
               </View>
 
-              <TouchableOpacity
-                style={styles.createCommunityBtn}
-                onPress={() => onOpenCreateCommunity()}
-              >
-                <LinearGradient
-                  colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.createCommunityGrad}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                {onOpenPackageRegistration && (
+                  <TouchableOpacity
+                    onPress={onOpenPackageRegistration}
+                    style={{
+                      paddingHorizontal: 10,
+                      paddingVertical: 7,
+                      borderRadius: 12,
+                      backgroundColor: "#0F172A",
+                      borderWidth: 1,
+                      borderColor: "rgba(216, 178, 130, 0.5)",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Package size={14} color="#D8B282" />
+                    <Text style={{ color: "#F6E1C3", fontSize: 11, fontWeight: "700" }}>
+                      Đăng Ký Gói
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                  style={styles.createCommunityBtn}
+                  onPress={() => onOpenCreateCommunity()}
                 >
-                  <Plus size={16} color="#050C15" strokeWidth={2.5} />
-                  <Text style={styles.createCommunityText}>+ Tạo cộng đồng (30 ngày free)</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+                  <LinearGradient
+                    colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.createCommunityGrad}
+                  >
+                    <Plus size={16} color="#050C15" strokeWidth={2.5} />
+                    <Text style={styles.createCommunityText}>+ Tạo cộng đồng (30 ngày free)</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
             </View>
+
+            {/* Banner Kích Hoạt 30 Ngày Dùng Thử Miễn Phí nếu tài khoản chưa có gói */}
+            {subStatus && !subStatus.hasSubscription && (
+              <View style={{ marginHorizontal: 16, marginBottom: 14 }}>
+                <LinearGradient
+                  colors={["rgba(216, 178, 130, 0.22)", "rgba(11, 15, 25, 0.95)"]}
+                  style={{
+                    borderRadius: 18,
+                    borderWidth: 1.5,
+                    borderColor: "rgba(216, 178, 130, 0.5)",
+                    padding: 16,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                      <View style={{ width: 30, height: 30, borderRadius: 8, backgroundColor: "#D8B282", alignItems: "center", justifyContent: "center" }}>
+                        <Sparkles size={16} color="#070B14" />
+                      </View>
+                      <View>
+                        <Text style={{ color: "#F6E1C3", fontSize: 13, fontWeight: "900", letterSpacing: 0.5 }}>
+                          FREE 30 NGÀY DÙNG THỬ
+                        </Text>
+                        <Text style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: 11 }}>
+                          Gói ViOne Platform Doanh Nghiệp 5.0
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12, backgroundColor: "rgba(216, 178, 130, 0.2)", borderWidth: 1, borderColor: "#D8B282" }}>
+                      <Text style={{ color: "#D8B282", fontSize: 10, fontWeight: "800" }}>FREE 30D</Text>
+                    </View>
+                  </View>
+
+                  <Text style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: 11.5, lineHeight: 16, marginBottom: 12 }}>
+                    Mở khóa tính năng Cộng Đồng, Giao việc & Nhận việc, Chấm công và Chăm sóc khách hàng CRM.
+                  </Text>
+
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <TouchableOpacity
+                      onPress={onActivateTrial}
+                      activeOpacity={0.85}
+                      style={{ flex: 1, borderRadius: 12, overflow: "hidden" }}
+                    >
+                      <LinearGradient
+                        colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{ paddingVertical: 10, alignItems: "center", justifyContent: "center" }}
+                      >
+                        <Text style={{ color: "#050C15", fontWeight: "900", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                          Kích Hoạt Free 30D
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+
+                    {onOpenPackageRegistration && (
+                      <TouchableOpacity
+                        onPress={onOpenPackageRegistration}
+                        activeOpacity={0.85}
+                        style={{
+                          flex: 1,
+                          borderRadius: 12,
+                          backgroundColor: "#050C15",
+                          borderWidth: 1,
+                          borderColor: "#D8B282",
+                          paddingVertical: 10,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: "#F6E1C3", fontWeight: "800", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                          Đăng Ký Gói (QR)
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </LinearGradient>
+              </View>
+            )}
+
+            {/* Badge Đếm Ngược Ngày Dùng Thử */}
+            {subStatus && subStatus.hasSubscription && subStatus.isTrial && (
+              <View style={{ marginHorizontal: 16, marginBottom: 12, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, backgroundColor: "rgba(216, 178, 130, 0.12)", borderWidth: 1, borderColor: "rgba(216, 178, 130, 0.35)", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Clock size={15} color="#D8B282" />
+                  <Text style={{ color: "#F6E1C3", fontSize: 12, fontWeight: "700" }}>
+                    Dùng Thử ViOne Platform 5.0
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <View style={{ backgroundColor: "#D8B282", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
+                    <Text style={{ color: "#070B14", fontSize: 10, fontWeight: "900" }}>
+                      Còn {subStatus.trialDaysLeft} ngày
+                    </Text>
+                  </View>
+                  {onOpenPackageRegistration && (
+                    <TouchableOpacity
+                      onPress={onOpenPackageRegistration}
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 2,
+                        borderRadius: 8,
+                        backgroundColor: "#050C15",
+                        borderWidth: 1,
+                        borderColor: "#D8B282",
+                      }}
+                    >
+                      <Text style={{ color: "#F6E1C3", fontSize: 10, fontWeight: "800" }}>
+                        Nâng cấp gói
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            )}
 
             {/* Filter Tabs matching PWA: Tất cả, Đang quản trị, Đã tham gia, Lịch sử yêu cầu */}
             <ScrollView

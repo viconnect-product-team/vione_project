@@ -27,6 +27,9 @@
 | **UC-APP-13** | Đăng ký & Điểm danh Vé Sự kiện B2B (Dynamic QR) | Doanh nhân, BTC | P1 - Cao | Hoạt động |
 | **UC-APP-14** | Ra lệnh Giọng nói Trợ lý Doanh nhân AI (Floating Orb) | Doanh nhân | P1 - Cao | Hoạt động |
 | **UC-APP-15** | Giám sát Hoạt động Nhân sự trong ngày dành cho Giám đốc | Ban Giám Đốc | P1 - Cao | Hoạt động |
+| **UC-APP-16** | Trải Nghiệm Cài Đặt PWA 1-Chạm (Home Install Banner Card) | Người dùng PWA | P1 - Cao | Hoạt động |
+| **UC-APP-17** | Quét Mã QR Cá Nhân & Trải Nghiệm Profile 5.0 Chuẩn Doanh Nhân Hiện Đại | Doanh nhân, Đối tác | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-18** | Kích Hoạt Dùng Thử Miễn Phí 30 Ngày Cộng Đồng ViOne Platform | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
 
 ---
 
@@ -165,3 +168,79 @@
   2. Khối thẻ **"Cài Đặt App ViOne (1-Chạm)"** (`HomeInstallBannerCard`) được di chuyển xuống vị trí dưới cùng của Trang chủ, trước các modal và thanh điều hướng đáy.
   3. Người dùng cuộn xuống đáy trang chủ sẽ thấy thẻ kêu gọi cài đặt PWA viền mạ vàng, tích hợp nút "Cài Đặt Ngay" chuẩn Gradient Vàng Hoàng Gia với đầy đủ hướng dẫn thêm vào màn hình chính (Add to Home Screen).
 
+
+---
+
+### UC-APP-17: Quét Mã QR Cá Nhân & Trải Nghiệm Profile 5.0 Chuẩn Doanh Nhân Hiện Đại (Modern Profile 5.0 Modal & QR Scanner Integration)
+* **Tác nhân:** Doanh nhân, Khách đối tác, Người dùng App ViOne (Native Mobile & PWA).
+* **Mục tiêu:** Nâng tầm trải nghiệm khi quét mã QR cá nhân của tài khoản trong ViOne. Thay vì mở màn hình phẳng thông thường, hệ thống bung Modal/BottomSheet Profile 5.0 siêu sang trọng, mang phong cách Executive Luxury (Đen Thạch Anh Obsidian `#050C15` & Vàng Hoàng Gia Champagne Gold `#D8B282`), hiệu ứng Holographic Glow huyền ảo, tích hợp đầy đủ các tương tác 1-chạm thông minh.
+* **Luồng sự kiện chính:**
+  1. **Quét Mã QR Cá Nhân:**
+     - Người dùng mở trình quét mã QR trong App ViOne (`ScanQrModal.tsx` trên Native Mobile hoặc Camera QR Scanner trên PWA).
+     - Đưa khung ngắm vào mã QR cá nhân của doanh nhân khác (chứa link dạng `https://vione.viconnect.vn/p/:identifier` hoặc `/public/p/:id`).
+  2. **Giải Mã & Hiển Thị Modal Profile 5.0 Hiện Đại (`Profile5ModernModal.tsx`):**
+     - Hệ thống tự động nhận diện mã định danh doanh nhân, gọi API `GET /api/public/profile/:identifier` hoặc `GET /connect-app/profile/:id` để lấy hồ sơ thực tế từ PostgreSQL.
+     - Bung Modal toàn màn hình với thiết kế tương tác 5.0:
+       * **Avatar Vòng Halo Phát Sáng:** Khung tròn avatar với dải viền Vàng Champagne chuyển động xoay nhẹ, hiệu ứng Glow 3D sang trọng.
+       * **Huy hiệu Xác Thực 5.0 (Verified Shield 5.0):** Huy hiệu mạ vàng xác minh danh tính doanh nhân chính thức.
+       * **Thẻ VIP Thông Minh Holographic:** Nền Đen Thạch Anh Obsidian chìm vân tinh thể, hiển thị Họ tên, Chức vụ, Tên Doanh nghiệp, Mã hội viên VIONE.
+  3. **Bộ Nút Hành Động Nhanh Chuẩn Gradient (Rule 8):**
+     - **Nút "Kết Nối 5.0" (Connect):** Gradient Ngọc Lục Bảo (`linear-gradient(135deg, #059669, #10B981, #047857)`), gửi yêu cầu kết nối giao thương tức thì.
+     - **Nút "Nhắn Tin":** Gradient Vàng Hoàng Gia (`linear-gradient(135deg, #F6E1C3, #D8B282, #C29B69, #8C653B)`), khởi tạo thread chat 1-1 với đối tác.
+     - **Nút "Lưu Danh Bạ":** Gradient Đen Thạch Anh Mạ Vàng viền vàng, xuất tệp vCard trực tiếp nạp vào danh bạ điện thoại 1-chạm.
+     - **Nút "Gọi Điện":** Gradient Ngọc Lục Bảo kích hoạt cuộc gọi điện thoại trực tiếp.
+     - **Nút "Chia Sẻ":** Gradient Thạch Anh kích hoạt chia sẻ hồ sơ số qua mạng xã hội hoặc sao chép liên kết.
+  4. **Hệ Thống 3 Tab Tương Tác Chuyên Sâu:**
+     - **Tab 1: Hồ Sơ Doanh Nhân:** Giới thiệu bản thân (Bio), Lĩnh vực chuyên môn, Sứ mệnh phát triển, Email, Số điện thoại và Địa chỉ.
+     - **Tab 2: Hợp Tác B2B:** Năng lực cung ứng sản phẩm/dịch vụ, Nhu cầu kết nối giao thương, Danh mục sản phẩm thế mạnh và Lợi thế cạnh tranh.
+     - **Tab 3: Mã QR Đối Ứng:** Hiển thị mã QR danh thiếp số của đối tác kèm nút tải ảnh QR chất lượng cao về máy.
+
+---
+
+### UC-APP-18: Kích Hoạt Dùng Thử Miễn Phí 30 Ngày Cộng Đồng ViOne Platform (30-Day Free Trial Community Hub)
+* **Tác nhân:** Người dùng App ViOne thông thường (Cá nhân, Doanh nhân tự do, Doanh nghiệp mới).
+* **Mục tiêu:** Cung cấp cơ chế mở khóa dùng thử toàn diện 30 ngày cho phân hệ Cộng đồng trên App ViOne (đồng bộ 100% giữa Native Mobile và PWA Web).
+* **Luồng sự kiện chính:**
+  1. Người dùng bấm vào Tab "Cộng đồng" trên thanh điều hướng App ViOne.
+  2. Hệ thống kiểm tra trạng thái thuê bao qua API `GET /api/companies/subscription-status`.
+  3. Nếu người dùng chưa kích hoạt gói:
+     - Hiển thị Banner Hoàng Gia: **"FREE 30 NGÀY DÙNG THỬ CỘNG ĐỒNG VIONE PLATFORM"**.
+     - Thuyết minh đặc quyền: Quản trị thành viên, Giao việc & Nhận việc Kanban, Chấm công thông minh, và Chăm sóc khách hàng CRM.
+     - Nút bấm Gradient Vàng Hoàng Gia: **"Kích Hoạt 30 Ngày Dùng Thử Miễn Phí"**.
+  4. Người dùng bấm kích hoạt:
+     - Client gửi request `POST /api/companies/subscribe-package` với `packageType = 'trial_30_days'`.
+     - Backend cập nhật trạng thái `active`, hạn dùng thử `trial_ends_at = NOW() + 30 ngày`.
+     - Kích hoạt gửi email chào mừng và hướng dẫn truy cập Web CRM Quản trị.
+  5. Màn hình Cộng đồng mở khóa ngay lập tức:
+     - Hiển thị Huy hiệu Đếm ngược: `Dùng Thử ViOne Platform 5.0 - Còn X ngày`.
+     - Cho phép khởi tạo cộng đồng mới hoặc truy cập các công cụ vận hành số (Tasks, Attendance, CRM) trực tiếp trên App.
+
+---
+
+### UC-APP-19: Đăng Ký Gói ViOne Platform Theo Số Lượng Tài Khoản, Thanh Toán VietQR & Kiểm Soát Giới Hạn Tạo Tài Khoản (Slot Limit Enforcement)
+* **Tác nhân:** Người dùng App ViOne (Đồng bộ 100% Dual-App giữa Native Mobile và PWA Web).
+* **Mục tiêu:** Cung cấp giao diện đăng ký gói ViOne Platform trực quan: nhập thông tin doanh nghiệp, chọn gói theo nhu cầu số lượng tài khoản (slots), thanh toán VietQR Napas 24/7 và đẩy hồ sơ về CRM ViConnect duyệt. Đồng thời kích hoạt cơ chế kiểm soát nghiêm ngặt hạn mức tài khoản theo gói cước.
+* **Luồng sự kiện chính:**
+  1. **Khởi Động Đăng Ký Gói (PackageRegistrationModal):**
+     - Người dùng bấm nút **"Đăng Ký Gói ViOne"** hoặc **"Đăng Ký Gói Cụ Thể (QR)"** tại màn hình Cộng đồng.
+     - Bung Modal đăng ký phong cách Đen Thạch Anh Obsidian & Vàng Champagne Gold.
+  2. **Nhập Thông Tin Doanh Nghiệp & Chọn Gói:**
+     - Người dùng điền thông tin: Tên doanh nghiệp (bắt buộc), Mã số thuế, Người đại diện (bắt buộc), Số điện thoại (bắt buộc), Email nhận gói (bắt buộc), Lĩnh vực kinh doanh, Địa chỉ.
+     - Chọn gói cước từ danh mục nạp trực tiếp qua API `GET /api/companies/packages`:
+       * Gói Dùng thử Free 30 ngày (0đ, 30 slots).
+       * Gói Chuẩn (1.500.000đ, 30 slots).
+       * Gói Tăng Trưởng (2.500.000đ, 50 slots).
+       * Gói Doanh Nghiệp (4.500.000đ, 100 slots).
+  3. **Thanh Toán VietQR Napas 24/7 Tự Động:**
+     - Đối với các gói có phí, hệ thống sinh mã VietQR Napas 24/7 tự động chuẩn xác theo số tiền gói, số tài khoản, chủ tài khoản và cú pháp chuyển tiền `VIONE {packageCode} {phone}`.
+     - Hỗ trợ nút sao chép 1-chạm (Copy to clipboard) cho số tài khoản và nội dung chuyển khoản.
+  4. **Gửi Hồ Sơ Đăng Ký Về ViConnect CRM:**
+     - Người dùng bấm nút Gradient Vàng Hoàng Gia: **"Gửi Đăng Ký Về ViConnect CRM"**.
+     - Gọi API `POST /api/companies/package-orders`. Hồ sơ được lưu vào CSDL PostgreSQL và xuất hiện ngay tại tab Duyệt Đơn trên ViConnect CRM.
+     - Hiển thị màn hình thông báo gửi thành công và thông tin email nhận kết quả kích hoạt.
+  5. **Kiểm Soát Giới Hạn Tạo Tài Khoản (Slot Limit Enforcement):**
+     - Tại màn hình Quản lý Đội ngũ & Phân quyền Nhân sự (`CompanyEmployeesTab.tsx`):
+       * Hệ thống hiển thị thanh tiến trình sử dụng tài khoản: `{usedSlots} / {maxSlots} slots đã dùng`.
+       * **Kiểm tra biên giới hạn (Boundary Guard):** Khi doanh nghiệp đã sử dụng hết hạn mức (ví dụ gói chỉ tạo được 10 hoặc 30 tài khoản mà người dùng cố tạo thêm 1 tài khoản mới), hệ thống chặn lại ngay lập tức và bắn thông báo chính xác:
+         `"Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản"`.
+       * Backend API `POST /api/companies/:id/employees` đồng thời kiểm tra lại hạn mức trong CSDL, nếu `currentCount >= maxSlots` thì trả về lỗi HTTP 400 Bad Request kèm thông điệp cảnh báo trên.

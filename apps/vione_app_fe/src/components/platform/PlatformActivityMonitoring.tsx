@@ -24,6 +24,8 @@ import {
   Edit2,
   X,
   Layers,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -48,15 +50,19 @@ export interface CompanyActivityItem {
   logoUrl?: string;
   industry: string;
   ownerName: string;
+  buyerName?: string;
   ownerEmail: string;
   ownerPhone: string;
   plan: string;
   subscriptionStatus: "active" | "trial" | "expired" | "unsubscribed" | string;
   isTrial: boolean;
+  isTrialExpiringSoon?: boolean;
+  trialDaysLeft?: number;
   expiresAt?: string;
   daysLeft: number;
   maxSlots: number;
   employeeCount: number;
+  memberCount?: number;
   taskCount: number;
   completedTaskCount: number;
   customerCount: number;
@@ -126,7 +132,9 @@ export function PlatformActivityMonitoring() {
 
   const openEditModal = (c: CompanyActivityItem) => {
     setSelectedCompany(c);
-    setEditPlan(c.plan.includes("enterprise") ? "vione_platform_enterprise" : "vione_platform_annual");
+    setEditPlan(
+      c.plan.includes("enterprise") ? "vione_platform_enterprise" : "vione_platform_annual",
+    );
     setEditStatus(c.subscriptionStatus === "expired" ? "active" : c.subscriptionStatus);
     setEditSlots(c.maxSlots || 20);
     setExtendDays(30);
@@ -159,6 +167,84 @@ export function PlatformActivityMonitoring() {
       toast.error("Lỗi khi cập nhật gói: " + (err.message || "Vui lòng thử lại"));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // Modal Quản lý Cộng đồng nền tảng (Platform Community CRUD)
+  const [isCommunityModalOpen, setIsCommunityModalOpen] = useState<boolean>(false);
+  const [editingCommunityId, setEditingCommunityId] = useState<string | null>(null);
+  const [communityName, setCommunityName] = useState<string>("");
+  const [communityTagline, setCommunityTagline] = useState<string>("");
+  const [communityDescription, setCommunityDescription] = useState<string>("");
+  const [communityOwnerUserId, setCommunityOwnerUserId] = useState<string>("");
+  const [communitySubmitting, setCommunitySubmitting] = useState<boolean>(false);
+
+  const handleSaveCommunity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!communityName.trim()) {
+      toast.error("Vui lòng nhập tên cộng đồng");
+      return;
+    }
+    setCommunitySubmitting(true);
+    try {
+      if (editingCommunityId) {
+        const res = await fetchNestApi<any>(
+          `/companies/platform/communities/${editingCommunityId}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify({
+              name: communityName.trim(),
+              tagline: communityTagline.trim() || undefined,
+              description: communityDescription.trim() || undefined,
+            }),
+          },
+        );
+        if (res && res.ok) {
+          toast.success("Cập nhật cộng đồng thành công!");
+          setIsCommunityModalOpen(false);
+          loadData();
+        } else {
+          toast.error(res?.message || "Không thể cập nhật cộng đồng");
+        }
+      } else {
+        const res = await fetchNestApi<any>("/companies/platform/communities", {
+          method: "POST",
+          body: JSON.stringify({
+            name: communityName.trim(),
+            tagline: communityTagline.trim() || undefined,
+            description: communityDescription.trim() || undefined,
+            ownerUserId: communityOwnerUserId || undefined,
+          }),
+        });
+        if (res && res.ok) {
+          toast.success("Tạo mới cộng đồng cho tài khoản thành công!");
+          setIsCommunityModalOpen(false);
+          loadData();
+        } else {
+          toast.error(res?.message || "Không thể tạo cộng đồng");
+        }
+      }
+    } catch (err: any) {
+      toast.error("Lỗi khi lưu cộng đồng: " + (err?.message || "Vui lòng thử lại"));
+    } finally {
+      setCommunitySubmitting(false);
+    }
+  };
+
+  const handleDeleteCommunity = async (id: string, name: string) => {
+    if (!confirm(`Bạn có chắc chắn muốn xóa cộng đồng "${name}"?`)) return;
+    try {
+      const res = await fetchNestApi<any>(`/companies/platform/communities/${id}`, {
+        method: "DELETE",
+      });
+      if (res && res.ok) {
+        toast.success(`Đã xóa cộng đồng "${name}" thành công!`);
+        loadData();
+      } else {
+        toast.error(res?.message || "Không thể xóa cộng đồng");
+      }
+    } catch (err: any) {
+      toast.error("Lỗi khi xóa: " + (err?.message || "Vui lòng thử lại"));
     }
   };
 
@@ -284,7 +370,10 @@ export function PlatformActivityMonitoring() {
 
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data?.userGrowthTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart
+              data={data?.userGrowthTrend || []}
+              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            >
               <defs>
                 <linearGradient id="userGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
@@ -339,18 +428,35 @@ export function PlatformActivityMonitoring() {
               <span>Theo Dõi Mức Độ Hoạt Động & Sức Khỏe Doanh Nghiệp (Health Score)</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Chi tiết các công ty có gói ViOne Platform, số lượng nhân sự, công việc, tài liệu và mức độ tương tác CRM
+              Chi tiết các công ty có gói ViOne Platform, số lượng nhân sự, công việc, tài liệu và
+              mức độ tương tác CRM
             </p>
           </div>
 
-          <button
-            onClick={loadData}
-            disabled={loading}
-            className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            <span>Làm mới</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setEditingCommunityId(null);
+                setCommunityName("");
+                setCommunityTagline("");
+                setCommunityDescription("");
+                setCommunityOwnerUserId("");
+                setIsCommunityModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 text-xs text-slate-950 font-bold bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-3.5 py-1.5 rounded-lg shadow hover:opacity-95 transition-all cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Tạo Cộng Đồng Mới</span>
+            </button>
+            <button
+              onClick={loadData}
+              disabled={loading}
+              className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span>Làm mới</span>
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -395,12 +501,12 @@ export function PlatformActivityMonitoring() {
           <table className="w-full text-left text-xs">
             <thead className="border-b border-slate-800 bg-slate-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[10.5px]">
               <tr>
-                <th className="py-3 px-4">Doanh Nghiệp & Chủ Sở Hữu</th>
-                <th className="py-3 px-3">Gói Dịch Vụ</th>
-                <th className="py-3 px-3 text-center">Hạn Mức Slots</th>
+                <th className="py-3 px-4">Doanh Nghiệp & Người Mua Gói</th>
+                <th className="py-3 px-3">Gói Dịch Vụ & Trạng Thái</th>
+                <th className="py-3 px-3 text-center">Số Thành Viên (Slots)</th>
                 <th className="py-3 px-3">Mức Độ Hoạt Động (Health Score)</th>
                 <th className="py-3 px-3 text-center">Tài Liệu & CRM</th>
-                <th className="py-3 px-4 text-right">Quản Trị Gói</th>
+                <th className="py-3 px-4 text-right">Quản Trị Gói & Cộng Đồng</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -423,8 +529,8 @@ export function PlatformActivityMonitoring() {
                     c.healthScore >= 75
                       ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
                       : c.healthScore >= 50
-                      ? "text-amber-300 bg-amber-500/10 border-amber-500/30"
-                      : "text-rose-400 bg-rose-500/10 border-rose-500/30";
+                        ? "text-amber-300 bg-amber-500/10 border-amber-500/30"
+                        : "text-rose-400 bg-rose-500/10 border-rose-500/30";
 
                   const slotPercent = Math.min(
                     100,
@@ -455,10 +561,20 @@ export function PlatformActivityMonitoring() {
                             >
                               {c.companyName}
                             </Link>
-                            <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                              <span>Chủ DN: {c.ownerName}</span>
-                              <span>•</span>
-                              <span className="text-slate-500">{c.ownerEmail}</span>
+                            <div className="text-[11px] text-slate-400 flex flex-col gap-0.5 mt-0.5">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-slate-300 font-medium">Người mua:</span>
+                                <span className="text-[#DFB76C] font-semibold">
+                                  {c.buyerName || c.ownerName}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                                <span>{c.ownerEmail}</span>
+                                <span>•</span>
+                                <span className="text-emerald-400 font-medium">
+                                  {c.memberCount ?? c.employeeCount} thành viên
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -472,23 +588,37 @@ export function PlatformActivityMonitoring() {
                               c.subscriptionStatus === "active"
                                 ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                                 : c.isTrial
-                                ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                                : c.subscriptionStatus === "expired"
-                                ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
-                                : "bg-slate-800 text-slate-400 border-slate-700"
+                                  ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                                  : c.subscriptionStatus === "expired"
+                                    ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
+                                    : "bg-slate-800 text-slate-400 border-slate-700"
                             }`}
                           >
                             {c.isTrial
                               ? "Dùng thử 30 ngày"
                               : c.subscriptionStatus === "active"
-                              ? "Doanh Nghiệp Active"
-                              : c.subscriptionStatus === "expired"
-                              ? "Đã hết hạn"
-                              : "Chưa kích hoạt"}
+                                ? "Doanh Nghiệp Active"
+                                : c.subscriptionStatus === "expired"
+                                  ? "Đã hết hạn"
+                                  : "Chưa kích hoạt"}
                           </span>
                           <div className="text-[10.5px] text-slate-400">
                             {c.daysLeft > 0 ? `Còn ${c.daysLeft} ngày` : "Hết hạn dịch vụ"}
                           </div>
+
+                          {/* Cảnh báo sắp hết hạn dùng thử */}
+                          {c.isTrial &&
+                            ((c.trialDaysLeft !== undefined
+                              ? c.trialDaysLeft <= 7
+                              : c.daysLeft <= 7) ||
+                              c.isTrialExpiringSoon) && (
+                              <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-[10px] text-rose-300 font-bold animate-pulse">
+                                <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" />
+                                <span>
+                                  ⚠️ Sắp hết hạn dùng thử ({c.trialDaysLeft ?? c.daysLeft} ngày)
+                                </span>
+                              </div>
+                            )}
                         </div>
                       </td>
 
@@ -516,7 +646,9 @@ export function PlatformActivityMonitoring() {
                       <td className="py-3 px-3">
                         <div className="space-y-1.5 min-w-[160px]">
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className={`px-1.5 py-0.2 rounded border font-semibold ${healthColor}`}>
+                            <span
+                              className={`px-1.5 py-0.2 rounded border font-semibold ${healthColor}`}
+                            >
                               {c.activityLevel}
                             </span>
                             <span className="font-bold font-mono text-white">
@@ -526,7 +658,8 @@ export function PlatformActivityMonitoring() {
                           {/* Mini stats */}
                           <div className="text-[10.5px] text-slate-400 flex items-center gap-2">
                             <span>
-                              Tasks: <strong className="text-white">{c.completedTaskCount}</strong>/{c.taskCount}
+                              Tasks: <strong className="text-white">{c.completedTaskCount}</strong>/
+                              {c.taskCount}
                             </span>
                             <span>•</span>
                             <span>
@@ -551,6 +684,23 @@ export function PlatformActivityMonitoring() {
                       {/* Thao tác */}
                       <td className="py-3 px-4 text-right">
                         <div className="inline-flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCommunityId(null);
+                              setCommunityName(c.companyName + " Community");
+                              setCommunityTagline("Cộng đồng giao thương & điều hành nội bộ");
+                              setCommunityDescription(
+                                `Cộng đồng điều hành & giao việc trực thuộc ${c.companyName}`,
+                              );
+                              setCommunityOwnerUserId("");
+                              setIsCommunityModalOpen(true);
+                            }}
+                            title="Tạo / Gán cộng đồng cho doanh nghiệp này"
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[#DFB76C] hover:text-amber-200 border border-slate-700 transition-colors cursor-pointer"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                          </button>
                           <button
                             type="button"
                             onClick={() => openEditModal(c)}
@@ -611,10 +761,18 @@ export function PlatformActivityMonitoring() {
                   onChange={(e) => setEditPlan(e.target.value)}
                   className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
                 >
-                  <option value="vione_platform_enterprise">ViOne Platform Enterprise (VIP 50-200 slots)</option>
-                  <option value="vione_platform_annual">ViOne Platform Annual (Chuẩn 50 slots)</option>
-                  <option value="vione_platform_starter">ViOne Platform Starter (Khởi nghiệp 10 slots)</option>
-                  <option value="vione_platform_trial_30d">Gói Dùng Thử Trải Nghiệm (30 Ngày)</option>
+                  <option value="vione_platform_enterprise">
+                    ViOne Platform Enterprise (VIP 50-200 slots)
+                  </option>
+                  <option value="vione_platform_annual">
+                    ViOne Platform Annual (Chuẩn 50 slots)
+                  </option>
+                  <option value="vione_platform_starter">
+                    ViOne Platform Starter (Khởi nghiệp 10 slots)
+                  </option>
+                  <option value="vione_platform_trial_30d">
+                    Gói Dùng Thử Trải Nghiệm (30 Ngày)
+                  </option>
                 </select>
               </div>
 
@@ -688,6 +846,103 @@ export function PlatformActivityMonitoring() {
                   }}
                 >
                   {submitting ? "Đang lưu..." : "Cập Nhật Quyền CRM"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: TẠO / SỬA CỘNG ĐỒNG CHO DOANH NGHIỆP NỀN TẢNG ──────────────── */}
+      {isCommunityModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-2xl border border-[#DFB76C]/30 bg-slate-950 p-6 shadow-2xl relative text-white">
+            <button
+              onClick={() => setIsCommunityModalOpen(false)}
+              className="absolute right-4 top-4 text-slate-400 hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="flex items-center gap-2 text-[#DFB76C] text-xs font-bold uppercase tracking-wider">
+              <Building2 className="w-4 h-4" />
+              <span>
+                {editingCommunityId ? "Chỉnh Sửa Cộng Đồng" : "Tạo Mới Cộng Đồng Cho Doanh Nghiệp"}
+              </span>
+            </div>
+
+            <h3 className="text-lg font-bold text-white mt-1">
+              {editingCommunityId
+                ? "Cập Nhật Thông Tin Cộng Đồng"
+                : "Khởi Tạo Cộng Đồng ViOne Platform"}
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Cộng đồng sẽ được gán quyền cho chủ doanh nghiệp / người mua gói để quản lý thành viên
+              & giao việc.
+            </p>
+
+            <form onSubmit={handleSaveCommunity} className="mt-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Tên cộng đồng <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ví dụ: CEO 1983 - CLB Doanh Nhân"
+                  value={communityName}
+                  onChange={(e) => setCommunityName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-[#DFB76C]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Khẩu hiệu / Tagline
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ví dụ: Kết nối giao thương & Tăng trưởng bền vững"
+                  value={communityTagline}
+                  onChange={(e) => setCommunityTagline(e.target.value)}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-[#DFB76C]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Mô tả cộng đồng
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Mô tả tôn chỉ, định hướng hoạt động của cộng đồng..."
+                  value={communityDescription}
+                  onChange={(e) => setCommunityDescription(e.target.value)}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-[#DFB76C] resize-none"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsCommunityModalOpen(false)}
+                  className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  disabled={communitySubmitting}
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 disabled:opacity-50 cursor-pointer"
+                  style={{
+                    background: "linear-gradient(135deg, #F6E1C3 0%, #D8B282 50%, #C29B69 100%)",
+                  }}
+                >
+                  {communitySubmitting
+                    ? "Đang xử lý..."
+                    : editingCommunityId
+                      ? "Lưu Thay Đổi"
+                      : "Tạo Cộng Đồng"}
                 </button>
               </div>
             </form>

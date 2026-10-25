@@ -160,20 +160,136 @@ export class RolesService {
   }
 
   /**
-   * 4. Tạo vai trò mới
+   * 4. Lấy danh sách modules và các thao tác con (cho Popup tạo / sửa nhóm quyền)
    */
-  async createRole(data: { code: string; name: string; description?: string; level?: number }) {
-    if (!data.code?.trim() || !data.name?.trim()) {
-      throw new BadRequestException('Mã vai trò và tên vai trò không được để trống');
+  async getModulesAndActions() {
+    try {
+      const permissions = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT id, module, action, name, description
+        FROM public.platform_permissions
+        ORDER BY module ASC, action ASC
+      `);
+
+      const moduleMetaMap: Record<string, { name: string; description: string }> = {
+        attendance: { name: 'Chấm công & Điểm danh', description: 'Quản lý vào ca, ra ca, GPS và lịch sử chấm công' },
+        employees: { name: 'Nhân sự & Thành viên', description: 'Quản lý nhân viên, hồ sơ, cấp tài khoản và vai trò' },
+        finance: { name: 'Tài chính & Dòng tiền', description: 'Báo cáo doanh thu, chi phí, kế toán và dòng tiền' },
+        roles: { name: 'Phân quyền & Nhóm quyền', description: 'Quản lý vai trò, nhóm quyền và ma trận quyền hạn' },
+        settings: { name: 'Cài đặt hệ thống', description: 'Cấu hình nền tảng, thương hiệu và thông số' },
+        statistics: { name: 'Báo cáo & Thống kê', description: 'Biểu đồ tăng trưởng, phân tích dữ liệu và dashboard' },
+        subscriptions: { name: 'Gói dịch vụ & Doanh nghiệp', description: 'Quản lý đăng ký gói ViOne, dùng thử và hạn mức' },
+        tasks: { name: 'Quản lý công việc', description: 'Giao việc, nhận việc, tiến độ và phê duyệt công việc' },
+        meetings: { name: 'Quản lý cuộc họp', description: 'Lên lịch họp, phòng họp Zoom/Google Meet và biên bản' },
+        documents: { name: 'Quản lý tài liệu số', description: 'Lưu trữ hợp đồng, tài liệu pháp lý và tài nguyên số' },
+        news: { name: 'Bản tin & Bài đăng', description: 'Đăng tải thông báo, bài viết truyền thông và sự kiện' },
+        crm: { name: 'Chăm sóc khách hàng CRM', description: 'Khách hàng tiềm năng, liên hệ, lịch hẹn và tương tác' },
+        communities: { name: 'Cộng đồng ViOne Platform', description: 'Quản trị cộng đồng, kết nối B2B và thành viên' },
+        ai: { name: 'Trợ lý AI Doanh nghiệp', description: 'Trợ lý trí tuệ nhân tạo, tự động hóa và tư vấn số' },
+      };
+
+      const modulesGrouped: Record<string, { module: string; moduleName: string; description: string; actions: any[] }> = {};
+
+      for (const p of permissions) {
+        if (!modulesGrouped[p.module]) {
+          const meta = moduleMetaMap[p.module] || { name: p.module.toUpperCase(), description: '' };
+          modulesGrouped[p.module] = {
+            module: p.module,
+            moduleName: meta.name,
+            description: meta.description,
+            actions: [],
+          };
+        }
+        modulesGrouped[p.module].actions.push({
+          id: p.id,
+          action: p.action,
+          name: p.name,
+          description: p.description,
+        });
+      }
+
+      return {
+        ok: true,
+        modules: Object.values(modulesGrouped),
+        totalPermissions: permissions.length,
+      };
+    } catch (err) {
+      this.logger.error('Error getting modules and actions:', err);
+      return { ok: false, modules: [], totalPermissions: 0 };
+    }
+  }
+
+  /**
+   * 5. Lấy danh sách nhóm quyền (Role Groups) kèm permissionIds đã gán
+   */
+  async listRoleGroups() {
+    try {
+      const roles = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT 
+          r.id,
+          r.code,
+          r.name,
+          r.description,
+          r.level,
+          r.is_system as "isSystem",
+          r.created_at as "createdAt",
+          COALESCE((
+            SELECT COUNT(DISTINCT user_id)::int 
+            FROM public.platform_user_roles pur 
+            WHERE pur.role_code = r.code
+          ), 0) +
+          COALESCE((
+            SELECT COUNT(DISTINCT user_id)::int 
+            FROM public.user_roles ur 
+            WHERE ur.role::text = r.code
+          ), 0) + 
+          COALESCE((
+            SELECT COUNT(*)::int 
+            FROM public.company_employees ce 
+            WHERE ce.role = r.code
+          ), 0) as "memberCount",
+          COALESCE(
+            (SELECT json_agg(rp.permission_id)
+             FROM public.platform_role_permissions rp
+             WHERE rp.role_id = r.id), '[]'::json
+          ) as "permissionIds"
+        FROM public.platform_roles r
+        ORDER BY r.level ASC, r.created_at ASC
+      `);
+
+      return {
+        ok: true,
+        items: roles,
+      };
+    } catch (err) {
+      this.logger.error('Error listing role groups:', err);
+      return { ok: false, items: [] };
+    }
+  }
+
+  /**
+   * 6. Tạo nhóm quyền mới (kèm các thao tác con được tích chọn)
+   */
+  async createRoleGroup(data: { name: string; code?: string; description?: string; level?: number; permissionIds?: string[] }) {
+    if (!data.name?.trim()) {
+      throw new BadRequestException('Tên nhóm quyền không được để trống');
     }
 
-    const code = data.code.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    const baseCode = (data.code?.trim() || data.name)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9_]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/(^_|_$)/g, '');
+
+    let code = baseCode || `role_${Date.now().toString(36)}`;
     const existing = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT id FROM public.platform_roles WHERE code = $1 LIMIT 1`,
       code,
     );
     if (existing.length > 0) {
-      throw new BadRequestException(`Mã vai trò "${code}" đã tồn tại trên hệ thống`);
+      code = `${baseCode}_${Date.now().toString(36).slice(-4)}`;
     }
 
     const roleId = crypto.randomUUID();
@@ -189,15 +305,118 @@ export class RolesService {
       level,
     );
 
+    if (Array.isArray(data.permissionIds) && data.permissionIds.length > 0) {
+      for (const permId of data.permissionIds) {
+        await this.prisma.$executeRawUnsafe(
+          `INSERT INTO public.platform_role_permissions (role_id, permission_id) 
+           VALUES ($1::uuid, $2::uuid) ON CONFLICT DO NOTHING`,
+          roleId,
+          permId,
+        );
+      }
+    }
+
     return {
-      id: roleId,
-      code,
-      name: data.name.trim(),
-      description: data.description?.trim() || '',
-      level,
-      isSystem: false,
-      memberCount: 0,
+      ok: true,
+      message: 'Tạo nhóm quyền thành công!',
+      role: {
+        id: roleId,
+        code,
+        name: data.name.trim(),
+        description: data.description?.trim() || '',
+        level,
+        isSystem: false,
+        permissionIds: data.permissionIds || [],
+        memberCount: 0,
+      },
     };
+  }
+
+  /**
+   * 7. Cập nhật nhóm quyền (tên, mô tả, cấp độ và danh sách permissionIds)
+   */
+  async updateRoleGroup(roleId: string, data: { name?: string; description?: string; level?: number; permissionIds?: string[] }) {
+    const existing = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT id, code, is_system as "isSystem" FROM public.platform_roles WHERE id = $1::uuid LIMIT 1`,
+      roleId,
+    );
+    if (!existing || existing.length === 0) {
+      throw new NotFoundException('Không tìm thấy nhóm quyền để cập nhật');
+    }
+
+    await this.prisma.$executeRawUnsafe(
+      `UPDATE public.platform_roles 
+       SET name = COALESCE($2, name), 
+           description = COALESCE($3, description), 
+           level = COALESCE($4, level),
+           updated_at = now()
+       WHERE id = $1::uuid`,
+      roleId,
+      data.name?.trim() || null,
+      data.description !== undefined ? data.description.trim() : null,
+      data.level || null,
+    );
+
+    if (Array.isArray(data.permissionIds)) {
+      await this.prisma.$executeRawUnsafe(
+        `DELETE FROM public.platform_role_permissions WHERE role_id = $1::uuid`,
+        roleId,
+      );
+      for (const permId of data.permissionIds) {
+        await this.prisma.$executeRawUnsafe(
+          `INSERT INTO public.platform_role_permissions (role_id, permission_id) 
+           VALUES ($1::uuid, $2::uuid) ON CONFLICT DO NOTHING`,
+          roleId,
+          permId,
+        );
+      }
+    }
+
+    return {
+      ok: true,
+      message: 'Cập nhật nhóm quyền thành công!',
+    };
+  }
+
+  /**
+   * 8. Xóa nhóm quyền
+   */
+  async deleteRoleGroup(roleId: string) {
+    const existing = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT id, code, is_system as "isSystem" FROM public.platform_roles WHERE id = $1::uuid LIMIT 1`,
+      roleId,
+    );
+    if (!existing || existing.length === 0) {
+      throw new NotFoundException('Không tìm thấy nhóm quyền để xóa');
+    }
+    if (existing[0].isSystem) {
+      throw new BadRequestException('Không thể xóa vai trò hệ thống mặc định');
+    }
+
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM public.platform_role_permissions WHERE role_id = $1::uuid`,
+      roleId,
+    );
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM public.platform_user_roles WHERE role_code = $1`,
+      existing[0].code,
+    );
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM public.platform_roles WHERE id = $1::uuid`,
+      roleId,
+    );
+
+    return {
+      ok: true,
+      message: 'Đã xóa nhóm quyền thành công!',
+    };
+  }
+
+  /**
+   * Alias createRole
+   */
+  async createRole(data: { code: string; name: string; description?: string; level?: number }) {
+    return this.createRoleGroup(data);
   }
 
   /**

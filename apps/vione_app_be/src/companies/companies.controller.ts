@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Put,
   Delete,
   Body,
   Param,
@@ -49,8 +50,74 @@ export class CompaniesController {
    * Danh sách các gói cước ViOne Platform
    */
   @Get('packages')
-  async listPackages() {
-    return this.companiesService.listSubscriptionPackages();
+  async listPackages(@Query('includeInactive') includeInactive?: string) {
+    return this.companiesService.listSubscriptionPackages(includeInactive === 'true');
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Tạo gói dịch vụ ViOne mới
+   */
+  @Post('packages')
+  async createPackage(@Body() body: any) {
+    return this.companiesService.createSubscriptionPackage(body);
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Cập nhật gói dịch vụ
+   */
+  @Put('packages/:id')
+  async updatePackage(@Param('id') id: string, @Body() body: any) {
+    return this.companiesService.updateSubscriptionPackage(id, body);
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Xóa / Ẩn gói dịch vụ
+   */
+  @Delete('packages/:id')
+  async deletePackage(@Param('id') id: string) {
+    return this.companiesService.deleteSubscriptionPackage(id);
+  }
+
+  /**
+   * APP VIONE USER: Gửi hồ sơ đăng ký gói cước từ App ViOne
+   */
+  @Post('package-orders')
+  async createPackageOrder(@Request() req: any, @Body() body: any) {
+    const userId = req.user?.id || req.headers?.['x-user-id'] || 'a0000000-0000-4000-8000-000000000002';
+    return this.companiesService.createPackageOrder(userId, body);
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Danh sách hồ sơ đăng ký gói
+   */
+  @Get('package-orders')
+  async listPackageOrders(@Query('status') status?: string) {
+    return this.companiesService.listPackageOrders(status);
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Xem chi tiết 1 hồ sơ đăng ký gói
+   */
+  @Get('package-orders/:id')
+  async getPackageOrder(@Param('id') id: string) {
+    return this.companiesService.getPackageOrder(id);
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Phê duyệt hồ sơ đăng ký gói & Bắn email cho khách hàng
+   */
+  @Post('package-orders/:id/approve')
+  async approvePackageOrder(@Request() req: any, @Param('id') id: string) {
+    const approvedBy = req.user?.id || req.headers?.['x-user-id'] || null;
+    return this.companiesService.approvePackageOrder(id, approvedBy);
+  }
+
+  /**
+   * SUPER ADMIN / STAFF: Từ chối hồ sơ đăng ký gói
+   */
+  @Post('package-orders/:id/reject')
+  async rejectPackageOrder(@Param('id') id: string, @Body() body: { reason?: string }) {
+    return this.companiesService.rejectPackageOrder(id, body?.reason);
   }
 
   /**
@@ -59,6 +126,41 @@ export class CompaniesController {
   @Get('platform-monitoring')
   async getPlatformMonitoring() {
     return this.companiesService.getPlatformMonitoring();
+  }
+
+  /**
+   * SUPER ADMIN: TRUNG TÂM THỐNG KÊ BÁO CÁO NỀN TẢNG TOÀN DIỆN (Dashboard, Biểu đồ cột/tròn, Cây đơn vị, Báo cáo tài khoản, Báo cáo tài liệu, Báo cáo dòng tiền)
+   */
+  @Get('platform-reports')
+  async getPlatformReports() {
+    return this.companiesService.getPlatformReports();
+  }
+
+  /**
+   * SUPER ADMIN: TẠO CỘNG ĐỒNG CHO TÀI KHOẢN MUA GÓI VIONE PLATFORM
+   */
+  @Post('platform/communities')
+  async createPlatformCommunity(@Body() body: any) {
+    return this.companiesService.createPlatformCommunity(body);
+  }
+
+  /**
+   * SUPER ADMIN: CẬP NHẬT THÔNG TIN CỘNG ĐỒNG
+   */
+  @Patch('platform/communities/:id')
+  async updatePlatformCommunity(
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    return this.companiesService.updatePlatformCommunity(id, body);
+  }
+
+  /**
+   * SUPER ADMIN: XÓA CỘNG ĐỒNG
+   */
+  @Delete('platform/communities/:id')
+  async deletePlatformCommunity(@Param('id') id: string) {
+    return this.companiesService.deletePlatformCommunity(id);
   }
 
   /**

@@ -31,6 +31,9 @@
 | **UC-CRM-17** | Giám Sát Chi Tiết Mức Độ Hoạt Động Doanh Nghiệp ViOne Platform & Quản Lý Khách Hàng Nền Tảng | Super Admin Nền tảng | P0 - Bắt buộc | Hoạt động |
 | **UC-CRM-18** | Phân Quyền Hai Tầng Hệ Sinh Thái ViOne (Tenant Internal RBAC & Platform Departments) | Chủ Doanh nghiệp, Nhân sự, Super Admin & Bộ phận ViOne | P0 - Bắt buộc | Hoạt động |
 | **UC-CRM-19** | Cấp Tài Khoản Nhân Viên Nội Bộ ViOne, Phân Quyền Đa Nhóm & Phản Ứng Rerender Tức Thì | Quản Trị Viên ViOne, Nhân Viên ViOne | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-20** | Luồng Người Dùng App ViOne & Dùng Thử Miễn Phí 30 Ngày Mở Khóa Cộng Đồng | Người dùng App ViOne thông thường | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-21** | Bộ Phân Hệ Quản Trị CRM Cộng Đồng Dành Cho Người Mua Gói (Tenant Community CRM) | Doanh nghiệp / Khách hàng mua gói ViOne | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-22** | Bộ Phân Hệ Quản Trị Nền Tảng ViConnect Dành Cho Super Admin & Platform Staff | Quản trị viên & Nhân viên ViConnect | P0 - Bắt buộc | Hoạt động |
 
 ---
 
@@ -325,3 +328,129 @@
      - Khi admin thêm mới hoặc cập nhật quyền của nhân viên, hệ thống phát tín hiệu qua BroadcastChannel.
      - Mọi tab đang mở của người dùng tự động bắt sự kiện, gọi lại `GET /api/roles/my-permissions` và cập nhật state React tức thì, giao diện và Sidebar tự động rerender tương ứng mà người dùng không cần reload trang.
 
+
+---
+
+### UC-CRM-20: Luồng Người Dùng App ViOne & Dùng Thử Miễn Phí 30 Ngày Mở Khóa Cộng Đồng (User Flow & 30-Day Free Trial Community Hub)
+* **Tác nhân:** Người dùng App ViOne thông thường (Cá nhân, Doanh nhân, Khách hàng bên ngoài, không phải nhân sự thuộc công ty ViConnect).
+* **Mục tiêu:** Định hình luồng hoạt động chuẩn của Hệ 1: Người dùng cài đặt và đăng nhập App ViOne được tiếp cận đầy đủ các tính năng cơ bản của App. Phân hệ Cộng đồng mặc định yêu cầu sở hữu gói bản quyền, nhưng hiện tại nền tảng áp dụng chính sách **DÙNG THỬ MIỄN PHÍ 30 NGÀY (FREE 30-DAY TRIAL)**. Khi kích hoạt thành công, mở khóa toàn bộ sức mạnh vận hành số trong cộng đồng và tự động cấp quyền truy cập CRM Quản trị.
+* **Luồng sự kiện chính:**
+  1. **Trải nghiệm Mặc định trên App ViOne:**
+     - Người dùng tải App ViOne (Native Mobile hoặc PWA) và đăng nhập bằng tài khoản cá nhân.
+     - Mặc định người dùng sử dụng đầy đủ các tính năng cơ bản có sẵn trong App: Hồ sơ số 5.0, Danh thiếp điện tử VIP, Chạm NFC 1-chạm, Quét mã QR cá nhân, Quét danh thiếp AI OCR, Nhắn tin 1-1, Tìm kiếm đối tác B2B, Sàn giao thương Marketplace, và Khoảnh khắc Stories 24h.
+  2. **Chính sách Mở Khóa Phân Hệ Cộng Đồng (Community Activation Flow):**
+     - Tại Tab "Cộng đồng" (`/connect-app/community` trên PWA hoặc màn hình Community trên Native Mobile):
+     - Mặc định cộng đồng yêu cầu gói thuê bao ViOne Platform.
+     - **Chính sách Ưu đãi Hiện tại:** Hệ thống hiển thị Banner Vàng Hoàng Gia nổi bật: **"FREE 30 NGÀY DÙNG THỬ CỘNG ĐỒNG VIONE PLATFORM"**.
+     - Đi kèm nút CTA Gradient Vàng Hoàng Gia: **"Kích Hoạt 30 Ngày Dùng Thử Miễn Phí"** (hoặc gói trả phí qua Napas 24/7 VietQR).
+     - Người dùng nhấn kích hoạt: Client gọi API `POST /api/companies/subscribe-package` (hoặc `/companies/subscribe-package`).
+     - Backend khởi tạo/kích hoạt đăng ký gói dùng thử 30 ngày, tính toán `trial_ends_at = NOW() + 30 days`, cập nhật trạng thái gói cước `active`, ghi nhận người dùng là Chủ sở hữu (Creator / Owner).
+  3. **Mở Khóa Toàn Bộ Chức Năng Vận Hành Số Trong Cộng Đồng:**
+     - Ngay sau khi mở gói (dùng thử 30 ngày hoặc mua gói chính thức), phân hệ Cộng đồng mở khóa toàn bộ 3 phân hệ cốt lõi:
+       * **Giao việc & Nhận việc:** Phân công công việc cho thành viên, theo dõi tiến độ checklist, cập nhật trạng thái Kanban thời gian thực.
+       * **Chấm công thông minh:** Điểm danh GPS / Wifi / Thẻ số hóa, theo dõi bảng chấm công thực tế của các thành viên.
+       * **Chăm sóc khách hàng CRM:** Quản lý đường ống cơ hội (Leads Pipeline), lịch sử tương tác, phân loại hạng khách hàng (Hot Lead, VIP C-Level).
+     - Hiển thị Huy hiệu Đếm ngược thời gian dùng thử (Trial Countdown Badge) minh bạch: *"Dùng Thử ViOne Platform 5.0 - Còn X ngày"*.
+  4. **Tự Động Gửi Email Đăng Ký Gói & Cung Cấp Link Truy Cập CRM Quản Trị:**
+     - Backend kích hoạt `MailService.sendPackageSubscriptionEmail`: Gửi email giao diện Obsidian & Gold cao cấp về hòm thư của người đăng ký.
+     - Email cung cấp:
+       * Lời chúc mừng kích hoạt thành công gói ViOne Platform (30 ngày dùng thử hoặc bản quyền chính thức).
+       * Tên cộng đồng / doanh nghiệp được bảo hộ.
+       * Toàn bộ lợi ích đặc quyền: Quản lý nhân sự, Bảng Kanban công việc, Báo cáo doanh thu, Trợ lý AI, CRM Chăm sóc khách hàng.
+       * **Nút bấm CTA vàng trực tiếp dẫn tới Web CRM Quản trị Doanh nghiệp:** `https://crm.viconnect.vn/` hoặc URL CRM môi trường hiện hành.
+
+---
+
+### UC-CRM-21: Bộ Phân Hệ Quản Trị CRM Cộng Đồng Dành Cho Người Mua Gói (Tenant Community CRM Suite)
+* **Tác nhân:** Doanh nghiệp / Khách hàng mua gói ViOne Platform hoặc kích hoạt Dùng thử 30 ngày (Tenant Owner / Admin).
+* **Mục tiêu:** Cung cấp không gian điều hành Web CRM độc lập, chuyên nghiệp cho người mua gói để quản lý toàn diện cộng đồng và doanh nghiệp của mình.
+* **Bộ Phân Hệ Quản Trị CRM Cộng Đồng:**
+  1. **Quản lý Thành viên (Member Management with Auto-Provisioning & Welcome Email):**
+     - Quản trị viên cộng đồng tạo mới tài khoản nhân viên / thành viên qua form: Họ và tên, Email, Số điện thoại, Chức vụ, Phòng ban, Nhóm quyền RBAC.
+     - Backend tự động cấp tài khoản bảo mật trong `auth.users`, `public.users`, gán vào `public.company_employees` và `public.members`.
+     - Kích hoạt `MailService.sendRegistrationAccountEmail`: Tự động gửi email thông báo thông tin tài khoản đăng nhập (Username, Mật khẩu, Tên công ty/cộng đồng) kèm nút CTA dẫn vào App ViOne.
+     - **Trải nghiệm thành viên được mời:** Nhân viên đăng nhập vào App ViOne sẽ có đầy đủ các chức năng cơ bản của App kèm quyền truy cập vào đúng Cộng đồng mà tài khoản mua gói đã đăng ký, với vai trò và quyền hạn tương ứng.
+  2. **Quản lý Công việc (Full Tasks CRUD & Kanban Workflow):**
+     - Đầy đủ tính năng: Tạo việc mới, Phân công người phụ trách (Assignee), Nhận việc, Cập nhật tiến độ & Checklist, Chỉnh sửa, và Xóa công việc.
+     - Bảng điều khiển Kanban trực quan 4 trạng thái, theo dõi deadline, cảnh báo nhiệm vụ quá hạn viền đỏ phát sáng.
+  3. **Trung tâm Báo cáo Doanh nghiệp (Comprehensive Reports Hub):**
+     - **Báo cáo Doanh thu:** Trực quan hóa bằng Biểu đồ cột (Bar Chart) tăng trưởng theo thời gian và Biểu đồ tròn (Pie Chart) cơ cấu nguồn thu.
+     - **Báo cáo Quý:** Tổng hợp kết quả hoạt động kinh doanh và chỉ số KPI theo từng quý (Q1, Q2, Q3, Q4).
+     - **Báo cáo Chăm sóc Khách hàng (CSKH):** Tỷ lệ chuyển đổi Leads, số cuộc hẹn, phản hồi khách hàng.
+     - **Báo cáo Công việc:** Tỷ lệ hoàn thành đúng hạn (On-time Delivery), tỷ lệ tồn đọng, khối lượng công việc theo phòng ban.
+  4. **Trợ lý Trí tuệ Nhân tạo AI (AI Community Assistant):**
+     - Trợ lý AI tích hợp sẵn tại route `/ai` hỗ trợ tóm tắt báo cáo, phân tích hiệu suất nhân sự, soạn thảo văn bản thông báo và gợi ý chiến lược chăm sóc khách hàng.
+  5. **Quản lý Tài liệu Số hóa (Full Documents CRUD):**
+     - Lưu trữ tài liệu quy chuẩn, hợp đồng, tài liệu đào tạo nội bộ.
+     - Hỗ trợ tải lên (Upload), Xem chi tiết (View), Phân loại thư mục (Categories), Cập nhật thông tin và Xóa tài liệu với phân quyền đọc/ghi minh bạch.
+  6. **Cài đặt & Cấu hình Cộng đồng (Full Community Settings CRUD):**
+     - Tùy chỉnh tên cộng đồng, mô tả, logo đại diện, ảnh bìa cover, lĩnh vực hoạt động, địa chỉ trụ sở, website và chính sách gia nhập.
+  7. **Ma trận Phân quyền & Nhóm Quyền Động (Dynamic Role Groups & Granular Permission Modal):**
+     - Quản lý danh mục Nhóm Quyền (`Role Groups`): Tạo mới, sửa, xóa nhóm quyền thông qua API `GET /api/roles/modules-actions` và `POST/PUT/DELETE /api/roles/groups`.
+     - **Popup Call API Phân Quyền Hạt Nhân:** Khi bấm tạo/sửa nhóm quyền, modal tải 100% danh mục 14 module chức năng cùng toàn bộ thao tác con chi tiết từ Backend. Quản trị viên tích chọn các Checkbox quyền mong muốn để tạo nhóm quyền.
+     - **Gán Nhóm Quyền khi Quản lý Tài khoản Nhân viên:** Trong màn hình Quản lý thành viên, dropdown "Nhóm Quyền Phân Bổ (API RBAC)" nạp trực tiếp danh sách nhóm quyền từ API. Khi chọn nhóm quyền, hệ thống tự động gán quyền tương ứng vào tài khoản. Nhân viên thuộc vai trò nào sẽ hiển thị chính xác các chức năng và quyền thao tác đó trên giao diện CRM.
+  8. **Chỉnh sửa Hồ sơ Cá nhân (Profile Settings):**
+     - Chủ sở hữu và nhân viên dễ dàng cập nhật thông tin cá nhân, avatar, chức vụ, đổi mật khẩu và thiết lập bảo mật.
+  9. **Nhắn tin Kết nối Nội bộ trong Cộng đồng (Internal Community Messaging):**
+     - Phân hệ `/messages` cho phép nhắn tin 1-1 và trao đổi công việc nhanh chóng giữa các thành viên trong cùng cộng đồng.
+  10. **Quản lý Bài đăng & Tin tức (Full Posts / News CRUD):**
+      - Đăng tin tức, thông báo nội bộ, chỉnh sửa nội dung bài viết, đính kèm hình ảnh và xóa bài đăng.
+  11. **Tạo & Điều phối Cuộc họp (Full Meetings CRUD):**
+      - Khởi tạo phòng họp, lên lịch họp, phân công thành phần tham dự, tích hợp link họp trực tuyến, cập nhật biên bản cuộc họp và xóa lịch họp.
+
+---
+
+### UC-CRM-22: Bộ Phân Hệ Quản Trị Nền Tảng ViConnect Dành Cho Super Admin & Platform Staff (Super Admin & Platform Staff Suite)
+* **Tác nhân:** Quản trị viên tối cao (Super Admin) và Nhân viên nội bộ nền tảng ViConnect (`platform_executive`, `platform_operations`, `platform_finance`).
+* **Mục tiêu:** Cung cấp trung tâm chỉ huy toàn diện để giám sát toàn bộ hệ sinh thái ViOne, quản trị tài khoản, quản trị doanh nghiệp, giám sát dùng thử, phân quyền nền tảng, tạo cộng đồng hỗ trợ và xem báo cáo thống kê chuyên sâu.
+* **Bộ Phân Hệ Quản Trị Nền Tảng ViConnect:**
+  1. **Quản lý Tài khoản Toàn Hệ Thống (Platform User Management):**
+     - Quản trị toàn bộ tài khoản người dùng trên nền tảng (Full CRUD).
+     - Gán nhóm quyền được nạp trực tiếp từ API Quản lý Nhóm Quyền (`GET /api/roles/groups`).
+     - Hỗ trợ đa nhóm quyền (Multi-Role Support: vừa làm vận hành vừa làm tài chính) với cơ chế phản ứng rerender tức thì qua BroadcastChannel.
+  2. **Quản lý Doanh nghiệp & Giám sát Dùng Thử (Tenant Management & Expiring Trial Alerts):**
+     - Quản lý danh mục doanh nghiệp toàn hệ sinh thái (Full CRUD).
+     - Bảng theo dõi hiển thị rõ ràng: Tên doanh nghiệp, **Cột Tên người mua gói (Buyer Name)**, **Số lượng thành viên (Member Count)**, Trạng thái gói cước, Hạn dùng thử.
+     - **Huy hiệu Cảnh báo Sắp Hết Hạn Dùng Thử (Expiring Trial Countdown Alert Badge):** Nếu doanh nghiệp đang dùng thử và còn <= 7 ngày, hệ thống tự động gắn badge màu hổ phách cảnh báo: `⚠️ Sắp hết hạn dùng thử (Còn X ngày)`, giúp đội ngũ CSKH ViConnect chủ động liên hệ hỗ trợ gia hạn.
+  3. **Nhắn tin Trao đổi Nội bộ Nền tảng (Platform Team Messaging & Group Chat):**
+     - Nhắn tin trao đổi công việc giữa các phòng ban ViConnect.
+     - Hỗ trợ tạo nhóm chat chuyên đề (Group Chat Creation) phục vụ tác chiến liên bộ phận.
+  4. **Phân quyền Nền tảng (Platform RBAC CRUD):**
+     - Quản lý danh mục vai trò nền tảng (`platform_roles`) và ma trận phân quyền chi tiết đến từng thao tác con (Granular Action Checkboxes).
+  5. **Tạo & Quản lý Cộng đồng Toàn Hệ Thống (Full Platform Community CRUD):**
+     - Quản trị viên ViConnect có toàn quyền khởi tạo cộng đồng mới (`POST /api/companies/platform/communities`) để gán cho các tài khoản mua gói ViOne Platform.
+     - Chỉnh sửa thông tin cộng đồng (`PATCH /api/companies/platform/communities/:id`) và xóa cộng đồng (`DELETE /api/companies/platform/communities/:id`) để kịp thời hỗ trợ người mua gói xử lý sự cố.
+  6. **Trung tâm Thống kê Báo cáo Nền tảng Toàn Diện (Platform Reports Hub):**
+     - Tích hợp tại route `/statistics` với dữ liệu thực từ `GET /api/companies/platform-reports`.
+     - **Bộ Thẻ Chỉ Số Tổng Quan (Summary KPI Cards):** Tổng doanh nghiệp, Doanh nghiệp đang hoạt động, Tổng người dùng, Doanh thu tháng MRR, Doanh thu năm ARR.
+     - **Biểu đồ Tăng trưởng & Cơ cấu:**
+       * Biểu đồ cột (Bar Chart): Xu hướng tăng trưởng doanh nghiệp và người dùng mới qua 6 tháng liên tiếp.
+       * Biểu đồ tròn (Pie Chart): Phân bổ cơ cấu các gói cước (Dùng thử 30 ngày, Gói Khởi nghiệp, Gói Doanh nghiệp, Gói Tập đoàn).
+     - **Cây Đơn Vị Tổ Chức (Organization Hierarchy Tree):**
+       * Trực quan hóa cấu trúc phân cấp toàn diện từ Tập đoàn Công nghệ ViConnect (Root) -> Các Khối Nghiệp vụ Nền tảng (Khối Kỹ thuật & Hạ tầng số, Khối Vận hành & Hỗ trợ Khách hàng, Khối Tài chính & Kế toán) -> Danh sách Toàn bộ Các Cộng đồng Doanh nghiệp Thành viên.
+     - **Phân Hệ Báo Cáo Chuyên Biệt Theo Tab:**
+       * *Báo cáo Tài khoản:* Thống kê cơ cấu tài khoản (Super Admin, Quản trị viên Doanh nghiệp, Nhân viên), trạng thái kích hoạt và người dùng hoạt động hàng tháng (MAU).
+       * *Báo cáo Tài liệu Pháp lý:* Giám sát tỷ lệ hợp đồng điện tử đã ký kết, hồ sơ pháp nhân đã thẩm định, tài liệu chờ phê duyệt.
+       * *Báo cáo Dòng tiền:* Doanh thu định kỳ hàng tháng (MRR), Doanh thu năm (ARR), Giá trị hợp đồng trung bình (ACV), và tỷ lệ chuyển đổi từ Dùng thử 30 ngày sang trả phí.
+  7. **Thanh Sidebar Dành Riêng Cho Quản Trị ViConnect:**
+     - Bộ công cụ chuyên trách: Trợ lý AI Nền tảng, Nhắn tin trao đổi (tạo nhóm), Quản lý cuộc họp (CRUD), và Quản lý công việc điều hành nội bộ (CRUD).
+---
+
+### UC-CRM-23: Quản Lý Danh Mục Gói ViOne Platform & Xét Duyệt Hồ Sơ Đăng Ký Từ App ViOne (Subscription Packages & Order Approval Hub)
+* **Tác nhân:** Super Admin và Nhân viên vận hành / kinh doanh ViConnect CRM (platform_executive, platform_operations, platform_finance).
+* **Mục tiêu:** Cung cấp trung tâm cấu hình bảng giá gói ViOne Platform theo số lượng tài khoản (slots) và xét duyệt các hồ sơ đăng ký gói được người dùng gửi về từ App ViOne (PWA & Native).
+* **Luồng sự kiện chính:**
+  1. **Cấu Hình Danh Mục Gói ViOne Platform (public.vione_subscription_packages):**
+     - Quản trị viên xem, thêm mới, chỉnh sửa và ẩn/hiện các gói dịch vụ trên route /segments.
+     - Mỗi gói cước được thiết lập linh hoạt theo số lượng người (slots):
+       * Số lượng tài khoản càng nhiều thì giá tiền càng cao (Mặc định gói thấp nhất có thể tạo là 30 tài khoản).
+       * Gói Free 30 ngày (0đ, 30 tài khoản).
+       * Các gói có phí: Gói Chuẩn (1.500.000đ, 30 tài khoản), Gói Tăng Trưởng (2.500.000đ, 50 tài khoản), Gói Doanh Nghiệp (4.500.000đ, 100 tài khoản).
+     - Thiết lập thông tin ngân hàng thanh toán (Ngân hàng, Số tài khoản, Chủ tài khoản, Mẫu VietQR Napas 24/7) để tự động sinh mã QR thanh toán trên App ViOne.
+  2. **Tiếp Nhận & Xét Duyệt Hồ Sơ Đăng Ký Gói (public.vione_package_orders):**
+     - Khi người dùng từ App ViOne đăng ký gói thành công, hồ sơ tự động đồng bộ về tab Duyệt Hồ Sơ Đăng Ký Gói trên ViConnect CRM.
+     - Nhân viên bấm **Xem Hồ Sơ**: Modal hiển thị toàn diện thông tin doanh nghiệp (Tên công ty, MST, Người đại diện, SĐT, Email, Ngành nghề, Địa chỉ, Gói cước đã chọn, Số tiền, Phương thức thanh toán, Ảnh chứng từ chuyển khoản).
+     - Nhân viên bấm **Duyệt & Bắn Mail Thông Tin Gói**:
+       * Hệ thống kích hoạt gói cước cho doanh nghiệp, cập nhật trường max_slots đúng theo gói đăng ký.
+       * Tự động gọi MailService.sendPackageSubscriptionEmail bắn email chứa thông tin chi tiết gói, số lượng tài khoản được phép tạo, và liên kết kích hoạt về hòm thư người đăng ký.
+     - Nhân viên bấm **Từ Chối**: Nhập lý do từ chối (thiếu chứng từ, thông tin sai lệch) để phản hồi lại hồ sơ.

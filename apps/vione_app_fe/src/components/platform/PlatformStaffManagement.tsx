@@ -62,40 +62,60 @@ const AVAILABLE_STAFF_ROLES: PlatformRoleDef[] = [
     code: "platform_finance",
     name: "Kế Toán & Thống Kê Tài Chính",
     department: "Phòng Tài Chính - Kế Toán",
-    description: "Xem dòng tiền, quản lý doanh thu nền tảng, xuất báo cáo tài chính Excel/PDF, theo dõi số liệu thanh toán.",
+    description:
+      "Xem dòng tiền, quản lý doanh thu nền tảng, xuất báo cáo tài chính Excel/PDF, theo dõi số liệu thanh toán.",
     color: "amber",
     badgeBg: "bg-amber-500/10 text-amber-300 border-amber-500/30",
     border: "border-amber-500/40",
     textColor: "text-amber-400",
-    defaultPermissions: ["finance:view", "finance:export", "statistics:view_platform", "statistics:view_growth"],
+    defaultPermissions: [
+      "finance:view",
+      "finance:export",
+      "statistics:view_platform",
+      "statistics:view_growth",
+    ],
   },
   {
     code: "platform_operations",
     name: "Vận Hành & Quản Lý Tài Khoản / CSKH",
     department: "Phòng Vận Hành & CSKH",
-    description: "Quản lý khách hàng doanh nghiệp, theo dõi mức độ hoạt động công ty, mở khóa CRM, hỗ trợ đối tác hội viên.",
+    description:
+      "Quản lý khách hàng doanh nghiệp, theo dõi mức độ hoạt động công ty, mở khóa CRM, hỗ trợ đối tác hội viên.",
     color: "blue",
     badgeBg: "bg-blue-500/10 text-blue-300 border-blue-500/30",
     border: "border-blue-500/40",
     textColor: "text-blue-400",
-    defaultPermissions: ["companies:manage", "companies:monitor", "companies:unlock", "employees:manage", "crm:manage"],
+    defaultPermissions: [
+      "companies:manage",
+      "companies:monitor",
+      "companies:unlock",
+      "employees:manage",
+      "crm:manage",
+    ],
   },
   {
     code: "platform_executive",
     name: "Ban Lãnh Đạo & Điều Hành Nền Tảng",
     department: "Hội Đồng Quản Trị & Ban Giám Đốc",
-    description: "Xem toàn bộ báo cáo tăng trưởng, phê duyệt chi tiền, duyệt đơn kích hoạt & gia hạn gói cước ViOne Platform.",
+    description:
+      "Xem toàn bộ báo cáo tăng trưởng, phê duyệt chi tiền, duyệt đơn kích hoạt & gia hạn gói cước ViOne Platform.",
     color: "purple",
     badgeBg: "bg-purple-500/10 text-purple-300 border-purple-500/30",
     border: "border-purple-500/40",
     textColor: "text-purple-400",
-    defaultPermissions: ["finance:approve", "subscriptions:approve", "statistics:view_platform", "companies:view"],
+    defaultPermissions: [
+      "finance:approve",
+      "subscriptions:approve",
+      "statistics:view_platform",
+      "companies:view",
+    ],
   },
   {
     code: "super_admin",
     name: "Ban Quản Trị Hệ Thống (Super Admin)",
     department: "Trung Tâm Điều Hành Toàn Quyền",
-    description: "Toàn quyền quản trị cao nhất, cấu hình ma trận phân quyền RBAC, nhật ký kiểm toán, cài đặt hệ thống.",
+    description:
+      "Toàn quyền quản trị cao nhất, cấu hình ma trận phân quyền RBAC, nhật ký kiểm toán, cài đặt hệ thống.",
     color: "rose",
     badgeBg: "bg-rose-500/10 text-rose-300 border-rose-500/30",
     border: "border-rose-500/40",
@@ -107,6 +127,7 @@ const AVAILABLE_STAFF_ROLES: PlatformRoleDef[] = [
 export function PlatformStaffManagement() {
   const { isQuanTri, isAdmin } = useRole();
   const [staffList, setStaffList] = useState<StaffAccount[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<PlatformRoleDef[]>(AVAILABLE_STAFF_ROLES);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState<string>("all");
@@ -142,6 +163,29 @@ export function PlatformStaffManagement() {
       const res = await fetchNestApi<any>("/roles/staff-accounts");
       if (res?.ok && Array.isArray(res.items)) {
         setStaffList(res.items);
+      }
+
+      const groupsRes = await fetchNestApi<any>("/roles/groups");
+      if (groupsRes?.ok && Array.isArray(groupsRes.items)) {
+        const customRoles: PlatformRoleDef[] = groupsRes.items.map((r: any) => ({
+          code: r.code,
+          name: r.name,
+          department: `Cấp độ ${r.level}`,
+          description: r.description || `Nhóm quyền ${r.name}`,
+          color: "emerald",
+          badgeBg: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+          border: "border-emerald-500/40",
+          textColor: "text-emerald-400",
+          defaultPermissions: [],
+        }));
+        const existingCodes = new Set(AVAILABLE_STAFF_ROLES.map((r) => r.code));
+        const merged = [...AVAILABLE_STAFF_ROLES];
+        for (const cr of customRoles) {
+          if (!existingCodes.has(cr.code)) {
+            merged.push(cr);
+          }
+        }
+        setAvailableRoles(merged);
       }
     } catch (err: any) {
       toast.error("Không thể tải danh sách nhân viên ViOne: " + (err?.message || "Lỗi kết nối"));
@@ -350,7 +394,7 @@ export function PlatformStaffManagement() {
         {
           method: "POST",
           body: JSON.stringify({ password: customResetPassword || undefined }),
-        }
+        },
       );
 
       if (res?.ok) {
@@ -384,10 +428,15 @@ export function PlatformStaffManagement() {
               Cấp Tài Khoản & Phân Quyền Nhân Sự Nền Tảng ViOne
             </h2>
             <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-              Quản trị viên có thể cấp tài khoản với Email/Số điện thoại của nhân viên trong công ty.
-              Hệ thống sẽ <strong>tự động bắn email gửi mật khẩu và liên kết CRM</strong> về hòm thư nhân viên.
-              1 tài khoản có thể <strong>vừa thuộc nhóm quyền thống kê báo cáo tài chính vừa thuộc nhóm quyền quản lý tài khoản</strong>.
-              Khi thay đổi quyền hạn, giao diện tài khoản đó sẽ <strong>tự động rerender lại ngay lập tức</strong>.
+              Quản trị viên có thể cấp tài khoản với Email/Số điện thoại của nhân viên trong công
+              ty. Hệ thống sẽ <strong>tự động bắn email gửi mật khẩu và liên kết CRM</strong> về hòm
+              thư nhân viên. 1 tài khoản có thể{" "}
+              <strong>
+                vừa thuộc nhóm quyền thống kê báo cáo tài chính vừa thuộc nhóm quyền quản lý tài
+                khoản
+              </strong>
+              . Khi thay đổi quyền hạn, giao diện tài khoản đó sẽ{" "}
+              <strong>tự động rerender lại ngay lập tức</strong>.
             </p>
           </div>
 
@@ -424,19 +473,29 @@ export function PlatformStaffManagement() {
           <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5">
             <div className="text-[11px] font-medium text-amber-300">Nhóm Kế Toán & Tài Chính</div>
             <div className="text-xl font-black text-amber-400 mt-1">{stats.financeCount} người</div>
-            <div className="text-[10px] text-amber-500/80 mt-0.5">Quyền xem & xuất báo cáo tài chính</div>
+            <div className="text-[10px] text-amber-500/80 mt-0.5">
+              Quyền xem & xuất báo cáo tài chính
+            </div>
           </div>
 
           <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3.5">
             <div className="text-[11px] font-medium text-blue-300">Nhóm Vận Hành & CSKH</div>
             <div className="text-xl font-black text-blue-400 mt-1">{stats.opsCount} người</div>
-            <div className="text-[10px] text-blue-500/80 mt-0.5">Quyền quản lý DN & mở khóa CRM</div>
+            <div className="text-[10px] text-blue-500/80 mt-0.5">
+              Quyền quản lý DN & mở khóa CRM
+            </div>
           </div>
 
           <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3.5">
-            <div className="text-[11px] font-medium text-purple-300">Ban Lãnh Đạo / Super Admin</div>
-            <div className="text-xl font-black text-purple-400 mt-1">{stats.executiveCount + stats.superAdminCount} người</div>
-            <div className="text-[10px] text-purple-500/80 mt-0.5">Toàn quyền giám sát & phê duyệt</div>
+            <div className="text-[11px] font-medium text-purple-300">
+              Ban Lãnh Đạo / Super Admin
+            </div>
+            <div className="text-xl font-black text-purple-400 mt-1">
+              {stats.executiveCount + stats.superAdminCount} người
+            </div>
+            <div className="text-[10px] text-purple-500/80 mt-0.5">
+              Toàn quyền giám sát & phê duyệt
+            </div>
           </div>
         </div>
       </div>
@@ -524,7 +583,8 @@ export function PlatformStaffManagement() {
                               )}
                             </div>
                             <div className="text-[11px] text-muted-foreground">
-                              {staff.title || "Nhân viên nội bộ ViOne"} · {staff.companyName || "ViOne Corporation"}
+                              {staff.title || "Nhân viên nội bộ ViOne"} ·{" "}
+                              {staff.companyName || "ViOne Corporation"}
                             </div>
                           </div>
                         </div>
@@ -551,7 +611,8 @@ export function PlatformStaffManagement() {
                         <div className="flex flex-wrap gap-1.5 max-w-xs">
                           {staff.assignedRoles?.map((r) => {
                             const def = AVAILABLE_STAFF_ROLES.find((d) => d.code === r.code);
-                            const badgeClass = def?.badgeBg || "bg-slate-800 text-slate-300 border-slate-700";
+                            const badgeClass =
+                              def?.badgeBg || "bg-slate-800 text-slate-300 border-slate-700";
                             return (
                               <span
                                 key={r.code}
@@ -563,7 +624,9 @@ export function PlatformStaffManagement() {
                             );
                           })}
                           {(!staff.assignedRoles || staff.assignedRoles.length === 0) && (
-                            <span className="text-[11px] text-muted-foreground italic">Chưa gán nhóm quyền</span>
+                            <span className="text-[11px] text-muted-foreground italic">
+                              Chưa gán nhóm quyền
+                            </span>
                           )}
                         </div>
                       </td>
@@ -580,7 +643,8 @@ export function PlatformStaffManagement() {
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-slate-500">
-                              <FileSpreadsheet className="h-3 w-3 opacity-40" /> Không quyền xuất báo cáo
+                              <FileSpreadsheet className="h-3 w-3 opacity-40" /> Không quyền xuất
+                              báo cáo
                             </span>
                           )}
                           {isOps || isSuper ? (
@@ -642,8 +706,12 @@ export function PlatformStaffManagement() {
                   <UserPlus className="h-5 w-5 font-bold" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Cấp Tài Khoản Nhân Viên ViOne Mới</h3>
-                  <p className="text-xs text-slate-400">Dành riêng cho nhân sự trực thuộc công ty ViOne</p>
+                  <h3 className="text-base font-bold text-white">
+                    Cấp Tài Khoản Nhân Viên ViOne Mới
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Dành riêng cho nhân sự trực thuộc công ty ViOne
+                  </p>
                 </div>
               </div>
               <button
@@ -704,9 +772,7 @@ export function PlatformStaffManagement() {
               {/* Mật khẩu khởi tạo */}
               <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-300">
-                    Mật khẩu khởi tạo
-                  </label>
+                  <label className="text-xs font-semibold text-slate-300">Mật khẩu khởi tạo</label>
                   <label className="flex items-center gap-1.5 text-xs text-amber-400 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -738,7 +804,8 @@ export function PlatformStaffManagement() {
                 )}
                 {formData.autoPassword && (
                   <p className="text-[11px] text-slate-400">
-                    Hệ thống sẽ tự động tạo mật khẩu an toàn chuẩn ViOne và gửi vào email của nhân viên.
+                    Hệ thống sẽ tự động tạo mật khẩu an toàn chuẩn ViOne và gửi vào email của nhân
+                    viên.
                   </p>
                 )}
               </div>
@@ -758,7 +825,7 @@ export function PlatformStaffManagement() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-2.5">
-                  {AVAILABLE_STAFF_ROLES.map((role) => {
+                  {availableRoles.map((role) => {
                     const isChecked = formData.roleCodes.includes(role.code);
                     return (
                       <div
@@ -779,7 +846,9 @@ export function PlatformStaffManagement() {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-white text-xs md:text-sm">{role.name}</span>
+                            <span className="font-bold text-white text-xs md:text-sm">
+                              {role.name}
+                            </span>
                             <span className="text-[10px] text-slate-400">{role.department}</span>
                           </div>
                           <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
@@ -801,12 +870,16 @@ export function PlatformStaffManagement() {
                   onChange={(e) => setFormData({ ...formData, sendEmail: e.target.checked })}
                   className="mt-0.5 rounded border-slate-700 accent-[#D8B282]"
                 />
-                <label htmlFor="sendEmailCheckbox" className="text-xs text-slate-200 cursor-pointer">
+                <label
+                  htmlFor="sendEmailCheckbox"
+                  className="text-xs text-slate-200 cursor-pointer"
+                >
                   <span className="font-bold text-[#F6E1C3]">
                     Tự động bắn email gửi thông tin tài khoản cho nhân viên
                   </span>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Email sẽ bao gồm Tên đăng nhập, Mật khẩu khởi tạo, Danh sách các vai trò được phân bổ và đường dẫn đăng nhập ViOne CRM.
+                    Email sẽ bao gồm Tên đăng nhập, Mật khẩu khởi tạo, Danh sách các vai trò được
+                    phân bổ và đường dẫn đăng nhập ViOne CRM.
                   </p>
                 </label>
               </div>
@@ -866,11 +939,13 @@ export function PlatformStaffManagement() {
 
             <div className="space-y-3">
               <p className="text-xs text-amber-300">
-                ⚡ <strong>Lưu ý quan trọng:</strong> 1 nhân viên có thể vừa thuộc nhóm quyền thống kê báo cáo tài chính vừa thuộc nhóm quyền quản lý tài khoản. Khi lưu thay đổi, giao diện tài khoản này sẽ tự động rerender lại ngay lập tức.
+                ⚡ <strong>Lưu ý quan trọng:</strong> 1 nhân viên có thể vừa thuộc nhóm quyền thống
+                kê báo cáo tài chính vừa thuộc nhóm quyền quản lý tài khoản. Khi lưu thay đổi, giao
+                diện tài khoản này sẽ tự động rerender lại ngay lập tức.
               </p>
 
               <div className="space-y-2">
-                {AVAILABLE_STAFF_ROLES.map((role) => {
+                {availableRoles.map((role) => {
                   const isChecked = editRoleCodes.includes(role.code);
                   return (
                     <div
@@ -951,7 +1026,8 @@ export function PlatformStaffManagement() {
 
             <div className="space-y-3.5 text-xs md:text-sm">
               <p className="text-slate-300">
-                Hệ thống sẽ cấp lại mật khẩu khởi tạo mới và <strong>bắn email thông tin đăng nhập trực tiếp</strong> đến địa chỉ:
+                Hệ thống sẽ cấp lại mật khẩu khởi tạo mới và{" "}
+                <strong>bắn email thông tin đăng nhập trực tiếp</strong> đến địa chỉ:
               </p>
               <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
                 <div className="font-bold text-white">{selectedStaff.fullName}</div>

@@ -25,6 +25,7 @@ import { CommunityNewsDetailModal } from "../../components/CommunityNewsDetailMo
 import { CommunityInviteModal } from "../../components/CommunityInviteModal";
 import { MemberCardBottomSheet, MemberCardData } from "../../components/MemberCardBottomSheet";
 import { BusinessNotificationsModal } from "../../components/BusinessNotificationsModal";
+import { PackageRegistrationModal } from "../../components/PackageRegistrationModal";
 import { communityApi, eventsApi, opportunityApi, meApi } from "../../api";
 import { apiRequest } from "../../api/client";
 
@@ -83,6 +84,18 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 
+  // Subscription & Free 30-Day Trial State
+  const [subStatus, setSubStatus] = useState<{
+    hasSubscription: boolean;
+    isTrial: boolean;
+    trialDaysLeft: number;
+    plan?: string;
+  }>({
+    hasSubscription: true, // Default to true while checking
+    isTrial: false,
+    trialDaysLeft: 0,
+  });
+
   // Detail Level 2 States
   const [detailTab, setDetailTab] = useState<DetailTab>(route?.params?.tab || "tasks");
   const [tasks, setTasks] = useState<TaskItem[]>(INITIAL_TASKS);
@@ -119,6 +132,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
 
   // Modals
   const [createCommunityVisible, setCreateCommunityVisible] = useState(false);
+  const [packageModalVisible, setPackageModalVisible] = useState(false);
   const [editCommunityVisible, setEditCommunityVisible] = useState(false);
   const [shareEventVisible, setShareEventVisible] = useState(false);
   const [assignTaskVisible, setAssignTaskVisible] = useState(false);
@@ -216,6 +230,64 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       }
     } catch {
       // ignore
+    }
+
+    try {
+      const isViConnectStaff = (user as any)?.roles?.some((r: any) =>
+        ["super_admin", "platform_admin", "platform_operations", "platform_finance", "admin"].includes(
+          typeof r === "string" ? r : r.code
+        )
+      ) || (user?.email && user.email.endsWith("@viconnect.vn"));
+
+      if (isViConnectStaff) {
+        setSubStatus({
+          hasSubscription: true,
+          isTrial: false,
+          trialDaysLeft: 365,
+          plan: "vione_platform_enterprise",
+        });
+      } else {
+        const subRes: any = await apiRequest<any>("/companies/subscription-status");
+        const subData = subRes?.data || subRes;
+        if (subData) {
+          setSubStatus({
+            hasSubscription: Boolean(subData.hasSubscription),
+            isTrial: Boolean(subData.isTrial),
+            trialDaysLeft: subData.trialDaysLeft || 0,
+            plan: subData.plan,
+          });
+        }
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleActivateTrial = async () => {
+    try {
+      const res: any = await apiRequest<any>("/companies/subscribe-package", {
+        method: "POST",
+        data: {
+          isTrial: true,
+          plan: "vione_platform_trial_30d",
+        },
+      });
+      const data = res?.data || res;
+      if (data && (data.ok || data.hasSubscription)) {
+        Alert.alert(
+          "Kích Hoạt Thành Công! 🌟",
+          "Chúc mừng bạn đã mở khóa 30 ngày dùng thử ViOne Platform!\n\nToàn bộ tính năng Cộng Đồng, Giao Việc, Chấm Công và Chăm Sóc Khách Hàng CRM đã được kích hoạt. Thông tin chi tiết đã được gửi đến email của bạn."
+        );
+        setSubStatus({
+          hasSubscription: true,
+          isTrial: true,
+          trialDaysLeft: 30,
+          plan: "vione_platform_trial_30d",
+        });
+        loadData();
+      }
+    } catch (e: any) {
+      Alert.alert("Thông báo", e?.message || "Không thể kích hoạt dùng thử lúc này.");
     }
   };
 
@@ -559,6 +631,9 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             setSelectedOppForMeeting(opp);
             setProposeMeetingVisible(true);
           }}
+          subStatus={subStatus}
+          onActivateTrial={handleActivateTrial}
+          onOpenPackageRegistration={() => setPackageModalVisible(true)}
         />
       )}
 
@@ -836,6 +911,17 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           setMemberSheetVisible(false);
           setSelectedMember(null);
         }}
+      />
+
+      {/* Modal Đăng Ký Gói ViOne Platform */}
+      <PackageRegistrationModal
+        visible={packageModalVisible}
+        onClose={() => setPackageModalVisible(false)}
+        onSuccess={() => {
+          setPackageModalVisible(false);
+          loadData();
+        }}
+        prefillCompanyName={currentCommunity?.name}
       />
     </SafeAreaView>
   );

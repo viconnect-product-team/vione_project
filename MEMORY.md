@@ -1,5 +1,136 @@
 # System Memory & Architecture
 
+## 0.000000000. QUẢN LÝ GÓI VIONE PLATFORM (BẢNG GIÁ THEO SỐ LƯỢNG SLOTS), ĐĂNG KÝ GÓI KÈM MÃ VIETQR, DUYỆT ĐƠN BẮN MAIL & KIỂM SOÁT HẠN MỨC TÀI KHOẢN (THÁNG 10/2026)
+
+### 1. Bối cảnh & Yêu cầu Nghiệp Vụ Cốt Lõi
+- **1. Phân chia gói cước cụ thể & setup theo số lượng người (Slots)**:
+  * Trên hệ thống Web CRM ViConnect (`/segments`): Quản trị viên cấu hình danh mục gói cước (`vione_subscription_packages`).
+  * Gói cước được thiết lập theo số lượng người (slots): Số lượng tài khoản càng nhiều thì giá tiền càng cao. Mặc định gói thấp nhất có thể tạo là 30 tài khoản.
+  * Tích hợp cấu hình tài khoản ngân hàng nhận tiền và mã VietQR Napas 24/7 tự động để phục vụ thanh toán.
+  * 4 gói chuẩn trong CSDL:
+    1. Gói Dùng Thử 30 Ngày (`FREE_30D`): 0đ, tối đa 30 slots.
+    2. Gói Chuẩn 30 Tài Khoản (`VIONE_STANDARD_30`): 1.500.000đ, 30 slots.
+    3. Gói Tăng Trưởng 50 Tài Khoản (`VIONE_GROWTH_50`): 2.500.000đ, 50 slots.
+    4. Gói Doanh Nghiệp 100 Tài Khoản (`VIONE_ENTERPRISE_100`): 4.500.000đ, 100 slots.
+- **2. Luồng Đăng Ký Gói Trên App ViOne (Dual-App Parity: PWA & Native Mobile)**:
+  * Cung cấp Modal Đăng Ký Gói ViOne Platform (`PackageRegistrationModal`) trên cả PWA (`apps/vione_app_fe`) và Native Mobile (`apps/mobile_vione`).
+  * Form nhập thông tin doanh nghiệp: Tên doanh nghiệp (bắt buộc), MST, Người đại diện pháp luật (bắt buộc), Số điện thoại (bắt buộc), Email nhận gói (bắt buộc), Ngành nghề, Địa chỉ.
+  * Lựa chọn gói cước tải trực tiếp từ API `GET /api/companies/packages`.
+  * Khi chọn gói có phí: Hệ thống hiển thị mã VietQR Napas 24/7 sinh tự động (`img.vietqr.io`) với đúng số tiền gói, số tài khoản, chủ tài khoản và nội dung chuyển khoản `VIONE {packageCode} {phone}` kèm nút sao chép 1-chạm.
+  * Khi bấm "Gửi Đăng Ký Gói Về ViConnect CRM": Gửi API `POST /api/companies/package-orders` lưu vào bảng `public.vione_package_orders` với trạng thái `pending`.
+- **3. Quy Trình Xét Duyệt Hồ Sơ Trên ViConnect CRM & Bắn Mail**:
+  * Tại tab "Duyệt Hồ Sơ Đăng Ký Gói" (`/segments`): Nhân viên ViConnect bấm **"Xem Hồ Sơ"** để kiểm tra toàn bộ thông tin công ty, gói lựa chọn, số tiền và hóa đơn chứng từ.
+  * Khi bấm **"Duyệt & Bắn Mail Thông Tin Gói"** (`POST /api/companies/package-orders/:id/approve`):
+    - Hệ thống kích hoạt gói cước cho doanh nghiệp (`public.vione_community_subscriptions` & `public.companies`), gán trường `max_slots` chính xác theo gói.
+    - Tự động gọi `MailService.sendPackageSubscriptionEmail` gửi thông tin chi tiết gói, số lượng tài khoản được cấp phép và hướng dẫn kích hoạt về email của người đăng ký.
+  * Khi bấm **"Từ Chối"**: Nhập lý do từ chối để phản hồi.
+- **4. Kiểm Soát Giới Hạn Tạo Tài Khoản (Slot Limit Enforcement)**:
+  * Nếu gói đăng ký chỉ tạo được N tài khoản (ví dụ 10 hoặc 30 tài khoản), khi người dùng cố tạo thêm 1 tài khoản vượt quá giới hạn thì hệ thống BẮT BUỘC hiển thị thông báo:
+    **`"Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản"`**.
+  * Chặn cả ở Frontend (`CompanyEmployeesTab.tsx`: nút mở modal và hàm submit) lẫn Backend (`companies.service.ts`: `addCompanyEmployee` throw `BadRequestException`).
+
+### 2. Chi Tiết Triển Khai Kỹ Thuật (Technical Implementation)
+- **1. Database PostgreSQL (`vione_project`)**:
+  * Tạo bảng `public.vione_subscription_packages` (lưu gói, giá, slots, ngân hàng, VietQR template, features).
+  * Tạo bảng `public.vione_package_orders` (lưu hồ sơ đăng ký gói, thông tin công ty, MST, người đại diện, trạng thái duyệt).
+  * Bổ sung cột `max_slots INT DEFAULT 30` vào bảng `public.vione_community_subscriptions` và `public.companies`.
+- **2. Backend API (`apps/vione_app_be`)**:
+  * `companies.service.ts` & `companies.controller.ts`:
+    - CRUD gói: `GET /companies/packages`, `POST /companies/packages`, `PUT /companies/packages/:id`, `DELETE /companies/packages/:id`.
+    - Hồ sơ đơn hàng: `POST /companies/package-orders`, `GET /companies/package-orders`, `GET /companies/package-orders/:id`, `POST /companies/package-orders/:id/approve`, `POST /companies/package-orders/:id/reject`.
+    - `approvePackageOrder`: cập nhật công ty, set subscription `max_slots`, gọi `MailService.sendPackageSubscriptionEmail`.
+    - `addCompanyEmployee`: kiểm tra `currentCount >= maxSlots` và chặn lại với thông báo: `"Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản. Hiện tại công ty đã có ${currentCount}/${maxSlots} tài khoản. Vui lòng liên hệ ViConnect nâng cấp gói để thêm thành viên!"`.
+- **3. Web CRM ViConnect (`apps/vione_app_fe`)**:
+  * `src/routes/segments.tsx`: Thiết kế lại toàn bộ giao diện Obsidian & Gold với 2 tab:
+    - Tab 1: Cấu hình danh mục gói ViOne Platform (Thẻ gói, giá, số slots, VietQR preview, Modal tạo/sửa gói).
+    - Tab 2: Duyệt hồ sơ đăng ký gói từ App ViOne (Bảng hồ sơ, Modal Xem chi tiết, Duyệt & Bắn mail thông tin gói, Từ chối kèm lý do).
+  * `src/components/companies/CompanyEmployeesTab.tsx`: Thêm kiểm tra `employees.length >= maxSlots` khi bấm Thêm nhân viên và khi submit form, hiển thị thông báo: `"Gói của bạn chỉ có thể tạo được ${max} tài khoản"`.
+- **4. PWA Web App ViOne (`apps/vione_app_fe`)**:
+  * Tạo component `src/components/business-connect/mobile/community/PackageRegistrationModal.tsx`: Form nhập thông tin công ty, chọn gói cước, hiển thị VietQR Napas 24/7 tự động kèm nút sao chép, gửi đăng ký về ViConnect CRM.
+  * Tích hợp vào `CommunityHome.tsx` với nút "Đăng Ký Gói ViOne", "Đăng Ký Gói Cụ Thể (QR)" và "Nâng cấp gói".
+- **5. Native Mobile ViOne App (`apps/mobile_vione`)**:
+  * Tạo component `src/components/PackageRegistrationModal.tsx` (React Native modal, LinearGradient, VietQR Napas 24/7, expo-clipboard).
+  * Tích hợp vào `CommunityHomeScreen.tsx` và `CommunityScreen.tsx` đạt Parity 100% với bản PWA.
+
+### 3. Kiểm Tra Chất Lượng Mã Nguồn & Xác Thực Bắt Buộc
+- **1. Backend (`apps/vione_app_be`)**: `tsc --noEmit` -> **0 errors (Exit code 0)**.
+- **2. Web CRM / PWA (`apps/vione_app_fe`)**: `tsc --noEmit` -> **0 errors (Exit code 0)**.
+- **3. Mobile Native (`apps/mobile_vione`)**: `tsc --noEmit` -> **0 errors (Exit code 0)**.
+- **4. Dual-App Parity (Rule 4)**: Cả 2 bản Native và PWA đều có tính năng đăng ký gói, thông tin doanh nghiệp và mã VietQR đồng nhất 100%.
+- **5. Gradient-Only Buttons (Rule 8)**: Toàn bộ nút bấm đều sử dụng chuẩn gradient thương hiệu ViOne Gold/Obsidian.
+- **6. Zero Mock Data (Rule 7)**: Kết nối 100% API và PostgreSQL thực tế.
+- **7. Zero Clear Text SRS (Rule 6)**: Cập nhật `docs/crm/SRS_CRM.md` (UC-CRM-23) và `docs/app_vione/SRS_APP.md` (UC-APP-19).
+- **8. Git Commit Rule (Rule 1)**: Không tự ý chạy git commit / git push.
+
+## 0.00000000. TÁI CẤU TRÚC TOÀN DIỆN LUỒNG HOẠT ĐỘNG VIONE: PHÂN HỆ NGƯỜI DÙNG THÔNG THƯỜNG (DÙNG THỬ 30 NGÀY), CRM DOANH NGHIỆP MUA GÓI & QUẢN TRỊ NỀN TẢNG VICONNECT (THÁNG 10/2026)
+
+### 1. Bối cảnh & Yêu cầu Nghiệp Vụ Cốt Lõi
+- **1. Trải nghiệm Quét Mã QR Cá Nhân Profile 5.0 Siêu Sang Trọng (`Profile5ModernModal.tsx` / `ScanQrModal.tsx`)**:
+  * Khi người dùng trong App ViOne quét mã QR cá nhân của nhau (hoặc quét đường link dạng `https://vione.viconnect.vn/p/:id` / `/public/p/:id`), hệ thống lập tức bung Modal Profile 5.0 Hiện Đại.
+  * Thiết kế theo phong cách Hoàng Gia Executive: Nền Đen Thạch Anh Obsidian `#050C15`, Ánh Vàng Champagne Gold `#D8B282`, hiệu ứng Holographic Glow huyền ảo.
+  * Thẻ VIP Doanh nhân 3D, Avatar viền vòng Halo mạ vàng chuyển động xoay tinh tế, Huy hiệu Xác thực 5.0 (Verified Shield).
+  * Bộ nút hành động nhanh chuẩn Gradient (Rule 8): Nút "Kết Nối 5.0" (Ngọc Lục Bảo), "Nhắn Tin" (Vàng Hoàng Gia), "Lưu Danh Bạ vCard" (Đen Mạ Vàng viền vàng), "Gọi Điện" (Ngọc Lục Bảo), "Chia Sẻ" (Thạch Anh).
+  * Hệ thống 3 tab tương tác sâu: Tab Hồ sơ Doanh nhân (Bio, Sứ mệnh, Liên hệ), Tab Hợp tác B2B (Sản phẩm/dịch vụ thế mạnh, Nhu cầu kết nối), Tab Mã QR Đối Ứng (QR danh thiếp số tải về máy).
+- **2. Luồng Hoạt Động Hệ 1: Người Dùng App ViOne Thông Thường & Tenant Community CRM**:
+  * **Trải nghiệm Mặc định trên App**: Người dùng thông thường (không phải nhân viên ViConnect) có đầy đủ các tính năng cơ bản của App ViOne (Hồ sơ số 5.0, Danh thiếp điện tử, Chạm NFC, Quét danh thiếp AI OCR, Nhắn tin 1-1, Tìm kiếm B2B, Marketplace, Stories).
+  * **Chính sách Mở Khóa Phân Hệ Cộng Đồng**: Mặc định chức năng Cộng đồng yêu cầu mua gói, nhưng hiện tại nền tảng áp dụng chương trình **FREE 30 NGÀY DÙNG THỬ**. Banner dùng thử nổi bật với nút Gradient Vàng Hoàng Gia "Kích Hoạt 30 Ngày Dùng Thử Miễn Phí" (`POST /api/companies/subscribe-package`).
+  * **Mở Khóa Toàn Bộ Sức Mạnh Vận Hành Trong Cộng Đồng**: Ngay khi kích hoạt thành công (dùng thử 30 ngày hoặc mua gói trả phí), mở khóa toàn diện 3 phân hệ cốt lõi: Giao việc & Nhận việc Kanban, Chấm công thông minh GPS/Wifi, Chăm sóc khách hàng CRM. Đồng thời hiển thị Huy hiệu Đếm ngược thời gian dùng thử (`Dùng Thử ViOne Platform 5.0 - Còn X ngày`).
+  * **Tự Động Gửi Email Chúc Mừng & Link Quản Trị CRM**: Backend tự động gửi email Obsidian & Gold (`MailService.sendPackageSubscriptionEmail`) chúc mừng và cung cấp nút CTA dẫn thẳng vào Web CRM Quản trị Doanh nghiệp.
+  * **Bộ Phân Hệ Quản Trị CRM Cộng Đồng Dành Cho Người Mua Gói (Tenant Community CRM)**:
+    1. *Quản lý Thành viên*: Quản trị viên tạo mới tài khoản nhân viên. Hệ thống tự động cấp tài khoản và gửi email thông báo (`sendRegistrationAccountEmail`). Nhân viên đăng nhập vào App ViOne có đầy đủ các chức năng cơ bản kèm quyền truy cập vào đúng Cộng đồng mà tài khoản mua gói đã đăng ký.
+    2. *Quản lý Công việc*: Full CRUD (Tạo việc, Phân công người phụ trách, Nhận việc, Cập nhật tiến độ & Checklist, Chỉnh sửa, Xóa công việc) trên bảng Kanban 4 cột.
+    3. *Trung tâm Báo cáo*: Doanh thu (biểu đồ cột, tròn), Báo cáo quý, Báo cáo CSKH, Báo cáo công việc.
+    4. *Trợ lý AI*: Hỗ trợ phân tích dữ liệu, tóm tắt báo cáo và soạn thảo nội dung.
+    5. *Quản lý Tài liệu*: Full CRUD lưu trữ tài liệu quy chuẩn, hợp đồng, tài liệu đào tạo nội bộ.
+    6. *Cài đặt Cộng đồng*: Full CRUD cấu hình thông tin, logo, cover, sứ mệnh, chính sách gia nhập.
+    7. *Phân quyền Nhóm Quyền Động*: Quản lý danh mục Nhóm Quyền (`Role Groups`). Modal tạo/sửa nhóm quyền gọi trực tiếp API `GET /api/roles/modules-actions` tải 100% 14 module và thao tác con kèm checkbox chọn để tạo nhóm quyền. Khi quản lý nhân viên, dropdown "Nhóm Quyền Phân Bổ (API RBAC)" nạp trực tiếp nhóm quyền từ API, chọn nhóm quyền sẽ tự động cấp quyền tương ứng cho nhân viên.
+    8. *Chỉnh sửa Hồ sơ Cá nhân*: Cập nhật thông tin, chức vụ, đổi mật khẩu và bảo mật.
+    9. *Nhắn tin Kết nối Nội bộ*: Nhắn tin 1-1 trao đổi công việc giữa các thành viên trong cộng đồng.
+    10. *Quản lý Bài đăng & Tin tức*: Full CRUD đăng tin tức, bài viết nội bộ.
+    11. *Tạo Cuộc họp*: Full CRUD lên lịch họp, phân công tham dự và đính kèm link họp trực tuyến.
+- **3. Luồng Hoạt Động Hệ 2: Quản Trị Viên & Nhân Viên ViConnect (Super Admin & Platform Staff)**:
+  * **Quản lý Tài khoản Toàn Hệ Thống**: CRUD toàn bộ tài khoản, gán nhóm quyền lấy trực tiếp từ API Quản lý Nhóm Quyền (`GET /api/roles/groups`). Hỗ trợ đa vai trò (Multi-Role) và phản ứng rerender tức thì qua BroadcastChannel.
+  * **Quản lý Doanh nghiệp & Cảnh Báo Dùng Thử**: CRUD doanh nghiệp, bảng theo dõi hiển thị rõ Tên doanh nghiệp, Tên người mua gói (`buyerName`), Số lượng thành viên (`memberCount`). Tự động hiển thị Huy hiệu Cảnh báo nếu sắp hết hạn dùng thử (còn <= 7 ngày): `⚠️ Sắp hết hạn dùng thử (Còn X ngày)`.
+  * **Nhắn tin Trao đổi Nội bộ Nền tảng**: Nhắn tin 1-1 và tạo nhóm chat trao đổi nghiệp vụ liên phòng ban ViConnect.
+  * **Phân quyền Nền tảng (Platform RBAC)**: Full CRUD vai trò nền tảng (`platform_roles`) và phân quyền chi tiết từng thao tác con.
+  * **Tạo & Quản lý Cộng đồng Toàn Hệ Thống**: Full CRUD tạo mới cộng đồng (`POST /api/companies/platform/communities`) để add cho tài khoản mua gói ViOne Platform, chỉnh sửa thông tin và xóa cộng đồng để kịp thời hỗ trợ người mua gói.
+  * **Trung tâm Thống kê Báo cáo Nền tảng Toàn Diện (`/statistics`)**: Lấy dữ liệu thực từ `GET /api/companies/platform-reports`, hiển thị KPI Cards, Biểu đồ cột (Bar Chart) tăng trưởng 6 tháng, Biểu đồ tròn (Pie Chart) cơ cấu gói cước, Cây đơn vị (Organization Hierarchy Tree) từ Tập đoàn ViConnect đến các Khối Nghiệp vụ và Cộng đồng Doanh nghiệp thành viên; chia thành các tab chuyên sâu: Báo cáo Tài khoản, Báo cáo Tài liệu Pháp lý, Báo cáo Dòng tiền (MRR, ARR).
+  * **Sidebar ViConnect Chuyên Biệt**: Trang bị Trợ lý AI Nền tảng, Nhắn tin trao đổi (tạo nhóm), Quản lý cuộc họp (CRUD), và Quản lý công việc nội bộ (CRUD).
+
+### 2. Chi Tiết Triển Khai Kỹ Thuật (Technical Implementation)
+- **1. Mobile Native App ViOne (`apps/mobile_vione`)**:
+  * Tạo component `apps/mobile_vione/src/components/Profile5ModernModal.tsx`: Giao diện Obsidian & Gold, Avatar vòng Halo xoay nhẹ, Holographic badge, 5 nút gradient, 3 tab tương tác.
+  * Cập nhật `apps/mobile_vione/src/screens/quick-connect/ScanQrModal.tsx`: Giải mã URL `/public/p/:id` và hiển thị `Profile5ModernModal`.
+  * Cập nhật `apps/mobile_vione/src/screens/community/components/CommunityHomeScreen.tsx`: Thêm Banner FREE 30 NGÀY DÙNG THỬ kèm nút CTA Gradient Vàng Hoàng Gia và Huy hiệu Đếm ngược.
+  * Cập nhật `apps/mobile_vione/src/screens/community/CommunityScreen.tsx`: Bổ sung kiểm tra thuê bao và hàm `handleActivateTrial` gọi `/companies/subscribe-package`.
+- **2. PWA Web App ViOne (`apps/vione_app_fe`)**:
+  * Cập nhật `apps/vione_app_fe/src/components/business-connect/mobile/community/CommunityHome.tsx`: Đồng bộ 100% với Mobile Native: Banner Dùng Thử 30 Ngày, nút CTA kích hoạt gradient gold, badge đếm ngược, và tự động mở khóa các tính năng cộng đồng khi đăng ký.
+  * Cập nhật `apps/vione_app_fe/src/routes/platform.permissions.tsx`: Bổ sung chế độ xem Quản lý Nhóm Quyền (`Role Groups`) với Modal Call API hạt nhân 14 module chức năng và thao tác con chi tiết.
+  * Cập nhật `apps/vione_app_fe/src/components/companies/CompanyEmployeesTab.tsx`: Nạp danh mục nhóm quyền từ `/roles/groups`, cho phép chọn nhóm quyền khi thêm/sửa nhân viên, tự động điền chức danh và gán danh sách quyền tương ứng.
+  * Cập nhật `apps/vione_app_fe/src/components/platform/PlatformStaffManagement.tsx`: Nạp động các nhóm quyền từ API `/roles/groups`.
+  * Cập nhật `apps/vione_app_fe/src/components/platform/PlatformActivityMonitoring.tsx`: Hiển thị cột Người mua gói (`buyerName`), Số lượng thành viên (`memberCount`), Huy hiệu Cảnh báo Sắp Hết Hạn Dùng Thử (`⚠️ Sắp hết hạn dùng thử (Còn X ngày)`), Nút Tạo Cộng Đồng Mới trên header và trên từng dòng công ty, Modal Full CRUD cộng đồng nền tảng.
+  * Cập nhật `apps/vione_app_fe/src/routes/statistics.tsx`: Tích hợp `GET /api/companies/platform-reports`, Tab chuyển đổi: Tổng quan (Bar Chart 6 tháng + Pie Chart gói cước), Cây Đơn Vị Tổ Chức (Organization Tree), Báo cáo Tài khoản, Báo cáo Tài liệu Pháp lý, Báo cáo Dòng tiền.
+- **3. Backend API (`apps/vione_app_be`)**:
+  * `roles.controller.ts` & `roles.service.ts`: Thêm endpoint `GET /roles/modules-actions` (14 modules, 45 actions), `GET/POST/PUT/DELETE /roles/groups` (quản lý nhóm quyền).
+  * `companies.controller.ts` & `companies.service.ts`:
+    - `GET /companies/platform-monitoring`: Trả về dữ liệu thực tế kèm `buyerName`, `memberCount`, `trialDaysLeft`, `isTrialExpiringSoon`.
+    - `GET /companies/platform-reports`: Báo cáo toàn diện gồm KPI Summary, Biểu đồ cột Bar Chart, Biểu đồ tròn Pie Chart, Cây Đơn Vị (Root Tập đoàn ViConnect -> Khối Kỹ thuật, Vận hành, Tài chính -> Danh sách Cộng đồng thành viên), Báo cáo tài khoản, Báo cáo pháp lý, Báo cáo dòng tiền.
+    - `POST /companies/platform/communities`, `PATCH /companies/platform/communities/:id`, `DELETE /companies/platform/communities/:id`: Full CRUD cộng đồng nền tảng.
+    - `createCompanyEmployee`: Tự động khởi tạo tài khoản trong `auth.users` & `public.users` với bcrypt password và gửi email thông tin đăng nhập (`MailService.sendRegistrationAccountEmail`).
+- **4. Cơ Sở Dữ Liệu PostgreSQL**:
+  * Đã chạy script seed `scratch/seed_permissions.js` nạp 45 granular permissions vào `public.platform_permissions` trên 14 modules.
+  * Lưu trữ 100% dữ liệu thực tế, liên kết bảng `public.associations`, `public.companies`, `public.company_employees`, `public.platform_user_roles`, `public.platform_role_permissions`.
+
+### 3. Kiểm Tra Chất Lượng Mã Nguồn & Xác Thực Bắt Buộc (Strict Verification)
+- **1. Backend (`apps/vione_app_be`)**: Chạy `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **2. Mobile Native (`apps/mobile_vione`)**: Chạy `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **3. Web Frontend PWA / CRM (`apps/vione_app_fe`)**: Chạy `npx tsc --noEmit` -> **Exit code 0 (0 errors)**. Đã chạy `prettier --write` và `eslint` đạt **0 errors**.
+- **4. Dual-App Parity (Rule 4)**: Cả hai bản Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`) đều đồng bộ 100% về giao diện, chức năng và luồng dùng thử 30 ngày.
+- **5. Gradient-Only Buttons (Rule 8)**: 100% nút bấm, CTA và action chips đều sử dụng chuẩn Gradient Vàng Hoàng Gia Champagne Gold, Đen Thạch Anh Mạ Vàng, Ngọc Lục Bảo và Đỏ Ruby.
+- **6. Zero Mock Data (Rule 7)**: 100% kết nối RESTful API thực tế với cơ sở dữ liệu PostgreSQL.
+- **7. Zero Clear Text SRS (Rule 6)**: Đã cập nhật `docs/crm/SRS_CRM.md` (thêm UC-CRM-20, UC-CRM-21, UC-CRM-22) và `docs/app_vione/SRS_APP.md` (thêm UC-APP-17, UC-APP-18) mà không xóa bất kỳ nội dung cũ nào.
+- **8. Git Commit Rule (Rule 1)**: Không tự ý chạy `git commit` hay `git push`.
+
 ## 0.0000000. CẤP TÀI KHOẢN NHÂN VIÊN NỘI BỘ VIONE, PHÂN QUYỀN ĐA NHÓM (MULTI-ROLE RBAC) & REACTIVE RERENDER TỰ ĐỘNG (THÁNG 10/2026)
 - **1. Bối cảnh & Yêu cầu Nghiệp Vụ Cốt Lõi**:
   * **Cấp tài khoản CRM nội bộ dành riêng cho nhân viên ViOne**:

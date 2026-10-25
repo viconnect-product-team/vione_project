@@ -14,8 +14,13 @@ import {
   Search,
   Users,
   X,
+  Sparkles,
+  Clock,
+  Package,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { fetchNestApi } from "@/lib/api-client";
 import { useT } from "@/lib/i18n";
 import { getVNTimeGreeting } from "@/lib/utils";
 import { useMyCommunities } from "@/hooks/use-community";
@@ -28,16 +33,17 @@ import { ViOneLogo } from "../ViOneLogo";
 import { MobileSearchBar } from "../MobileSearchBar";
 import { CommunityJoinSection } from "./CommunityJoinSection";
 import { CommunityJoinHistory } from "./CommunityJoinHistory";
-import {
-  CommunityJoinStatusBadge,
-  CommunityJoinStatusCards,
-} from "./CommunityJoinStatusCards";
+import { CommunityJoinStatusBadge, CommunityJoinStatusCards } from "./CommunityJoinStatusCards";
 import { useCommunityJoinAdminRequests } from "@/hooks/use-community-join";
 import { sanitizeVietnameseText } from "@/lib/textSanitizer";
-import { useCommunityJoinDecisionAlerts, useCommunityJoinLiveSync } from "@/hooks/use-community-join";
+import {
+  useCommunityJoinDecisionAlerts,
+  useCommunityJoinLiveSync,
+} from "@/hooks/use-community-join";
 import { CommunityUpcomingEvents } from "./CommunityUpcomingEvents";
 import { CommunityOpportunitiesSection } from "./CommunityOpportunitiesSection";
 import { CreateCommunityModal } from "./CreateCommunityModal";
+import { PackageRegistrationModal } from "./PackageRegistrationModal";
 
 type CommunityTab = "all" | "admin" | "joined" | "history";
 
@@ -45,17 +51,64 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
   const t = useT();
   const { communities, initialLoading, coreError, retry } = useMyCommunities();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [packageModalOpen, setPackageModalOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const [term, setTerm] = useState("");
   const [tab, setTab] = useState<CommunityTab>(initialTab ?? "all");
+
+  const [subStatus, setSubStatus] = useState<{
+    hasSubscription: boolean;
+    isTrial: boolean;
+    trialDaysLeft: number;
+    plan?: string;
+  } | null>(null);
+  const [activatingTrial, setActivatingTrial] = useState(false);
 
   useCommunityJoinDecisionAlerts();
   useCommunityJoinLiveSync();
 
   useEffect(() => {
     reportCommunityMetric("COMMUNITY_OPENED");
+    fetchNestApi<any>("/companies/subscription-status")
+      .then((res) => {
+        const data = res?.data || res;
+        if (data && typeof data.hasSubscription === "boolean") {
+          setSubStatus(data);
+        }
+      })
+      .catch((err) => {
+        console.warn("[CommunityHome] Could not load subscription status:", err);
+      });
   }, []);
+
+  const handleActivateTrial = async () => {
+    setActivatingTrial(true);
+    try {
+      const res = await fetchNestApi<any>("/companies/subscribe-package", {
+        method: "POST",
+        body: JSON.stringify({
+          plan: "vione_platform_trial_30d",
+          isTrial: true,
+        }),
+      });
+      if (res && (res.ok || res.success)) {
+        toast.success("Kích hoạt 30 ngày dùng thử ViOne Platform thành công!");
+        setSubStatus({
+          hasSubscription: true,
+          isTrial: true,
+          trialDaysLeft: 30,
+          plan: "vione_platform_trial_30d",
+        });
+      } else {
+        toast.error(res?.message || "Không thể kích hoạt dùng thử");
+      }
+    } catch (err: any) {
+      toast.error("Lỗi khi kích hoạt: " + (err?.message || "Vui lòng thử lại"));
+    } finally {
+      setActivatingTrial(false);
+    }
+  };
 
   const query = term.trim().toLowerCase();
 
@@ -67,11 +120,18 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
     return enterpriseCommunities.filter((c: any) => {
       if (tab === "admin" && c.viewerRole !== "admin" && !c.isOwner) return false;
       if (tab === "joined") {
-        const isJoined = c.viewerRole === "member" || c.viewerRole === "admin" || c.isMember || c.membershipStatus === "active";
+        const isJoined =
+          c.viewerRole === "member" ||
+          c.viewerRole === "admin" ||
+          c.isMember ||
+          c.membershipStatus === "active";
         if (!isJoined) return false;
       }
       if (!query) return true;
-      return c.name.toLowerCase().includes(query) || (c.shortDescription && c.shortDescription.toLowerCase().includes(query));
+      return (
+        c.name.toLowerCase().includes(query) ||
+        (c.shortDescription && c.shortDescription.toLowerCase().includes(query))
+      );
     });
   }, [enterpriseCommunities, query, tab]);
 
@@ -99,7 +159,6 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
       </header>
 
       <main id="bc-mobile-community" className="contents">
-
         {/* A — Header */}
         <div className="mt-1 flex items-center justify-between w-full gap-3">
           <div className="min-w-0 flex-1">
@@ -110,15 +169,92 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
               Điều hành · Giao việc · CRM · Cơ hội B2B
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setCreateModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md border border-[#E5C07B]/60 hover:brightness-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
-          >
-            <Plus className="h-4 w-4 stroke-[2.5]" />
-            <span>Tạo cộng đồng (30 ngày free)</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPackageModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-slate-900 border border-[#D8B282]/50 text-[#F6E1C3] font-bold text-xs shadow-md hover:bg-slate-800 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+            >
+              <Package className="h-4 w-4 text-[#D8B282]" />
+              <span>Đăng Ký Gói ViOne</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCreateModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md border border-[#E5C07B]/60 hover:brightness-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+            >
+              <Plus className="h-4 w-4 stroke-[2.5]" />
+              <span>Tạo cộng đồng (30 ngày free)</span>
+            </button>
+          </div>
         </div>
+
+        {/* Banner Kích Hoạt 30 Ngày Dùng Thử Miễn Phí nếu tài khoản chưa có gói */}
+        {subStatus && !subStatus.hasSubscription && (
+          <div className="mt-4 p-4 rounded-2xl border-1.5 border-[#D8B282]/50 bg-gradient-to-br from-[#D8B282]/20 via-slate-950 to-slate-950 shadow-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#D8B282] flex items-center justify-center text-slate-950 font-bold shadow">
+                  <Sparkles className="w-4 h-4 text-slate-950" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-black tracking-wide text-[#F6E1C3] uppercase">
+                    FREE 30 NGÀY DÙNG THỬ
+                  </h3>
+                  <p className="text-[11px] text-white/60">Gói ViOne Platform Doanh Nghiệp 5.0</p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-[#D8B282]/20 border border-[#D8B282] text-[#D8B282] text-[10px] font-extrabold">
+                FREE 30D
+              </span>
+            </div>
+
+            <p className="text-xs text-white/80 leading-relaxed">
+              Mở khóa tính năng Cộng Đồng, Giao việc & Nhận việc, Chấm công và Chăm sóc khách hàng
+              CRM.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={handleActivateTrial}
+                disabled={activatingTrial}
+                className="py-2.5 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-black text-xs uppercase tracking-wider shadow-md hover:brightness-105 active:scale-98 transition cursor-pointer disabled:opacity-50"
+              >
+                {activatingTrial ? "Đang kích hoạt..." : "Kích Hoạt Nhanh Free 30D"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPackageModalOpen(true)}
+                className="py-2.5 rounded-xl bg-slate-900 border border-[#D8B282]/60 text-[#F6E1C3] font-black text-xs uppercase tracking-wider shadow-md hover:bg-slate-800 active:scale-98 transition cursor-pointer"
+              >
+                Đăng Ký Gói Cụ Thể (QR)
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Badge Đếm Ngược Ngày Dùng Thử */}
+        {subStatus && subStatus.hasSubscription && subStatus.isTrial && (
+          <div className="mt-3 p-3 rounded-xl border border-[#D8B282]/40 bg-[#D8B282]/10 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[#D8B282]" />
+              <span className="text-xs font-bold text-[#F6E1C3]">Dùng Thử ViOne Platform 5.0</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-md bg-[#D8B282] text-slate-950 text-[10.5px] font-black">
+                Còn {subStatus.trialDaysLeft} ngày
+              </span>
+              <button
+                type="button"
+                onClick={() => setPackageModalOpen(true)}
+                className="px-2.5 py-0.5 rounded-md border border-[#D8B282]/60 bg-slate-900 text-[#F6E1C3] text-[10px] font-black hover:bg-slate-800 transition cursor-pointer"
+              >
+                Nâng cấp gói
+              </button>
+            </div>
+          </div>
+        )}
 
         {initialLoading ? (
           <CommunityListSkeleton />
@@ -154,7 +290,7 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
                 { id: "all", label: "Tất cả cộng đồng" },
                 { id: "admin", label: "👑 Đang quản trị" },
                 { id: "joined", label: "🤝 Đã tham gia" },
-                { id: "history", label: "📋 Lịch sử yêu cầu" }
+                { id: "history", label: "📋 Lịch sử yêu cầu" },
               ].map((item) => {
                 const isActive = tab === item.id;
                 return (
@@ -186,11 +322,11 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
               role="search"
               onSubmit={(event) => event.preventDefault()}
             >
-            <MobileSearchBar
-              value={term}
-              onChange={setTerm}
-              placeholder="Tìm cộng đồng, liên minh, sự kiện..."
-            />
+              <MobileSearchBar
+                value={term}
+                onChange={setTerm}
+                placeholder="Tìm cộng đồng, liên minh, sự kiện..."
+              />
             </form>
 
             {tab === "history" ? (
@@ -252,14 +388,17 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
       </main>
 
       {/* Modal Tạo Cộng Đồng Mới */}
-      <CreateCommunityModal
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
+      <CreateCommunityModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
+
+      {/* Modal Đăng Ký Gói ViOne Platform */}
+      <PackageRegistrationModal
+        open={packageModalOpen}
+        onClose={() => setPackageModalOpen(false)}
+        onSuccess={() => setPackageModalOpen(false)}
       />
     </>
   );
 }
-
 
 /** Lối vào màn quản trị yêu cầu tham gia (chỉ hiện khi viewer quản trị cộng đồng). */
 function CommunityJoinAdminEntry() {
@@ -282,7 +421,11 @@ function CommunityJoinAdminEntry() {
           {t("bc.mobile.community.join.admin.pendingCount", { count: String(pending) })}
         </span>
       </span>
-      <ChevronRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--bc-mobile-muted)]" strokeWidth={1.8} />
+      <ChevronRight
+        aria-hidden="true"
+        className="h-5 w-5 shrink-0 text-[var(--bc-mobile-muted)]"
+        strokeWidth={1.8}
+      />
     </Link>
   );
 }
@@ -313,30 +456,51 @@ function CommunityNotificationsButton() {
 }
 
 // Curated media visuals for communities (Mino Executive Style - 3 Signature Brand Colors)
-export function getCommunityVisuals(name: string, logoUrl?: string | null, bannerUrl?: string | null) {
+export function getCommunityVisuals(
+  name: string,
+  logoUrl?: string | null,
+  bannerUrl?: string | null,
+) {
   const lower = (name || "").toLowerCase();
 
-  let defaultBanner = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
-  let defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80";
+  let defaultBanner =
+    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
+  let defaultAvatar =
+    logoUrl ||
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80";
   let category = "Hiệp Hội Doanh Nghiệp B2B";
   let categoryColor = "border-[#D8B282]/50 bg-[#D8B282]/15 text-[#8C653B] dark:text-[#F6E1C3]";
   let attendees: string[] = [];
-  let descFallback = "Liên minh xúc tiến thương mại, kết nối cơ hội kinh doanh và đầu tư quy mô lớn.";
+  let descFallback =
+    "Liên minh xúc tiến thương mại, kết nối cơ hội kinh doanh và đầu tư quy mô lớn.";
 
-  if (lower.includes("vione") || lower.includes("gia đình") || lower.includes("ceo") || lower.includes("1983")) {
-    defaultBanner = "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80";
-    defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
+  if (
+    lower.includes("vione") ||
+    lower.includes("gia đình") ||
+    lower.includes("ceo") ||
+    lower.includes("1983")
+  ) {
+    defaultBanner =
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80";
+    defaultAvatar =
+      logoUrl ||
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
     category = "Gia Đình ViOne • Doanh Nghiệp";
     categoryColor = "border-[#D8B282]/50 bg-[#D8B282]/15 text-[#8C653B] dark:text-[#F6E1C3]";
     attendees = [];
     descFallback = "Mạng lưới kết nối Chủ tịch, CEO & Lãnh đạo doanh nghiệp thuộc Gia Đình ViOne.";
   } else if (lower.includes("ai") || lower.includes("vietnam") || lower.includes("tech")) {
-    defaultBanner = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80";
-    defaultAvatar = logoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80";
+    defaultBanner =
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80";
+    defaultAvatar =
+      logoUrl ||
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80";
     category = "AI & Chuyển Đổi Số";
-    categoryColor = "border-slate-300/60 dark:border-slate-600 bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200";
+    categoryColor =
+      "border-slate-300/60 dark:border-slate-600 bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200";
     attendees = [];
-    descFallback = "Cộng đồng chuyên gia, Founder & Kỹ sư AI tiên phong ứng dụng công nghệ thực chiến.";
+    descFallback =
+      "Cộng đồng chuyên gia, Founder & Kỹ sư AI tiên phong ứng dụng công nghệ thực chiến.";
   }
 
   return {
@@ -357,12 +521,13 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
 
   const cleanName = sanitizeVietnameseText(community.name);
   const visuals = getCommunityVisuals(cleanName, community.logoUrl, community.bannerUrl);
-  const cleanDesc = sanitizeVietnameseText(community.shortDescription) || sanitizeVietnameseText(visuals.descFallback);
+  const cleanDesc =
+    sanitizeVietnameseText(community.shortDescription) ||
+    sanitizeVietnameseText(visuals.descFallback);
   const memberCount = community.memberCount ?? 1;
 
   return (
     <li className="overflow-hidden rounded-3xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface)] shadow-xs transition-all duration-300 hover:border-[var(--bc-mobile-border-active)] active:border-[var(--bc-mobile-border-active)] flex flex-col">
-      
       {/* Top Cover Banner */}
       <Link
         to="/connect-app/community/$communityId"
@@ -376,17 +541,19 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-[0.85] dark:brightness-[0.70]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bc-mobile-surface)] via-[var(--bc-mobile-surface)]/30 to-transparent" />
-        
+
         {/* Category Badge over Banner */}
         <div className="absolute top-2.5 left-3 flex items-center gap-1.5">
-          {community.communityType === "company_internal" || 
-           cleanName.toLowerCase().includes("công ty") || 
-           cleanName.toLowerCase().includes("tập đoàn") ? (
+          {community.communityType === "company_internal" ||
+          cleanName.toLowerCase().includes("công ty") ||
+          cleanName.toLowerCase().includes("tập đoàn") ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase backdrop-blur-md border border-[#DFB76C] bg-black/75 text-[#DFB76C] shadow-sm">
               <span>🏢 CÔNG TY NỘI BỘ</span>
             </span>
           ) : (
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase backdrop-blur-md border ${visuals.categoryColor}`}>
+            <span
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase backdrop-blur-md border ${visuals.categoryColor}`}
+            >
               <span>🤝 MẠNG LƯỚI B2B</span>
             </span>
           )}
@@ -402,7 +569,6 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
 
       {/* Main Content Body */}
       <div className="p-4 pt-0 flex-1 flex flex-col justify-between">
-        
         {/* Floating Avatar + Community Name Header */}
         <div className="flex items-start gap-3.5 -mt-6 relative z-10">
           <CommunityAvatar
@@ -435,7 +601,6 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
 
         {/* Overlapping Members Pile & Activity Metrics */}
         <div className="mt-3.5 pt-3 border-t border-[var(--bc-mobile-border)] flex items-center justify-between gap-2 text-xs">
-          
           {/* Member Row */}
           <div className="flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D8B282]/15 border border-[#D8B282]/30 text-[#8C653B] dark:text-[#F6E1C3]">
@@ -468,7 +633,11 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
             params={{ communityId: community.communityId }}
             className="flex h-9 items-center justify-center gap-1.5 text-xs font-semibold text-[var(--bc-mobile-text)] hover:text-[var(--bc-mobile-accent)] hover:bg-[var(--bc-mobile-surface)] transition-colors cursor-pointer"
           >
-            <Users aria-hidden="true" className="h-3.5 w-3.5 text-[var(--bc-mobile-accent)]" strokeWidth={1.8} />
+            <Users
+              aria-hidden="true"
+              className="h-3.5 w-3.5 text-[var(--bc-mobile-accent)]"
+              strokeWidth={1.8}
+            />
             <span>Thành viên</span>
           </Link>
           <Link
@@ -476,7 +645,11 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
             params={{ communityId: community.communityId }}
             className="flex h-9 items-center justify-center gap-1.5 text-xs font-semibold text-[var(--bc-mobile-text)] hover:text-[var(--bc-mobile-accent)] hover:bg-[var(--bc-mobile-surface)] transition-colors cursor-pointer"
           >
-            <CalendarDays aria-hidden="true" className="h-3.5 w-3.5 text-[var(--bc-mobile-accent)]" strokeWidth={1.8} />
+            <CalendarDays
+              aria-hidden="true"
+              className="h-3.5 w-3.5 text-[var(--bc-mobile-accent)]"
+              strokeWidth={1.8}
+            />
             <span>Sự kiện</span>
           </Link>
           <Link
@@ -484,11 +657,14 @@ function CommunityCard({ community }: { community: CommunitySummaryDTO }) {
             params={{ communityId: community.communityId }}
             className="flex h-9 items-center justify-center gap-1.5 text-xs font-semibold text-[var(--bc-mobile-text)] hover:text-[var(--bc-mobile-accent)] hover:bg-[var(--bc-mobile-surface)] transition-colors cursor-pointer"
           >
-            <Briefcase aria-hidden="true" className="h-3.5 w-3.5 text-[var(--bc-mobile-accent)]" strokeWidth={1.8} />
+            <Briefcase
+              aria-hidden="true"
+              className="h-3.5 w-3.5 text-[var(--bc-mobile-accent)]"
+              strokeWidth={1.8}
+            />
             <span>Cơ hội</span>
           </Link>
         </div>
-
       </div>
     </li>
   );

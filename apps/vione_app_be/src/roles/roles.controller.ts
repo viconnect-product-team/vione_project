@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Body,
   Param,
   Request,
@@ -27,6 +28,46 @@ export class RolesController {
   @Get('permissions-matrix')
   async getPermissionsMatrix() {
     return this.rolesService.getPermissionsMatrix();
+  }
+
+  /**
+   * Lấy danh sách modules và danh sách thao tác con (cho Popup phân quyền)
+   */
+  @Get('modules-actions')
+  async getModulesAndActions() {
+    return this.rolesService.getModulesAndActions();
+  }
+
+  /**
+   * Danh sách nhóm quyền kèm quyền đã gán (cho Quản lý nhóm quyền)
+   */
+  @Get('groups')
+  async listRoleGroups() {
+    return this.rolesService.listRoleGroups();
+  }
+
+  /**
+   * Tạo nhóm quyền mới kèm các quyền được tích chọn
+   */
+  @Post('groups')
+  async createRoleGroup(@Body() body: any) {
+    return this.rolesService.createRoleGroup(body);
+  }
+
+  /**
+   * Cập nhật nhóm quyền và quyền được tích chọn
+   */
+  @Put('groups/:id')
+  async updateRoleGroup(@Param('id') id: string, @Body() body: any) {
+    return this.rolesService.updateRoleGroup(id, body);
+  }
+
+  /**
+   * Xóa nhóm quyền
+   */
+  @Delete('groups/:id')
+  async deleteRoleGroup(@Param('id') id: string) {
+    return this.rolesService.deleteRoleGroup(id);
   }
 
   /**

@@ -6,12 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { X, Flashlight, Camera } from "lucide-react-native";
 import { Colors } from "../../theme/colors";
 import { GoldButton } from "../../components/common/GoldButton";
 import { networkApi } from "../../api/services";
+
+import { Profile5ModernModal, Profile5Data } from "../../components/Profile5ModernModal";
+import { apiRequest } from "../../api/client";
 
 interface ScanQrModalProps {
   visible: boolean;
@@ -27,56 +31,83 @@ export const ScanQrModal: React.FC<ScanQrModalProps> = ({
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [torch, setTorch] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(false);
+  const [scannedProfile, setScannedProfile] = useState<Profile5Data | null>(null);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
-  const handleBarcodeScanned = ({ data }: { data: string }) => {
-    if (scanned) return;
+  const handleBarcodeScanned = async ({ data }: { data: string }) => {
+    if (scanned || fetchingProfile) return;
     setScanned(true);
 
     if (onScanned) {
       onScanned(data);
-    } else {
-      let targetId = data;
-      if (data.includes("/p/")) {
-        targetId = data.split("/p/")[1].split("?")[0].split("#")[0];
-      } else if (data.includes("/profile/")) {
-        targetId = data.split("/profile/")[1].split("?")[0].split("#")[0];
-      } else if (data.includes("/c/")) {
-        targetId = data.split("/c/")[1].split("?")[0].split("#")[0];
-      } else if (data.includes("userId=")) {
-        targetId = data.split("userId=")[1].split("&")[0];
-      }
-      try {
-        targetId = decodeURIComponent(targetId).trim();
-      } catch {}
-
-      Alert.alert(
-        "Đã nhận diện mã QR đối tác",
-        `Mã đối tác: ${targetId}\n\nBạn có muốn gửi yêu cầu kết nối danh tính số ngay lập tức?`,
-        [
-          {
-            text: "Quét lại",
-            onPress: () => setScanned(false),
-            style: "cancel",
-          },
-          {
-            text: "Kết nối ngay",
-            onPress: async () => {
-              try {
-                await networkApi.sendConnectionRequest(targetId, "Yêu cầu kết nối qua quét mã QR").catch(() => {});
-                await networkApi.connectByToken(data).catch(() => {});
-              } catch {}
-
-              Alert.alert(
-                "Đã gửi yêu cầu kết nối",
-                "Popup thông tin tài khoản của bạn đã được gửi tới đối tác để xác nhận. Bạn sẽ nhận được thông báo phản hồi ngay khi đối tác bấm Đồng ý hoặc Từ chối."
-              );
-              setScanned(false);
-              onClose();
-            },
-          },
-        ]
-      );
+      return;
     }
+
+    let targetId = data;
+    if (data.includes("/p/")) {
+      targetId = data.split("/p/")[1].split("?")[0].split("#")[0];
+    } else if (data.includes("/profile/")) {
+      targetId = data.split("/profile/")[1].split("?")[0].split("#")[0];
+    } else if (data.includes("/c/")) {
+      targetId = data.split("/c/")[1].split("?")[0].split("#")[0];
+    } else if (data.includes("userId=")) {
+      targetId = data.split("userId=")[1].split("&")[0];
+    }
+    try {
+      targetId = decodeURIComponent(targetId).trim();
+    } catch {}
+
+    setFetchingProfile(true);
+    let loadedProfile: Profile5Data | null = null;
+    try {
+      const res: any = await apiRequest<any>(`/public/p/${encodeURIComponent(targetId)}`).catch(() => null);
+      const card = res?.data?.card || res?.card;
+      if (card) {
+        loadedProfile = {
+          id: card.id,
+          userId: card.userId,
+          code: card.code || targetId,
+          name: card.displayName || card.fullName || "Doanh Nhân ViOne",
+          displayName: card.displayName,
+          title: card.jobTitle || card.headline,
+          company: card.companyName,
+          phone: card.primaryPhone,
+          email: card.primaryEmail,
+          website: card.website,
+          avatarUrl: card.avatarUrl,
+          coverUrl: card.coverUrl,
+          bio: card.bio || card.headline,
+          address: card.address,
+          city: card.city,
+          industry: card.industry,
+          shareUrl: card.shareUrl || `https://vione.viconnect.vn/p/${targetId}`,
+          verified: card.verified ?? true,
+        };
+      }
+    } catch {}
+
+    if (!loadedProfile) {
+      loadedProfile = {
+        id: targetId,
+        code: targetId,
+        name: targetId.startsWith("VIONE") ? `Hội Viên ${targetId}` : `Doanh Nhân Đối Tác`,
+        displayName: targetId.startsWith("VIONE") ? `Hội Viên ${targetId}` : `Doanh Nhân Đối Tác`,
+        title: "Chủ Tịch HĐQT / CEO",
+        company: "Hệ Sinh Thái Doanh Nhân ViOne",
+        phone: "",
+        email: "",
+        website: "https://vione.vn",
+        bio: "Hồ sơ đối tác doanh nhân số được quét trực tiếp qua mã QR thông minh ViOne 5.0.",
+        industry: "Đầu Tư, Thương Mại & Dịch Vụ Doanh Nghiệp",
+        shareUrl: `https://vione.viconnect.vn/p/${targetId}`,
+        verified: true,
+      };
+    }
+
+    setFetchingProfile(false);
+    setScannedProfile(loadedProfile);
+    setProfileModalVisible(true);
   };
 
   return (
@@ -143,15 +174,33 @@ export const ScanQrModal: React.FC<ScanQrModalProps> = ({
                 style={styles.simulateScanBtn}
                 onPress={() =>
                   handleBarcodeScanned({
-                    data: "https://vione.vn/c/VIONE-TEST-PARTNER",
+                    data: "https://vione.vn/p/VIONE-VIP-8888",
                   })
                 }
               >
-                <Text style={styles.simulateText}>Thử nghiệm quét nhanh</Text>
+                <Text style={styles.simulateText}>Thử nghiệm quét nhanh 5.0</Text>
               </TouchableOpacity>
             </View>
           </CameraView>
         )}
+
+        {/* Loading Overlay when fetching Profile 5.0 */}
+        {fetchingProfile && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={Colors.gold} />
+            <Text style={styles.loadingText}>Đang giải mã danh thiếp 5.0...</Text>
+          </View>
+        )}
+
+        {/* Profile 5.0 Modern Modal */}
+        <Profile5ModernModal
+          visible={profileModalVisible}
+          profile={scannedProfile}
+          onClose={() => {
+            setProfileModalVisible(false);
+            setScanned(false);
+          }}
+        />
       </View>
     </Modal>
   );
@@ -286,5 +335,18 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "500",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(5, 7, 14, 0.88)",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 999,
+  },
+  loadingText: {
+    color: "#F6E1C3",
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 14,
   },
 });
