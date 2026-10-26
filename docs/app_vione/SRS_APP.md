@@ -1,292 +1,269 @@
-# ĐẶC TẢ YÊU CẦU PHẦN MỀM (SRS) - PHÂN HỆ APP VIONE
-## SOFTWARE REQUIREMENTS SPECIFICATION — USE CASES & SYSTEM BEHAVIOR (APP VIONE)
+# ĐẶC TẢ YÊU CẦU PHẦN MỀM (SRS) - PHÂN HỆ ỨNG DỤNG DI ĐỘNG NATIVE VIONE
+## SOFTWARE REQUIREMENTS SPECIFICATION — USE CASES & SYSTEM BEHAVIOR (VIONE NATIVE MOBILE APP)
 
 > **Mã tài liệu:** `VIONE-SRS-APP-02`  
-> **Phiên bản:** `6.0.0 (Cập nhật Tháng 10/2026)`  
-> **Phân hệ:** App Doanh Nhân ViOne (PWA Responsive Web & React Native Native Mobile)  
-> **Nguyên tắc tài liệu:** KHÔNG CLEAR TEXT CŨ. Khi có thay đổi luồng hoặc yêu cầu bổ sung chức năng, Agent phải tìm đúng Use Case (UC-APP-xxx) tương ứng để cập nhật, đánh dấu phiên bản và ghi nhận chi tiết.
+> **Phiên bản:** `7.0.0 (Cập nhật Toàn diện Chuẩn Native Mobile - Tháng 10/2026)`  
+> **Phân hệ:** Ứng dụng Di Động Thuần Native ViOne Doanh Nhân (`apps/mobile_vione` — React Native / Expo Native Engine cho Google Play Store & Apple App Store)  
+> **Phạm vi nền tảng (Platform Scope):** Ứng dụng di động thuần Native (iOS & Android). Toàn bộ định danh PWA trước đây chỉ là bản web dựng tạm trong giai đoạn sơ khởi của dự án và KHÔNG thuộc phạm vi đặc tả này. Tài liệu này đóng vai trò là quy chuẩn kỹ thuật chính thức và duy nhất để thẩm định, phát triển, kiểm thử và phát hành ứng dụng lên CH-PLAY và APP STORE.  
+> **Nguyên tắc tài liệu:** KHÔNG XÓA NỘI DUNG CŨ. Luôn bổ sung chi tiết vào Use Case (UC-APP-xxx) tương ứng, mô tả đầy đủ 100% các trường dữ liệu, validation, placeholder, vị trí hiển thị bản ghi mới trên App và cơ chế đồng bộ / đẩy dữ liệu từ hệ thống về.
 
 ---
 
-## 1. DANH MỤC USE CASES (USE CASE MATRIX)
+## 1. DANH MỤC USE CASES NATIVE MOBILE (USE CASE MATRIX)
 
-| Mã Use Case | Tên Chức Năng | Tác Nhân (Actors) | Mức Ưu Tiên | Trạng Thái |
+| Mã Use Case | Tên Chức Năng Trên App Native | Tác Nhân (Actors) | Mức Ưu Tiên | Trạng Thái |
 | :--- | :--- | :--- | :--- | :--- |
-| **UC-APP-01** | Đăng nhập đa kênh (Google, Apple, OTP, Email) | Doanh nhân, Khách mời | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-02** | Xem & Cập nhật Hồ sơ Doanh nhân & Kéo căn chỉnh Avatar/Cover | Doanh nhân | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-03** | Hiển thị Thẻ Danh thiếp VIP & Chạm 1-Tap NFC | Doanh nhân, Đối tác | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-04** | Xem Trang Hồ sơ Số Công khai (`/p/:identifier`) | Khách vãng lai, Đối tác | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-05** | Quét mã QR đối tác (Live Camera Zalo-Style) | Doanh nhân | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-01** | Đăng nhập đa kênh (Google Sign-In, Apple Sign-In native, Email, OTP SĐT) | Doanh nhân, Khách mời | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-02** | Xem & Cập nhật Hồ sơ Doanh nhân, Kéo căn chỉnh Avatar/Cover | Doanh nhân | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-03** | Hiển thị Thẻ Danh thiếp VIP & Chạm 1-Tap NFC Vật Lý | Doanh nhân, Đối tác | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-04** | Xem Hồ sơ Số Cá nhân & Quản lý Mã QR Chia sẻ Đối tác | Khách vãng lai, Đối tác | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-05** | Quét mã QR đối tác (Live Camera Native Zalo-Style Scanner) | Doanh nhân | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-06** | Chụp Danh thiếp Giấy AI OCR & Chuyển Khách hàng Lead CRM | Doanh nhân, Trợ lý | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-07** | Nhắn tin Trực tiếp 1-1 (Direct Message Thread) | Hai doanh nhân | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-08** | Đăng & Xem Khoảnh khắc Doanh nhân 24h (Stories) | Doanh nhân | P1 - Cao | Hoạt động |
-| **UC-APP-09** | Lên lịch hẹn & Điều phối Cuộc gặp 1-on-1 | Doanh nhân | P1 - Cao | Hoạt động |
-| **UC-APP-10** | Quản lý & Chăm sóc Khách hàng Tiềm năng (Leads Pipeline) | Doanh nhân, Kinh doanh | P1 - Cao | Hoạt động |
-| **UC-APP-11** | Tham gia Cộng đồng, Bầu Ban điều hành & Mời kết nối | Doanh nhân, Trưởng nhóm | P1 - Cao | Hoạt động |
-| **UC-APP-12** | Đăng tin & Tìm kiếm Cơ hội Kinh doanh B2B | Doanh nhân, Chủ DN | P1 - Cao | Hoạt động |
-| **UC-APP-13** | Đăng ký & Điểm danh Vé Sự kiện B2B (Dynamic QR) | Doanh nhân, BTC | P1 - Cao | Hoạt động |
-| **UC-APP-14** | Ra lệnh Giọng nói Trợ lý Doanh nhân AI (Floating Orb) | Doanh nhân | P1 - Cao | Hoạt động |
+| **UC-APP-07** | Nhắn tin Trực tiếp 1-1 Thời Gian Thực (Direct Message Realtime Thread) | Hai doanh nhân | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-08** | Đăng & Xem Khoảnh khắc Doanh nhân 24h (Stories Video/Image) | Doanh nhân | P1 - Cao | Hoạt động |
+| **UC-APP-09** | Lên lịch hẹn & Điều phối Cuộc gặp 1-on-1 (Appointments) | Doanh nhân | P1 - Cao | Hoạt động |
+| **UC-APP-10** | Quản lý & Chăm sóc Khách hàng Tiềm năng (Leads CRM Mobile) | Doanh nhân, Kinh doanh | P1 - Cao | Hoạt động |
+| **UC-APP-11** | Khởi tạo, Tham gia & Quản trị Cộng đồng Doanh nghiệp (Community Hub) | Doanh nhân, Trưởng nhóm | P1 - Cao | Hoạt động |
+| **UC-APP-12** | Đăng tin & Tìm kiếm Cơ hội Kinh doanh B2B (Opportunities) | Doanh nhân, Chủ DN | P1 - Cao | Hoạt động |
+| **UC-APP-13** | Đăng ký & Điểm danh Vé Sự kiện B2B (Dynamic QR Ticket) | Doanh nhân, BTC | P1 - Cao | Hoạt động |
+| **UC-APP-14** | Ra lệnh Giọng nói Trợ lý Doanh nhân AI (Floating Orb Voice AI) | Doanh nhân | P1 - Cao | Hoạt động |
 | **UC-APP-15** | Giám sát Hoạt động Nhân sự trong ngày dành cho Giám đốc | Ban Giám Đốc | P1 - Cao | Hoạt động |
-| **UC-APP-16** | Trải Nghiệm Cài Đặt PWA 1-Chạm (Home Install Banner Card) | Người dùng PWA | P1 - Cao | Hoạt động |
-| **UC-APP-17** | Quét Mã QR Cá Nhân & Trải Nghiệm Profile 5.0 Chuẩn Doanh Nhân Hiện Đại | Doanh nhân, Đối tác | P0 - Bắt buộc | Hoạt động |
-| **UC-APP-18** | Kích Hoạt Dùng Thử Miễn Phí 30 Ngày Cộng Đồng ViOne Platform | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-16** | Điểm Danh & Chấm Công GPS/FaceID Khu Vực Làm Việc (Check-in Mobile) | Nhân sự doanh nghiệp | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-17** | Quét Mã QR Cá Nhân & Trải Nghiệm Profile 5.0 Executive Luxury | Doanh nhân, Đối tác | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-18** | Kích Hoạt Dùng Thử Miễn Phí 30 Ngày & Phân Quyền Quản Trị ViConnect | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-19** | Đăng Ký Gói ViOne Platform, Thanh Toán VietQR & Kiểm Soát Hạn Mức Slots | Chủ doanh nghiệp | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-20** | Xoá Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-21** | Đồng Bộ Dữ Liệu Thực Mạng Lưới B2B & Giao Diện EmptyState Luxury | Doanh nhân, Hội viên | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-22** | Nhận Việc, Cập Nhật Tiến Độ Checklist & Báo Cáo Nhiệm Vụ Mobile | Nhân sự doanh nghiệp | P0 - Bắt buộc | Hoạt động |
 
 ---
 
-## 2. CHI TIẾT CÁC USE CASE
-
-### UC-APP-01: Đăng nhập đa kênh (Google SSO, Apple ID, Phone/OTP, Email)
-* **Tác nhân:** Doanh nhân, Thành viên mới.
-* **Tiền điều kiện:** Ứng dụng đã khởi động trên PWA hoặc Native Mobile.
-* **Luồng sự kiện chính:**
-  1. Người dùng mở màn hình đăng nhập (`ConnectAppSignIn.tsx` trên PWA hoặc `LoginScreen.tsx` trên Native).
-  2. Người dùng chọn phương thức đăng nhập:
-     - Bấm nút Google hoặc Apple (mở popup/SSO native).
-     - Nhập Email / Mật khẩu hoặc Số điện thoại.
-  3. Bấm nút **"Đăng nhập"** (Bắt buộc dùng nút Gradient Vàng Hoàng Gia Champagne Gold).
-  4. Hệ thống xác thực qua API `POST /connect-app/auth/login`.
-  5. Nếu thành công, lưu token vào SecureStore / LocalStorage, điều hướng vào Trang chủ (`/connect-app`).
-* **Quy tắc Nghiệp vụ & Dữ liệu Thực:**
-  - CẤM TỰ Ý MOCK DỮ LIỆU đăng nhập thành công nếu API trả về lỗi.
-  - Phải hiển thị toast lỗi cụ thể nếu sai thông tin hoặc tài khoản chưa kích hoạt.
+## 2. CHI TIẾT CÁC USE CASE & ĐẶC TẢ TRƯỜNG DỮ LIỆU CHUẨN NATIVE MOBILE
 
 ---
 
-### UC-APP-03: Hiển thị Thẻ Danh thiếp VIP & Chạm 1-Tap NFC
-* **Tác nhân:** Doanh nhân sở hữu tài khoản ViOne.
-* **Luồng sự kiện chính:**
-  1. Người dùng vào tab "Tôi" hoặc bấm nút V trung tâm chọn "Thẻ của tôi".
-  2. Hệ thống tải thông tin từ bảng `public.vione_users`, `user_profiles`, `business_identities`.
-  3. Hiển thị thẻ VIP mạ vàng hoặc mạ bạc Platinum:
-     - Avatar viền vàng, Họ tên, Chức vụ, Công ty.
-     - Chip kim loại 3D, sóng NFC, mã doanh nhân `VIONE-XXXX`.
-  4. Người dùng bấm "Mã QR của tôi": Bung modal hiển thị mã QR kèm logo vương miện mạ vàng ở giữa.
-  5. Đối tác quét mã QR hoặc chạm thẻ NFC vật lý vào mặt lưng điện thoại.
-* **Cập nhật Phiên bản v6.1.0 (Tháng 10/2026 - Tối giản Thẻ & Đa dạng Hồ sơ):**
-  - **Quy tắc Thẻ vật lý tối giản:** Trên bề mặt thẻ VIP (Thẻ Vàng Hoàng Gia / Thẻ Bạc Bạch Kim), hệ thống STRICTLY chỉ hiển thị 3 trường: **Họ và tên**, **Công ty**, và **Số điện thoại** ("chỉ thế thôi"). Loại bỏ chức danh và email khỏi mặt thẻ để tránh rối mắt, giữ trọn vẻ tinh tế sang trọng của thẻ kim loại.
-  - **Khu vực Hồ sơ Số bên dưới Thẻ:** Bên dưới thẻ là khu vực hiển thị Profile với bộ chuyển đổi linh hoạt:
-    + `Hồ sơ cá nhân`: Giới thiệu bản thân (Bio), Sứ mệnh, Email, Website, Địa chỉ và Mã định danh doanh nhân.
-    + `Hồ sơ doanh nghiệp`: Tên công ty, Lĩnh vực hoạt động, Năng lực hợp tác B2B, Trụ sở và Website.
-  - **Mẫu Bố cục Nền Đa dạng (Interactive Background Patterns):** Dựng sẵn 3 mẫu nền hình học tinh tế cho người dùng lựa chọn:
-    + `■ Vuông`: Bố cục lưới khối hình vuông chuẩn mực, thể hiện sự vững chắc, kỷ luật và minh bạch tư pháp.
-    + `▲ Tam giác`: Bố cục lưới đa diện hình tam giác, biểu trưng cho tăng trưởng, bứt phá và hợp tác đa chiều.
-    + `◆ Tinh thể`: Bố cục đa diện Obsidian sắc nét, tượng trưng cho vị thế C-Level và đẳng cấp thương hiệu.
-  - **Cụm nút Hành động Chuẩn Gradient (Rule 8):**
-    + Nút Gọi điện: Gradient Ngọc Lục Bảo (`linear-gradient(135deg,#059669_0%,#10B981_50%,#047857_100%)`).
-    + Nút Chat Zalo: Gradient Xanh Zalo Blue (`linear-gradient(135deg,#0088FF_0%,#0066CC_50%,#0052A3_100%)`).
-    + Nút Mã QR: Gradient Vàng Hoàng Gia (`linear-gradient(135deg,#F6E1C3_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)`).
-    + Nút Chia sẻ: Gradient Đen Thạch Anh Mạ Vàng (`linear-gradient(135deg,#1E293B_0%,#0F172A_100%)`).
-* **Quy chuẩn Giao diện Bắt buộc:**
-  - Nút đóng, nút chuyển đổi màu thẻ hoặc chia sẻ bắt buộc sử dụng chuẩn nút Gradient.
+### UC-APP-01: Đăng nhập đa kênh (Google Sign-In, Apple Sign-In Native, Email, OTP SĐT)
+* **Tác nhân:** Doanh nhân, Hội viên doanh nghiệp, Khách mời mới.
+* **Màn hình thực hiện trên App Native:** `LoginScreen.tsx`, `OtpVerificationModal.tsx`.
+* **Tiền điều kiện:** Ứng dụng ViOne Native đã được cài đặt trên thiết bị iOS (từ App Store) hoặc Android (từ CH-Play), thiết bị có kết nối mạng Internet.
+* **Hậu điều kiện:** Người dùng được cấp Token định danh JWT (Access Token & Refresh Token) lưu an toàn trong `expo-secure-store`, điều hướng thẳng vào Trang Chủ (`HomeScreen.tsx`).
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Form Đăng Nhập
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `email` | Email doanh nghiệp | `TextInput` (email-address) | `nhap_email@doanhnghiep.vn` | Bắt buộc nếu đăng nhập bằng Email. Định dạng RFC 5322 regex: `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$` | `Email không đúng định dạng!` / `Vui lòng nhập email!` |
+| `password` | Mật khẩu bảo mật | `TextInput` (password, secureTextEntry) | `••••••••` | Bắt buộc nếu đăng nhập bằng Email. Độ dài tối thiểu 6 ký tự. | `Mật khẩu phải có ít nhất 6 ký tự!` |
+| `phone` | Số điện thoại | `TextInput` (phone-pad) | `0912 345 678` | Bắt buộc nếu chọn nhận OTP. Định dạng SĐT Việt Nam: Bắt đầu bằng 03, 05, 07, 08, 09, đúng 10 chữ số: `^(0[3\|5\|7\|8\|9])[0-9]{8}$` | `Số điện thoại Việt Nam không hợp lệ (10 số)!` |
+| `otp_code` | Mã xác thực OTP | `TextInput` (number-pad, 6 ô) | `_ _ _ _ _ _` | Bắt buộc khi vào màn hình OTP. Đúng 6 chữ số: `^[0-9]{6}$`. Hết hạn sau 120 giây. | `Mã OTP gồm 6 chữ số không hợp lệ hoặc đã hết hạn!` |
+| `id_token` | Apple / Google Token | `Hidden Native Payload` | N/A | Được sinh tự động bởi Apple Authentication Framework (iOS) hoặc Google Play Services Auth (Android). | `Xác thực Apple/Google thất bại. Vui lòng thử lại!` |
+
+#### 2. Luồng sự kiện chính
+1. Người dùng mở App ViOne Native trên điện thoại.
+2. Chọn phương thức xác thực:
+   - **Bấm "Tiếp tục với Apple"**: Native iOS gọi `AppleAuthentication.signInAsync()`, mở hộp thoại FaceID / TouchID của Apple.
+   - **Bấm "Tiếp tục với Google"**: Gọi Google Play Services SDK trên Android hoặc Google SignIn trên iOS.
+   - **Nhập Email & Mật khẩu**: Điền thông tin vào form, bấm nút Gradient Vàng Hoàng Gia **"Đăng Nhập"**.
+   - **Đăng nhập bằng OTP**: Nhập SĐT, bấm "Nhận mã OTP", hệ thống gửi SMS Brandname ViOne, người dùng nhập 6 số xác nhận.
+3. Backend NestJS thẩm định thông tin qua `POST /connect-app/auth/login`.
+4. Nếu thành công, lưu token vào SecureStore, cập nhật State `isAuthenticated = true`.
+
+#### 3. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** Điều hướng tức thì vào `HomeScreen.tsx`. Tên doanh nhân, Avatar viền vàng và mã VIP xuất hiện ngay trên Header trang chủ.
+* **Cơ chế đẩy dữ liệu từ hệ thống về:** Hệ thống tự động đẩy gói thông tin hồ sơ `GET /api/me/profile`, quyền hạn doanh nghiệp `GET /api/roles/my-permissions` và danh sách thông báo chưa đọc `GET /api/notifications/unread-count`. Đồng thời thiết lập kết nối WebSocket với máy chủ thông báo để nhận Push Notifications (APNs / FCM) khi có người kết nối hoặc giao việc mới.
 
 ---
 
-### UC-APP-04: Xem Trang Hồ sơ Số Công khai (`/p/:identifier`)
-* **Tác nhân:** Đối tác quét mã QR từ bên ngoài (Camera iOS, Android, Zalo), Khách vãng lai.
-* **Tiền điều kiện:** Không yêu cầu đăng nhập.
-* **Luồng sự kiện chính:**
-  1. Người dùng quét mã QR của doanh nhân hoặc nhấp vào đường link chia sẻ dạng `https://vione.viconnect.vn/p/le-hoang-nam`.
-  2. Hệ thống nhận diện route `/p/` thuộc danh sách `isPublic` tại `__root.tsx`, bỏ qua AuthGate.
-  3. Client gọi API `GET /api/public/profile/:identifier` lấy thông tin công khai.
-  4. Giao diện hiển thị trang Profile công khai sang trọng chuẩn Executive Obsidian:
-     - Ảnh bìa, Avatar viền vàng, Tên doanh nhân, Chức vụ, Công ty, Mã hội viên.
-     - Bộ nút tương tác nhanh: Nút "Gọi điện", nút "Nhắn Zalo", nút "Gửi Email", nút "Lưu Danh Bạ 1-Chạm".
-  5. Người dùng bấm "Lưu Danh Bạ": Hệ thống kích hoạt Web Share API hoặc tải tệp vCard trực tiếp nạp vào danh bạ điện thoại, tuyệt đối không mở PDF.
-* **Quy chuẩn UI/UX:**
-  - Tất cả các nút hành động (Gọi điện, Nhắn tin, Lưu danh bạ) đều sử dụng Gradient Vàng Hoàng Gia hoặc Gradient Đen Thạch Anh Mạ Vàng.
+### UC-APP-02: Xem & Cập nhật Hồ sơ Doanh nhân & Căn chỉnh Avatar/Cover
+* **Tác nhân:** Doanh nhân, Chủ doanh nghiệp.
+* **Màn hình thực hiện trên App Native:** `ProfileScreen.tsx`, `EditProfileModal.tsx`.
+* **Tiền điều kiện:** Đã đăng nhập vào App ViOne Native.
+* **Hậu điều kiện:** Thông tin hồ sơ được cập nhật vào bảng `public.vione_users`, `user_profiles` và phản ánh tức thì trên toàn bộ danh thiếp số công khai.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Form Cập Nhật Hồ Sơ
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `name` | Họ và tên | `TextInput` (default) | `VD: Nguyễn Văn An` | Bắt buộc. Độ dài từ 2 đến 60 ký tự. Không chứa ký tự đặc biệt độc hại. | `Họ và tên không được để trống (2-60 ký tự)!` |
+| `title` | Chức danh / Vị trí | `TextInput` (default) | `VD: Tổng Giám Đốc` | Tùy chọn. Tối đa 80 ký tự. | `Chức danh không vượt quá 80 ký tự!` |
+| `company` | Tên doanh nghiệp | `TextInput` (default) | `VD: Công ty Cổ phần Công nghệ ViConnect` | Tùy chọn. Tối đa 120 ký tự. | `Tên công ty không vượt quá 120 ký tự!` |
+| `phone` | Số điện thoại liên hệ | `TextInput` (phone-pad) | `0912 345 678` | Bắt buộc. Định dạng 10 số di động VN: `^(0[3\|5\|7\|8\|9])[0-9]{8}$`. | `Số điện thoại liên hệ không hợp lệ!` |
+| `bio` | Giới thiệu bản thân | `TextInput` (multiline, 4 dòng) | `Chia sẻ ngắn gọn về sứ mệnh, triết lý kinh doanh và mục tiêu kết nối của bạn...` | Tùy chọn. Tối đa 500 ký tự. | `Nội dung giới thiệu không vượt quá 500 ký tự!` |
+| `industry` | Lĩnh vực hoạt động | `SelectPicker` / Modal chọn | `Chọn ngành nghề kinh doanh` | Bắt buộc. Chọn từ danh mục 25 ngành nghề chuẩn VCCI. | `Vui lòng chọn lĩnh vực hoạt động!` |
+| `avatar_file` | Ảnh đại diện (Avatar) | `ImagePicker` Native | N/A | Tùy chọn. Định dạng JPG, PNG, WEBP. Tự động crop vuông 1:1, nén tối đa 1.5MB. | `Ảnh đại diện phải ở định dạng JPG/PNG và dung lượng < 5MB!` |
+| `cover_file` | Ảnh bìa (Cover) | `ImagePicker` Native | N/A | Tùy chọn. Định dạng JPG, PNG. Tỉ lệ 16:9, nén tối đa 2MB. | `Ảnh bìa vượt quá dung lượng cho phép!` |
+| `zalo_phone` | Số Zalo kết nối | `TextInput` (phone-pad) | `0912 345 678` | Tùy chọn. Định dạng 10 số. | `Số Zalo không hợp lệ!` |
+| `website` | Website công ty | `TextInput` (url) | `https://viconnect.vn` | Tùy chọn. URL hợp lệ regex `^https?:\/\/.+`. | `Địa chỉ website phải bắt đầu bằng http:// hoặc https://` |
+
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** Ngay khi bấm "Lưu thay đổi" (Gradient Vàng Hoàng Gia), modal đóng lại, màn hình `ProfileScreen.tsx` cập nhật tức thì (Optimistic Update) với Avatar mới, họ tên, chức danh và tiểu sử mới.
+* **Cơ chế đẩy dữ liệu từ hệ thống về:** Backend ghi nhận vào PostgreSQL, trả về JSON Profile mới nhất. Ứng dụng phát thông điệp đồng bộ cục bộ để cập nhật Thẻ VIP ở Tab "Tôi" và thẻ danh thiếp trên Trang chủ mà không cần tải lại app.
 
 ---
 
-### UC-APP-06: Chụp Danh thiếp Giấy AI OCR & Chuyển Khách hàng Lead CRM
-* **Tác nhân:** Doanh nhân, Trợ lý giám đốc.
-* **Luồng sự kiện chính:**
-  1. Người dùng bấm nút V chọn "Quét danh thiếp AI".
-  2. Camera mở lên, người dùng căn chỉnh danh thiếp giấy vào khung ngắm và bấm chụp (dung lượng ảnh được nén $< 450\text{KB}$).
-  3. Client quét nhanh mã QR vCard trên ảnh trước (nếu có); nếu không có, gửi ảnh lên Backend OCR Vision (`POST /connect-app/card-scan`).
-  4. AI bóc tách các trường: Họ và tên, Chức danh, Công ty, SĐT, Email, Website, Địa chỉ. Bộ lọc loại bỏ hoàn toàn các chuỗi dummy (`Thông tin danh thiếp`, `0900000000`).
-  5. Màn hình xác nhận hiển thị Form kết quả (`CardScanReviewModal.tsx` / `BusinessCardReviewForm.tsx`):
-     - Người dùng kiểm tra và điều chỉnh thông tin nếu cần.
-     - Bật Switch: *"Lưu thành Khách Hàng Tiềm Năng (Lead)"*.
-     - Chọn Tier khách hàng: ⭐ `Hot Lead`, 💎 `VIP C-Level`, 🎯 `Cần care 24h`, 🌟 `Nổi bật`.
-     - Nhập Giá trị thương vụ (Deal Value VND) và Nhân sự phụ trách (PIC).
-  6. Bấm nút **"Lưu thẻ & Khách hàng"** (Gradient Vàng Hoàng Gia).
-  7. Dữ liệu được ghi nhận đồng thời vào Danh bạ đối tác và CRM Lead Pipeline thực tế của doanh nghiệp.
+### UC-APP-03: Hiển thị Thẻ Danh thiếp VIP & Chạm 1-Tap NFC Vật Lý
+* **Tác nhân:** Doanh nhân, Đối tác đối diện có điện thoại hỗ trợ NFC.
+* **Màn hình thực hiện trên App Native:** `VipCardViewScreen.tsx`, `MyQrModal.tsx`.
+* **Tiền điều kiện:** Doanh nhân sở hữu thẻ kim loại ViOne NFC hoặc kích hoạt danh thiếp điện tử.
+* **Luồng sự kiện & Quy tắc hiển thị tối giản:**
+  1. Người dùng bấm biểu tượng chữ **V** trung tâm thanh điều hướng hoặc vào tab "Tôi" chọn **"Thẻ VIP của tôi"**.
+  2. Hệ thống kết xuất đồ họa Thẻ kim loại 3D chuẩn Executive Luxury (Đen Thạch Anh Obsidian mạ Vàng Hoàng Gia Champagne Gold `#D8B282` hoặc Bạc Bạch Kim Platinum):
+     - Hiệu ứng ánh kim chuyển động theo con quay hồi chuyển thiết bị (Gyroscope tilt effect).
+     - **Quy tắc Thẻ vật lý tối giản:** Trên bề mặt thẻ VIP STRICTLY chỉ hiển thị đúng 3 trường: **Họ và tên**, **Công ty**, và **Số điện thoại** ("chỉ thế thôi").
+     - Chip kim loại 3D nguyên khối, biểu tượng sóng NFC và mã số doanh nhân định danh duy nhất (VD: `VIONE-8888`).
+  3. **Chạm 1-Tap NFC Vật Lý:**
+     - Doanh nhân chạm thẻ kim loại hoặc mặt lưng điện thoại vào máy đối tác.
+     - Chip NFC phát sóng NDEF chứa liên kết rút gọn mã hóa `https://vione.viconnect.vn/p/:identifier`.
+     - Điện thoại đối tác (iOS / Android) tự động bật thông báo mở Profile doanh nhân trong 0.5 giây mà không cần cài app trước.
+  4. **Khu vực Hồ sơ Số bên dưới Thẻ:**
+     - Bộ chuyển đổi 2 chế độ: `Hồ sơ cá nhân` (Bio, Email, Mã hội viên) và `Hồ sơ doanh nghiệp` (Lĩnh vực, Năng lực B2B, Địa chỉ).
+     - Chọn 3 mẫu lưới nền hình học tinh tế: `■ Vuông` (Kỷ luật, vững chắc), `▲ Tam giác` (Tăng trưởng bứt phá), `◆ Tinh thể` (Đẳng cấp Obsidian).
+     - Cụm 4 nút bấm hành động chuẩn Gradient: Gọi điện (Ngọc Lục Bảo), Chat Zalo (Zalo Blue), Mã QR (Vàng Hoàng Gia), Chia sẻ (Đen Thạch Anh Mạ Vàng).
 
 ---
 
-### UC-APP-07: Nhắn tin Trực tiếp 1-1 (Direct Message Thread)
-* **Tác nhân:** Hai doanh nhân đã kết nối.
-* **Luồng sự kiện chính:**
-  1. Người dùng bấm nút "Nhắn tin" từ danh thiếp hoặc danh sách kết nối.
-  2. Client gọi API `POST /connect-app/dm/threads` với `targetUserId` để lấy UUID cuộc hội thoại chuẩn từ CSDL PostgreSQL (bảng `public.dm_threads`).
-  3. Mở giao diện chat realtime (`ChatThreadModal.tsx` / `ChatThreadView.tsx`):
-     - Header hiển thị tên đối tác, avatar viền vàng, chức vụ và công ty thực tế từ CSDL.
-     - Danh sách tin nhắn tải từ `GET /connect-app/dm/threads/:threadId/messages`.
-     - Kết nối WebSocket nhận tin nhắn realtime.
-  4. Người dùng nhập nội dung và bấm gửi: tin nhắn xuất hiện tức thì với bong bóng chat sang trọng.
-* **Quy tắc Cấm Fake:**
-  - CẤM tự sinh thread ID giả lập prefix `th-...` hoặc hardcode tin nhắn mẫu.
+### UC-APP-06: Chụp Danh thiếp Giấy AI OCR & Chuyển Thành Khách Hàng Lead CRM
+* **Tác nhân:** Doanh nhân, Trợ lý Giám đốc.
+* **Màn hình thực hiện trên App Native:** `CardScanCameraScreen.tsx`, `BusinessCardReviewModal.tsx`.
+* **Tiền điều kiện:** Thiết bị đã cấp quyền Camera (`expo-camera` / `react-native-vision-camera`).
+* **Hậu điều kiện:** Danh thiếp được số hóa lưu vào danh bạ, đồng thời tạo mới 1 bản ghi Khách hàng tiềm năng (Lead) trong CSDL CRM.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Form Thẩm Định Sau Khi OCR
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `card_image` | Ảnh chụp danh thiếp | `CameraSnapshot` | N/A | Bắt buộc. Ảnh được nén tự động $< 450\text{KB}$, độ tương phản cao. | `Vui lòng chụp lại ảnh danh thiếp rõ nét!` |
+| `extracted_name` | Họ và tên đối tác | `TextInput` | `Họ tên trên danh thiếp` | Bắt buộc. AI tự động điền, người dùng có thể sửa. Độ dài 2-60 ký tự. | `Tên đối tác không được để trống!` |
+| `extracted_phone` | Số điện thoại đối tác | `TextInput` (phone-pad) | `Số điện thoại` | Bắt buộc. Tự động chuẩn hóa về định dạng 10 số. | `Số điện thoại không hợp lệ!` |
+| `extracted_email` | Email đối tác | `TextInput` (email-address) | `Email liên hệ` | Tùy chọn. Định dạng email hợp lệ. | `Email không đúng định dạng!` |
+| `extracted_company`| Công ty đối tác | `TextInput` | `Tên doanh nghiệp` | Tùy chọn. Tối đa 120 ký tự. | `Tên công ty quá dài!` |
+| `extracted_title` | Chức vụ | `TextInput` | `Chức danh trên thẻ` | Tùy chọn. Tối đa 80 ký tự. | N/A |
+| `save_as_lead` | Lưu thành Khách hàng CRM | `Switch` (Toggle) | `Bật/Tắt` | Mặc định: `BẬT` (True). | N/A |
+| `lead_tier` | Hạng tiềm năng (Tier) | `SelectPicker` | `Chọn phân khúc Lead` | Bắt buộc nếu bật `save_as_lead`. Các giá trị: ⭐ `Hot Lead`, 💎 `VIP C-Level`, 🎯 `Cần care 24h`, 🌟 `Nổi bật`. | `Vui lòng chọn phân khúc khách hàng!` |
+| `deal_value` | Giá trị thương vụ dự kiến | `NumberInput` (currency) | `VD: 50,000,000` | Tùy chọn. Số nguyên dương $> 0$ (VND). | `Giá trị thương vụ phải là số dương!` |
+| `assigned_pic` | Nhân sự phụ trách (PIC) | `SelectPicker` | `Chọn nhân sự chăm sóc` | Tùy chọn. Danh sách nhân sự trong công ty của người quét. | N/A |
+| `notes` | Ghi chú cuộc gặp | `TextInput` (multiline) | `Bối cảnh gặp gỡ, nhu cầu hợp tác...` | Tùy chọn. Tối đa 300 ký tự. | N/A |
+
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** 
+  1. Thẻ danh thiếp mới xuất hiện ngay tại vị trí **ĐẦU TIÊN** của Tab *"Thẻ Đã Lưu"* trên màn hình Mạng Lưới (`NetworkScreen.tsx`).
+  2. Khách hàng mới lập tức xuất hiện tại vị trí **ĐẦU TIÊN** của Tab *"Khách Hàng CRM"* (`customerApi.getCustomers()`) kèm badge phân hạng (Hot Lead / VIP C-Level).
+* **Cơ chế đẩy dữ liệu về CRM:** Dữ liệu được backend ghi vào PostgreSQL (`public.crm_leads`), đẩy tín hiệu qua WebSocket về hệ thống Web CRM. Trên màn hình CRM của công ty, danh sách Khách hàng (`/members`) tự động nhảy thêm 1 bản ghi mới ở dòng 1 mà nhân viên kinh doanh không cần F5 trình duyệt.
 
 ---
 
-### UC-APP-15: Giám sát Hoạt động Nhân sự trong ngày dành cho Giám đốc
-* **Tác nhân:** Giám đốc / Lãnh đạo C-Level.
-* **Luồng sự kiện chính:**
-  1. Tại Trang chủ, Giám đốc bấm thẻ *"Giám sát hoạt động nhân sự trong ngày"*.
-  2. Mở modal chi tiết `StaffDailyActivityModal.tsx` (hoặc `StaffDailyActivitySheet.tsx` trên PWA).
-  3. Hệ thống tải dữ liệu thực từ module HRM & Operations:
-     - Header KPI: Tổng nhân sự, Số người có mặt, Đang gặp khách hàng, Tại văn phòng, Tỷ lệ hoàn thành công việc.
-     - Tab phân loại: [Tất cả] [Tại văn phòng] [Đang gặp đối tác].
-     - Danh sách nhân sự kèm thông tin đối tác đang tiếp xúc, địa điểm, tiến độ BPMN và nhật ký check-in GPS.
-  4. Giám đốc có thể bấm nút "Gọi trực tiếp" hoặc "Nhắc việc" 1-chạm.
-* **Quy tắc Giao diện:**
-  - Toàn bộ các nút gọi, nhắc việc, bộ lọc đều tuân thủ nghiêm ngặt quy định Gradient của ViOne App.
+### UC-APP-07: Nhắn Tin Trực Tiếp 1-1 Thời Gian Thực (Direct Message Realtime Thread)
+* **Tác nhân:** Hai doanh nhân đã kết nối trên mạng lưới ViOne.
+* **Màn hình thực hiện trên App Native:** `ChatThreadModal.tsx`, `ChatMessagesScreen.tsx`.
+* **Tiền điều kiện:** Hai bên đã quét thẻ hoặc chấp nhận kết nối.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Khung Soạn Thảo Tin Nhắn
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `message_text` | Nội dung tin nhắn | `TextInput` (multiline) | `Nhập tin nhắn trao đổi...` | Bắt buộc khi bấm gửi. Tối thiểu 1 ký tự, tối đa 2000 ký tự. Cắt khoảng trắng đầu cuối (trim). | `Tin nhắn không được để trống!` |
+| `attached_image` | Ảnh đính kèm | `ImagePicker` Native | N/A | Tùy chọn. Tối đa 5 ảnh/lần gửi. Dung lượng tối đa 10MB/ảnh. | `Ảnh đính kèm vượt quá dung lượng!` |
+| `thread_id` | Định danh hội thoại | `Hidden UUID` | N/A | Bắt buộc. Phải là UUID chuẩn `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$` lưu trong `public.dm_threads`. Tuyệt đối không dùng ID giả lập `th-...`. | `Cuộc hội thoại không hợp lệ!` |
+
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App người gửi:** Tin nhắn xuất hiện tức thì ở cuối danh sách bong bóng chat với hiệu ứng Optimistic UI (Bong bóng Vàng Champagne mạ đen viền vàng), trạng thái hiển thị tích xám "Đang gửi" -> chuyển sang tích đôi vàng "Đã chuyển".
+* **Cơ chế đẩy dữ liệu về máy người nhận:** 
+  - Máy chủ Backend phát sự kiện WebSocket `new_message` tới kênh cá nhân của người nhận.
+  - Nếu đối tác đang mở màn hình chat, tin nhắn trượt lên ngay tức khắc ($< 200\text{ms}$).
+  - Nếu đối tác đang tắt app hoặc ở màn hình khác, máy chủ kích hoạt dịch vụ **Push Notification Apple (APNs) / Google (FCM)** gửi thông báo biểu ngữ trên màn hình khóa: *"Doanh nhân [Tên đối tác] vừa gửi tin nhắn mới cho bạn"*. Chạm vào thông báo sẽ mở thẳng vào thread chat này.
 
 ---
 
-### UC-APP-11: Tham gia Cộng đồng, Quyền Hạn Người Sáng Lập & Thao Tác Tối Giản
-* **Tác nhân:** Doanh nhân sáng lập cộng đồng (Owner/Creator), Thành viên ban điều hành, Hội viên.
-* **Luồng sự kiện chính:**
-  1. Người sáng lập tạo cộng đồng mới qua form `CreateCommunityModal.tsx`.
-  2. Backend lưu thông tin vào `public.associations`, ghi nhận chính xác `creator_id = userId`, đồng thời tạo bản ghi hội viên quản trị trong `public.memberships` và `public.members`.
-  3. Khi truy cập màn hình chi tiết cộng đồng (`CommunityDetail.tsx` / `CommunityDetailView.tsx`):
-     - Hệ thống kiểm tra đa tầng quyền sáng lập: cột `creator_id` trong `public.associations`, đăng ký trong `public.vione_community_subscriptions`, và `localStorage.vione_created_community`.
-     - Nếu nhận diện là Người sáng lập (`isCommunityCreator`), Backend & Client tự động cấp quyền Quản trị viên (`viewerRole: 'admin'`), `canEdit: true`, `isMember: true` và tự động kích hoạt cơ chế tự phục hồi (auto-repair) bản ghi hội viên nếu bị khuyết.
-     - Người sáng lập luôn thấy nút **"Chỉnh sửa cộng đồng"** (chuẩn Gradient Vàng Hoàng Gia) và các công cụ quản trị.
-  4. **Tối giản nút bấm (UI Minimalism):**
-     - Loại bỏ nút thừa `+ Đăng cơ hội` khỏi header chi tiết cộng đồng nhằm tập trung vào các hành động giao thương cốt lõi.
-     - Chỉ giữ 2 nút hành động tối giản: `Đăng bài viết` (Gradient Vàng Hoàng Gia) và `Chia sẻ sự kiện` (Gradient Đen Thạch Anh Mạ Vàng).
-* **Quy chuẩn Giao diện Bắt buộc:**
-  - Tuyệt đối không dùng nút màu trơn xám/xanh/đen phẳng. 100% nút bấm phải sử dụng Gradient chuẩn ViOne.
+### UC-APP-11: Khởi Tạo, Tham Gia & Quản Trị Cộng Đồng Doanh Nghiệp (Community Hub)
+* **Tác nhân:** Doanh nhân sáng lập (Owner / Creator), Ban Điều Hành, Hội viên cộng đồng.
+* **Màn hình thực hiện trên App Native:** `CommunityScreen.tsx`, `CreateCommunityModal.tsx`, `CommunityDetailView.tsx`.
+* **Tiền điều kiện:** Người dùng đã đăng nhập.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Form Khởi Tạo Cộng Đồng
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `name` | Tên cộng đồng / Hiệp hội | `TextInput` | `VD: Hiệp hội Doanh nhân Trẻ ViOne Hà Nội` | Bắt buộc. Độ dài từ 5 đến 120 ký tự. | `Tên cộng đồng phải từ 5 đến 120 ký tự!` |
+| `short_description`| Mô tả ngắn gọn | `TextInput` (multiline, 2 dòng) | `Sứ mệnh, tiêu chí giao thương và đối tượng tham gia...` | Bắt buộc. Từ 20 đến 250 ký tự. | `Mô tả ngắn phải từ 20 đến 250 ký tự!` |
+| `industry` | Ngành nghề trọng tâm | `SelectPicker` | `Chọn lĩnh vực liên minh` | Bắt buộc. Chọn từ danh mục ngành nghề. | `Vui lòng chọn ngành nghề trọng tâm!` |
+| `city` | Tỉnh / Thành phố | `SelectPicker` | `Chọn tỉnh/thành hoạt động` | Bắt buộc. Chọn trong 63 tỉnh thành Việt Nam. | `Vui lòng chọn tỉnh thành!` |
+| `logo_file` | Biểu trưng (Logo) | `ImagePicker` Native | N/A | Tùy chọn. Ảnh tròn 1:1, tối đa 2MB. | `Logo vượt quá 2MB!` |
+| `banner_file` | Ảnh bìa cộng đồng | `ImagePicker` Native | N/A | Tùy chọn. Ảnh tỉ lệ 16:9, tối đa 3MB. | `Ảnh bìa vượt quá 3MB!` |
+
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** Sau khi bấm nút Gradient Vàng Hoàng Gia **"Tạo Cộng Đồng"**, modal đóng lại. Cộng đồng mới lập tức hiển thị ở vị trí **ĐẦU TIÊN** của Tab *"Cộng đồng của tôi"* trên màn hình `CommunityHomeScreen.tsx`. Đồng thời app tự động chuyển người dùng vào thẳng màn hình chi tiết cộng đồng (`CommunityDetailView.tsx`) với đầy đủ quyền Admin.
+* **Cơ chế đẩy dữ liệu từ hệ thống về:** Backend lưu vào `public.associations`, tự động gán `creator_id = userId`, tạo bản ghi thành viên sáng lập trong `public.members`. Dữ liệu được đồng bộ ngay về CRM Nền Tảng để Ban Quản Trị ViConnect theo dõi và hỗ trợ.
 
 ---
 
-### UC-APP-16: Trải Nghiệm Cài Đặt PWA 1-Chạm (Home Install Banner Card Placement)
-* **Tác nhân:** Người dùng PWA ViOne trên trình duyệt Web/Mobile.
-* **Luồng sự kiện chính:**
-  1. Loại bỏ nút cài đặt khỏi thanh Header cố định trên Trang chủ (`ExecutiveHome.tsx`) để thanh tiêu đề giữ vẻ sang trọng, không che khuất các thông tin thương hiệu.
-  2. Khối thẻ **"Cài Đặt App ViOne (1-Chạm)"** (`HomeInstallBannerCard`) được di chuyển xuống vị trí dưới cùng của Trang chủ, trước các modal và thanh điều hướng đáy.
-  3. Người dùng cuộn xuống đáy trang chủ sẽ thấy thẻ kêu gọi cài đặt PWA viền mạ vàng, tích hợp nút "Cài Đặt Ngay" chuẩn Gradient Vàng Hoàng Gia với đầy đủ hướng dẫn thêm vào màn hình chính (Add to Home Screen).
+### UC-APP-16: Điểm Danh & Chấm Công GPS/FaceID Khu Vực Làm Việc (Check-in Mobile)
+* **Tác nhân:** Nhân sự thuộc doanh nghiệp sở hữu gói ViOne Platform.
+* **Màn hình thực hiện trên App Native:** `AttendanceCheckInModal.tsx`, `AttendanceHistoryScreen.tsx`.
+* **Tiền điều kiện:** Doanh nghiệp đã thiết lập tọa độ văn phòng (Kinh độ/Vĩ độ, Bán kính cho phép) trên Web CRM; thiết bị di động đã cấp quyền Vị trí (GPS) và Camera.
 
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Chấm Công Mobile
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `latitude` | Vĩ độ thực tế thiết bị | `GPS Sensor Read` | N/A | Bắt buộc. Tọa độ thực tế lấy từ `expo-location` với độ chính xác cao (`Accuracy.High`). | `Không lấy được tọa độ GPS. Vui lòng bật vị trí!` |
+| `longitude` | Kinh độ thực tế thiết bị | `GPS Sensor Read` | N/A | Bắt buộc. Tọa độ thực tế. | N/A |
+| `distance_meters`| Khoảng cách tới công ty | `System Calculated` | N/A | Tự động tính theo công thức Haversine. Phải $\le \text{radius}$ quy định của công ty (VD: 200m). | `Bạn đang cách văn phòng X mét (vượt bán kính cho phép 200m)!` |
+| `face_snapshot` | Ảnh chụp xác thực gương mặt | `Camera Selfie Live` | N/A | Bắt buộc. Chụp trực tiếp từ camera trước, chống gian lận ảnh chụp lại (liveness check). | `Chụp ảnh gương mặt thất bại!` |
+| `check_in_note` | Ghi chú chấm công | `TextInput` | `VD: Check-in ca sáng, đi công tác...` | Tùy chọn. Tối đa 150 ký tự. | N/A |
 
----
-
-### UC-APP-17: Quét Mã QR Cá Nhân & Trải Nghiệm Profile 5.0 Chuẩn Doanh Nhân Hiện Đại (Modern Profile 5.0 Modal & QR Scanner Integration)
-* **Tác nhân:** Doanh nhân, Khách đối tác, Người dùng App ViOne (Native Mobile & PWA).
-* **Mục tiêu:** Nâng tầm trải nghiệm khi quét mã QR cá nhân của tài khoản trong ViOne. Thay vì mở màn hình phẳng thông thường, hệ thống bung Modal/BottomSheet Profile 5.0 siêu sang trọng, mang phong cách Executive Luxury (Đen Thạch Anh Obsidian `#050C15` & Vàng Hoàng Gia Champagne Gold `#D8B282`), hiệu ứng Holographic Glow huyền ảo, tích hợp đầy đủ các tương tác 1-chạm thông minh.
-* **Luồng sự kiện chính:**
-  1. **Quét Mã QR Cá Nhân:**
-     - Người dùng mở trình quét mã QR trong App ViOne (`ScanQrModal.tsx` trên Native Mobile hoặc Camera QR Scanner trên PWA).
-     - Đưa khung ngắm vào mã QR cá nhân của doanh nhân khác (chứa link dạng `https://vione.viconnect.vn/p/:identifier` hoặc `/public/p/:id`).
-  2. **Giải Mã & Hiển Thị Modal Profile 5.0 Hiện Đại (`Profile5ModernModal.tsx`):**
-     - Hệ thống tự động nhận diện mã định danh doanh nhân, gọi API `GET /api/public/profile/:identifier` hoặc `GET /connect-app/profile/:id` để lấy hồ sơ thực tế từ PostgreSQL.
-     - Bung Modal toàn màn hình với thiết kế tương tác 5.0:
-       * **Avatar Vòng Halo Phát Sáng:** Khung tròn avatar với dải viền Vàng Champagne chuyển động xoay nhẹ, hiệu ứng Glow 3D sang trọng.
-       * **Huy hiệu Xác Thực 5.0 (Verified Shield 5.0):** Huy hiệu mạ vàng xác minh danh tính doanh nhân chính thức.
-       * **Thẻ VIP Thông Minh Holographic:** Nền Đen Thạch Anh Obsidian chìm vân tinh thể, hiển thị Họ tên, Chức vụ, Tên Doanh nghiệp, Mã hội viên VIONE.
-  3. **Bộ Nút Hành Động Nhanh Chuẩn Gradient (Rule 8):**
-     - **Nút "Kết Nối 5.0" (Connect):** Gradient Ngọc Lục Bảo (`linear-gradient(135deg, #059669, #10B981, #047857)`), gửi yêu cầu kết nối giao thương tức thì.
-     - **Nút "Nhắn Tin":** Gradient Vàng Hoàng Gia (`linear-gradient(135deg, #F6E1C3, #D8B282, #C29B69, #8C653B)`), khởi tạo thread chat 1-1 với đối tác.
-     - **Nút "Lưu Danh Bạ":** Gradient Đen Thạch Anh Mạ Vàng viền vàng, xuất tệp vCard trực tiếp nạp vào danh bạ điện thoại 1-chạm.
-     - **Nút "Gọi Điện":** Gradient Ngọc Lục Bảo kích hoạt cuộc gọi điện thoại trực tiếp.
-     - **Nút "Chia Sẻ":** Gradient Thạch Anh kích hoạt chia sẻ hồ sơ số qua mạng xã hội hoặc sao chép liên kết.
-  4. **Hệ Thống 3 Tab Tương Tác Chuyên Sâu:**
-     - **Tab 1: Hồ Sơ Doanh Nhân:** Giới thiệu bản thân (Bio), Lĩnh vực chuyên môn, Sứ mệnh phát triển, Email, Số điện thoại và Địa chỉ.
-     - **Tab 2: Hợp Tác B2B:** Năng lực cung ứng sản phẩm/dịch vụ, Nhu cầu kết nối giao thương, Danh mục sản phẩm thế mạnh và Lợi thế cạnh tranh.
-     - **Tab 3: Mã QR Đối Ứng:** Hiển thị mã QR danh thiếp số của đối tác kèm nút tải ảnh QR chất lượng cao về máy.
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** Ngay khi xác thực thành công, màn hình bung thông báo thành công viền mạ vàng: *"Điểm danh thành công lúc HH:mm:ss - Trạng thái: Đúng giờ"*. Bản ghi mới nhất xuất hiện ở dòng 1 trong danh sách *"Lịch sử chấm công của tôi"*.
+* **Cơ chế đẩy dữ liệu về CRM:** Backend lưu bản ghi vào `public.attendance_records`, phát tín hiệu tức thời qua WebSocket về Web CRM. Màn hình Giám sát Chấm công của Giám đốc/HR (`/attendance`) trên Web CRM tự động nhảy trạng thái nhân sự từ "Chưa đến" sang "Có mặt" và cập nhật chỉ số chuyên cần trong thời gian thực.
 
 ---
 
-### UC-APP-18: Kích Hoạt Dùng Thử Miễn Phí 30 Ngày Cộng Đồng ViOne Platform (30-Day Free Trial Community Hub)
-* **Tác nhân:** Người dùng App ViOne thông thường (Cá nhân, Doanh nhân tự do, Doanh nghiệp mới).
-* **Mục tiêu:** Cung cấp cơ chế mở khóa dùng thử toàn diện 30 ngày cho phân hệ Cộng đồng trên App ViOne (đồng bộ 100% giữa Native Mobile và PWA Web).
-* **Luồng sự kiện chính:**
-  1. Người dùng bấm vào Tab "Cộng đồng" trên thanh điều hướng App ViOne.
-  2. Hệ thống kiểm tra trạng thái thuê bao qua API `GET /api/companies/subscription-status`.
-  3. Nếu người dùng chưa kích hoạt gói:
-     - Hiển thị Banner Hoàng Gia: **"FREE 30 NGÀY DÙNG THỬ CỘNG ĐỒNG VIONE PLATFORM"**.
-     - Thuyết minh đặc quyền: Quản trị thành viên, Giao việc & Nhận việc Kanban, Chấm công thông minh, và Chăm sóc khách hàng CRM.
-     - Nút bấm Gradient Vàng Hoàng Gia: **"Kích Hoạt 30 Ngày Dùng Thử Miễn Phí"**.
-  4. Người dùng bấm kích hoạt:
-     - Client gửi request `POST /api/companies/subscribe-package` với `packageType = 'trial_30_days'`.
-     - Backend cập nhật trạng thái `active`, hạn dùng thử `trial_ends_at = NOW() + 30 ngày`.
-     - Kích hoạt gửi email chào mừng và hướng dẫn truy cập Web CRM Quản trị.
-  5. Màn hình Cộng đồng mở khóa ngay lập tức:
-     - Hiển thị Huy hiệu Đếm ngược: `Dùng Thử ViOne Platform 5.0 - Còn X ngày`.
-     - Cho phép khởi tạo cộng đồng mới hoặc truy cập các công cụ vận hành số (Tasks, Attendance, CRM) trực tiếp trên App.
+### UC-APP-19: Đăng Ký Gói ViOne Platform Theo Hạn Mức Slots & Thanh Toán VietQR
+* **Tác nhân:** Chủ doanh nghiệp, Doanh nhân muốn mở rộng quy mô tổ chức.
+* **Màn hình thực hiện trên App Native:** `PackageRegistrationModal.tsx`.
+* **Tiền điều kiện:** Tài khoản cá nhân hoặc doanh nghiệp chưa đăng ký gói hoặc có nhu cầu nâng cấp hạn mức tài khoản.
+* **Hậu điều kiện:** Đơn hàng được tạo trong `public.vione_package_orders`, mã VietQR Napas 24/7 được sinh tự động, hồ sơ được đẩy về CRM ViConnect xét duyệt.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Form Đăng Ký Gói
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `company_name` | Tên doanh nghiệp | `TextInput` | `Công ty Cổ phần / TNHH...` | Bắt buộc. Từ 5 đến 150 ký tự. | `Vui lòng nhập tên công ty!` |
+| `tax_code` | Mã số thuế (MST) | `TextInput` (number-pad) | `0101234567` | Tùy chọn. Từ 10 đến 13 chữ số: `^[0-9]{10}(-[0-9]{3})?$`. | `Mã số thuế gồm 10 hoặc 13 chữ số!` |
+| `representative`| Người đại diện pháp luật | `TextInput` | `Họ và tên người đại diện` | Bắt buộc. Từ 2 đến 60 ký tự. | `Vui lòng nhập người đại diện!` |
+| `phone` | Số điện thoại nhận gói | `TextInput` (phone-pad) | `0912 345 678` | Bắt buộc. 10 số di động VN. | `Số điện thoại không hợp lệ!` |
+| `email` | Email nhận thông tin CRM | `TextInput` (email-address) | `admin@congty.com` | Bắt buộc. Định dạng email hợp lệ. | `Email nhận kích hoạt không hợp lệ!` |
+| `package_id` | Gói cước giải pháp | `CardSelectionGroup` | N/A | Bắt buộc chọn 1 gói: Free 30D (0đ/30 slots), Gói Chuẩn (1.5tr/30 slots), Gói Tăng Trưởng (2.5tr/50 slots), Gói Doanh Nghiệp (4.5tr/100 slots). | `Vui lòng chọn một gói cước!` |
+| `transfer_proof`| Ảnh biên lai chuyển khoản | `ImagePicker` Native | N/A | Tùy chọn với gói trả phí. Định dạng ảnh JPG/PNG. | N/A |
+
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** Sau khi gửi đăng ký, modal chuyển sang màn hình thành công hiển thị mã đơn hàng `ORD-XXXX`, kèm mã VietQR Napas 24/7 (với gói có phí) chứa sẵn số tiền và cú pháp chuyển khoản `VIONE {packageCode} {phone}`.
+* **Cơ chế đẩy dữ liệu về CRM:** Hồ sơ đơn hàng được đẩy tức thời vào bảng `public.vione_package_orders` trên CSDL PostgreSQL. Tại Web CRM ViConnect (`/segments` - Tab "Duyệt Đơn Hàng"), đơn hàng mới lập tức xuất hiện ở dòng đầu tiên của bảng duyệt đơn để nhân sự tài chính ViConnect đối soát và kích hoạt gói.
 
 ---
 
-### UC-APP-19: Đăng Ký Gói ViOne Platform Theo Số Lượng Tài Khoản, Thanh Toán VietQR & Kiểm Soát Giới Hạn Tạo Tài Khoản (Slot Limit Enforcement)
-* **Tác nhân:** Người dùng App ViOne (Đồng bộ 100% Dual-App giữa Native Mobile và PWA Web).
-* **Mục tiêu:** Cung cấp giao diện đăng ký gói ViOne Platform trực quan: nhập thông tin doanh nghiệp, chọn gói theo nhu cầu số lượng tài khoản (slots), thanh toán VietQR Napas 24/7 và đẩy hồ sơ về CRM ViConnect duyệt. Đồng thời kích hoạt cơ chế kiểm soát nghiêm ngặt hạn mức tài khoản theo gói cước.
-* **Luồng sự kiện chính:**
-  1. **Khởi Động Đăng Ký Gói (PackageRegistrationModal):**
-     - Người dùng bấm nút **"Đăng Ký Gói ViOne"** hoặc **"Đăng Ký Gói Cụ Thể (QR)"** tại màn hình Cộng đồng.
-     - Bung Modal đăng ký phong cách Đen Thạch Anh Obsidian & Vàng Champagne Gold.
-  2. **Nhập Thông Tin Doanh Nghiệp & Chọn Gói:**
-     - Người dùng điền thông tin: Tên doanh nghiệp (bắt buộc), Mã số thuế, Người đại diện (bắt buộc), Số điện thoại (bắt buộc), Email nhận gói (bắt buộc), Lĩnh vực kinh doanh, Địa chỉ.
-     - Chọn gói cước từ danh mục nạp trực tiếp qua API `GET /api/companies/packages`:
-       * Gói Dùng thử Free 30 ngày (0đ, 30 slots).
-       * Gói Chuẩn (1.500.000đ, 30 slots).
-       * Gói Tăng Trưởng (2.500.000đ, 50 slots).
-       * Gói Doanh Nghiệp (4.500.000đ, 100 slots).
-  3. **Thanh Toán VietQR Napas 24/7 Tự Động:**
-     - Đối với các gói có phí, hệ thống sinh mã VietQR Napas 24/7 tự động chuẩn xác theo số tiền gói, số tài khoản, chủ tài khoản và cú pháp chuyển tiền `VIONE {packageCode} {phone}`.
-     - Hỗ trợ nút sao chép 1-chạm (Copy to clipboard) cho số tài khoản và nội dung chuyển khoản.
-  4. **Gửi Hồ Sơ Đăng Ký Về ViConnect CRM:**
-     - Người dùng bấm nút Gradient Vàng Hoàng Gia: **"Gửi Đăng Ký Về ViConnect CRM"**.
-     - Gọi API `POST /api/companies/package-orders`. Hồ sơ được lưu vào CSDL PostgreSQL và xuất hiện ngay tại tab Duyệt Đơn trên ViConnect CRM.
-     - Hiển thị màn hình thông báo gửi thành công và thông tin email nhận kết quả kích hoạt.
-  5. **Kiểm Soát Giới Hạn Tạo Tài Khoản (Slot Limit Enforcement):**
-     - Tại màn hình Quản lý Đội ngũ & Phân quyền Nhân sự (`CompanyEmployeesTab.tsx`):
-       * Hệ thống hiển thị thanh tiến trình sử dụng tài khoản: `{usedSlots} / {maxSlots} slots đã dùng`.
-       * **Kiểm tra biên giới hạn (Boundary Guard):** Khi doanh nghiệp đã sử dụng hết hạn mức (ví dụ gói chỉ tạo được 10 hoặc 30 tài khoản mà người dùng cố tạo thêm 1 tài khoản mới), hệ thống chặn lại ngay lập tức và bắn thông báo chính xác:
-         `"Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản"`.
-       * Backend API `POST /api/companies/:id/employees` đồng thời kiểm tra lại hạn mức trong CSDL, nếu `currentCount >= maxSlots` thì trả về lỗi HTTP 400 Bad Request kèm thông điệp cảnh báo trên.
+### UC-APP-20: Xoá Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v)
+* **Tác nhân:** Người dùng App ViOne Native.
+* **Màn hình thực hiện trên App Native:** `AccountSecurityModal.tsx`.
+* **Mục tiêu:** Tuân thủ 100% điều khoản nghiêm ngặt của Apple App Store (Guideline 5.1.1(v)) — bắt buộc cho phép người dùng tự xóa tài khoản vĩnh viễn trực tiếp từ bên trong ứng dụng.
+* **Luồng sự kiện:**
+  1. Người dùng vào tab "Tôi" -> chọn "Bảo mật tài khoản" (`AccountSecurityModal.tsx`).
+  2. Cuộn xuống đáy màn hình đến khối nguy hiểm màu Đỏ Ruby: **"VÙNG NGUY HIỂM — XOÁ TÀI KHOẢN VĨNH VIỄN"**.
+  3. Bấm nút Gradient Đỏ Ruby: **"Xoá Tài Khoản Vĩnh Viễn"**.
+  4. Hộp thoại Native Alert 2 bước xác nhận:
+     - *"Hành động này không thể hoàn tác. Toàn bộ danh thiếp số, dữ liệu đối tác, tin nhắn và lịch sử kết nối của bạn sẽ bị xoá vĩnh viễn khỏi hệ thống ViOne."*
+     - Bấm nút đỏ: *"Xoá Vĩnh Viễn"*.
+  5. Client gọi API `DELETE /connect-app/me/account`.
+  6. Backend xóa/vô hiệu hóa tài khoản trong `auth.users` và `public.vione_users`.
+  7. Client xóa toàn bộ cache `AsyncStorage.clear()`, gọi `logout()`, đưa người dùng về màn hình đăng nhập.
 
 ---
 
-### UC-APP-20: Xoá Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) (Account Deletion & Data Purge)
-* **Tác nhân:** Người dùng App ViOne (Cá nhân, Doanh nhân, Thành viên doanh nghiệp).
-* **Mục tiêu:** Tuân thủ 100% điều khoản Apple App Store Review Guideline 5.1.1(v) — cho phép người dùng tự khởi tạo và hoàn tất xoá tài khoản vĩnh viễn trực tiếp trong ứng dụng di động mà không cần liên hệ hỗ trợ hoặc mở web ngoài.
-* **Luồng sự kiện chính:**
-  1. Người dùng mở màn hình **"Thiết lập & Bảo mật tài khoản"** (`AccountSecurityModal.tsx`) từ Tab "Tôi" hoặc thanh cài đặt.
-  2. Tại phần đáy màn hình, hệ thống hiển thị khối nguy hiểm: **"Vùng Nguy Hiểm — Xoá Tài Khoản Vĩnh Viễn"**.
-  3. Thuyết minh rõ ràng hệ quả không thể đảo ngược: Xoá sạch toàn bộ danh thiếp số cá nhân, danh bạ kết nối, lịch hẹn, bài đăng và dữ liệu liên quan.
-  4. Người dùng bấm nút **"Xoá Tài Khoản Vĩnh Viễn"** (Nút Gradient Đỏ Ruby `gradient-destructive`).
-  5. Hệ thống hiển thị hộp thoại xác thực 2 bước (Two-step confirmation Alert):
-     - Tiêu đề: `"Xác nhận xoá tài khoản vĩnh viễn"`.
-     - Thông điệp: `"Hành động này không thể hoàn tác. Toàn bộ danh thiếp số, dữ liệu đối tác và lịch sử kết nối của bạn sẽ bị xoá vĩnh viễn khỏi hệ thống ViOne."`.
-     - Nút Hủy và Nút xác nhận `"Xoá Vĩnh Viễn"` (destructive).
-  6. Khi người dùng xác nhận:
-     - Client gửi request `DELETE /api/me/account` (hoặc `POST /api/auth/account/delete`).
-     - Backend thực thi purge dữ liệu tài khoản, vô hiệu hóa token và khóa tài khoản vĩnh viễn.
-     - Ứng dụng dọn sạch bộ nhớ cache cục bộ: `AsyncStorage.clear()`.
-     - Tự động gọi `logout()` và điều hướng người dùng về màn hình đăng nhập công khai.
+### UC-APP-22: Nhận Việc, Cập Nhật Tiến Độ Checklist & Báo Cáo Nhiệm Vụ Mobile
+* **Tác nhân:** Nhân sự doanh nghiệp.
+* **Màn hình thực hiện trên App Native:** `CommunityDetailView.tsx` (Tab Nhiệm vụ), `TaskDetailModal.tsx`.
+* **Tiền điều kiện:** Nhân sự đã được công ty giao việc trên Web CRM hoặc trên App.
 
----
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Cập Nhật Tiến Độ Công Việc
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `task_status` | Trạng thái nhiệm vụ | `SelectChips` | N/A | Bắt buộc. Các giá trị: `todo` (Cần làm), `in_progress` (Đang làm), `review` (Chờ duyệt), `done` (Hoàn thành). | N/A |
+| `checklist_item` | Đầu việc con (Checklist) | `Checkbox` (Toggle done) | N/A | Đánh dấu hoàn thành từng tiêu chí con. Bắt buộc hoàn thành 100% checklist trước khi chuyển sang `done` (Quy tắc BR-WRK-07). | `Bắt buộc hoàn thành 100% Checklist trước khi nghiệm thu Done!` |
+| `progress_pct` | Tỷ lệ hoàn thành (%) | `Slider` (0% - 100%) | N/A | Tự động tính theo tỷ lệ checklist hoàn thành hoặc kéo tay từ 0 đến 100. | `Tiến độ phải từ 0% đến 100%!` |
+| `report_note` | Báo cáo kết quả | `TextInput` (multiline) | `Báo cáo vướng mắc hoặc kết quả đạt được...` | Tùy chọn. Tối đa 500 ký tự. | N/A |
 
-### UC-APP-21: Đồng Bộ Dữ Liệu Thực Mạng Lưới B2B & Giao Diện EmptyState Luxury (Zero-Mock Data Rule)
-* **Tác nhân:** Doanh nhân, Thành viên kết nối B2B trên App ViOne.
-* **Mục tiêu:** Thực hiện nghiêm ngặt quy tắc **Zero-Mock Data Rule (Rule 7)** và **Dual-App Parity (Rule 4)** trên toàn bộ phân hệ Mạng lưới (`NetworkScreen.tsx`), Trang chủ (`HomeScreen.tsx`), và Cộng đồng (`CommunityHomeScreen.tsx`, `CommunityDetailView.tsx`). 100% dữ liệu hiển thị phải phản ánh trung thực từ RESTful API / PostgreSQL backend.
-* **Luồng sự kiện chính:**
-  1. **Nạp Dữ Liệu Thực Đồng Bộ (Real Backend Data Hydration):**
-     - Tại `NetworkScreen.tsx`: Nạp song song qua `Promise.allSettled` danh bạ đối tác (`networkApi.getConnections()`), thẻ đã lưu (`networkApi.getSavedCards()`), đối tác gợi ý AI (`networkApi.getTodayRecommendations()`), khách hàng CRM (`customerApi.getCustomers()`), tin nhắn (`/connect-app/dm/threads`), và lời mời kết nối (`/connect-app/network/requests/incoming`).
-     - Tab Khách hàng CRM: Tính toán các chỉ số pipeline tự động từ danh sách thật; nút "Thêm khách hàng" gọi `customerApi.createCustomer` lưu thực tế vào PostgreSQL.
-     - Tab Lời mời kết nối: Hiển thị lời mời thật gửi đến; nút "Chấp nhận" gọi `networkApi.updateConnection(id, 'accepted')`, nút "Bỏ qua" gọi `updateConnection(id, 'declined')`.
-  2. **Xử Lý Trạng Thái Dữ Liệu Trống Chuẩn Luxury (`EmptyState` Component):**
-     - Khi CSDL trống hoặc chưa có dữ liệu ở bất kỳ màn hình nào:
-       * TUYỆT ĐỐI KHÔNG hiển thị dữ liệu giả lập (mock placeholder) hoặc mảng hardcode.
-       * BẮT BUỘC hiển thị component `EmptyState` sang trọng Đen Thạch Anh Obsidian `#050C15` kết hợp Vàng Champagne Gold `#D8B282`.
-       * Icon Lucide đặt trong vòng tròn Gradient viền mạ vàng tinh xảo.
-       * Tiêu đề và mô tả giải thích trung thực lý do danh sách trống, kèm nút hành động kêu gọi (CTA) nếu người dùng có quyền (ví dụ: "Tạo cộng đồng ngay", "Giao việc mới", "Đăng bài viết", "Chia sẻ sự kiện", "Mời thành viên").
-  3. **Đồng Bộ Nút Bấm Gradient Thương Hiệu (Gradient-Only Button Rule):**
-     - 100% tất cả các nút bấm CTAs trên ViOne App (cả PWA và Native) sử dụng `LinearGradient` theo đúng bảng quy chuẩn thương hiệu:
-       * Primary Action: Gradient Vàng Hoàng Gia Champagne Gold (`["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]`), chữ Đen Obsidian `#050C15` font-bold.
-       * Secondary Action: Gradient Đen Thạch Anh Mạ Vàng viền mạ vàng `border-[#D8B282]/40`, chữ Vàng `#F6E1C3`.
-       * Destructive Action: Gradient Đỏ Ruby (`["#EF4444", "#DC2626", "#991B1B"]`), chữ Trắng.
-       * Success Action: Gradient Ngọc Lục Bảo (`["#34D399", "#10B981", "#059669"]`), chữ Đen/Trắng font-bold.
+#### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
+* **Vị trí hiển thị trên App:** Khi nhân sự bấm "Đánh dấu đang làm" hoặc tích checklist, thẻ công việc cập nhật màu sắc và thanh tiến trình tức thì trên màn hình di động.
+* **Cơ chế đẩy dữ liệu về CRM:** Trạng thái được gửi qua API `PATCH /companies/:companyId/tasks/:taskId/status`. Trên Web CRM của Giám đốc (`/workflow` và `/companies/:id?tab=tasks`), cột thẻ Kanban tự động dịch chuyển tương ứng trong thời gian thực, đảm bảo Giám đốc luôn nắm bắt tiến độ chính xác của nhân viên.

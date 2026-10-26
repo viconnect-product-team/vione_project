@@ -1,5 +1,130 @@
 # System Memory & Architecture
 
+## 0.0000000000.4. TRIỂN KHAI PHÂN HỆ PHÂN QUYỀN BIỆT LẬP DOANH NGHIỆP (TENANT-ISOLATED RBAC), TINH GỌN BỎ SỰ KIỆN/KẾT NỐI ĐỐI TÁC VÀ ĐỒNG BỘ CSDL CẤU HÌNH HỆ THỐNG 100% (26/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Yêu cầu 1:** Web CRM ViOne, phân hệ doanh nghiệp đã mua gói ViOne Platform chưa có chức năng phân quyền riêng cho các tài khoản nhân viên thuộc doanh nghiệp đó. Chức năng phân quyền là giống nhau nhưng mỗi doanh nghiệp phải riêng biệt, tách biệt dữ liệu hoàn toàn (Multi-tenant RBAC Data Isolation).
+- **Yêu cầu 2:** Bỏ chức năng Sự kiện (Events) ở phân hệ doanh nghiệp, đồng thời bỏ phần Business Connect (Kết nối đối tác) ở phân hệ doanh nghiệp đó.
+- **Yêu cầu 3:** Đặc biệt phần Cấu hình hệ thống: dữ liệu nào thay đổi là phải thay đổi được và lưu vĩnh viễn vào CSDL PostgreSQL (100% Real Data Persistence, cấm Mock/Fake hoặc chỉ lưu state tạm thời).
+
+### 2. Kiến trúc & Các Thay Đổi Kỹ Thuật Đã Thực Hiện
+1. **Cơ sở dữ liệu PostgreSQL:**
+   - Cột `company_id VARCHAR(255) NULL` được thêm vào bảng `public.platform_roles`, kèm index `idx_platform_roles_company_id`.
+   - Các vai trò hệ thống mẫu có `company_id IS NULL`. Các vai trò riêng của từng công ty có `company_id = <companyId>` -> Đảm bảo tính độc lập và biệt lập dữ liệu tuyệt đối giữa các doanh nghiệp.
+   - Bảng `public.app_settings` được sử dụng với khóa `system_config` để lưu trữ tập trung và toàn vẹn dữ liệu cấu hình hệ thống (tổ chức, email, hotline, website, slogan, ngôn ngữ, cờ thông báo, 2FA và trạng thái 4 ứng dụng tích hợp Zalo OA, Google Workspace, MS Teams, Slack).
+2. **Backend NestJS (`apps/vione_app_be`):**
+   - **`SettingsModule` / `SettingsController` / `SettingsService`**:
+     * `GET /settings/system`: Truy xuất cấu hình từ `app_settings` (fallback `associations` và `user_settings`).
+     * `PUT /settings/system`: Lưu dữ liệu đồng bộ 3 tầng vào `app_settings`, `associations` (name, tagline) và `user_settings`.
+     * `POST /settings/change-password`: Kiểm tra mật khẩu hiện tại bằng bcrypt và băm mật khẩu mới cập nhật vào `auth.users`.
+     * Đăng ký `SettingsModule` trong `app.module.ts`.
+   - **Mở rộng `RolesController` / `RolesService`**:
+     * `GET /roles/company/:companyId`: Lấy danh sách nhóm quyền riêng của doanh nghiệp.
+     * `GET /roles/company/:companyId/matrix`: Lấy ma trận phân quyền theo từng vai trò của công ty.
+     * `POST /roles/company/:companyId/groups`: Tạo vai trò mới gắn riêng với `company_id`.
+     * `PUT /roles/company/:companyId/groups/:roleId`: Cập nhật tên, mô tả vai trò của công ty.
+     * `DELETE /roles/company/:companyId/groups/:roleId`: Xóa vai trò riêng của công ty.
+     * `PUT /roles/company/:companyId/:roleId/permissions`: Cập nhật quyền hạn chi tiết cho từng vai trò.
+     * `GET /roles/company/:companyId/employees`: Lấy danh sách nhân viên và quyền hiện tại.
+     * `PUT /roles/company/:companyId/employees/:employeeId/permissions`: Phân quyền / gán vai trò riêng cho nhân viên.
+   - TypeScript Backend (`tsc --noEmit`): Đạt 0 errors.
+3. **Frontend Web CRM (`apps/vione_app_fe`):**
+   - **Component `CompanyPermissionsTab.tsx`**:
+     * Tích hợp 3 tiểu phân hệ: Ma trận phân quyền động (Dynamic Matrix: CRM, Nhân sự, Dự án, Tài chính, Cấu hình với các hành động Xem/Thêm/Sửa/Xóa/Phê duyệt/Xuất file), Danh mục nhóm quyền riêng (Role Groups Directory), và Phân quyền nhân viên (Employee Permission Management).
+     * Modal tạo/sửa nhóm quyền, modal gán quyền nhân viên.
+     * Giao diện phong cách Obsidian & Vàng Hoàng Gia Champagne Gold (`gradient-gold`, viền mạ vàng).
+   - **Refactor `companies.$companyId.tsx`**:
+     * Thay thế tab `events` (Sự kiện) bằng tab `permissions` (Phân quyền & Vai trò).
+     * Gỡ bỏ toàn bộ code `EventsTab` thừa và icon Calendar.
+     * Cập nhật thẻ KPI tổng nhân sự thay cho sự kiện.
+   - **Refactor `EnterpriseTreeMenu.tsx`**:
+     * Bổ sung nhánh con "Phân quyền & Vai trò" (`tab=permissions`) kèm icon `ShieldCheck` và nhãn `RBAC` dưới mỗi công ty được mở rộng.
+   - **Refactor `Sidebar.tsx`**:
+     * Gỡ bỏ nút "Kết Nối Đối Tác B2B" (`/business-connect/connections`) khỏi thanh điều hướng phân hệ doanh nghiệp.
+     * Bổ sung mục "Phân Quyền & Vai Trò" (`/companies`) vào `companyWorkflowSuite`.
+   - **Refactor `CompanyEmployeesTab.tsx`**:
+     * Điều chỉnh `loadRoleGroups` nạp vai trò từ `/roles/company/${companyId}` để nhân viên công ty chỉ được gán các vai trò của công ty đó.
+   - **Refactor `settings.tsx` & `settings.functions.ts`**:
+     * Chuyển toàn bộ luồng sang gọi API thực `GET /settings/system` và `PUT /settings/system`.
+     * Cho phép chỉnh sửa và lưu thành công 100% dữ liệu: Tên tổ chức, Email, Hotline, Website, Khẩu hiệu/Slogan, Ngôn ngữ, Email Notif, SMS Notif, 2FA.
+     * Tích hợp 4 dịch vụ bên thứ 3 (Zalo OA, Google Workspace, MS Teams, Slack) với nút Kết Nối / Hủy Kết Nối lưu trực tiếp trạng thái vào CSDL.
+     * Modal Đổi mật khẩu gọi `POST /settings/change-password` xác thực mật khẩu cũ bằng bcrypt.
+     * Phát sự kiện `association-changed` và `vione-settings-updated` đồng bộ Header, Sidebar ngay lập tức.
+   - Tuân thủ quy chuẩn Nút Gradient: 100% nút bấm sử dụng gradient Champagne Gold (`bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B]`) hoặc gradient Obsidian viền mạ vàng (`bg-[#161B26] border-[#D8B282]/40 text-[#F6E1C3]`).
+
+## 0.0000000000.3. KHẮC PHỤC LỖI RUNTIME CRASH ROOT 'TypeError: Cannot convert object to primitive value' TRÊN WEB CRM (26/10/2026)
+
+### 1. Bối cảnh & Hiện tượng lỗi
+- Khi người dùng thực thi kịch bản deploy .ps1 và truy cập Web CRM (https://dev-vione-crm.14-225-217-232.sslip.io:5446), màn hình xuất hiện màn hình báo lỗi Root Error Boundary: "Đã xảy ra lỗi - Cannot convert object to primitive value".
+- Console lỗi: "TypeError: Cannot convert object to primitive value at mF (index-CxkYJ7KU.js:155:55183)".
+
+### 2. Nguyên nhân cốt lõi (Root Cause)
+- Tại component ReportsTreeMenu.tsx: Dòng 55 khai báo "const currentPathWithSearch = `${routerState.location.pathname}${routerState.location.search || ""}`;".
+- Trong TanStack Router, routerState.location.search là một Parsed Search Object (thường kế thừa Object.create(null) không có prototype và không có .toString()). Khi đưa vào chuỗi template string, JavaScript thực hiện ép kiểu string toPrimitive và văng ngoại lệ TypeError: Cannot convert object to primitive value.
+- Do ReportsTreeMenu nằm trong Sidebar.tsx và được render ở tất cả các layout của Web CRM, lỗi này khiến toàn bộ ứng dụng bị crash ngay từ Root Error Boundary.
+- Ngoài ra, các đường link con trong ReportsTreeMenu khai báo to: "/statistics?group=finance" dạng URL nhồi query string khiến router matcher của TanStack Router bị xung đột ép kiểu.
+
+### 3. Giải pháp khắc phục
+1. **Refactor ReportsTreeMenu.tsx**: Loại bỏ hoàn toàn useRouterState và phép ép chuỗi routerState.location.search. Sử dụng trực tiếp prop pathname được truyền an toàn từ Sidebar.
+2. **Chuẩn hóa Link Search Params**: Tách rõ ràng to: "/statistics" và search: { group: "finance" } (truyền qua prop search của <Link> chuẩn TanStack Router thay vì nhồi chuỗi).
+3. **Sửa dependency statistics.tsx**: Đổi dependency [routerState.location.search] thành [routerState.location.searchStr] để đảm bảo kiểu dữ liệu luôn là primitive string an toàn.
+4. **Kiểm tra và sinh lại route**: Chạy node scripts/gen-routes.mjs thành công 100%.
+
+## 0.0000000000.2. NÂNG CẤP TOÀN DIỆN TÀI LIỆU SRS (APP NATIVE & WEB CRM) & BIÊN SOẠN BẢN THUYẾT MINH TRÌNH BÀY TÁC PHẨM VIONE (26/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- Yêu cầu sửa lại tài liệu SRS do các mô tả Use Cases và luồng chức năng trước đây chưa chi tiết, chưa đầy đủ.
+- **Quy chuẩn loại trừ PWA:** Nghiêm cấm ghi nhận phân hệ App là "PWA" vì PWA chỉ là bản web dựng tạm trong giai đoạn ban đầu; App Native (`apps/mobile_vione` — React Native / Expo Native Engine cho iOS và Android) mới là app chuẩn chính thức để phát hành lên Google Play Store (CH-PLAY) và Apple App Store.
+- **Đặc tả chi tiết từng trường dữ liệu:** Mọi form nhập liệu đều phải có bảng đặc tả chi tiết 100% các trường: Tên trường (Key), Nhãn (Label tiếng Việt), Kiểu dữ liệu & Control UI, Placeholder gợi ý, Quy tắc kiểm thực (Validation rules: Regex, độ dài, min/max, bắt buộc/tùy chọn) và Thông báo lỗi kiểm thực hiển thị.
+- **Vị trí và cơ chế hiển thị sau khi nhập:**
+  * **Đối với CRM:** Xác định rõ ràng vị trí bản ghi mới hiển thị sau khi submit (Dòng đầu tiên trên bảng danh sách, cột nào trên bảng Kanban, Modal đóng lại ra sao, Toast thông báo, phân trang reset về Page 1 và tăng Total Count).
+  * **Đối với App Native:** Dữ liệu vừa nhập hiển thị ở đâu trên màn hình App (Tab nào, thẻ nào, Optimistic UI thế nào) và cơ chế đẩy dữ liệu từ hệ thống về (Push Notification FCM/APNs, WebSocket / SSE real-time sync, tự động reload/rerender).
+- **Biên soạn Bản Thuyết Minh Trình Bày Tác Phẩm ViOne:** Soạn thảo tài liệu thuyết minh và trình bày tác phẩm phần mềm sáng tạo chuyên nghiệp, quy chuẩn cao cấp để phục vụ thẩm định hồ sơ đăng ký bản quyền tác giả hoặc tham gia các giải thưởng công nghệ quốc gia.
+
+### 2. Các Tài Liệu Đã Hoàn Thiện & Cập Nhật
+1. **[docs/app_vione/SRS_APP.md](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/docs/app_vione/SRS_APP.md) (Phiên bản 7.0.0 Gold Master):**
+   - Loại bỏ hoàn toàn định danh PWA, xác lập quy chuẩn kỹ thuật chính thức cho **Ứng Dụng Di Động Thuần Native ViOne (iOS & Android)**.
+   - Bổ sung bảng đặc tả trường dữ liệu chi tiết cho toàn bộ 22 Use Cases từ Đăng nhập Apple/Google/OTP, Thẻ VIP NFC 1-chạm, AI OCR bóc tách danh thiếp, Nhắn tin 1-1, Điểm danh chấm công GPS/FaceID, Đăng ký gói VietQR đến Xóa tài khoản vĩnh viễn chuẩn Apple App Store Guideline 5.1.1(v).
+   - Mô tả rõ ràng vị trí hiển thị bản ghi trên màn hình App Native và cơ chế đẩy dữ liệu từ hệ thống backend (WebSocket, APNs, FCM).
+2. **[docs/crm/SRS_CRM.md](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/docs/crm/SRS_CRM.md) (Phiên bản 7.0.0 Gold Master):**
+   - Nâng cấp 25 Use Cases Web CRM: Bổ sung bảng đặc tả chi tiết từng trường dữ liệu cho Form đăng nhập, Kanban công việc, Tờ trình chi 3 cấp sinh mã VietQR Napas 24/7 gạch nợ tức thì, Quản trị nhân sự và phân quyền, Cấp tài khoản nhân viên nội bộ ViOne.
+   - Thêm 2 Use Case mới nhất: **UC-CRM-24** (Phân hệ Thống kê & Báo cáo chuyên sâu dạng Tree Menu đa cấp tại Sidebar) và **UC-CRM-25** (Quản trị giao việc cho nhân sự doanh nghiệp, checklist con và đồng bộ trạng thái Kanban thời gian thực).
+   - Xác định chính xác vị trí hiển thị bản ghi trên các bảng CRM (`ORDER BY created_at DESC`, reset Page 1) và cơ chế phát sóng sự kiện đồng bộ đa người dùng.
+3. **[docs/TAI_LIEU_THUYET_MINH_TAC_PHAM_VIONE.md](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/docs/TAI_LIEU_THUYET_MINH_TAC_PHAM_VIONE.md) (Tài Liệu Thuyết Minh & Trình Bày Tác Phẩm Phần Mềm):**
+   - Biên soạn 10 Chương hoàn chỉnh theo cấu trúc chuẩn quốc gia: Tổng quan tác phẩm, Bối cảnh & Sứ mệnh, Ý tưởng sáng tạo & Đột phá kỹ thuật, Ngôn ngữ thiết kế mỹ thuật Executive Luxury Obsidian & Champagne Gold, Kiến trúc kỹ thuật & Công nghệ chế tác, Thuyết minh chi tiết 3 phân hệ cốt lõi (Native Mobile, Tenant CRM, Super Platform), Tính năng công nghệ tiên phong (AI OCR, Voice AI, Dynamic QR/NFC, VietQR Napas 24/7, Tree Menu), Giá trị thực tiễn & tác động kinh tế - xã hội, Hướng dẫn cài đặt vận hành và Cam kết bản quyền tác giả sở hữu trí tuệ.
+4. **[document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.md](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.md):**
+   - Rà soát và loại bỏ sạch sẽ 100% các từ khóa PWA (0 occurrences). Chuẩn hóa toàn bộ hệ thống gồm Nền tảng Web CRM và Ứng dụng Di động Native ViOne Connect chuẩn App Store và Google Play.
+5. **XUẤT BẢN THÀNH CÔNG TỆP WORD MASTER CHÍNH THỨC:**
+   - **Tên file chính xác theo yêu cầu người dùng:** `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`
+   - **Dung lượng tệp:** `7,055,777 bytes` (~ 6.9 MB / 6,890 KB, khớp chuẩn với ảnh mẫu).
+   - **Vị trí lưu trữ song song:**
+     * `C:\Users\vumik\Downloads\[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`
+   - **Nội dung tích hợp:**
+     * Phần I: Giới thiệu & Pháp lý tác phẩm ViOne.
+     * Phần II: Kiến trúc hệ thống, 10 Modules cốt lõi với 25 Chức năng chi tiết kèm bảng đặc tả (Data Flow, Bảng CSDL PostgreSQL, API Endpoint, Form Validation & Placeholder, Vị trí hiển thị trên Web CRM vs App Native, Cơ chế Push thời gian thực FCM/APNs).
+     * Phụ lục II: Hướng dẫn sử dụng phần mềm Nền tảng Quản trị Doanh nghiệp Web CRM ViOne.
+     * Phụ lục III: Hướng dẫn sử dụng phần mềm Ứng dụng Di động Thuần Native ViOne Connect (iOS & Android).
+     * Phụ lục IV: Tập mã nguồn tiêu biểu (Backend NestJS, Web CRM Vite, Native Mobile React Native).
+6. **XUẤT BẢN THÀNH CÔNG TÀI LIỆU ĐẶC TẢ YÊU CẦU PHẦN MỀM (SRS) SANG ĐỊNH DẠNG DOCX:**
+   - **Tệp tin đã sinh:**
+     * document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.docx
+     * document/[VIONE] SRS ĐẶC TẢ YÊU CẦU PHẦN MỀM TOÀN DIỆN.docx
+     * C:\\Users\\vumik\\Downloads\\SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.docx
+     * C:\\Users\\vumik\\Downloads\\[VIONE] SRS ĐẶC TẢ YÊU CẦU PHẦN MỀM TOÀN DIỆN.docx
+   - **Cấu trúc tài liệu Word SRS chuẩn quốc tế IEEE 830-1998:**
+     * Trang bìa chuẩn quốc gia mạ vàng Champagne Gold & Đen Obsidian.
+     * Bảng lịch sử thay đổi phiên bản (Revision History).
+     * Phần 1: Giới thiệu chung, phạm vi dự án (Chỉ có Web CRM và App Native iOS & Android trên App Store & Google Play, loại bỏ 100% PWA), thuật ngữ viết tắt.
+     * Phần 2: Cấu trúc 2 Role cốt lõi (C-Level CEO vs Staff/Partner), kiến trúc CSDL Multi-tenant PostgreSQL và Backend NestJS.
+     * Phần 3: Đặc tả chi tiết 25 Use Cases Web CRM (UC-CRM-01 đến UC-CRM-25), có đầy đủ bảng Form Validation, Placeholder, API, PostgreSQL DB, vị trí hiển thị dòng đầu trên bảng dữ liệu CRM, reset Trang 1.
+     * Phần 4: Đặc tả chi tiết 22 Use Cases Ứng dụng Di động Thuần Native ViOne Connect (UC-APP-01 đến UC-APP-22), có đầy đủ bảng Form Validation, Placeholder, API, PostgreSQL DB, vị trí hiển thị trên App Native và cơ chế đẩy dữ liệu thời gian thực Push Notification FCM/APNs.
+     * Phần 5: Yêu cầu phi chức năng (NFR: Response time < 200ms, 10,000 CCU, bảo mật TLS 1.3, Argon2id, AES-256, WCAG 2.1 AA).
+     * Phần 6: Giao tiếp hệ thống (Prisma ORM, VietQR Napas 24/7, Apple APNs, Google FCM, AI OCR).
+     * Phần 7: Ma trận truy xuất nguồn gốc (Traceability Matrix) & Tiêu chuẩn nghiệm thu UAT.
+
+---
+
 ## 0.0000000000.1. HOÀN THIỆN 5 HẠNG MỤC CRM & NỀN TẢNG VIONE: GỠ CHẶN PLATFORM, ADAPTIVE LIGHT THEME, TREE MENU BÁO CÁO, PHỤC HỒI GIAO VIỆC & CLEANUP CSDL (26/10/2026)
 
 ### 1. Bối cảnh & Yêu cầu Người Dùng

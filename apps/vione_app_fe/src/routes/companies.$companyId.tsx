@@ -41,15 +41,14 @@ import { type Member, type MemberStatus } from "@/lib/members-data";
 import { fetchNestApi } from "@/lib/api-client";
 import { CompanyEmployeesTab, type CompanyEmployee } from "@/components/companies/CompanyEmployeesTab";
 import { CompanyTasksTab } from "@/components/companies/CompanyTasksTab";
+import { CompanyPermissionsTab } from "@/components/companies/CompanyPermissionsTab";
 import {
   ACTIVITY_LABEL,
-  EVENT_ROLE_LABEL,
   PAY_KIND_LABEL,
   PAY_METHOD_LABEL,
   PAY_STATUS_LABEL,
   formatVND,
   type ActivityType,
-  type EventRole,
   type PayStatus,
 } from "@/lib/companies-history";
 import type { CompanyHistory } from "@/lib/companies.functions";
@@ -144,12 +143,6 @@ const ACT_STYLE: Record<ActivityType, { Icon: typeof MailIcon; bg: string; text:
   note: { Icon: StickyNote, bg: "bg-muted", text: "text-muted-foreground" },
 };
 
-const ROLE_STYLE: Record<EventRole, string> = {
-  attendee: "bg-muted text-muted-foreground border-border",
-  sponsor: "bg-primary/10 text-primary border-primary/30",
-  speaker: "bg-info/10 text-info border-info/30",
-  partner: "bg-warning/15 text-[oklch(0.45_0.16_65)] border-warning/40",
-};
 
 const PAY_STATUS_STYLE: Record<PayStatus, string> = {
   paid: "bg-success/10 text-success",
@@ -213,9 +206,9 @@ function CompanyDetailPage() {
   });
   const company: Member = { ...companyState, ...contact };
   const search = Route.useSearch();
-  type CompanyTab = "overview" | "employees" | "tasks" | "activity" | "events" | "payments";
+  type CompanyTab = "overview" | "employees" | "tasks" | "permissions" | "activity" | "payments";
   const [tab, setTab] = useState<CompanyTab>(() => {
-    const validTabs: CompanyTab[] = ["overview", "employees", "tasks", "activity", "events", "payments"];
+    const validTabs: CompanyTab[] = ["overview", "employees", "tasks", "permissions", "activity", "payments"];
     if (search?.tab && validTabs.includes(search.tab as CompanyTab)) {
       return search.tab as CompanyTab;
     }
@@ -223,7 +216,7 @@ function CompanyDetailPage() {
   });
 
   useEffect(() => {
-    const validTabs: CompanyTab[] = ["overview", "employees", "tasks", "activity", "events", "payments"];
+    const validTabs: CompanyTab[] = ["overview", "employees", "tasks", "permissions", "activity", "payments"];
     if (search?.tab && validTabs.includes(search.tab as CompanyTab)) {
       setTab(search.tab as CompanyTab);
     }
@@ -430,17 +423,12 @@ function CompanyDetailPage() {
     { key: "overview", label: "Tổng quan hồ sơ", Icon: Building2 },
     { key: "employees", label: "Quản lý nhân viên", Icon: Users },
     { key: "tasks", label: "Giao việc & Tiến độ", Icon: ListTodo },
+    { key: "permissions", label: "Phân quyền & Vai trò", Icon: ShieldCheck },
     {
       key: "activity",
       label: "Nhật ký hoạt động",
       Icon: Activity,
       count: activities.length,
-    },
-    {
-      key: "events",
-      label: "Sự kiện",
-      Icon: CalendarCheck2,
-      count: events.length,
     },
     {
       key: "payments",
@@ -531,9 +519,9 @@ function CompanyDetailPage() {
       {/* KPI strip */}
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi
-          Icon={CalendarCheck2}
-          label={t("cdetail.kpi.events")}
-          value={history.events.length.toString()}
+          Icon={Users}
+          label="Tổng nhân sự"
+          value={company.employees ? company.employees.toString() : "0"}
           tone="primary"
         />
         <Kpi
@@ -615,8 +603,13 @@ function CompanyDetailPage() {
           initialAssignee={selectedEmployee}
         />
       )}
+      {tab === "permissions" && (
+        <CompanyPermissionsTab
+          companyId={company.id}
+          companyName={company.name}
+        />
+      )}
       {tab === "activity" && <ActivityTab entries={history.activities} />}
-      {tab === "events" && <EventsTab entries={history.events} />}
       {tab === "payments" && <PaymentsTab entries={history.payments} />}
 
       {/* Send Email Modal */}
@@ -1036,66 +1029,6 @@ function ActivityTab({ entries }: { entries: CompanyHistory["activities"] }) {
           );
         })}
       </ol>
-    </section>
-  );
-}
-
-function EventsTab({ entries }: { entries: CompanyHistory["events"] }) {
-  const t = useT();
-  return (
-    <section className="rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
-      <div className="border-b border-border p-5">
-        <h3 className="text-base font-semibold text-foreground">{t("cdetail.events.title")}</h3>
-      </div>
-      <div className="divide-y divide-border">
-        {entries.map((e: any) => (
-          <div
-            key={e.id}
-            className="flex flex-wrap items-center justify-between gap-3 p-4 transition hover:bg-muted/30"
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <span className="text-[10px] font-semibold uppercase">
-                  {new Date(e.date).toLocaleDateString("vi-VN", { month: "short" })}
-                </span>
-                <span className="text-base font-bold leading-none">
-                  {new Date(e.date).getDate()}
-                </span>
-              </div>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold text-foreground">{e.name}</div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <Calendar className="h-3 w-3" /> {fmtDate(e.date)}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Users className="h-3 w-3" /> {e.attendees.toLocaleString("vi-VN")}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${ROLE_STYLE[e.role as EventRole]}`}
-              >
-                {t(EVENT_ROLE_LABEL[e.role as EventRole])}
-              </span>
-              <span
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                  e.checkedIn ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {e.checkedIn ? (
-                  <CheckCircle2 className="h-3 w-3" />
-                ) : (
-                  <XCircle className="h-3 w-3" />
-                )}
-                {t("cdetail.checkin")}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
     </section>
   );
 }

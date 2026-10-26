@@ -115,9 +115,14 @@ export function EnterpriseTreeMenu({
     return pathname.includes(companyId) && (typeof window !== "undefined" && window.location.search.includes("tab=tasks"));
   };
 
+  const isPermissionsActive = (companyId: string) => {
+    if (!pathname) return false;
+    return pathname.includes(companyId) && (typeof window !== "undefined" && window.location.search.includes("tab=permissions"));
+  };
+
   const isCompanyActive = (companyId: string) => {
     if (!pathname) return false;
-    return pathname === `/companies/${companyId}` && !isEmployeeActive(companyId) && !isTaskActive(companyId);
+    return pathname === `/companies/${companyId}` && !isEmployeeActive(companyId) && !isTaskActive(companyId) && !isPermissionsActive(companyId);
   };
 
   if (collapsed) {
@@ -199,6 +204,7 @@ export function EnterpriseTreeMenu({
                 const isExpanded = Boolean(expandedCompanies[company.id]);
                 const empActive = isEmployeeActive(company.id);
                 const taskActive = isTaskActive(company.id);
+                const permActive = isPermissionsActive(company.id);
                 const detailActive = isCompanyActive(company.id);
 
                 return (
@@ -221,7 +227,7 @@ export function EnterpriseTreeMenu({
                       </div>
                     </div>
 
-                    {/* Sub-items of this Enterprise: Quản lý nhân viên & Giao việc */}
+                    {/* Sub-items of this Enterprise: Quản lý nhân viên, Phân quyền & Giao việc */}
                     {isExpanded && (
                       <div className="ml-4 pl-2 border-l border-slate-700/60 space-y-0.5 py-0.5">
                         {/* 1. Quản lý nhân viên */}
@@ -247,7 +253,28 @@ export function EnterpriseTreeMenu({
                           )}
                         </Link>
 
-                        {/* 2. Giao việc */}
+                        {/* 2. Phân quyền & Vai trò (RBAC) */}
+                        <Link
+                          to="/companies/$companyId"
+                          params={{ companyId: company.id }}
+                          search={{ tab: "permissions" }}
+                          onClick={onNavigate}
+                          className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[11.5px] transition-colors cursor-pointer ${
+                            permActive
+                              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+                              : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <ShieldCheck className={`size-3.5 ${permActive ? "text-amber-300" : "text-slate-400"}`} />
+                            <span>Phân quyền & Vai trò</span>
+                          </div>
+                          <span className="text-[9px] uppercase tracking-wider font-mono px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            RBAC
+                          </span>
+                        </Link>
+
+                        {/* 3. Giao việc */}
                         <Link
                           to="/companies/$companyId"
                           params={{ companyId: company.id }}

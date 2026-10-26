@@ -23,6 +23,7 @@ import { OperationsModule } from './operations/operations.module';
 import { CompaniesModule } from './companies/companies.module';
 import { RolesModule } from './roles/roles.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     CompaniesModule,
     RolesModule,
     AnalyticsModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -80,7 +80,7 @@ export function StatisticsHubPage() {
     if (grp && ["operations", "attendance", "finance", "crm", "platform"].includes(grp)) {
       setActiveGroup(grp);
     }
-  }, [routerState.location.search]);
+  }, [routerState.location.searchStr]);
 
   const loadData = async () => {
     setLoading(true);

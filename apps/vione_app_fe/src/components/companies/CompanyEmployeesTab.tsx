@@ -193,13 +193,13 @@ export function CompanyEmployeesTab({
 
   const loadRoleGroups = async () => {
     try {
-      const res = await fetchNestApi<any>("/roles/groups");
-      const list = Array.isArray(res) ? res : res?.groups || [];
+      const res = await fetchNestApi<any>(`/roles/company/${companyId}`);
+      const list = Array.isArray(res) ? res : res?.roles || res?.groups || [];
       if (Array.isArray(list)) {
         setRoleGroups(list);
       }
     } catch (err) {
-      console.warn("[CompanyEmployeesTab] Failed to load role groups:", err);
+      console.warn("[CompanyEmployeesTab] Failed to load company role groups:", err);
     }
   };
 

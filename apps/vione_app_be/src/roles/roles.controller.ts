@@ -141,5 +141,89 @@ export class RolesController {
       ...context,
     };
   }
+
+  // ── ĐIỀU PHỐI PHÂN QUYỀN RIÊNG BIỆT TỪNG DOANH NGHIỆP (TENANT ISOLATED RBAC) ─
+
+  /**
+   * Danh sách vai trò / nhóm quyền của riêng doanh nghiệp
+   */
+  @Get('company/:companyId')
+  async listCompanyRoles(@Param('companyId') companyId: string) {
+    return this.rolesService.listCompanyRoles(companyId);
+  }
+
+  /**
+   * Ma trận phân quyền riêng biệt của doanh nghiệp
+   */
+  @Get('company/:companyId/matrix')
+  async getCompanyPermissionsMatrix(@Param('companyId') companyId: string) {
+    return this.rolesService.getCompanyPermissionsMatrix(companyId);
+  }
+
+  /**
+   * Danh sách nhân viên doanh nghiệp kèm phân quyền
+   */
+  @Get('company/:companyId/employees')
+  async getCompanyEmployeesWithPermissions(@Param('companyId') companyId: string) {
+    return this.rolesService.getCompanyEmployeesWithPermissions(companyId);
+  }
+
+  /**
+   * Tạo nhóm quyền mới riêng cho doanh nghiệp
+   */
+  @Post('company/:companyId/groups')
+  async createCompanyRoleGroup(
+    @Param('companyId') companyId: string,
+    @Body() body: any,
+  ) {
+    return this.rolesService.createCompanyRoleGroup(companyId, body);
+  }
+
+  /**
+   * Cập nhật nhóm quyền của doanh nghiệp
+   */
+  @Put('company/:companyId/groups/:roleId')
+  async updateCompanyRoleGroup(
+    @Param('companyId') companyId: string,
+    @Param('roleId') roleId: string,
+    @Body() body: any,
+  ) {
+    return this.rolesService.updateCompanyRoleGroup(companyId, roleId, body);
+  }
+
+  /**
+   * Xóa nhóm quyền của doanh nghiệp
+   */
+  @Delete('company/:companyId/groups/:roleId')
+  async deleteCompanyRoleGroup(
+    @Param('companyId') companyId: string,
+    @Param('roleId') roleId: string,
+  ) {
+    return this.rolesService.deleteCompanyRoleGroup(companyId, roleId);
+  }
+
+  /**
+   * Cập nhật phân quyền cho một vai trò của doanh nghiệp
+   */
+  @Put('company/:companyId/:roleId/permissions')
+  async updateCompanyRolePermissions(
+    @Param('companyId') companyId: string,
+    @Param('roleId') roleId: string,
+    @Body('permissionIds') permissionIds: string[],
+  ) {
+    return this.rolesService.updateCompanyRoleGroup(companyId, roleId, { permissionIds });
+  }
+
+  /**
+   * Cập nhật phân quyền trực tiếp cho nhân viên của doanh nghiệp
+   */
+  @Put('company/:companyId/employees/:employeeId/permissions')
+  async updateCompanyEmployeePermissions(
+    @Param('companyId') companyId: string,
+    @Param('employeeId') employeeId: string,
+    @Body() body: any,
+  ) {
+    return this.rolesService.updateCompanyEmployeePermissions(companyId, employeeId, body);
+  }
 }
 

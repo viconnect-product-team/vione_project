@@ -171,6 +171,13 @@ const companyWorkflowSuite: Item[] = [
     label: "Quản Lý Thành Viên & Nhân Sự",
   },
   {
+    key: "nav.vioneRoleMatrix" as TKey,
+    icon: ShieldCheck,
+    to: "/companies",
+    label: "Phân Quyền & Vai Trò",
+    badge: "RBAC",
+  },
+  {
     key: "nav.vioneDocuments" as TKey,
     icon: FolderOpen,
     to: "/documents",
@@ -191,7 +198,7 @@ const companyWorkflowSuite: Item[] = [
   },
   {
     key: "nav.vioneApprovals" as TKey,
-    icon: ShieldCheck,
+    icon: CheckCircle2,
     to: "/payment-approvals",
     label: "Phê Duyệt Chi Tiền",
   },
@@ -222,12 +229,6 @@ const companyConnectMediaSuite: Item[] = [
     icon: Newspaper,
     to: "/news",
     label: "Đăng Tin & Khoảnh Khắc",
-  },
-  {
-    key: "nav.vioneIntroductions" as TKey,
-    icon: Handshake,
-    to: "/business-connect/connections",
-    label: "Kết Nối Đối Tác B2B",
   },
   {
     key: "nav.vioneNfc" as TKey,

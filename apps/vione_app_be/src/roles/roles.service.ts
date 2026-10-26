@@ -851,5 +851,347 @@ export class RolesService {
       emailSent: emailRes.ok,
     };
   }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // PHÂN HỆ PHÂN QUYỀN RIÊNG BIỆT DÀNH CHO TỪNG DOANH NGHIỆP (TENANT ISOLATED RBAC)
+  // ───────────────────────────────────────────────────────────────────────────
+
+  /**
+   * 11. Danh sách các vai trò / nhóm quyền của riêng doanh nghiệp
+   * (Bao gồm các vai trò chuẩn doanh nghiệp và vai trò tùy chỉnh do chính doanh nghiệp đó tạo)
+   */
+  async listCompanyRoles(companyId: string) {
+    try {
+      const roles = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT 
+          r.id,
+          r.code,
+          r.name,
+          r.description,
+          r.level,
+          r.is_system as "isSystem",
+          r.company_id as "companyId",
+          r.created_at as "createdAt",
+          COALESCE((
+            SELECT COUNT(*)::int 
+            FROM public.company_employees ce 
+            WHERE ce.community_id = $1 AND (ce.role = r.code OR ce.role = r.id::text)
+          ), 0) as "memberCount"
+        FROM public.platform_roles r
+        WHERE (r.company_id = $1) 
+           OR (r.company_id IS NULL AND r.code IN ('company_owner', 'company_manager', 'company_staff'))
+        ORDER BY r.level ASC, r.created_at ASC
+      `, companyId);
+
+      const roleIds = roles.map((r) => r.id);
+      let rolePermMap: Record<string, string[]> = {};
+      if (roleIds.length > 0) {
+        const rpRows = await this.prisma.$queryRawUnsafe<any[]>(`
+          SELECT role_id as "roleId", permission_id as "permissionId"
+          FROM public.platform_role_permissions
+          WHERE role_id = ANY($1::uuid[])
+        `, roleIds);
+        for (const row of rpRows) {
+          if (!rolePermMap[row.roleId]) rolePermMap[row.roleId] = [];
+          rolePermMap[row.roleId].push(row.permissionId);
+        }
+      }
+
+      const items = roles.map((r) => ({
+        ...r,
+        permissionIds: rolePermMap[r.id] || [],
+      }));
+
+      return {
+        ok: true,
+        companyId,
+        items,
+      };
+    } catch (err) {
+      this.logger.error(`Error listing roles for company ${companyId}:`, err);
+      return { ok: false, companyId, items: [] };
+    }
+  }
+
+  /**
+   * 12. Ma trận phân quyền chi tiết của riêng doanh nghiệp (Roles x Permissions x Actions)
+   */
+  async getCompanyPermissionsMatrix(companyId: string) {
+    try {
+      const rolesRes = await this.listCompanyRoles(companyId);
+      const roles = rolesRes.items || [];
+
+      // Lấy các quyền phù hợp cho cấp độ vận hành doanh nghiệp
+      const permissions = await this.prisma.$queryRawUnsafe<any[]>(`
+        SELECT id, module, action, name, description
+        FROM public.platform_permissions
+        WHERE module IN ('tasks', 'attendance', 'employees', 'roles', 'crm', 'finance', 'documents', 'news', 'ai', 'settings')
+        ORDER BY module ASC, action ASC
+      `);
+
+      const roleIds = roles.map((r) => r.id);
+      const matrix: Record<string, Record<string, boolean>> = {};
+      for (const r of roles) {
+        matrix[r.id] = {};
+      }
+
+      if (roleIds.length > 0) {
+        const rolePerms = await this.prisma.$queryRawUnsafe<any[]>(`
+          SELECT role_id as "roleId", permission_id as "permissionId"
+          FROM public.platform_role_permissions
+          WHERE role_id = ANY($1::uuid[])
+        `, roleIds);
+        for (const rp of rolePerms) {
+          if (matrix[rp.roleId]) {
+            matrix[rp.roleId][rp.permissionId] = true;
+          }
+        }
+      }
+
+      const modulesMap: Record<string, any[]> = {};
+      for (const p of permissions) {
+        if (!modulesMap[p.module]) {
+          modulesMap[p.module] = [];
+        }
+        modulesMap[p.module].push(p);
+      }
+
+      return {
+        ok: true,
+        companyId,
+        roles,
+        permissions,
+        modulesMap,
+        matrix,
+      };
+    } catch (err) {
+      this.logger.error(`Error getting company permissions matrix for ${companyId}:`, err);
+      return { ok: false, companyId, roles: [], permissions: [], matrix: {} };
+    }
+  }
+
+  /**
+   * 13. Tạo nhóm quyền mới riêng biệt cho doanh nghiệp
+   */
+  async createCompanyRoleGroup(companyId: string, dto: any) {
+    const cleanName = (dto.name || '').trim();
+    if (!cleanName) {
+      throw new BadRequestException('Tên vai trò / nhóm quyền không được để trống');
+    }
+
+    const id = crypto.randomUUID();
+    const cleanSlug = cleanName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/(^_|_$)/g, '');
+    const code = dto.code ? dto.code.trim() : `comp_${companyId.slice(0, 6)}_${cleanSlug}`;
+
+    await this.prisma.$executeRawUnsafe(
+      `INSERT INTO public.platform_roles (id, code, name, description, level, is_system, company_id, created_at, updated_at)
+       VALUES ($1::uuid, $2, $3, $4, $5, false, $6, NOW(), NOW())`,
+      id,
+      code,
+      cleanName,
+      dto.description || null,
+      Number(dto.level) || 5,
+      companyId,
+    );
+
+    if (Array.isArray(dto.permissionIds) && dto.permissionIds.length > 0) {
+      for (const permId of dto.permissionIds) {
+        await this.prisma.$executeRawUnsafe(
+          `INSERT INTO public.platform_role_permissions (role_id, permission_id)
+           VALUES ($1::uuid, $2::uuid) ON CONFLICT DO NOTHING`,
+          id,
+          permId,
+        ).catch(() => null);
+      }
+    }
+
+    return {
+      ok: true,
+      message: `Đã tạo nhóm quyền "${cleanName}" thành công cho doanh nghiệp!`,
+      role: {
+        id,
+        code,
+        name: cleanName,
+        description: dto.description || null,
+        level: Number(dto.level) || 5,
+        isSystem: false,
+        companyId,
+        permissionIds: dto.permissionIds || [],
+        memberCount: 0,
+      },
+    };
+  }
+
+  /**
+   * 14. Cập nhật nhóm quyền của doanh nghiệp
+   */
+  async updateCompanyRoleGroup(companyId: string, roleId: string, dto: any) {
+    const roles = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT id, is_system as "isSystem", company_id as "companyId" 
+       FROM public.platform_roles WHERE id = $1::uuid LIMIT 1`,
+      roleId,
+    );
+
+    if (roles.length === 0) {
+      throw new NotFoundException('Không tìm thấy nhóm quyền');
+    }
+
+    const current = roles[0];
+    if (current.companyId && current.companyId !== companyId) {
+      throw new BadRequestException('Bạn không có quyền chỉnh sửa nhóm quyền của doanh nghiệp khác!');
+    }
+
+    if (!current.isSystem) {
+      await this.prisma.$executeRawUnsafe(
+        `UPDATE public.platform_roles 
+         SET name = COALESCE($1, name),
+             description = COALESCE($2, description),
+             level = COALESCE($3, level),
+             updated_at = NOW()
+         WHERE id = $4::uuid AND (company_id = $5 OR company_id IS NULL)`,
+        dto.name ? dto.name.trim() : null,
+        dto.description !== undefined ? dto.description : null,
+        dto.level ? Number(dto.level) : null,
+        roleId,
+        companyId,
+      );
+    }
+
+    if (Array.isArray(dto.permissionIds)) {
+      await this.prisma.$executeRawUnsafe(
+        `DELETE FROM public.platform_role_permissions WHERE role_id = $1::uuid`,
+        roleId,
+      );
+
+      for (const permId of dto.permissionIds) {
+        await this.prisma.$executeRawUnsafe(
+          `INSERT INTO public.platform_role_permissions (role_id, permission_id)
+           VALUES ($1::uuid, $2::uuid) ON CONFLICT DO NOTHING`,
+          roleId,
+          permId,
+        ).catch(() => null);
+      }
+    }
+
+    return {
+      ok: true,
+      message: 'Đã cập nhật nhóm quyền và quyền hạn thành công!',
+      roleId,
+      permissionIds: dto.permissionIds || [],
+    };
+  }
+
+  /**
+   * 15. Xóa nhóm quyền tùy chỉnh của doanh nghiệp
+   */
+  async deleteCompanyRoleGroup(companyId: string, roleId: string) {
+    const roles = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT id, is_system as "isSystem", company_id as "companyId", name
+       FROM public.platform_roles WHERE id = $1::uuid LIMIT 1`,
+      roleId,
+    );
+
+    if (roles.length === 0) throw new NotFoundException('Không tìm thấy nhóm quyền');
+    if (roles[0].isSystem) throw new BadRequestException('Không thể xóa nhóm quyền mặc định của hệ thống!');
+    if (roles[0].companyId !== companyId) throw new BadRequestException('Bạn không có quyền xóa nhóm quyền của doanh nghiệp khác!');
+
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.platform_role_permissions WHERE role_id = $1::uuid`, roleId);
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.platform_roles WHERE id = $1::uuid AND company_id = $2`, roleId, companyId);
+
+    return {
+      ok: true,
+      message: `Đã xóa nhóm quyền "${roles[0].name}" thành công!`,
+    };
+  }
+
+  /**
+   * 16. Danh sách nhân viên doanh nghiệp kèm phân quyền chi tiết
+   */
+  async getCompanyEmployeesWithPermissions(companyId: string) {
+    const emps = await this.prisma.$queryRawUnsafe<any[]>(
+      `SELECT 
+        id,
+        community_id as "communityId",
+        user_id as "userId",
+        full_name as "fullName",
+        email,
+        phone,
+        role,
+        role_title as "roleTitle",
+        department,
+        avatar_url as "avatarUrl",
+        status,
+        joined_at as "joinedAt",
+        can_assign_tasks as "canAssignTasks",
+        can_manage_members as "canManageMembers",
+        can_manage_finance as "canManageFinance",
+        can_manage_docs as "canManageDocs",
+        can_manage_crm as "canManageCrm",
+        permissions
+      FROM public.company_employees
+      WHERE community_id = $1
+      ORDER BY created_at ASC`,
+      companyId,
+    );
+
+    return {
+      ok: true,
+      companyId,
+      items: emps,
+    };
+  }
+
+  /**
+   * 17. Cập nhật phân quyền trực tiếp cho nhân viên của doanh nghiệp
+   */
+  async updateCompanyEmployeePermissions(companyId: string, employeeId: string, dto: any) {
+    const isMgr = dto.role === 'manager' || dto.role === 'owner' || dto.role === 'admin';
+    const canAssign = dto.canAssignTasks !== undefined ? Boolean(dto.canAssignTasks) : isMgr;
+    const canMembers = dto.canManageMembers !== undefined ? Boolean(dto.canManageMembers) : isMgr;
+    const canFinance = dto.canManageFinance !== undefined ? Boolean(dto.canManageFinance) : (dto.role === 'owner');
+    const canDocs = dto.canManageDocs !== undefined ? Boolean(dto.canManageDocs) : isMgr;
+    const canCrm = dto.canManageCrm !== undefined ? Boolean(dto.canManageCrm) : isMgr;
+    const permissionsJson = JSON.stringify(dto.permissions || []);
+
+    await this.prisma.$executeRawUnsafe(
+      `UPDATE public.company_employees SET
+         role = COALESCE($1, role),
+         role_title = COALESCE($2, role_title),
+         department = COALESCE($3, department),
+         can_assign_tasks = $4,
+         can_manage_members = $5,
+         can_manage_finance = $6,
+         can_manage_docs = $7,
+         can_manage_crm = $8,
+         permissions = $9::jsonb,
+         updated_at = NOW()
+       WHERE community_id = $10 AND id = $11`,
+      dto.role || null,
+      dto.roleTitle ? dto.roleTitle.trim() : null,
+      dto.department ? dto.department.trim() : null,
+      canAssign,
+      canMembers,
+      canFinance,
+      canDocs,
+      canCrm,
+      permissionsJson,
+      companyId,
+      employeeId,
+    );
+
+    return {
+      ok: true,
+      message: 'Cập nhật phân quyền nhân viên thành công!',
+      employeeId,
+      role: dto.role,
+      permissions: dto.permissions || [],
+    };
+  }
 }
 

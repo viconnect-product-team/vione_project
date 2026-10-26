@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   FileBarChart,
   Wallet,
@@ -25,6 +25,7 @@ interface ReportSubItem {
   id: string;
   label: string;
   to: string;
+  search?: Record<string, string>;
   icon: LucideIcon;
   badge?: string;
 }
@@ -46,13 +47,11 @@ interface ReportsTreeMenuProps {
 
 export function ReportsTreeMenu({
   collapsed = false,
-  pathname,
+  pathname = "",
   onNavigate,
 }: ReportsTreeMenuProps) {
   const { isPlatformAdmin, isAdmin, isSuperAdmin: checkSuperAdmin } = useRole();
   const isSuperAdmin = Boolean(isPlatformAdmin || isAdmin || checkSuperAdmin);
-  const routerState = useRouterState();
-  const currentPathWithSearch = `${routerState.location.pathname}${routerState.location.search || ""}`;
 
   const reportCategories: ReportCategory[] = [
     {
@@ -64,7 +63,8 @@ export function ReportsTreeMenu({
         {
           id: "fin_kpi",
           label: "Thống Kê Doanh Thu & Dòng Tiền",
-          to: "/statistics?group=finance",
+          to: "/statistics",
+          search: { group: "finance" },
           icon: TrendingUp,
         },
         {
@@ -90,13 +90,15 @@ export function ReportsTreeMenu({
         {
           id: "ops_kanban",
           label: "Tiến Độ & Hiệu Suất Kanban BPMN",
-          to: "/statistics?group=operations",
+          to: "/statistics",
+          search: { group: "operations" },
           icon: Activity,
         },
         {
           id: "ops_attendance",
           label: "Báo Cáo Chấm Công & Ca Làm",
-          to: "/statistics?group=attendance",
+          to: "/statistics",
+          search: { group: "attendance" },
           icon: UserCheck,
         },
         {
@@ -116,7 +118,8 @@ export function ReportsTreeMenu({
         {
           id: "crm_funnel",
           label: "Phân Tích Phễu Khách Hàng CRM",
-          to: "/statistics?group=crm",
+          to: "/statistics",
+          search: { group: "crm" },
           icon: BarChart3,
         },
         {
@@ -137,7 +140,8 @@ export function ReportsTreeMenu({
         {
           id: "plat_kpi",
           label: "Chỉ Số Tăng Trưởng Nền Tảng",
-          to: "/statistics?group=platform",
+          to: "/statistics",
+          search: { group: "platform" },
           icon: Layers,
         },
         {
@@ -170,33 +174,32 @@ export function ReportsTreeMenu({
     platform_reports: false,
   });
 
+  const isChildActive = (child: ReportSubItem) => {
+    if (!pathname) return false;
+    if (child.search?.group) {
+      const activeGroup = typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("group")
+        : "";
+      return pathname.startsWith(child.to) && activeGroup === child.search.group;
+    }
+    return pathname === child.to || pathname.startsWith(child.to + "/");
+  };
+
   // Tự động mở node cha nếu URL hiện tại trỏ tới node con của nó
   useEffect(() => {
     availableCategories.forEach((cat) => {
-      const hasActiveChild = cat.children.some((child) => {
-        if (child.to.includes("?")) {
-          return currentPathWithSearch === child.to;
-        }
-        return pathname === child.to || pathname?.startsWith(child.to + "/");
-      });
+      const hasActiveChild = cat.children.some((child) => isChildActive(child));
       if (hasActiveChild) {
         setExpandedKeys((prev) => ({ ...prev, [cat.id]: true }));
       }
     });
-  }, [pathname, currentPathWithSearch]);
+  }, [pathname]);
 
   const toggleCategory = (catId: string) => {
     setExpandedKeys((prev) => ({
       ...prev,
       [catId]: !prev[catId],
     }));
-  };
-
-  const isChildActive = (childTo: string) => {
-    if (childTo.includes("?")) {
-      return currentPathWithSearch === childTo;
-    }
-    return pathname === childTo || pathname?.startsWith(childTo + "/");
   };
 
   // Trạng thái thu gọn sidebar (collapsed)
@@ -238,7 +241,7 @@ export function ReportsTreeMenu({
         {availableCategories.map((cat) => {
           const isExpanded = Boolean(expandedKeys[cat.id]);
           const Icon = cat.icon;
-          const hasActiveChild = cat.children.some((c) => isChildActive(c.to));
+          const hasActiveChild = cat.children.some((c) => isChildActive(c));
 
           return (
             <div key={cat.id} className="rounded-xl overflow-hidden transition-all">
@@ -279,13 +282,14 @@ export function ReportsTreeMenu({
               {isExpanded && (
                 <div className="relative pl-6 pr-1 py-1 space-y-0.5 border-l border-slate-800/80 ml-5 my-0.5">
                   {cat.children.map((child) => {
-                    const active = isChildActive(child.to);
+                    const active = isChildActive(child);
                     const ChildIcon = child.icon;
 
                     return (
                       <Link
                         key={child.id}
                         to={child.to}
+                        search={child.search as any}
                         onClick={onNavigate}
                         className={`group relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[11px] transition-all duration-150 cursor-pointer ${
                           active

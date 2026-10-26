@@ -2,7 +2,7 @@
 ## CHUẨN QUỐC TẾ IEEE 830 - PHÂN RÃ MECE CHI TIẾT KHÔNG BỎ SÓT CHỨC NĂNG
 **Dự án:** Hệ Thống Quản Trị Doanh Nghiệp Toàn Diện ViOne & Mạng Xã Hội Giao Thương Doanh Nhân B2B ViOne Connect  
 **Mã tài liệu:** `SRS-VIONE-MASTER-7.0` | **Ngày ban hành:** 12/10/2026 | **Phiên bản:** `7.0 Enterprise Master Release`  
-*(Đồng Bộ 100% Tính Năng Giữa ViOne PWA và ViOne Native App, Chuẩn Hóa Cân Đối Giao Diện UI/UX Text & Icon, Phân Quyền Phòng Ban Department RBAC, Bàn Giao Tự Động, Họp Ban 1-Chạm & Import/Export Excel/Word)*  
+*(Kiến Trúc Chuẩn Hóa Toàn Diện Giữa Nền Tảng Web CRM ViOne và Ứng Dụng Di Động Native ViOne Connect (iOS & Android), Chuẩn Hóa Cân Đối Giao Diện UI/UX Text & Icon, Phân Quyền Phòng Ban Department RBAC, Bàn Giao Tự Động, Họp Ban 1-Chạm & Import/Export Excel/Word)*  
 **Đơn vị thực hiện:** Senior Business Analyst & Solution Architect Team — Tập Đoàn VioConnect
 
 ---
@@ -16,11 +16,11 @@
    - 1.4 Tiêu Chuẩn Tham Chiếu Quốc Tế IEEE 830-1998
 2. [PHẦN 2: MÔ TẢ TỔNG QUAN HỆ THỐNG (OVERALL DESCRIPTION)](#phần-2-mô-tả-tổng-quan-hệ-thống-overall-description)
    - 2.1 Cấu Trúc 2 Role Người Dùng Cốt Lõi (Executive C-Level vs Staff/Partner)
-   - 2.2 Kiến Trúc Đồng Bộ 100% ViOne PWA (`/connect-app`) và ViOne Native App (`apps/mobile_vione`)
+   - 2.2 Kiến Trúc Ứng Dụng Di Động Native ViOne Connect (apps/mobile_vione) Chuẩn App Store & Google Play
    - 2.3 Môi Trường Hoạt Động & Yêu Cầu Hạ Tầng (Operating Environment)
 3. [PHẦN 3: ĐẶC TẢ YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)](#phần-3-đặc-tả-yêu-cầu-chức-năng-chi-tiết-functional-requirements)
    - *Phân hệ I: Web CRM ViOne Platform (25 Modules Doanh Nghiệp)*
-   - *Phân hệ II: Ứng Dụng Di Động ViOne Connect (Native & PWA) (13 Phân Hệ Toàn Năng)*
+   - *Phân hệ II: Ứng Dụng Di Động Native ViOne Connect (iOS & Android) (13 Phân Hệ Toàn Năng)*
      * FR-APP-01: Header Thương Hiệu Dính & Lời Chào Năng Động (`StickyBrandHeader`)
      * FR-APP-02: Thẻ Doanh Nhân ViOne & Trạng Thái Định Vị GPS (`EntrepreneurCard`, `LocationBanner`)
      * FR-APP-03: Bàn Điều Hành Lãnh Đạo & Lịch Trình Hôm Nay 5 Tabs (`TodayEditorialSection`)
@@ -49,12 +49,12 @@
 ### PHẦN 1: GIỚI THIỆU CHUNG (INTRODUCTION)
 
 #### 1.1 Mục Đích Tài Liệu
-Tài liệu Software Requirements Specification (SRS) này được biên soạn bởi Senior Business Analyst và System Architect theo chuẩn quốc tế **IEEE 830-1998 (Recommended Practice for Software Requirements Specifications)**. Tài liệu đặc tả chi tiết, toàn diện và đầy đủ 100% tất cả các yêu cầu chức năng (FR) và phi chức năng (NFR) cho Hệ thống Quản trị Doanh nghiệp ViOne CRM và Ứng dụng Di động ViOne Connect. Đây là căn cứ kỹ thuật duy nhất phục vụ công tác phát triển mã nguồn, kiểm thử chấp nhận (UAT), nghiệm thu và bàn giao hệ thống cho Chủ đầu tư.
+Tài liệu Software Requirements Specification (SRS) này được biên soạn bởi Business Analyst và System Architect theo chuẩn quốc tế **IEEE 830-1998 (Recommended Practice for Software Requirements Specifications)**. Tài liệu đặc tả chi tiết, toàn diện và đầy đủ 100% tất cả các yêu cầu chức năng (FR) và phi chức năng (NFR) cho Hệ thống Quản trị Doanh nghiệp ViOne CRM và Ứng dụng Di động ViOne Connect. Đây là căn cứ kỹ thuật duy nhất phục vụ công tác phát triển mã nguồn, kiểm thử chấp nhận (UAT), nghiệm thu và bàn giao hệ thống cho Chủ đầu tư.
 
 #### 1.2 Phạm Vi Dự Án
 Phạm vi dự án bao gồm hai trụ cột công nghệ hợp nhất:
 1. **Nền Tảng Quản Trị Doanh Nghiệp ViOne CRM (Web Portal):** Bộ công cụ quản trị B2B toàn diện gồm Quản lý quan hệ khách hàng, Phễu bán hàng Kanban Deals, Quản trị quy trình tự động, Chấm công định vị GPS & FaceID, Phê duyệt tài chính 3 cấp, Đối soát ngân hàng VietQR, Sàn giao thương B2B, Trí tuệ nhân tạo AI Copilot 6.0, và Ma trận phân quyền 7x6 theo kiến trúc Multi-Tenant (25 Phân hệ).
-2. **Ứng Dụng Di Động ViOne Connect (Mobile App Native & PWA):** Ứng dụng di động cao cấp dành cho lãnh đạo C-Level và nhân sự/đối tác B2B, tích hợp danh thiếp số NFC, Thẻ doanh nhân mở Bottom Sheet vuốt tay xuống, Sàn kết nối cung cầu B2B, Kênh chat trực tiếp gửi thẻ đề xuất hẹn gặp ghim lịch điều hành, Phân hệ cộng đồng hợp nhất All-in-One, Phân quyền phòng ban Department RBAC, Bàn giao công việc tự động Auto-Handover, Họp ban trực tuyến 1-chạm, Import/Export Word/Excel, Nhật ký ghi âm khoảnh khắc điều hành, Trợ lý AI Copilot 6.0 đa tác vụ tìm kiếm bằng giọng nói và quét đối tác quanh đây, Trung tâm duyệt hồ sơ 1-chạm di động và giải pháp cài đặt 1-chạm độc quyền cho iOS (.mobileconfig) (13 Phân hệ).
+2. **Ứng Dụng Di Động Native ViOne Connect (iOS trên App Store & Android trên Google Play):** Ứng dụng di động cao cấp dành cho lãnh đạo C-Level và nhân sự/đối tác B2B, tích hợp danh thiếp số NFC, Thẻ doanh nhân mở Bottom Sheet vuốt tay xuống, Sàn kết nối cung cầu B2B, Kênh chat trực tiếp gửi thẻ đề xuất hẹn gặp ghim lịch điều hành, Phân hệ cộng đồng hợp nhất All-in-One, Phân quyền phòng ban Department RBAC, Bàn giao công việc tự động Auto-Handover, Họp ban trực tuyến 1-chạm, Import/Export Word/Excel, Nhật ký ghi âm khoảnh khắc điều hành, Trợ lý AI Copilot 6.0 đa tác vụ tìm kiếm bằng giọng nói và quét đối tác quanh đây, Trung tâm duyệt hồ sơ 1-chạm di động và giải pháp cài đặt 1-chạm độc quyền cho iOS (.mobileconfig) (13 Phân hệ).
 
 #### 1.3 Thuật Ngữ Và Viết Tắt
 - **CRM:** Customer Relationship Management (Quản lý quan hệ khách hàng).
@@ -63,7 +63,6 @@ Phạm vi dự án bao gồm hai trụ cột công nghệ hợp nhất:
 - **NFC:** Near Field Communication (Giao tiếp trường gần - Chạm truyền dữ liệu).
 - **OCR:** Optical Character Recognition (Nhận dạng ký tự quang học).
 - **MECE:** Mutually Exclusive, Collectively Exhaustive (Không trùng lặp, Không bỏ sót).
-- **PWA:** Progressive Web App (Ứng dụng web tiến bộ).
 - **JWT:** JSON Web Token (Chuẩn xác thực phân tán an toàn).
 - **WebRTC:** Web Real-Time Communication (Giao thức truyền âm thanh & video thời gian thực).
 
@@ -81,7 +80,7 @@ Hệ thống chuẩn hóa cấp bậc quyền lực và phân quyền dữ liệ
    - **Nhân viên:** Nhận việc do sếp giao qua thông báo chuông, bấm nút **`[⚡ TIẾN HÀNH NHẬN VIỆC]`** để tiếp nhận, cập nhật thanh tiến độ % (0-100%) kèm báo cáo giải trình, nộp tài liệu nghiệm thu Word/Excel, chuyển giao việc có lý do.
    - **Bạn bè, Đối tác B2B:** Lưu và đồng bộ danh bạ điện thoại, trao đổi Danh thiếp số Titanium NFC / QR Code, lên lịch hẹn giao thương 1-on-1.
 
-#### 2.2 Kiến Trúc Đồng Bộ 100% ViOne PWA (`/connect-app`) và ViOne Native App (`apps/mobile_vione`)
+#### 2.2 Kiến Trúc Ứng Dụng Di Động Native ViOne Connect (apps/mobile_vione) Chuẩn App Store & Google Play
 Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`apps/vione_app_be`), kiến trúc dữ liệu PostgreSQL và luồng nghiệp vụ:
 - Tab 1: Trang Chủ (Executive Home) $\rightarrow$ Khớp 100% dữ liệu briefing hôm nay, lịch trình, bàn điều hành C-Level, insight kết nối, AI partner recommendations.
 - Tab 2: Mạng Lưới (Network & B2B CRM) $\rightarrow$ Khớp 100% pipeline khách hàng, stories 24h, messenger chat 0ms, đề xuất hẹn 1-1, đồng bộ danh bạ Zalo style.
@@ -148,7 +147,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 
 ---
 
-#### Phân Hệ II: Ứng Dụng Di Động ViOne Connect (Native & PWA) (13 Phân Hệ Toàn Năng)
+#### Phân Hệ II: Ứng Dụng Di Động Native ViOne Connect (iOS & Android) (13 Phân Hệ Toàn Năng)
 
 ##### FR-APP-01: Header Thương Hiệu Dính (`StickyBrandHeader`)
 - **Mô tả:** Cố định trên đỉnh tất cả các màn hình, hiển thị nhận diện thương hiệu mạ vàng đẳng cấp.
@@ -178,7 +177,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
     3. `Sắp tới (N)`: Lịch trình đối tác và sự kiện hiệp hội trong 7 ngày tới. Khi không có sự kiện sắp tới, hệ thống hiển thị Empty State sang trọng ("Chưa có sự kiện nào sắp diễn ra"), tuyệt đối không fallback lấy sự kiện cũ trong quá khứ.
     4. `Nhắc lịch (N)`: Các cảnh báo quan trọng, gia hạn hội viên, hẹn gặp khách VIP.
     5. `🎙️ Ghi âm (N)`: Danh sách ghi âm giọng nói khoảnh khắc kèm trình phát sóng âm inline wave player (`handleTogglePlayVoice`).
-  - Modal Tùy chỉnh Briefing Hôm Nay (`TodayCustomizeSheet`): Đồng bộ 100% với PWA, cho phép lãnh đạo bật/tắt hiển thị từng nhóm thông tin, sắp xếp thứ tự và giới hạn số mục hiển thị.
+  - Modal Tùy chỉnh Briefing Hôm Nay (`TodayCustomizeSheet`): Cho phép lãnh đạo bật/tắt hiển thị từng nhóm thông tin, sắp xếp thứ tự và giới hạn số mục hiển thị.
 
 ##### FR-APP-04: Thẻ Giám Sát Vận Hành & Chuyên Cần Nhân Sự C-Level
 - **Mô tả:** Trung tâm giám sát kỷ luật và tài chính doanh nghiệp dành riêng cho CEO.
@@ -208,7 +207,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
     3. `Gợi ý AI`: Danh sách đối tác cần giữ kết nối (Nurture List) kèm phân tích lý do cần chăm sóc.
     4. `Tin nhắn (Messenger)`: Danh mục chat thời gian thực.
     5. `Lời mời`: Quản lý lời mời kết nối đến và đi.
-  - Máy quét danh thiếp OCR AI (`CardScanReviewModal` trên Native & `CardScanFlow` trên PWA): Chụp ảnh danh thiếp visit card, AI kết hợp OCR.space Engine 2 và bộ trích xuất biểu thức chính quy tiếng Việt chuyên sâu `extractVietnameseCardEntities`, bóc tách đầy đủ và chuẩn xác: Họ tên, Số điện thoại, Chức danh, Tên công ty, Email, Website và Địa chỉ; Triệt tiêu hoàn toàn mã fallback dummy hardcode (`0900000000` / `Thông tin danh thiếp`); tự động làm sạch số điện thoại và cung cấp liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`) với nút Zalo vàng Champagne Gold (`#D8B282`) chữ đen đậm (`text-slate-950 font-bold`); Lưu vào danh bạ ứng dụng ở mục Danh thiếp đã quét; Xuất file vCard `.vcf` lưu trực tiếp xuống danh bạ điện thoại thu gọn strictly chỉ gồm: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại (`TEL;TYPE=CELL,VOICE`); Trang bị nút điều khiển camera và chip trạng thái phủ màu Obsidian Quartz (`#141C2B` / `#1A2234`) phối hợp viền và chữ vàng Champagne Gold, loại bỏ hoàn toàn nút trạng thái màu đen và lỗi chữ trắng trên nền sáng.
+  - Máy quét danh thiếp OCR AI (`CardScanReviewModal` trên Native Mobile App): Chụp ảnh danh thiếp visit card, AI kết hợp OCR.space Engine 2 và bộ trích xuất biểu thức chính quy tiếng Việt chuyên sâu `extractVietnameseCardEntities`, bóc tách đầy đủ và chuẩn xác: Họ tên, Số điện thoại, Chức danh, Tên công ty, Email, Website và Địa chỉ; Triệt tiêu hoàn toàn mã fallback dummy hardcode (`0900000000` / `Thông tin danh thiếp`); tự động làm sạch số điện thoại và cung cấp liên kết Zalo trực tiếp (`https://zalo.me/${cleanPhone}`) với nút Zalo vàng Champagne Gold (`#D8B282`) chữ đen đậm (`text-slate-950 font-bold`); Lưu vào danh bạ ứng dụng ở mục Danh thiếp đã quét; Xuất file vCard `.vcf` lưu trực tiếp xuống danh bạ điện thoại thu gọn strictly chỉ gồm: Họ và tên (`FN`, `N`), Chức danh (`TITLE`), và Số điện thoại (`TEL;TYPE=CELL,VOICE`); Trang bị nút điều khiển camera và chip trạng thái phủ màu Obsidian Quartz (`#141C2B` / `#1A2234`) phối hợp viền và chữ vàng Champagne Gold, loại bỏ hoàn toàn nút trạng thái màu đen và lỗi chữ trắng trên nền sáng.
   - Banner quét danh bạ điện thoại tìm bạn bè kiểu Zalo (`ContactsDiscoveryModal`).
 
 ##### FR-APP-07: Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1 Ghim Lịch
@@ -236,7 +235,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 - **Thành phần:**
   - Hợp nhất 2 mô hình cũ thành 1 mô hình toàn năng duy nhất với 6 phân hệ: Công việc, Giám sát, Cơ hội B2B, Bản tin, Sự kiện, Thành viên.
   - Xóa sạch cộng đồng cũ, nghiêm cấm tuyệt đối hardcode tự động thêm thành viên khi tạo mới cộng đồng.
-  - Quy chuẩn mời thành viên (`CommunityInviteSheet` trên PWA & `CommunityInviteModal` trên Native): Chỉ cho phép mời những người đã kết nối trong mạng lưới thông qua API `POST /connect-app/community/:communityId/invites`.
+  - Quy chuẩn mời thành viên (`CommunityInviteModal` trên Native Mobile App): Chỉ cho phép mời những người đã kết nối trong mạng lưới thông qua API `POST /connect-app/community/:communityId/invites`.
   - Thông báo phê duyệt thời gian thực: Tài khoản được mời nhận thông báo chuông (`business_notifications`) kèm quyền lựa chọn "Đồng ý tham gia" (`POST /connect-app/community/invites/:inviteRef/accept`) hoặc "Từ chối" (`POST /connect-app/community/invites/:inviteRef/decline`).
   - Gói bản quyền cộng đồng: Người dùng đăng ký gói hoặc dùng thử 30 ngày free được quyền tạo 1 cộng đồng của riêng mình.
   - Gating phân hệ giao việc tại Trang chủ: Chỉ hiển thị khi có gói cộng đồng hoặc dùng thử 30 ngày.
@@ -360,7 +359,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 | FR-APP-14 | Trợ Lý Giọng Nói AI Copilot| `ViOneVoiceAssistantModal.tsx` | `POST /api/ai/chat` | Đạt 100% |
 | FR-APP-15 | Kéo Thả Di Chuyển & Cắt Ảnh | `ImagePanCropModal.tsx` | N/A (Client Pan/Zoom/Crop) | Đạt 100% |
 | FR-APP-16 | Trang Profile Công Khai Khi Quét QR | `p.$identifier.tsx` | `GET /connect-app/public/profile/:id` | Đạt 100% |
-| FR-APP-17 | Phân Lập Cổng 5445 (PWA) & 5446 (CRM) | `nginx.conf` & `__root.tsx` | N/A (Subdomain https://vione.viconnect.vn) | Đạt 100% |
+| FR-APP-17 | Phân Lập Cổng 5445 (App Mobile) & 5446 (CRM) | `nginx.conf` & `__root.tsx` | N/A (Subdomain https://vione.viconnect.vn) | Đạt 100% |
 
 ---
 *Tài liệu SRS Master 7.1 được chuẩn hóa và phê duyệt bởi Ban Kiến Trúc Công Nghệ VioConnect.*
