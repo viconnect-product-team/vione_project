@@ -58,11 +58,16 @@ import {
 } from "lucide-react";
 import type { TKey } from "@/lib/i18n";
 import type { LucideIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
 import { ProfileMenu } from "@/components/dashboard/ProfileMenu";
-import { EnterpriseTreeMenu } from "@/components/dashboard/EnterpriseTreeMenu";
 import { ReportsTreeMenu } from "@/components/dashboard/ReportsTreeMenu";
 import { SubscribePackageModal } from "@/components/dashboard/SubscribePackageModal";
 
@@ -75,8 +80,15 @@ const superAdminOverview: Item[] = [
     key: "nav.platformOverview" as TKey,
     icon: LayoutDashboard,
     to: "/platform",
-    label: "Tổng Quan & Tăng Trưởng",
+    label: "Bảng Điều Khiển Nền Tảng",
     badge: "5.0",
+  },
+  {
+    key: "nav.vioneAi" as TKey,
+    icon: Sparkles,
+    to: "/ai",
+    label: "Trợ Lý Điều Hành AI ViOne",
+    badge: "AI",
   },
 ];
 
@@ -85,20 +97,20 @@ const superAdminTenantsSuite: Item[] = [
     key: "nav.vioneCompanyList" as TKey,
     icon: Building2,
     to: "/companies",
-    label: "Quản Lý Khách Hàng & DN",
-  },
-  {
-    key: "nav.vionePlatformMonitoring" as TKey,
-    icon: Activity,
-    to: "/platform",
-    label: "Theo Dõi Mức Độ Hoạt Động",
-    badge: "Giám sát",
+    label: "Quản Lý Danh Sách Doanh Nghiệp",
   },
   {
     key: "nav.vionePlatformMembers" as TKey,
     icon: Users,
     to: "/members",
-    label: "Khách Hàng Nền Tảng (CRM)",
+    label: "Khách Hàng & Đối Tác Nền Tảng",
+  },
+  {
+    key: "nav.vionePlatformMonitoring" as TKey,
+    icon: Activity,
+    to: "/platform/ai-audit",
+    label: "Theo Dõi Hoạt Động & AI Audit",
+    badge: "Giám sát",
   },
 ];
 
@@ -113,16 +125,40 @@ const superAdminPackagesSuite: Item[] = [
     key: "nav.vioneApprovals" as TKey,
     icon: CheckCircle2,
     to: "/payment-approvals",
-    label: "Phê Duyệt Đơn Hàng & Gia Hạn",
+    label: "Phê Duyệt Đơn Hàng & Kích Hoạt",
+  },
+  {
+    key: "nav.vioneRevenueReport" as TKey,
+    icon: ArrowDownCircle,
+    to: "/income",
+    label: "Báo Cáo Thu Nền Tảng",
   },
 ];
 
-const vioneInternalChatSuite: Item[] = [
+const superAdminNetworkSuite: Item[] = [
+  {
+    key: "nav.vioneMarketplace" as TKey,
+    icon: Store,
+    to: "/marketplace",
+    label: "Sàn Giao Thương Toàn Hệ Thống",
+  },
+  {
+    key: "nav.vioneEvents" as TKey,
+    icon: Calendar,
+    to: "/events",
+    label: "Sự Kiện & Hội Thảo Kết Nối",
+  },
+  {
+    key: "nav.vioneCheckin" as TKey,
+    icon: ScanLine,
+    to: "/checkin",
+    label: "Điểm Danh & Check-in QR",
+  },
   {
     key: "nav.vioneMessages" as TKey,
     icon: MessageSquare,
     to: "/messages",
-    label: "Kết Nối Nhắn Tin",
+    label: "Kết Nối Nhắn Tin Toàn Hệ Thống",
     badge: "Chat",
   },
 ];
@@ -132,7 +168,7 @@ const superAdminSystemSuite: Item[] = [
     key: "nav.vioneStaffAccounts" as TKey,
     icon: UserPlus,
     to: "/platform/admins",
-    label: "Cấp Tài Khoản Nhân Viên",
+    label: "Cấp Tài Khoản Quản Trị ViOne",
     badge: "ViOne",
   },
   {
@@ -146,72 +182,25 @@ const superAdminSystemSuite: Item[] = [
     key: "nav.vioneAudit" as TKey,
     icon: History,
     to: "/activity",
-    label: "Nhật Ký Kiểm Toán",
+    label: "Nhật Ký Kiểm Toán Toàn Hệ Thống",
   },
   {
     key: "nav.vioneSettings" as TKey,
     icon: Settings,
     to: "/settings",
-    label: "Cài Đặt Nền Tảng",
+    label: "Cài Đặt & Cấu Hình Nền Tảng",
   },
 ];
 
-// ── PHÂN HỆ DOANH NGHIỆP (COMPANY / BUSINESS ADMIN SUITE) ───────────────
-// Dành cho tài khoản mua gói ViOne Platform và được mở khóa CRM
+// ── PHÂN HỆ DOANH NGHIỆP (COMPANY / BUSINESS SUITE) ───────────────
+// Dành cho tài khoản doanh nghiệp đã mua gói ViOne Platform
+// Tuyệt đối không có quản lý doanh nghiệp (/companies) và không gộp chung
 const companyOverview: Item[] = [
-  { key: "nav.dashboard", icon: LayoutDashboard, to: "/", label: "Bảng Điều Khiển Doanh Nghiệp" },
-];
-
-// NHÓM 1: QUY TRÌNH & VẬN HÀNH (Gói gọn toàn bộ vận hành doanh nghiệp vào 1 nhóm lớn theo BRD)
-const companyWorkflowSuite: Item[] = [
   {
-    key: "nav.vioneMemberList" as TKey,
-    icon: Users,
-    to: "/companies",
-    label: "Quản Lý Thành Viên & Nhân Sự",
-  },
-  {
-    key: "nav.vioneRoleMatrix" as TKey,
-    icon: ShieldCheck,
-    to: "/companies",
-    label: "Phân Quyền & Vai Trò",
-    badge: "RBAC",
-  },
-  {
-    key: "nav.vioneDocuments" as TKey,
-    icon: FolderOpen,
-    to: "/documents",
-    label: "Quản Lý Tài Liệu Số Hóa",
-  },
-  {
-    key: "nav.vioneWorkflow" as TKey,
-    icon: Kanban,
-    to: "/workflow",
-    label: "Quy Trình & Công Việc",
-    badge: "Kanban",
-  },
-  {
-    key: "nav.vioneAttendance" as TKey,
-    icon: UserCheck,
-    to: "/attendance",
-    label: "Chấm Công & Ca Làm Việc",
-  },
-  {
-    key: "nav.vioneApprovals" as TKey,
-    icon: CheckCircle2,
-    to: "/payment-approvals",
-    label: "Phê Duyệt Chi Tiền",
-  },
-];
-
-// NHÓM 2: CHĂM SÓC KHÁCH HÀNG (CRM) & TRỢ LÝ AI
-const companyCrmRevenueSuite: Item[] = [
-  {
-    key: "nav.vioneCrmCustomers" as TKey,
-    icon: HeartHandshake,
-    to: "/members",
-    label: "Chăm Sóc Khách Hàng (CRM)",
-    badge: "CRM",
+    key: "nav.dashboard",
+    icon: LayoutDashboard,
+    to: "/",
+    label: "Bảng Điều Khiển Doanh Nghiệp",
   },
   {
     key: "nav.vioneAi" as TKey,
@@ -222,34 +211,132 @@ const companyCrmRevenueSuite: Item[] = [
   },
 ];
 
-// NHÓM 3: KẾT NỐI & TRUYỀN THÔNG (NETWORKING & PUBLIC PRESENCE)
-const companyConnectMediaSuite: Item[] = [
+// NHÓM 1: NHÂN SỰ & CHẤM CÔNG
+const companyHrSuite: Item[] = [
   {
-    key: "nav.vioneMoments" as TKey,
-    icon: Newspaper,
-    to: "/news",
-    label: "Đăng Tin & Khoảnh Khắc",
+    key: "nav.vioneMemberList" as TKey,
+    icon: Users,
+    to: "/members",
+    label: "Quản Lý Nhân Sự & Đội Ngũ",
   },
   {
-    key: "nav.vioneNfc" as TKey,
-    icon: IdCard,
-    to: "/admin/business-cards",
-    label: "Thẻ Thông Minh NFC & QR",
+    key: "nav.vioneAttendance" as TKey,
+    icon: UserCheck,
+    to: "/attendance",
+    label: "Chấm Công & Ca Làm Việc",
+  },
+];
+
+// NHÓM 2: VẬN HÀNH & CÔNG VIỆC
+const companyOperationsSuite: Item[] = [
+  {
+    key: "nav.vioneWorkflow" as TKey,
+    icon: Kanban,
+    to: "/workflow",
+    label: "Quy Trình & Công Việc (Kanban)",
+    badge: "Kanban",
+  },
+  {
+    key: "nav.vioneDocuments" as TKey,
+    icon: FolderOpen,
+    to: "/documents",
+    label: "Quản Lý Tài Liệu Số Hóa",
+  },
+  {
+    key: "nav.vioneMeetings" as TKey,
+    icon: Calendar,
+    to: "/meetings",
+    label: "Lịch Trình & Cuộc Họp",
+  },
+];
+
+// NHÓM 3: TÀI CHÍNH & DÒNG TIỀN
+const companyFinanceSuite: Item[] = [
+  {
+    key: "nav.vioneApprovals" as TKey,
+    icon: CheckCircle2,
+    to: "/payment-approvals",
+    label: "Phê Duyệt Chi Tiền",
+  },
+  {
+    key: "nav.vioneIncome" as TKey,
+    icon: ArrowDownCircle,
+    to: "/income",
+    label: "Quản Lý Thu Tiền",
+  },
+  {
+    key: "nav.vioneExpenses" as TKey,
+    icon: ArrowUpCircle,
+    to: "/expenses",
+    label: "Quản Lý Chi Phí",
+  },
+  {
+    key: "nav.vioneFees" as TKey,
+    icon: Wallet,
+    to: "/fees",
+    label: "Hóa Đơn & Định Mức",
+  },
+];
+
+// NHÓM 4: KINH DOANH & KHÁCH HÀNG (CRM)
+const companyCrmSuite: Item[] = [
+  {
+    key: "nav.vioneCrmCustomers" as TKey,
+    icon: HeartHandshake,
+    to: "/members",
+    label: "Khách Hàng & Đối Tác CRM",
+    badge: "CRM",
+  },
+  {
+    key: "nav.vioneDeals" as TKey,
+    icon: Handshake,
+    to: "/opportunities",
+    label: "Cơ Hội Kinh Doanh (Deals)",
   },
   {
     key: "nav.vioneMarketplace" as TKey,
     icon: Store,
     to: "/marketplace",
-    label: "Sàn Sản Phẩm & Dịch Vụ",
+    label: "Sàn Giao Thương B2B",
+  },
+  {
+    key: "nav.vioneNfc" as TKey,
+    icon: IdCard,
+    to: "/admin/business-cards",
+    label: "Danh Thiếp Số NFC & QR",
   },
 ];
 
+// NHÓM 5: TRUYỀN THÔNG & TƯƠNG TÁC
+const companyMediaSuite: Item[] = [
+  {
+    key: "nav.vioneMoments" as TKey,
+    icon: Newspaper,
+    to: "/news",
+    label: "Đăng Tin & Khoảnh Khắc 24h",
+  },
+  {
+    key: "nav.vioneVoting" as TKey,
+    icon: Vote,
+    to: "/voting",
+    label: "Biểu Quyết & Khảo Sát",
+  },
+  {
+    key: "nav.vioneMessages" as TKey,
+    icon: MessageSquare,
+    to: "/messages",
+    label: "Nhắn Tin & Trao Đổi",
+    badge: "Chat",
+  },
+];
+
+// NHÓM 6: CẤU HÌNH & TỔ CHỨC
 const companySettingsSuite: Item[] = [
   {
     key: "nav.vioneSettings" as TKey,
     icon: Settings,
     to: "/settings",
-    label: "Hồ Sơ & Cài Đặt Doanh Nghiệp",
+    label: "Cài Đặt Hồ Sơ Doanh Nghiệp",
   },
 ];
 
@@ -337,28 +424,45 @@ function NavItem({
     </div>
   );
 
-  if (item.to) {
-    return (
-      <Link
-        to={item.to}
-        data-active={active ? "true" : undefined}
-        className={cls}
-        onClick={onNavigate}
-        title={collapsed ? label : undefined}
-      >
-        {inner}
-      </Link>
-    );
-  }
-  return (
+  const interactive = item.to ? (
+    <Link
+      to={item.to}
+      data-active={active ? "true" : undefined}
+      className={cls}
+      onClick={onNavigate}
+      title={label}
+    >
+      {inner}
+    </Link>
+  ) : (
     <button
       data-active={active ? "true" : undefined}
       className={cls}
       onClick={onNavigate}
-      title={collapsed ? label : undefined}
+      title={label}
     >
       {inner}
     </button>
+  );
+
+  return (
+    <Tooltip delayDuration={150}>
+      <TooltipTrigger asChild>{interactive}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        sideOffset={12}
+        className="z-50 max-w-xs rounded-lg border border-[#D8B282]/40 bg-[#0B0F17] px-3 py-1.5 text-xs font-semibold text-[#F6E1C3] shadow-2xl backdrop-blur-md"
+      >
+        <div className="flex items-center gap-2">
+          <span>{label}</span>
+          {showBadge && (
+            <span className="rounded bg-[#C29B69]/30 px-1.5 py-0.5 text-[10px] text-[#F6E1C3]">
+              {badgeVal}
+            </span>
+          )}
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -646,167 +750,172 @@ export function Sidebar({
         )}
 
         {/* Nav Container with Scroll */}
-        <div
-          ref={scrollRef}
-          className="sidebar-scroll flex-1 space-y-4 overflow-y-auto py-5"
-        >
-          {effectiveView === "platform" ? (
-            <>
-              {/* ── SUPER ADMIN: TỔNG QUAN & TĂNG TRƯỞNG ── */}
-              <div className={isCollapsed ? "px-2" : "px-3"}>
-                <div className="space-y-1">
-                  {superAdminOverview.map((it) => (
-                    <NavItem
-                      key={it.key}
-                      item={it}
-                      pathname={pathname}
-                      collapsed={isCollapsed}
-                      onNavigate={onNavigate}
-                    />
-                  ))}
+        <TooltipProvider delayDuration={150}>
+          <div
+            ref={scrollRef}
+            className="sidebar-scroll flex-1 space-y-4 overflow-y-auto py-5"
+          >
+            {effectiveView === "platform" ? (
+              <>
+                {/* ── SUPER ADMIN: TỔNG QUAN NỀN TẢNG ── */}
+                <div className={isCollapsed ? "px-2" : "px-3"}>
+                  <div className="space-y-1">
+                    {superAdminOverview.map((it) => (
+                      <NavItem
+                        key={it.key}
+                        item={it}
+                        pathname={pathname}
+                        collapsed={isCollapsed}
+                        onNavigate={onNavigate}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* ── KẾT NỐI NHẮN TIN (CHỨC NĂNG TỐI THIỂU CHO MỌI NHÂN SỰ VIONE) ── */}
-              <Group
-                label="KẾT NỐI & LIÊN LẠC"
-                items={vioneInternalChatSuite}
-                pathname={pathname}
-                collapsed={isCollapsed}
-                onNavigate={onNavigate}
-                badges={badges}
-              />
+                {/* ── QUẢN LÝ DOANH NGHIỆP & HỘI VIÊN ── */}
+                {(isSuperAdmin || isOperationsStaff || isExecutiveStaff) && (
+                  <Group
+                    label="QUẢN LÝ DOANH NGHIỆP & HỘI VIÊN"
+                    items={superAdminTenantsSuite}
+                    pathname={pathname}
+                    collapsed={isCollapsed}
+                    onNavigate={onNavigate}
+                    badges={badges}
+                  />
+                )}
 
-              {/* ── NHÓM VẬN HÀNH & QUẢN LÝ KHÁCH HÀNG / DN (platform_operations) ── */}
-              {(isSuperAdmin || isOperationsStaff || isExecutiveStaff) && (
+                {/* ── GÓI CƯỚC & DOANH THU NỀN TẢNG ── */}
+                {(isSuperAdmin || isFinanceStaff || isExecutiveStaff) && (
+                  <Group
+                    label="GÓI CƯỚC & DOANH THU"
+                    items={superAdminPackagesSuite}
+                    pathname={pathname}
+                    collapsed={isCollapsed}
+                    onNavigate={onNavigate}
+                    badges={badges}
+                  />
+                )}
+
+                {/* ── MẠNG LƯỚI & SỰ KIỆN GIAO THƯƠNG ── */}
                 <Group
-                  label="QUẢN TRỊ KHÁCH HÀNG & DN"
-                  items={superAdminTenantsSuite}
+                  label="MẠNG LƯỚI & GIAO THƯƠNG"
+                  items={superAdminNetworkSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
                   onNavigate={onNavigate}
                   badges={badges}
                 />
-              )}
 
-              {/* ── NHÓM TÀI CHÍNH, DOANH THU & GÓI (platform_finance) ── */}
-              {(isSuperAdmin || isFinanceStaff || isExecutiveStaff) && (
+                {/* ── NHÓM THỐNG KÊ & BÁO CÁO TOÀN DIỆN ── */}
+                <div className={isCollapsed ? "px-2" : "px-3"}>
+                  <ReportsTreeMenu
+                    collapsed={isCollapsed}
+                    pathname={pathname}
+                    onNavigate={onNavigate}
+                  />
+                </div>
+
+                {/* ── AN NINH & HỆ THỐNG NỀN TẢNG ── */}
+                {(isSuperAdmin || isQuanTri) && (
+                  <Group
+                    label="AN NINH & HỆ THỐNG"
+                    items={superAdminSystemSuite}
+                    pathname={pathname}
+                    collapsed={isCollapsed}
+                    onNavigate={onNavigate}
+                    badges={badges}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {/* ── DOANH NGHIỆP: TỔNG QUAN NỔI BẬT ── */}
+                <div className={isCollapsed ? "px-2" : "px-3"}>
+                  <div className="space-y-1">
+                    {companyOverview.map((it) => (
+                      <NavItem
+                        key={it.key}
+                        item={it}
+                        pathname={pathname}
+                        collapsed={isCollapsed}
+                        onNavigate={onNavigate}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* NHÓM 1: NHÂN SỰ & CHẤM CÔNG */}
                 <Group
-                  label="GÓI DỊCH VỤ NỀN TẢNG"
-                  items={superAdminPackagesSuite}
+                  label="NHÂN SỰ & CHẤM CÔNG"
+                  items={companyHrSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
                   onNavigate={onNavigate}
                   badges={badges}
                 />
-              )}
 
-              {/* ── NHÓM THỐNG KÊ & BÁO CÁO (TREE MENU RIÊNG BIỆT) ── */}
-              <div className={isCollapsed ? "px-2" : "px-3"}>
-                <ReportsTreeMenu
-                  collapsed={isCollapsed}
-                  pathname={pathname}
-                  onNavigate={onNavigate}
-                />
-              </div>
-
-              {/* ── HỆ THỐNG & BẢO MẬT (Chỉ Super Admin & Ban Quản Trị) ── */}
-              {(isSuperAdmin || isQuanTri) && (
+                {/* NHÓM 2: VẬN HÀNH & CÔNG VIỆC */}
                 <Group
-                  label="HỆ THỐNG & BẢO MẬT"
-                  items={superAdminSystemSuite}
+                  label="VẬN HÀNH & CÔNG VIỆC"
+                  items={companyOperationsSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
                   onNavigate={onNavigate}
                   badges={badges}
                 />
-              )}
-            </>
-          ) : (
-            <>
-              {/* ── DOANH NGHIỆP: BẢNG ĐIỀU KHIỂN DOANH NGHIỆP ── */}
-              <div className={isCollapsed ? "px-2" : "px-3"}>
-                <div className="space-y-1">
-                  {companyOverview.map((it) => (
-                    <NavItem
-                      key={it.key}
-                      item={it}
-                      pathname={pathname}
-                      collapsed={isCollapsed}
-                      onNavigate={onNavigate}
-                    />
-                  ))}
-                </div>
-              </div>
 
-              {/* Doanh nghiệp & Quản trị Doanh nghiệp (Tree Menu Sidebar) */}
-              <div className={isCollapsed ? "px-2" : "px-3"}>
-                <EnterpriseTreeMenu
-                  collapsed={isCollapsed}
+                {/* NHÓM 3: TÀI CHÍNH & DÒNG TIỀN */}
+                <Group
+                  label="TÀI CHÍNH & DÒNG TIỀN"
+                  items={companyFinanceSuite}
                   pathname={pathname}
-                  onNavigate={onNavigate}
-                  onRequestSubscribe={() => setSubscribeModalOpen(true)}
-                />
-              </div>
-
-              {/* Divider */}
-              {!isCollapsed && (
-                <div className="px-6 pt-2 pb-1">
-                  <div className="h-px w-full bg-slate-800/80" />
-                </div>
-              )}
-
-              {/* NHÓM 1: QUY TRÌNH & VẬN HÀNH (Gói gọn toàn bộ vận hành doanh nghiệp vào 1 nhóm lớn theo BRD) */}
-              <Group
-                label="QUY TRÌNH & VẬN HÀNH"
-                items={companyWorkflowSuite}
-                pathname={pathname}
-                collapsed={isCollapsed}
-                onNavigate={onNavigate}
-                badges={badges}
-              />
-
-              {/* ── NHÓM THỐNG KÊ & BÁO CÁO DOANH NGHIỆP (TREE MENU RIÊNG BIỆT) ── */}
-              <div className={isCollapsed ? "px-2" : "px-3"}>
-                <ReportsTreeMenu
                   collapsed={isCollapsed}
-                  pathname={pathname}
                   onNavigate={onNavigate}
+                  badges={badges}
                 />
-              </div>
 
-              {/* NHÓM 2: CHĂM SÓC KHÁCH HÀNG (CRM) & AI */}
-              <Group
-                label="CHĂM SÓC KHÁCH HÀNG (CRM) & AI"
-                items={companyCrmRevenueSuite}
-                pathname={pathname}
-                collapsed={isCollapsed}
-                onNavigate={onNavigate}
-                badges={badges}
-              />
+                {/* NHÓM 4: KINH DOANH & KHÁCH HÀNG (CRM) */}
+                <Group
+                  label="KINH DOANH & CRM"
+                  items={companyCrmSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
 
-              {/* NHÓM 3: KẾT NỐI & TRUYỀN THÔNG */}
-              <Group
-                label="KẾT NỐI & TRUYỀN THÔNG"
-                items={companyConnectMediaSuite}
-                pathname={pathname}
-                collapsed={isCollapsed}
-                onNavigate={onNavigate}
-                badges={badges}
-              />
+                {/* NHÓM 5: TRUYỀN THÔNG & TƯƠNG TÁC */}
+                <Group
+                  label="TRUYỀN THÔNG & TƯƠNG TÁC"
+                  items={companyMediaSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
 
-              {/* NHÓM 4: HỒ SƠ DOANH NGHIỆP */}
-              <Group
-                label="HỒ SƠ DOANH NGHIỆP"
-                items={companySettingsSuite}
-                pathname={pathname}
-                collapsed={isCollapsed}
-                onNavigate={onNavigate}
-                badges={badges}
-              />
-            </>
-          )}
-        </div>
+                {/* ── BÁO CÁO & THỐNG KÊ DOANH NGHIỆP ── */}
+                <div className={isCollapsed ? "px-2" : "px-3"}>
+                  <ReportsTreeMenu
+                    collapsed={isCollapsed}
+                    pathname={pathname}
+                    onNavigate={onNavigate}
+                  />
+                </div>
+
+                {/* NHÓM 6: CẤU HÌNH & TỔ CHỨC */}
+                <Group
+                  label="CẤU HÌNH & TỔ CHỨC"
+                  items={companySettingsSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
+              </>
+            )}
+          </div>
+        </TooltipProvider>
       </div>
 
       {/* ── Profile Footer matching user's design ──────────────────────── */}

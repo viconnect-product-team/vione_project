@@ -5,12 +5,12 @@
 ---
 
 > **CƠ QUAN ĐĂNG KÝ / XÉT DUYỆT:** CỤC BẢN QUYỀN TÁC GIẢ — BỘ VĂN HÓA, THỂ THAO VÀ DU LỊCH / HỘI ĐỒNG GIẢI THƯỞNG CÔNG NGHỆ SỐ QUỐC GIA  
-> **TÊN TÁC PHẨM:** Hệ Sinh Thái Chuyển Đổi Số Doanh Nghiệp & Mạng Lưới Giao Thương Doanh Nhân ViOne  
+> **TÊN TÁC PHẨM:** Hệ Sinh Thái Quản Trị Doanh Nghiệp & Mạng Xã Hội Giao Thương Doanh Nhân B2B ViOne  
 > **LOẠI HÌNH TÁC PHẨM:** Tác phẩm phần mềm máy tính (Computer Program / Software Suite) bao gồm:  
 > 1. Ứng dụng di động thuần Native ViOne (Native Mobile App — iOS & Android)  
 > 2. Hệ sinh thái Web CRM Quản trị Doanh nghiệp & Vận hành Doanh nghiệp Số (Enterprise Web CRM)  
 > 3. Hệ thống Quản trị & Điều phối Nền tảng Đa tầng ViConnect (Multi-tenant Platform Core)  
-> **ĐƠN VỊ CHỦ QUẢN & TÁC GIẢ:** CÔNG TY CỔ PHẦN CÔNG NGHỆ VICONNECT (VICONNECT TECHNOLOGY CORPORATION)  
+> **ĐƠN VỊ CHỦ QUẢN & TÁC GIẢ:** ........................................................................................................................  
 > **NĂM HOÀN THIỆN & CÔNG BỐ:** 2026  
 > **PHIÊN BẢN HỆ THỐNG:** ViOne Enterprise Release 7.0 (Production Gold Master)
 
@@ -39,10 +39,12 @@
 * **Mã hiệu đăng ký bản quyền:** `VIONE-SOFT-2026-VN`.
 
 ### 1.2. Chủ sở hữu & Đội ngũ Sáng tạo
-* **Chủ sở hữu quyền tác giả:** Công ty Cổ phần Công nghệ ViConnect.
-* **Mã số doanh nghiệp:** Đại diện pháp nhân công nghệ công bố tác phẩm.
-* **Địa chỉ trụ sở:** Hà Nội, Việt Nam.
-* **Đội ngũ Kiến trúc sư Trưởng & Kỹ sư Phần mềm:** Nhóm tác giả sáng tạo hệ thống kiến trúc microservices, giải thuật trí tuệ nhân tạo OCR, xử lý đồ họa Native Mobile và giao diện Executive Luxury.
+* **Chủ sở hữu quyền tác giả:** ........................................................................................................................
+* **Mã số doanh nghiệp:** .................................................................................................................................
+* **Địa chỉ trụ sở chính:** ...................................................................................................................................
+* **Số điện thoại:** ............................................................ **Email:** ....................................................................
+* **Đại diện theo pháp luật:** .............................................................................................................................
+* **Tác giả sáng tạo tác phẩm:** .......................................................................................................................................
 
 ### 1.3. Mô hình Cấu thành Tác phẩm
 Tác phẩm là một giải pháp đồng bộ **"3 trong 1"** (All-in-One Enterprise Mesh):
@@ -153,30 +155,34 @@ Hệ thống sở hữu cơ chế nhận diện ngữ cảnh và sở thích ng�
 ## CHƯƠNG 6: THUYẾT MINH CHI TIẾT CÁC PHÂN HỆ CỐT LÕI
 
 ### 6.1. Phân Hệ I: Ứng Dụng Di Động Thuần Native ViOne (Mobile Native Suite)
-Được thiết kế để trở thành trợ thủ đắc lực không thể thiếu của mọi doanh nhân khi di chuyển, công tác và giao thiệp:
-1. **Thẻ VIP Điện Tử & Chạm 1-Tap NFC:** Hiển thị thẻ VIP mạ vàng/bạc tinh tế, tích hợp đọc/ghi NFC tức thời.
-2. **Quét Mã QR Zalo-Style Cực Nhạy:** Nhận diện ngay lập tức mọi mã QR danh thiếp đối tác, liên kết website và thông tin doanh nghiệp.
-3. **Quét Danh Thiếp Giấy Bằng AI OCR:** Chụp và bóc tách danh thiếp giấy thành dữ liệu số trong 1.5 giây.
-4. **Nhắn Tin 1-1 Thời Gian Thực:** Trò chuyện bảo mật, gửi hình ảnh, chia sẻ tài liệu đối tác tức thì qua kết nối WebSocket.
-5. **Đăng Tin & Chia Sẻ Khoảnh Khắc Doanh Nhân 24h (Stories):** Kênh truyền thông thương hiệu cá nhân và giới thiệu sản phẩm dịch vụ mới của doanh nghiệp.
-6. **Đặt Lịch Hẹn & Điều Phối Cuộc Gặp 1-on-1:** Quản lý lịch trình công tác, nhắc hẹn thông minh.
-7. **Trợ Lý Giọng Nói Trí Tuệ Nhân Tạo (Voice AI Floating Orb):** Nhận lệnh bằng giọng nói tiếng Việt tự nhiên để tìm kiếm đối tác, tạo lịch hẹn hoặc tra cứu báo cáo.
-8. **Chấm Công GPS & FaceID:** Điểm danh xác thực vị trí vệ tinh GPS trong bán kính cho phép của trụ sở công ty.
-9. **Nhận Việc & Checklist Tiến Độ Nhiệm Vụ:** Nhân viên nhận việc từ cấp trên, cập nhật từng tiêu chí checklist và báo cáo nghiệm thu trực tiếp trên điện thoại.
+Được thiết kế để trở thành trợ thủ đắc lực không thể thiếu của mọi doanh nhân khi di chuyển, công tác và giao thiệp. Hệ thống phân định rõ rệt thành 2 vai trò và góc nhìn giao diện trải nghiệm:
+
+#### A. Góc Nhìn Công Ty Thuộc Sở Hữu / Chủ Quản Nền Tảng (Platform Host / System Owner - ViConnect):
+* **Đóng vai trò Điều Phối Toàn Hệ Sinh Thái:** Quản lý danh mục các liên minh doanh nghiệp, phê duyệt các đơn đăng ký mua gói ViOne Platform, giám sát chỉ số sức khỏe hệ thống (Health Score), điều phối lưu lượng kết nối OpenRouter AI Gateway và phát hành thông cáo toàn mạng lưới.
+* **Giao diện trên App Di Động:** Hiển thị huy hiệu Lãnh Đạo Nền Tảng VIP Host Master, bảng tin điều hành vĩ mô, danh bạ toàn bộ doanh nhân thành viên trong hệ sinh thái và trung tâm duyệt yêu cầu kết nối B2B liên doanh nghiệp.
+
+#### B. Góc Nhìn Khách Hàng / Doanh Nghiệp Mua Gói ViOne Platform (Tenant Client - Minh họa: VIASIA TECH JSC):
+* **Đóng vai trò Doanh Nghiệp Thụ Hưởng Dịch Vụ:** Sau khi đăng ký Gói Doanh Nghiệp 100 tài khoản (VIONE_ENTERPRISE_100), CEO Trần Hoàng Long và đội ngũ nhân sự VIASIA sở hữu không gian làm việc số hóa toàn diện:
+  1. **Giao diện Không Gian Cộng Đồng Riêng (Private Corporate Workspace):** Tab Cộng Đồng hiển thị không gian riêng của VIASIA TECH JSC với logo nhận diện công ty, bảng tin nội bộ, sự kiện đào tạo và thông báo nội bộ của riêng công ty.
+  2. **Bàn Làm Việc Điều Hành & Giao Việc Di Động:** Nhân viên nhận việc từ cấp trên, cập nhật tiến độ công việc checklist % và gửi báo cáo giải trình kèm biên bản đính kèm trực tiếp trên di động.
+  3. **Chấm Công Định Vị GPS & Geofencing:** Nhân sự chấm công vào/ra tại vị trí GPS văn phòng VIASIA trong bán kính 100m, chống gian lận vị trí.
+  4. **Danh Thiếp Doanh Nhân Số & Thẻ NFC 1-Chạm:** Cấp danh thiếp số chuẩn Obsidian Luxury mang thương hiệu VIASIA TECH JSC, tích hợp mã QR vCard và thẻ chip NFC 1-chạm mạ vàng để ngoại giao đối tác.
+  5. **Mạng Lưới Giao Thương B2B & Trí Tuệ Nhân Tạo AI Matcher:** Vẫn kết nối thông suốt với toàn bộ cộng đồng hàng nghìn doanh nghiệp khác trên hệ sinh thái ViOne để chào hàng trên B2B Marketplace và kết nối 1-on-1 qua Trợ lý AI (OpenRouter AI Engine — DeepSeek LLM & Meta Llama 3.3).
 
 ### 6.2. Phân Hệ II: Hệ Thống Web CRM Quản Trị Vận Hành Doanh Nghiệp (Enterprise Tenant CRM)
-Không gian số hóa toàn diện dành cho Chủ doanh nghiệp và Ban Điều Hành:
-1. **Tree Menu Báo Cáo Đa Cấp Tại Sidebar:** Phân hệ Thống Kê & Báo Cáo được quy hoạch thành cây phân cấp trực quan gồm 4 nhánh chính: *Báo Cáo Tài Chính & Doanh Thu*, *Thống Kê Vận Hành & Nhân Sự*, *Báo Cáo Khách Hàng CRM*, và *Giám Sát Nền Tảng ViOne*.
-2. **Quản Trị Nhân Sự & Phân Quyền Hạt Nhân:** Quản lý danh sách cán bộ công nhân viên, thiết lập quyền giao việc, duyệt chi, quản lý hồ sơ và theo dõi số lượng tài khoản theo gói cước (Slot Control).
-3. **Quy Trình BPMN 2.0 & Bảng Kanban Công Việc:** Quản trị luồng công việc 4 giai đoạn, cảnh báo nhiệm vụ quá hạn bằng hiệu ứng phát quang viền đỏ (Glowing Red Pulse), ngăn chặn tình trạng quá tải nhân sự (WIP Limit).
-4. **Bản Đồ Nhiệt Khối Lượng Công Việc (Workload Heatmap):** Ma trận trực quan hóa tổng số giờ làm việc trong tuần của từng nhân viên, cảnh báo quá tải khi vượt 45 giờ/tuần và gợi ý phân bổ lại việc cho nhân sự còn trống thời gian.
-5. **Phê Duyệt Tờ Trình Chi 3 Cấp & VietQR Napas 24/7:** Quy trình chuẩn mực Maker - Checker - Approver, tự động khử trùng hóa đơn chống chi trùng và tạo mã thanh toán VietQR ngân hàng tức thời.
-6. **Quản Trị Đường Ống Khách Hàng Tiềm Năng (CRM Leads Pipeline):** Phân hạng khách hàng 4 cấp độ (Hot Lead, VIP C-Level, Cần Care 24h, Nổi Bật), ghi nhận lịch sử tương tác và tỷ lệ chuyển đổi đơn hàng.
-7. **Kho Tài Liệu Số Hóa Doanh Nghiệp:** Lưu trữ hợp đồng điện tử, quy chế nội bộ với cơ chế phân quyền đọc/ghi bảo mật.
+Không gian số hóa toàn diện dành cho Doanh nghiệp Mua Gói ViOne Platform (Minh họa tài khoản mẫu thực tế: **CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG TOÀN CẦU VIASIA - VIASIA TECH JSC**, CEO Trần Hoàng Long, Gói Doanh Nghiệp 100 slots — `VIONE_ENTERPRISE_100`):
+1. **Cổng Đăng Ký & Kích Hoạt Gói Doanh Nghiệp (/segments):** Doanh nghiệp thanh toán qua mã VietQR Napas 24/7, đơn hàng được duyệt tại Bảng Duyệt Đơn Nền Tảng. Ban Quản Trị phê duyệt, hệ thống tự động khởi tạo Tenant Workspace và gửi email kích hoạt tới CEO Trần Hoàng Long.
+2. **Không Gian Quản Trị Doanh Nghiệp Độc Lập (Dedicated Tenant CRM):** Header và Sidebar CRM hiển thị logo, thương hiệu VIASIA TECH JSC cùng thanh theo dõi hạn mức tài khoản `Đang sử dụng: 10/100 slots`. Toàn bộ dữ liệu được phân lập tuyệt đối (Multi-tenancy Row-Level Security), bảo vệ an toàn thông tin doanh nghiệp.
+3. **Quản Trị Cơ Cấu Tổ Chức & Phân Quyền Hạt Nhân (RBAC 7x6):** CEO Trần Hoàng Long thiết lập danh mục phòng ban (Kinh Doanh, Kỹ Thuật, Kế Toán, Hành Chính,...) và phân quyền 7 nhóm quyền cho 100 nhân sự của công ty.
+4. **Quy Trình BPMN 2.0 & Bảng Kanban Công Việc Doanh Nghiệp:** Quản trị luồng công việc 4 giai đoạn, cảnh báo nhiệm vụ quá hạn bằng hiệu ứng phát quang viền đỏ (Glowing Red Pulse), ngăn chặn tình trạng quá tải nhân sự qua ma trận nhiệt (Workload Heatmap).
+5. **Quản Trị Đường Ống Khách Hàng Tiềm Năng (CRM Deals Pipeline):** Cơ sở dữ liệu khách hàng B2B, phễu cơ hội kinh doanh và hợp đồng thương mại của riêng công ty VIASIA.
+6. **Chấm Công GPS & Theo Dõi Chuyên Cần Nhân Sự:** Thiết lập bán kính Geofence 100m quanh trụ sở VIASIA; nhân viên chấm công trên App di động, dữ liệu tự động đổ về bảng chấm công CRM.
+7. **Phê Duyệt Tờ Trình Chi 3 Cấp & VietQR Napas 24/7:** Quy trình chuẩn mực Maker - Checker - Approver gắn liền tài khoản ngân hàng của VIASIA, tự động tạo mã thanh toán VietQR ngân hàng tức thời gạch nợ tự động.
+8. **Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0 (OpenRouter AI Engine):** Không sử dụng Copilot mà vận hành qua OpenRouter AI Gateway tích hợp mô hình ngôn ngữ lớn **DeepSeek LLM (DeepSeek-V3 / DeepSeek-Chat)** và **Meta Llama 3.3 (Llama-3.3-70B-Instruct)**, hỗ trợ CEO tra cứu doanh thu, phân tích dữ liệu CSDL PostgreSQL và tự động soạn thảo văn bản.
 
 ### 6.3. Phân Hệ III: Trung Tâm Quản Trị & Điều Phối Nền Tảng ViConnect (Super Platform Core)
 Trung tâm điều hành vĩ mô dành riêng cho Ban Quản Trị Tập Đoàn ViConnect:
-1. **Quám Sát Sức Khỏe Doanh Nghiệp Thời Gian Thực:** Theo dõi điểm số hoạt động (Health Score) của toàn bộ các công ty thuê gói ViOne Platform.
+1. **Giám Sát Sức Khỏe Doanh Nghiệp Thời Gian Thực:** Theo dõi điểm số hoạt động (Health Score) của toàn bộ các công ty thuê gói ViOne Platform.
 2. **Cấp Tài Khoản & Phân Quyền Đa Nhóm Rerender Tức Thì:** Quản trị viên cấp tài khoản cho nhân sự nội bộ ViOne, gán đồng thời nhiều nhóm quyền (`platform_finance`, `platform_operations`, `platform_executive`), hệ thống tự động phát tín hiệu cập nhật giao diện của nhân sự ngay tức thì qua BroadcastChannel.
 3. **Quản Lý Bảng Giá Gói Dịch Vụ & Duyệt Đơn Đăng Ký:** Cấu hình danh mục gói theo số lượng tài khoản (30 slots, 50 slots, 100 slots, gói Free 30 ngày) và tiếp nhận xét duyệt các hồ sơ đăng ký từ App di động gửi về.
 4. **Nhật Ký Kiểm Toán An Ninh Toàn Hệ Thống (Audit Logs):** Truy vết minh bạch mọi hành vi đăng nhập, thay đổi quyền hạn và giao dịch tài chính.

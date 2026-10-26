@@ -1,5 +1,92 @@
 # System Memory & Architecture
 
+## 0.0000000000.6. NÂNG CẤP QUẢN LÝ TÀI LIỆU CHUẨN GOOGLE DRIVE, TÍCH HỢP TOOLTIP SIDEBAR, TÁCH BẠCH PHÂN HỆ DOANH NGHIỆP & BỎ CÂY MENU DOANH NGHIỆP CỦA TÔI (26/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Yêu cầu 1:** Nâng cấp phân hệ Quản lý tài liệu (`/documents`) theo phong cách Google Drive: có chức năng tạo thư mục phân cấp (Nested Folders, breadcrumbs điều hướng), tạo danh mục (Document Categories), tải tệp tin vào thư mục đang đứng và lọc nhanh.
+- **Yêu cầu 2:** Nâng cấp Sidebar phải có Tooltip để khắc phục tình trạng tên chức năng dài bị cắt thành 3 dấu chấm (...) ellipsis (như "Bảng Điều Khiển Doan...", "Quản Lý Thành Viên & ...").
+- **Yêu cầu 3:** Tách biệt rõ ràng các hạng mục ở phân hệ Doanh nghiệp, không gộp chung vào "Quy trình & Vận hành" như trước. Phần đầu Tổng quan chỉ hiển thị các chức năng nổi bật. Ở phân hệ Doanh nghiệp TUYỆT ĐỐI KHÔNG CÓ chức năng "Quản lý doanh nghiệp" (`/companies`). Sắp xếp lại phân hệ Quản trị nền tảng ViConnect gọn gàng, mạch lạc.
+- **Yêu cầu 4:** Bỏ hoàn toàn phần "Doanh nghiệp của tôi" (EnterpriseTreeMenu) vì khi đăng nhập vào CRM, người dùng đã là doanh nghiệp, hệ thống tự động hiển thị các chức năng sẵn có theo gói cước mà không cần dropdown cây danh bạ doanh nghiệp.
+
+### 2. Chi Tiết Thực Hiện & Kết Quả
+1. **Cơ sở dữ liệu PostgreSQL (100% Real Data):**
+   - Tạo bảng `public.document_folders`: `id UUID PRIMARY KEY`, `name VARCHAR(255)`, `parent_id UUID REFERENCES document_folders(id)`, `category VARCHAR(100)`, `color VARCHAR(50)`, `created_by VARCHAR(120)`, `company_id VARCHAR(255)`, `association_id UUID`, `created_at`, `updated_at`.
+   - Tạo bảng `public.document_categories`: `id UUID PRIMARY KEY`, `name VARCHAR(255)`, `code VARCHAR(100)`, `description TEXT`, `color VARCHAR(50)`, `company_id VARCHAR(255)`, `association_id UUID`, `created_at`.
+   - Bổ sung cột vào `public.documents`: `folder_id UUID REFERENCES document_folders(id) ON DELETE SET NULL`, `company_id VARCHAR(255)`, `is_starred BOOLEAN DEFAULT FALSE`.
+   - Seed sẵn 6 danh mục chuẩn doanh nghiệp (Pháp Lý & ĐKKD, Hợp Đồng & Phụ Lục, Tài Chính & Thuế, Nhân Sự & Tiền Lương, Quy Chế & Vận Hành, Kỹ Thuật & Dự Án) và 4 thư mục phân cấp chuẩn Google Drive.
+2. **Backend NestJS (`apps/vione_app_be`):**
+   - `documents.service.ts` & `documents.controller.ts`:
+     * API Thư mục: `GET /documents/folders` (kèm `docCount` và `subfolderCount`), `POST /documents/folders`, `PUT /documents/folders/:id`, `DELETE /documents/folders/:id`.
+     * API Danh mục: `GET /documents/categories`, `POST /documents/categories`, `DELETE /documents/categories/:id`.
+     * API Tài liệu: `GET /documents` hỗ trợ lọc `folderId`, `category`, `search`, map `folderId`, `folderName`, `isStarred`. Endpoint `POST /documents/:id/star` đảo trạng thái ghim dấu sao.
+     * Chạy kiểm tra `tsc --noEmit` trên backend đạt exit code 0 (0 errors).
+3. **Frontend (`apps/vione_app_fe`):**
+   - `src/lib/documents.functions.ts`: Export đầy đủ các server functions `listFoldersFn`, `createFolderFn`, `updateFolderFn`, `deleteFolderFn`, `listCategoriesFn`, `createCategoryFn`, `deleteCategoryFn`, `toggleStarDocumentFn`, `getDocumentUrlFn`.
+   - `src/routes/documents.index.tsx`: Giao diện Google Drive chuẩn mực:
+     * Toolbar "+ Tạo Mới" với menu 4 tác vụ: Tạo Thư Mục Mới, Tạo Danh Mục Mới, Tải Tệp Tin Lên, Thêm Tài Liệu Số Hóa.
+     * Breadcrumbs điều hướng đa cấp `Kho Lưu Trữ > [Thư mục cha] > [Thư mục con]` kèm nút Back quay lại cấp trước.
+     * Lưới Thư mục (Folders Grid) thẻ Obsidian Champagne Gold sang trọng, hiển thị icon màu tùy biến, số tệp tin và danh mục, nút đổi tên/xóa.
+     * Thanh lọc Danh mục (Category Chips Bar) dạng tab ngang có chấm màu trạng thái và nút thêm danh mục mới.
+     * Danh sách Tệp tin hỗ trợ chuyển đổi linh hoạt giữa dạng Lưới (Grid Cards) và Bảng (List Table), có icon định dạng tệp (PDF, Word, Excel, PowerPoint), ghim dấu sao, tải xuống, sửa, xóa.
+     * Các Modal tạo/sửa thư mục, tạo danh mục, tải tệp tin và thêm tài liệu hoàn chỉnh.
+4. **Nâng cấp Tooltip trên Sidebar (`src/components/dashboard/Sidebar.tsx`):**
+   - Tích hợp Radix UI `TooltipProvider`, `Tooltip`, `TooltipTrigger asChild`, `TooltipContent` và `title={label}` vào `NavItem`.
+   - Giao diện Tooltip viền vàng đen Obsidian (`bg-[#0B0F17] text-[#F6E1C3] border border-[#D8B282]/40 shadow-2xl`) với độ trễ 150ms.
+   - Khi hover chuột vào bất kỳ mục nào trên Sidebar (kể cả khi mở rộng hoặc thu gọn), toàn bộ tên chức năng và badge đều hiển thị sắc nét, giải quyết triệt để lỗi 3 chấm (...).
+5. **Cơ cấu lại phân hệ Doanh nghiệp & Quản trị Nền tảng:**
+   - **Phân hệ Doanh nghiệp (`effectiveView === 'company'`):**
+     * Đã LOẠI BỎ HOÀN TOÀN chức năng Quản lý doanh nghiệp (`/companies`). Quản lý nhân sự được điều hướng chuẩn qua `/members`.
+     * Phần `TỔNG QUAN DOANH NGHIỆP` chỉ giữ 2 chức năng nổi bật: `Bảng Điều Khiển Doanh Nghiệp` (`/`) và `Trợ Lý AI ViOne` (`/ai`).
+     * Phân định thành 6 nhóm rõ ràng: `NHÂN SỰ & CHẤM CÔNG`, `VẬN HÀNH & CÔNG VIỆC`, `TÀI CHÍNH & DÒNG TIỀN`, `KINH DOANH & CRM`, `TRUYỀN THÔNG & TƯƠNG TÁC`, `CẤU HÌNH & TỔ CHỨC`, kèm `BÁO CÁO & THỐNG KÊ`.
+   - **Phân hệ Quản trị Nền tảng (`effectiveView === 'platform'`):**
+     * Chia thành: `TỔNG QUAN NỀN TẢNG`, `QUẢN LÝ DOANH NGHIỆP & HỘI VIÊN`, `GÓI CƯỚC & DOANH THU`, `MẠNG LƯỚI & GIAO THƯƠNG`, `BÁO CÁO & THỐNG KÊ TOÀN DIỆN`, `AN NINH & HỆ THỐNG`.
+6. **Bỏ phần "Doanh nghiệp của tôi" (EnterpriseTreeMenu):**
+   - Xóa bỏ khối component `EnterpriseTreeMenu` khỏi Sidebar phân hệ doanh nghiệp. Người dùng vào thẳng các chức năng đã có sẵn theo gói đã mua.
+
+---
+## 0.0000000000.5. HOÀN THIỆN BỘ HỒ SƠ PHÁP LÝ ĐĂNG KÝ BẢN QUYỀN TÁC GIẢ (4 TỆP DOCX) VÀ CHUẨN HÓA TÀI LIỆU TRÌNH BÀY TÁC PHẨM HỆ SINH THÁI VIONE (26/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Yêu cầu 1:** Đọc và hiệu chỉnh toàn diện tệp `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`:
+  * Thông tin tác giả và công ty tác giả để trống dạng dấu chấm (`................................`) phục vụ pháp lý điền tay khi nộp Cục Bản quyền tác giả.
+  * Mô tả chi tiết phân hệ Doanh nghiệp sử dụng khi mua gói platform (Tenant Workspace), không mô tả chung chung.
+  * Tạo 1 tài khoản doanh nghiệp thực tế coi như đã đăng ký và kích hoạt gói để minh họa chính xác các màn hình và chức năng của phân hệ doanh nghiệp.
+  * Phân tách rõ ràng giao diện ViOne App Mobile thành 2 góc nhìn: (a) Công ty thuộc sở hữu / Chủ quản nền tảng (Host / System Owner - ViConnect) và (b) Khách hàng / Doanh nghiệp khi mua gói ViOne Platform (Tenant Client).
+  * Về AI: Mô tả rõ ràng KHÔNG dùng Copilot mà sử dụng OpenRouter AI Engine tích hợp mô hình ngôn ngữ lớn DeepSeek LLM (`deepseek/deepseek-chat`) và Meta Llama 3.3 (`meta-llama/llama-3.3-70b-instruct`). Tuyệt đối không để lộ API key trong tài liệu.
+  * Thay thế toàn bộ 36 hình ảnh nhúng trong docx bằng bộ ảnh mới chụp thực tế từ hệ thống.
+- **Yêu cầu 2:** Tạo 3 bản hồ sơ pháp lý tại thư mục `C:\Users\vumik\Downloads` khớp với ảnh mẫu:
+  * `[VIONE] 01. Tờ khai.docx`
+  * `[VIONE] 02. Cam đoan.docx`
+  * `[VIONE] 03. Quyết định.docx`
+  * Giữ nguyên toàn bộ cấu trúc và các trường để trống theo mẫu, chuẩn hóa tên sản phẩm sang Hệ sinh thái Quản trị Doanh nghiệp và Mạng xã hội Giao thương Doanh nhân B2B ViOne (ViOne CRM & ViOne Connect App).
+
+### 2. Chi Tiết Thực Hiện & Kết Quả
+1. **Kiểm tra và xác định mô hình AI OpenRouter:**
+   - Tra cứu qua OpenRouter AI Gateway: Hệ thống sử dụng mô hình cốt lõi **DeepSeek LLM (DeepSeek-V3 / DeepSeek-Chat)** chuyên xử lý logic nghiệp vụ, tính toán phân tích dữ liệu CSDL PostgreSQL, kết hợp **Meta Llama 3.3 (Llama-3.3-70B-Instruct)** cho trích xuất thông tin, đối sánh AI Matcher và tổng hợp báo cáo điều hành.
+   - Loại bỏ 100% từ khóa "Copilot" trong tài liệu, thay bằng "Trợ Lý Trí Tuệ Nhân Tạo Doanh Nghiệp ViOne AI 6.0 (OpenRouter AI Engine)". Tuyệt đối bảo mật, không để lộ API key.
+2. **Khởi tạo và tích hợp Tài khoản Doanh nghiệp mẫu thực tế:**
+   - Đã khởi tạo đầy đủ bản ghi trong CSDL PostgreSQL (`auth.users`, `public.vione_users`, `public.companies`, `public.vione_package_orders`, `public.vione_community_subscriptions`, `public.company_employees`, `public.company_tasks`, `public.company_customers`):
+     * Doanh nghiệp: **CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG TOÀN CẦU VIASIA (VIASIA TECH JSC)**
+     * Người đại diện pháp luật / CEO: **Ông Trần Hoàng Long** (`long.tran@viasiatech.vn`)
+     * Gói cước đã kích hoạt: **Gói Doanh Nghiệp (100 Tài Khoản / Slots)** — Mã gói `VIONE_ENTERPRISE_100` (4.500.000 VNĐ/tháng).
+     * Không gian doanh nghiệp: Tenant ID `c8888888-8888-4000-8000-000000000002`.
+   - Đặc tả chi tiết phân hệ Doanh nghiệp mua gói: Cổng duyệt đơn `/segments`, không gian làm việc riêng biệt (Dedicated Tenant Workspace), hạn mức 100 slots, phân quyền RBAC 7x6 phòng ban, quy trình BPMN & Kanban giao việc, quản trị phễu khách hàng Deals biệt lập, chấm công định vị GPS và phê duyệt chi tiền VietQR 3 cấp.
+3. **Phân định rõ 2 góc nhìn trên ViOne Mobile App:**
+   - **Góc nhìn Chủ quản Nền tảng (Platform Host - ViConnect):** Quản lý mạng lưới doanh nghiệp, duyệt đơn mua gói, giám sát chỉ số sức khỏe nền tảng, điều phối lưu lượng AI Gateway và phát hành thông cáo toàn hệ thống. Giao diện App có phù hiệu Lãnh Đạo Nền Tảng VIP Host Master.
+   - **Góc nhìn Doanh nghiệp Mua gói (Tenant Client - VIASIA TECH JSC):** Không gian cộng đồng nội bộ riêng biệt của VIASIA TECH với biểu trưng công ty, bảng tin nội bộ, nhận việc và báo cáo tiến độ %, chấm công GPS văn phòng công ty, danh thiếp số cá nhân gắn thương hiệu công ty và thẻ NFC 1-chạm kết nối giao thương B2B.
+4. **Chụp và cập nhật bộ ảnh giao diện mới 100% (36 hình ảnh):**
+   - Sử dụng Playwright Chrome headless chụp đủ 36 màn hình (20 hình Web CRM desktop 1440x900 và 16 hình Mobile App 393x852) lưu vào `scratch/captured_36/`.
+   - Thay thế trực tiếp toàn bộ 36 file binary trong `word/media/` của tệp docx, đảm bảo giữ nguyên 100% bố cục, kích thước và định dạng bảng biểu XML.
+5. **Xuất bản trọn bộ 4 tệp DOCX phục vụ đăng ký bản quyền:**
+   - `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (9,901,772 bytes)
+   - `C:\Users\vumik\Downloads\[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (9,901,772 bytes)
+   - `C:\Users\vumik\Downloads\[VIONE] 01. Tờ khai.docx` (142,218 bytes)
+   - `C:\Users\vumik\Downloads\[VIONE] 02. Cam đoan.docx` (100,822 bytes)
+   - `C:\Users\vumik\Downloads\[VIONE] 03. Quyết định.docx` (101,037 bytes)
+   - Đã kiểm tra tự động qua script: 0 lỗi, 0 chuỗi CEO 1983/Unicom/Copilot còn sót lại, thông tin tác giả và công ty để trống đúng chuẩn pháp lý.
+6. **Đồng bộ tài liệu kỹ thuật:**
+   - Cập nhật đồng bộ `docs/TAI_LIEU_THUYET_MINH_TAC_PHAM_VIONE.md`.
+
 ## 0.0000000000.4. TRIỂN KHAI PHÂN HỆ PHÂN QUYỀN BIỆT LẬP DOANH NGHIỆP (TENANT-ISOLATED RBAC), TINH GỌN BỎ SỰ KIỆN/KẾT NỐI ĐỐI TÁC VÀ ĐỒNG BỘ CSDL CẤU HÌNH HỆ THỐNG 100% (26/10/2026)
 
 ### 1. Bối cảnh & Yêu cầu Người Dùng

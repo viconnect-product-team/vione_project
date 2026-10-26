@@ -25,21 +25,33 @@
     3. Danger CTA: **Gradient Đỏ Ruby** (`gradient-destructive`), chữ trắng `#FFFFFF`.
     4. Success CTA: **Gradient Ngọc Lục Bảo** (`gradient-success`), chữ trắng `#FFFFFF`.
 
-## -0.3. Quy Chuẩn Quản Trị Doanh Nghiệp Trên CRM ViOne (STRICT ENTERPRISE TREE MENU & SUBSCRIPTION PROTOCOL)
-- **ĐIỀU KIỆN HIỂN THỊ DOANH NGHIỆP**:
-  * Chỉ khi người dùng đăng ký mua gói giải pháp ViOne Platform (kiểm tra bản ghi hoạt động trong `public.vione_community_subscriptions`) thì chức năng doanh nghiệp mới có dữ liệu.
-  * Nếu chưa có gói, API trả về `hasSubscription: false, items: []` và giao diện CRM hiển thị trạng thái khóa kèm modal đăng ký gói ViOne Platform.
-- **TREE MENU SIDEBAR DOANH NGHIỆP & PHÂN QUYỀN BIỆT LẬP**:
-  * Doanh nghiệp được nhóm chung theo cấu trúc cây (`EnterpriseTreeMenu.tsx`) trên Sidebar CRM.
-  * Mỗi doanh nghiệp trên Tree Menu có 4 nhánh con:
-    1. Quản lý nhân viên (`/companies/:companyId?tab=employees` -> `CompanyEmployeesTab.tsx`)
-    2. Giao việc (`/companies/:companyId?tab=tasks` -> `CompanyTasksTab.tsx`)
-    3. Phân quyền & Vai trò (`/companies/:companyId?tab=permissions` -> `CompanyPermissionsTab.tsx`): Mỗi doanh nghiệp có ma trận phân quyền và nhóm quyền riêng biệt, độc lập hoàn toàn (`platform_roles.company_id = <companyId>`).
-    4. Hồ sơ & Giới thiệu (`/companies/:companyId?tab=overview`)
-  * **LOẠI BỎ SỰ KIỆN & KẾT NỐI ĐỐI TÁC**: Đã gỡ bỏ hoàn toàn tính năng Sự kiện (Events) và Kết nối Đối tác (Business Connect) khỏi phân hệ quản trị doanh nghiệp để tập trung vận hành nội bộ.
+## -0.3. Quy Chuẩn Quản Trị Phân Hệ Doanh Nghiệp & Nền Tảng ViOne (STRICT SIDEBAR NAVIGATION & PORTAL PROTOCOL)
+- **TỰ ĐỘNG HIỂN THỊ CHỨC NĂNG DOANH NGHIỆP (BỎ TREE MENU DOANH NGHIỆP CỦA TÔI)**:
+  * Khi người dùng đăng nhập vào CRM, hệ thống tự động nhận diện và mở ra đầy đủ các chức năng doanh nghiệp theo gói giải pháp ViOne Platform.
+  * **ĐÃ LOẠI BỎ HOÀN TOÀN CÂY MENU "DOANH NGHIỆP CỦA TÔI" (`EnterpriseTreeMenu`)**: Người dùng không cần dropdown danh bạ công ty mà thao tác trực tiếp trên các phân hệ nghiệp vụ.
+- **TUYỆT ĐỐI KHÔNG CÓ QUẢN LÝ DOANH NGHIỆP TRONG PHÂN HỆ DOANH NGHIỆP**:
+  * Ở phân hệ Doanh nghiệp (`effectiveView === 'company'`), **CẤM TUYỆT ĐỐI** đưa chức năng Quản lý danh sách doanh nghiệp (`/companies`) vào Sidebar. Chức năng `/companies` chỉ thuộc về phân hệ Quản trị nền tảng ViConnect (`effectiveView === 'platform'`).
+  * Quản lý nhân sự và đội ngũ trong doanh nghiệp được điều hướng chuẩn qua `/members` và `/attendance`.
+- **TÁCH BIỆT RÕ RÀNG CÁC HẠNG MỤC PHÂN HỆ DOANH NGHIỆP (CẤM GỘP CHUNG)**:
+  * `TỔNG QUAN DOANH NGHIỆP`: Chỉ hiển thị 2 chức năng nổi bật (`/` Bảng Điều Khiển Doanh Nghiệp và `/ai` Trợ Lý AI ViOne).
+  * `NHÂN SỰ & CHẤM CÔNG`: `/members` Quản Lý Nhân Sự & Đội Ngũ, `/attendance` Chấm Công & Ca Làm Việc.
+  * `VẬN HÀNH & CÔNG VIỆC`: `/workflow` Quy Trình & Công Việc (Kanban), `/documents` Quản Lý Tài Liệu Số Hóa (Google Drive), `/meetings` Lịch Trình & Cuộc Họp.
+  * `TÀI CHÍNH & DÒNG TIỀN`: `/payment-approvals` Phê Duyệt Chi Tiền, `/income` Quản Lý Thu Tiền, `/expenses` Quản Lý Chi Phí, `/fees` Hóa Đơn & Định Mức.
+  * `KINH DOANH & CRM`: `/members` Khách Hàng & Đối Tác CRM, `/opportunities` Cơ Hội Kinh Doanh (Deals), `/marketplace` Sàn Giao Thương B2B, `/admin/business-cards` Danh Thiếp Số NFC & QR.
+  * `TRUYỀN THÔNG & TƯƠNG TÁC`: `/news` Đăng Tin & Khoảnh Khắc 24h, `/voting` Biểu Quyết & Khảo Sát, `/messages` Nhắn Tin & Trao Đổi.
+  * `BÁO CÁO & THỐNG KÊ`: `ReportsTreeMenu`.
+  * `CẤU HÌNH & TỔ CHỨC`: `/settings` Cài Đặt Hồ Sơ Doanh Nghiệp.
+- **QUY CHUẨN TOOLTIP SIDEBAR (STRICT TOOLTIP PROTOCOL)**:
+  * 100% các mục trên Sidebar (cả khi mở rộng hay thu gọn) BẮT BUỘC phải bọc trong Radix UI Tooltip (`TooltipProvider`, `Tooltip`, `TooltipTrigger asChild`, `TooltipContent`) và native `title={label}`.
+  * Giao diện Tooltip viền vàng đen Obsidian (`bg-[#0B0F17] text-[#F6E1C3] border border-[#D8B282]/40 shadow-2xl`).
+  * Tuyệt đối không để tên chức năng dài bị cắt thành 3 dấu chấm (`...`) mà người dùng không đọc được.
+- **QUY CHUẨN QUẢN LÝ TÀI LIỆU CHUẨN GOOGLE DRIVE (`/documents`)**:
+  * Hỗ trợ tạo thư mục phân cấp (Nested Folders, breadcrumbs điều hướng `Kho Lưu Trữ > [Thư mục cha] > [Thư mục con]`) lưu tại bảng `public.document_folders`.
+  * Hỗ trợ phân loại và tạo danh mục tài liệu nghiệp vụ (`public.document_categories`) có gắn nhãn màu sắc.
+  * Quản lý tệp tin gắn vào thư mục đang đứng (`folder_id`), hỗ trợ tải tệp, ghim yêu thích (`is_starred`), xem dạng Lưới và Bảng.
 - **DỮ LIỆU THỰC 100% & CẤU HÌNH HỆ THỐNG (ZERO MOCK & SYSTEM CONFIG RULE)**:
-  * Toàn bộ thông tin nhân sự, vai trò, nhiệm vụ và cấu hình hệ thống được lưu trữ và truy vấn thực tế từ `public.company_employees`, `public.platform_roles`, `public.app_settings` (key 'system_config') và `public.associations` trong PostgreSQL.
-  * Khi cấu hình hệ thống (`/settings`) thay đổi bất kỳ trường nào (Tên tổ chức, Email, Hotline, Slogan, Website, Ngôn ngữ, Email/SMS notif, 2FA, Tích hợp Zalo OA/Google/MS Teams/Slack), hệ thống BẮT BUỘC lưu vĩnh viễn vào CSDL và đồng bộ reactive ngay lập tức. Nghiêm cấm tạo mock data hay chỉ lưu state tạm thời.
+  * Toàn bộ thông tin nhân sự, vai trò, nhiệm vụ, thư mục, danh mục tài liệu và cấu hình hệ thống được lưu trữ và truy vấn thực tế từ `public.company_employees`, `public.platform_roles`, `public.document_folders`, `public.document_categories`, `public.documents`, `public.app_settings` (key 'system_config') và `public.associations` trong PostgreSQL.
+  * Khi cấu hình hệ thống (`/settings`) thay đổi bất kỳ trường nào, hệ thống BẮT BUỘC lưu vĩnh viễn vào CSDL và đồng bộ reactive ngay lập tức. Nghiêm cấm tạo mock data hay chỉ lưu state tạm thời.
 
 ## -0.4. Quy Chuẩn Nền Tảng SaaS ViOne: Multi-Level Admin, Slot Control, Dynamic RBAC, Statistics Hub & Bulk Tasks
 - **PHÂN TẦNG QUẢN TRỊ 3 CẤP**:
