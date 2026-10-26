@@ -590,26 +590,7 @@ function CompaniesPage() {
           </div>
         </div>
 
-        {hasSubscription === false ? (
-          <div className="rounded-2xl border border-[#DFB76C]/30 bg-slate-950/80 backdrop-blur p-10 text-center shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#DFB76C]/20 to-[#8C653B]/20 border border-[#DFB76C]/30 flex items-center justify-center mx-auto mb-4">
-              <ShieldAlert className="w-8 h-8 text-[#DFB76C]" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Chưa Kích Hoạt Gói Doanh Nghiệp ViOne Platform</h3>
-            <p className="mt-2 text-sm text-slate-300 max-w-lg mx-auto">
-              Chỉ khi người dùng đăng ký mua gói ViOne Platform thì chức năng doanh nghiệp mới có dữ liệu. Kích hoạt ngay gói dùng thử 30 ngày hoặc gói cước năm để quản lý nhân viên và phân công giao việc số.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <button
-                onClick={() => setSubscribeModalOpen(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-slate-950 font-bold text-sm shadow-lg hover:opacity-95 transition cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Đăng Ký Gói ViOne Platform Ngay</span>
-              </button>
-            </div>
-          </div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center shadow-[var(--shadow-card)]">
             <Building2 className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <h3 className="mt-4 text-base font-bold text-foreground">{t("companies.empty")}</h3>

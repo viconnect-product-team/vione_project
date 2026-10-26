@@ -415,19 +415,19 @@ export function PlatformStaffManagement() {
   return (
     <div className="space-y-6">
       {/* Banner giới thiệu phân quyền & chức năng cấp tài khoản */}
-      <div className="relative overflow-hidden rounded-2xl border border-[#D8B282]/40 bg-gradient-to-r from-[#050C15] via-[#111c2d] to-[#0a1424] p-6 shadow-xl">
-        <div className="absolute top-0 right-0 h-48 w-48 bg-gradient-to-bl from-[#D8B282]/10 to-transparent blur-2xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-2xl border border-[#D8B282]/40 bg-gradient-to-r from-amber-50/90 via-white to-amber-50/60 dark:from-[#050C15] dark:via-[#111c2d] dark:to-[#0a1424] p-6 shadow-xl">
+        <div className="absolute top-0 right-0 h-48 w-48 bg-gradient-to-bl from-[#D8B282]/15 to-transparent blur-2xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1.5 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#D8B282]/40 bg-[#D8B282]/10 px-3 py-1 text-xs font-bold text-[#F6E1C3]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#D8B282]/40 bg-[#D8B282]/15 px-3 py-1 text-xs font-bold text-amber-900 dark:text-[#F6E1C3]">
               <ShieldCheck className="h-3.5 w-3.5 text-[#D8B282]" />
               <span>CỔNG QUẢN TRỊ NỘI BỘ VIONE — CHỈ DÀNH CẤP CHO NHÂN VIÊN VIONE</span>
             </div>
-            <h2 className="text-xl md:text-2xl font-black text-white tracking-wide">
+            <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-wide">
               Cấp Tài Khoản & Phân Quyền Nhân Sự Nền Tảng ViOne
             </h2>
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Quản trị viên có thể cấp tài khoản với Email/Số điện thoại của nhân viên trong công
               ty. Hệ thống sẽ <strong>tự động bắn email gửi mật khẩu và liên kết CRM</strong> về hòm
               thư nhân viên. 1 tài khoản có thể{" "}
@@ -445,7 +445,7 @@ export function PlatformStaffManagement() {
               type="button"
               onClick={loadStaffAccounts}
               disabled={loading}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-sm"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
               <span>Làm Mới</span>
@@ -463,37 +463,37 @@ export function PlatformStaffManagement() {
         </div>
 
         {/* 4 Thẻ Thống Kê Nhanh */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800">
-          <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3.5">
-            <div className="text-[11px] font-medium text-slate-400">Tổng Nhân Sự ViOne</div>
-            <div className="text-xl font-black text-white mt-1">{stats.total} nhân viên</div>
-            <div className="text-[10px] text-slate-500 mt-0.5">Đã được cấp tài khoản CRM</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/60 p-3.5 shadow-sm">
+            <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Tổng Nhân Sự ViOne</div>
+            <div className="text-xl font-black text-slate-900 dark:text-white mt-1">{stats.total} nhân viên</div>
+            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Đã được cấp tài khoản CRM</div>
           </div>
 
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5">
-            <div className="text-[11px] font-medium text-amber-300">Nhóm Kế Toán & Tài Chính</div>
-            <div className="text-xl font-black text-amber-400 mt-1">{stats.financeCount} người</div>
-            <div className="text-[10px] text-amber-500/80 mt-0.5">
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/5 p-3.5 shadow-sm">
+            <div className="text-[11px] font-medium text-amber-800 dark:text-amber-300">Nhóm Kế Toán & Tài Chính</div>
+            <div className="text-xl font-black text-amber-700 dark:text-amber-400 mt-1">{stats.financeCount} người</div>
+            <div className="text-[10px] text-amber-600 dark:text-amber-500/80 mt-0.5">
               Quyền xem & xuất báo cáo tài chính
             </div>
           </div>
 
-          <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3.5">
-            <div className="text-[11px] font-medium text-blue-300">Nhóm Vận Hành & CSKH</div>
-            <div className="text-xl font-black text-blue-400 mt-1">{stats.opsCount} người</div>
-            <div className="text-[10px] text-blue-500/80 mt-0.5">
+          <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 dark:bg-blue-500/5 p-3.5 shadow-sm">
+            <div className="text-[11px] font-medium text-blue-800 dark:text-blue-300">Nhóm Vận Hành & CSKH</div>
+            <div className="text-xl font-black text-blue-700 dark:text-blue-400 mt-1">{stats.opsCount} người</div>
+            <div className="text-[10px] text-blue-600 dark:text-blue-500/80 mt-0.5">
               Quyền quản lý DN & mở khóa CRM
             </div>
           </div>
 
-          <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3.5">
-            <div className="text-[11px] font-medium text-purple-300">
+          <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 dark:bg-purple-500/5 p-3.5 shadow-sm">
+            <div className="text-[11px] font-medium text-purple-800 dark:text-purple-300">
               Ban Lãnh Đạo / Super Admin
             </div>
-            <div className="text-xl font-black text-purple-400 mt-1">
+            <div className="text-xl font-black text-purple-700 dark:text-purple-400 mt-1">
               {stats.executiveCount + stats.superAdminCount} người
             </div>
-            <div className="text-[10px] text-purple-500/80 mt-0.5">
+            <div className="text-[10px] text-purple-600 dark:text-purple-500/80 mt-0.5">
               Toàn quyền giám sát & phê duyệt
             </div>
           </div>
@@ -509,16 +509,16 @@ export function PlatformStaffManagement() {
             placeholder="Tìm theo tên, email, số điện thoại nhân viên..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-slate-700 bg-slate-900/80 pl-10 pr-4 py-2 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#D8B282] transition-colors"
+            className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 pl-10 pr-4 py-2 text-xs md:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#D8B282] transition-colors shadow-sm"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 whitespace-nowrap">Lọc theo nhóm quyền:</span>
+          <span className="text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap">Lọc theo nhóm quyền:</span>
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-[#D8B282]"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/90 px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#D8B282] shadow-sm"
           >
             <option value="all">Tất cả nhóm quyền ({staffList.length})</option>
             <option value="platform_finance">Kế Toán & Báo Cáo Tài Chính</option>
@@ -534,7 +534,7 @@ export function PlatformStaffManagement() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              <tr className="border-b border-border bg-slate-100/70 dark:bg-slate-900/40 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                 <th className="py-3 px-4">Nhân Sự ViOne</th>
                 <th className="py-3 px-4">Thông Tin Liên Hệ</th>
                 <th className="py-3 px-4">Các Nhóm Quyền Được Giao</th>
@@ -669,17 +669,17 @@ export function PlatformStaffManagement() {
                           <button
                             type="button"
                             onClick={() => openEditRoles(staff)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-700 transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-sm"
                             title="Chỉnh sửa phân quyền nhóm"
                           >
-                            <Pencil className="h-3.5 w-3.5 text-amber-400" />
+                            <Pencil className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
                             <span>Sửa Quyền</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={() => openResendCredentials(staff)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-[#D8B282]/30 bg-[#D8B282]/10 px-2.5 py-1.5 text-xs font-bold text-[#F6E1C3] hover:bg-[#D8B282]/20 transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#D8B282]/40 bg-[#D8B282]/15 px-2.5 py-1.5 text-xs font-bold text-amber-900 dark:text-[#F6E1C3] hover:bg-[#D8B282]/25 transition-all cursor-pointer"
                             title="Gửi lại thông tin tài khoản qua email"
                           >
                             <Send className="h-3.5 w-3.5 text-[#D8B282]" />
@@ -696,20 +696,20 @@ export function PlatformStaffManagement() {
         </div>
       </div>
 
-      {/* ── MODAL 1: CẤP TÀI KHOẢN NHÂN VIÊN MỚI ──────────────────────────────── */}
+      {/* ── MODAL 1: CẤP TÀI KHOẢN NHÂN VIÊN MỚI ────────────────────────────── */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#D8B282]/50 bg-slate-900 p-6 text-slate-100 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-[#D8B282]/50 bg-white dark:bg-slate-900 p-6 text-slate-800 dark:text-slate-100 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#F6E1C3] to-[#D8B282] text-[#050C15]">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#F6E1C3] to-[#D8B282] text-[#050C15] shadow-sm">
                   <UserPlus className="h-5 w-5 font-bold" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
                     Cấp Tài Khoản Nhân Viên ViOne Mới
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Dành riêng cho nhân sự trực thuộc công ty ViOne
                   </p>
                 </div>
@@ -717,7 +717,7 @@ export function PlatformStaffManagement() {
               <button
                 type="button"
                 onClick={() => setCreateModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 ✕
               </button>
@@ -726,8 +726,8 @@ export function PlatformStaffManagement() {
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs md:text-sm">
               {/* Họ tên */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Họ và tên nhân viên <span className="text-rose-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Họ và tên nhân viên <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -735,15 +735,15 @@ export function PlatformStaffManagement() {
                   placeholder="Ví dụ: Nguyễn Văn Hùng"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-[#D8B282]"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#D8B282] shadow-sm"
                 />
               </div>
 
               {/* Email & Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Email công vụ (Bắn thông tin về đây) <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Email công vụ (Bắn thông tin về đây) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -751,12 +751,12 @@ export function PlatformStaffManagement() {
                     placeholder="hung.nv@vione.vn"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-[#D8B282]"
+                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#D8B282] shadow-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Số điện thoại liên hệ
                   </label>
                   <input
@@ -764,21 +764,21 @@ export function PlatformStaffManagement() {
                     placeholder="0912345678"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-[#D8B282]"
+                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#D8B282] shadow-sm"
                   />
                 </div>
               </div>
 
               {/* Mật khẩu khởi tạo */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-3.5 space-y-2">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-300">Mật khẩu khởi tạo</label>
-                  <label className="flex items-center gap-1.5 text-xs text-amber-400 cursor-pointer select-none">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Mật khẩu khởi tạo</label>
+                  <label className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400 cursor-pointer select-none font-medium">
                     <input
                       type="checkbox"
                       checked={formData.autoPassword}
                       onChange={(e) => setFormData({ ...formData, autoPassword: e.target.checked })}
-                      className="rounded border-slate-700 accent-[#D8B282]"
+                      className="rounded border-slate-300 dark:border-slate-700 accent-[#D8B282]"
                     />
                     <span>Tự sinh mật khẩu an toàn ngẫu nhiên</span>
                   </label>
@@ -791,19 +791,19 @@ export function PlatformStaffManagement() {
                       placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-white pr-10 focus:outline-none focus:border-[#D8B282]"
+                      className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2 text-slate-900 dark:text-white pr-10 focus:outline-none focus:border-[#D8B282]"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 )}
                 {formData.autoPassword && (
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Hệ thống sẽ tự động tạo mật khẩu an toàn chuẩn ViOne và gửi vào email của nhân
                     viên.
                   </p>
@@ -813,13 +813,13 @@ export function PlatformStaffManagement() {
               {/* Lựa chọn Nhóm Quyền (Multi-role checkbox) */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <label className="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
                     <span>Phân bổ Nhóm Quyền Hệ Thống</span>
-                    <span className="text-[11px] font-normal text-amber-300">
+                    <span className="text-[11px] font-normal text-amber-600 dark:text-amber-300">
                       (Có thể chọn nhiều nhóm cùng lúc)
                     </span>
                   </label>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
                     Đã chọn: {formData.roleCodes.length} nhóm
                   </span>
                 </div>
@@ -833,25 +833,25 @@ export function PlatformStaffManagement() {
                         onClick={() => toggleRoleCreate(role.code)}
                         className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
                           isChecked
-                            ? `${role.border} bg-slate-800/80 shadow-md`
-                            : "border-slate-800 bg-slate-950/40 hover:border-slate-700 opacity-80"
+                            ? `${role.border} bg-amber-50/70 dark:bg-slate-800/80 shadow-sm`
+                            : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:border-slate-300 dark:hover:border-slate-700"
                         }`}
                       >
                         <div className="mt-0.5">
                           {isChecked ? (
                             <CheckSquare className={`h-5 w-5 ${role.textColor}`} />
                           ) : (
-                            <Square className="h-5 w-5 text-slate-600" />
+                            <Square className="h-5 w-5 text-slate-400 dark:text-slate-600" />
                           )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-white text-xs md:text-sm">
+                            <span className="font-bold text-slate-900 dark:text-white text-xs md:text-sm">
                               {role.name}
                             </span>
-                            <span className="text-[10px] text-slate-400">{role.department}</span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400">{role.department}</span>
                           </div>
-                          <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
+                          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
                             {role.description}
                           </p>
                         </div>
@@ -862,22 +862,22 @@ export function PlatformStaffManagement() {
               </div>
 
               {/* Checkbox tự động bắn email */}
-              <div className="rounded-xl border border-[#D8B282]/30 bg-[#D8B282]/5 p-3.5 flex items-start gap-3">
+              <div className="rounded-xl border border-amber-300 dark:border-[#D8B282]/30 bg-amber-50/60 dark:bg-[#D8B282]/5 p-3.5 flex items-start gap-3">
                 <input
                   type="checkbox"
                   id="sendEmailCheckbox"
                   checked={formData.sendEmail}
                   onChange={(e) => setFormData({ ...formData, sendEmail: e.target.checked })}
-                  className="mt-0.5 rounded border-slate-700 accent-[#D8B282]"
+                  className="mt-0.5 rounded border-slate-300 dark:border-slate-700 accent-[#D8B282]"
                 />
                 <label
                   htmlFor="sendEmailCheckbox"
-                  className="text-xs text-slate-200 cursor-pointer"
+                  className="text-xs text-slate-800 dark:text-slate-200 cursor-pointer"
                 >
-                  <span className="font-bold text-[#F6E1C3]">
+                  <span className="font-bold text-amber-900 dark:text-[#F6E1C3]">
                     Tự động bắn email gửi thông tin tài khoản cho nhân viên
                   </span>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
                     Email sẽ bao gồm Tên đăng nhập, Mật khẩu khởi tạo, Danh sách các vai trò được
                     phân bổ và đường dẫn đăng nhập ViOne CRM.
                   </p>
@@ -885,12 +885,12 @@ export function PlatformStaffManagement() {
               </div>
 
               {/* Nút Submit */}
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setCreateModalOpen(false)}
                   disabled={submitting}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:text-white cursor-pointer"
                 >
                   Hủy Bỏ
                 </button>
@@ -919,26 +919,26 @@ export function PlatformStaffManagement() {
 
       {/* ── MODAL 2: SỬA NHÓM QUYỀN CHO NHÂN VIÊN ─────────────────────────────── */}
       {editModalOpen && selectedStaff && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-slate-900 p-6 text-slate-100 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-slate-900 p-6 text-slate-800 dark:text-slate-100 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 mb-4">
               <div>
-                <h3 className="text-base font-bold text-white">Chỉnh Sửa Nhóm Quyền</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Chỉnh Sửa Nhóm Quyền</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Nhân sự: <strong>{selectedStaff.fullName}</strong> ({selectedStaff.email})
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setEditModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3">
-              <p className="text-xs text-amber-300">
+              <p className="text-xs text-amber-700 dark:text-amber-300">
                 ⚡ <strong>Lưu ý quan trọng:</strong> 1 nhân viên có thể vừa thuộc nhóm quyền thống
                 kê báo cáo tài chính vừa thuộc nhóm quyền quản lý tài khoản. Khi lưu thay đổi, giao
                 diện tài khoản này sẽ tự động rerender lại ngay lập tức.
@@ -953,35 +953,35 @@ export function PlatformStaffManagement() {
                       onClick={() => toggleRoleEdit(role.code)}
                       className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
                         isChecked
-                          ? `${role.border} bg-slate-800/90 shadow-md`
-                          : "border-slate-800 bg-slate-950/40 hover:border-slate-700 opacity-80"
+                          ? `${role.border} bg-amber-50/70 dark:bg-slate-800/90 shadow-sm`
+                          : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:border-slate-300 dark:hover:border-slate-700"
                       }`}
                     >
                       <div className="mt-0.5">
                         {isChecked ? (
                           <CheckSquare className={`h-5 w-5 ${role.textColor}`} />
                         ) : (
-                          <Square className="h-5 w-5 text-slate-600" />
+                          <Square className="h-5 w-5 text-slate-400 dark:text-slate-600" />
                         )}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-white text-xs">{role.name}</span>
-                          <span className="text-[10px] text-slate-400">{role.department}</span>
+                          <span className="font-bold text-slate-900 dark:text-white text-xs">{role.name}</span>
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400">{role.department}</span>
                         </div>
-                        <p className="text-[11px] text-slate-300 mt-0.5">{role.description}</p>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">{role.description}</p>
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setEditModalOpen(false)}
                   disabled={updatingRoles}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:text-white cursor-pointer"
                 >
                   Hủy Bỏ
                 </button>
@@ -1008,34 +1008,34 @@ export function PlatformStaffManagement() {
 
       {/* ── MODAL 3: CẤP LẠI MẬT KHẨU & BẮN EMAIL ─────────────────────────────── */}
       {resendModalOpen && selectedStaff && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-md rounded-2xl border border-[#D8B282]/50 bg-slate-900 p-6 text-slate-100 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 dark:border-[#D8B282]/50 bg-white dark:bg-slate-900 p-6 text-slate-800 dark:text-slate-100 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
               <div className="flex items-center gap-2">
                 <KeyRound className="h-5 w-5 text-[#D8B282]" />
-                <h3 className="text-base font-bold text-white">Gửi Lại Thông Tin Đăng Nhập</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Gửi Lại Thông Tin Đăng Nhập</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setResendModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3.5 text-xs md:text-sm">
-              <p className="text-slate-300">
+              <p className="text-slate-600 dark:text-slate-300">
                 Hệ thống sẽ cấp lại mật khẩu khởi tạo mới và{" "}
                 <strong>bắn email thông tin đăng nhập trực tiếp</strong> đến địa chỉ:
               </p>
-              <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                <div className="font-bold text-white">{selectedStaff.fullName}</div>
-                <div className="text-xs text-[#F6E1C3] font-mono mt-0.5">{selectedStaff.email}</div>
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
+                <div className="font-bold text-slate-900 dark:text-white">{selectedStaff.fullName}</div>
+                <div className="text-xs text-amber-700 dark:text-[#F6E1C3] font-mono mt-0.5">{selectedStaff.email}</div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Mật khẩu mới (Tùy chọn, để trống sẽ tự sinh ngẫu nhiên an toàn)
                 </label>
                 <input
@@ -1043,16 +1043,16 @@ export function PlatformStaffManagement() {
                   placeholder="Để trống nếu muốn tự tạo ngẫu nhiên"
                   value={customResetPassword}
                   onChange={(e) => setCustomResetPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-[#D8B282]"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#D8B282] shadow-sm"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setResendModalOpen(false)}
                   disabled={resending}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:text-white cursor-pointer"
                 >
                   Hủy Bỏ
                 </button>

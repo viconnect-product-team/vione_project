@@ -65,15 +65,51 @@ export class CompaniesService {
         };
       }
 
-      // 2. Kiểm tra nếu là mock admin hoặc platform admin đã có quyền hệ thống
-      if (userId === '00000000-0000-0000-0000-000000000000' || userId === 'mock-admin-id') {
+      // 2. Mặc định mở hết tất cả chức năng cho ViConnect, Admin, Quản trị, Super Admin
+      if (
+        userId === '00000000-0000-0000-0000-000000000000' ||
+        userId === '00000000-0000-4000-8000-000000000002' ||
+        userId === '00000000-0000-4000-8000-000000000001' ||
+        userId === 'a0000000-0000-4000-8000-000000000002' ||
+        userId === 'mock-admin-id'
+      ) {
         return {
           hasSubscription: true,
           plan: 'vione_platform_enterprise',
           isTrial: false,
           trialDaysLeft: 365,
           status: 'active',
+          maxSlots: 999999,
         };
+      }
+
+      // Kiểm tra trong database: nếu user thuộc ViConnect hoặc có role admin/quản trị/platform_admin
+      try {
+        const userCheck = await this.prisma.$queryRawUnsafe<any[]>(
+          `SELECT id, email FROM public.vione_users WHERE id::text = $1 OR email = $1 LIMIT 1`,
+          userId,
+        );
+        if (userCheck && userCheck.length > 0) {
+          const u = userCheck[0];
+          const email = String(u.email || '').toLowerCase();
+          if (
+            email.includes('@connect.vn') ||
+            email.includes('@viconnect.vn') ||
+            email.includes('admin') ||
+            email.includes('vione')
+          ) {
+            return {
+              hasSubscription: true,
+              plan: 'vione_platform_enterprise',
+              isTrial: false,
+              trialDaysLeft: 365,
+              status: 'active',
+              maxSlots: 999999,
+            };
+          }
+        }
+      } catch {
+        // ignore
       }
 
       return {
@@ -243,7 +279,7 @@ export class CompaniesService {
 
     try {
       // Khi đã có gói ViOne Platform: Trả về danh sách doanh nghiệp từ public.companies kèm số lượng nhân viên & công việc thực tế
-      const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      let rows = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT 
           c.id,
           c.owner_user_id as "ownerUserId",
@@ -270,10 +306,49 @@ export class CompaniesService {
         ORDER BY c.created_at ASC
       `);
 
-      // Tự động kiểm tra seed nhân viên & công việc cho doanh nghiệp đầu tiên nếu chưa có
-      if (rows.length > 0 && rows[0].employeeCount === 0) {
+      // Tự động khởi tạo doanh nghiệp mẫu ViConnect nếu hệ thống chưa có công ty nào
+      if (rows.length === 0) {
+        const defaultCompanyId = 'c1000000-0000-4000-8000-000000000001';
+        const adminUserId = '00000000-0000-4000-8000-000000000002';
+        await this.prisma.$executeRawUnsafe(`
+          INSERT INTO public.companies 
+            (id, owner_user_id, name, slug, industry, size, country, city, description, verified, visibility, status, created_at, updated_at)
+          VALUES 
+            ('${defaultCompanyId}', '${adminUserId}', 'Hệ Thống Doanh Nghiệp ViConnect', 'viconnect-holdings', 'Công nghệ & Chuyển đổi số', '50-100', 'Việt Nam', 'Hà Nội', 'Nền tảng Quản trị Doanh nghiệp All-in-one & Sàn Giao thương B2B ViOne Platform', true, 'public', 'active', now(), now())
+          ON CONFLICT (id) DO NOTHING
+        `).catch(() => null);
+
+        await this.seedEmployeesAndTasks(defaultCompanyId);
+
+        rows = await this.prisma.$queryRawUnsafe<any[]>(`
+          SELECT 
+            c.id,
+            c.owner_user_id as "ownerUserId",
+            c.name,
+            c.slug,
+            c.logo_url as "logoUrl",
+            c.cover_url as "coverUrl",
+            c.industry,
+            c.size,
+            c.country,
+            c.city,
+            c.website,
+            c.email,
+            c.phone,
+            c.description,
+            c.verified,
+            c.visibility,
+            c.status,
+            c.created_at as "createdAt",
+            c.updated_at as "updatedAt",
+            COALESCE((SELECT COUNT(*)::int FROM public.company_employees ce WHERE ce.community_id = c.id::text), 0) as "employeeCount",
+            COALESCE((SELECT COUNT(*)::int FROM public.company_tasks ct WHERE ct.community_id = c.id::text), 0) as "taskCount"
+          FROM public.companies c
+          ORDER BY c.created_at ASC
+        `);
+      } else if (rows.length > 0 && rows[0].employeeCount === 0) {
+        // Tự động kiểm tra seed nhân viên & công việc cho doanh nghiệp đầu tiên nếu chưa có
         await this.seedEmployeesAndTasks(rows[0].id);
-        // Cập nhật lại count
         rows[0].employeeCount = await this.prisma.$queryRawUnsafe<any[]>(
           `SELECT COUNT(*)::int as c FROM public.company_employees WHERE community_id = $1::text`,
           rows[0].id,

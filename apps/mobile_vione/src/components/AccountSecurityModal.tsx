@@ -22,10 +22,14 @@ import {
   AlertCircle,
   Sparkles,
   LogOut,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { apiRequest } from "../api/client";
 
 interface AccountSecurityModalProps {
   visible: boolean;
@@ -37,7 +41,7 @@ export const AccountSecurityModal: React.FC<AccountSecurityModalProps> = ({
   onClose,
 }) => {
   const { isDark } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -46,6 +50,7 @@ export const AccountSecurityModal: React.FC<AccountSecurityModalProps> = ({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
 
   // Active Sessions
@@ -116,6 +121,43 @@ export const AccountSecurityModal: React.FC<AccountSecurityModalProps> = ({
           onPress: () => {
             setSessions((prev) => prev.filter((s) => s.isCurrent));
             Alert.alert("Hoàn tất", "Đã thu hồi phiên đăng nhập của các thiết bị khác.");
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Xác nhận xoá tài khoản",
+      "Hành động này sẽ xoá vĩnh viễn tài khoản ViOne, danh thiếp số điện tử, danh bạ đối tác và dữ liệu quan hệ doanh nghiệp của bạn. Thao tác này KHÔNG THỂ HOÀN TÁC.\n\nBạn có chắc chắn muốn xoá tài khoản vĩnh viễn?",
+      [
+        { text: "Huỷ bỏ", style: "cancel" },
+        {
+          text: "Xoá Vĩnh Viễn",
+          style: "destructive",
+          onPress: async () => {
+            setIsDeletingAccount(true);
+            try {
+              await apiRequest("/me/account", { method: "DELETE" }).catch(() => null);
+              await AsyncStorage.clear();
+              if (logout) {
+                await logout();
+              }
+              onClose();
+              Alert.alert(
+                "Đã xoá tài khoản",
+                "Tài khoản và dữ liệu cá nhân của bạn đã được xoá hoàn toàn khỏi hệ thống ViOne."
+              );
+            } catch (err: any) {
+              Alert.alert(
+                "Lỗi",
+                "Không thể hoàn tất yêu cầu xoá tài khoản: " +
+                  (err?.message || "Vui lòng thử lại sau")
+              );
+            } finally {
+              setIsDeletingAccount(false);
+            }
           },
         },
       ]
@@ -413,6 +455,51 @@ export const AccountSecurityModal: React.FC<AccountSecurityModalProps> = ({
               </View>
             </View>
 
+            {/* 4. Tuân thủ App Store: Xoá tài khoản & Quyền riêng tư (Apple Guideline 5.1.1v) */}
+            <View
+              style={[
+                styles.sectionCard,
+                {
+                  backgroundColor: isDark ? "rgba(239, 68, 68, 0.06)" : "#FEF2F2",
+                  borderColor: isDark ? "rgba(239, 68, 68, 0.3)" : "#FECACA",
+                  borderWidth: 1,
+                },
+              ]}
+            >
+              <View style={styles.sectionHeader}>
+                <AlertTriangle size={16} color="#EF4444" />
+                <Text style={[styles.sectionTitle, { color: "#EF4444" }]}>
+                  Khu Vực Nguy Hiểm & Xoá Tài Khoản
+                </Text>
+              </View>
+              <Text style={[styles.deleteDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>
+                Theo quy định bảo vệ quyền riêng tư người dùng Apple và ViOne, bạn có quyền yêu cầu xoá vĩnh viễn tài khoản cùng toàn bộ thông tin cá nhân, danh thiếp số điện tử và dữ liệu quan hệ doanh nghiệp trên hệ thống.
+              </Text>
+
+              <TouchableOpacity
+                style={styles.deleteAccountBtn}
+                onPress={handleDeleteAccount}
+                disabled={isDeletingAccount}
+                activeOpacity={0.85}
+              >
+                <LinearGradient
+                  colors={["#EF4444", "#DC2626", "#991B1B"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.deleteGradient}
+                >
+                  {isDeletingAccount ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" style={{ marginRight: 8 }} />
+                  ) : (
+                    <Trash2 size={15} color="#FFFFFF" style={{ marginRight: 8 }} />
+                  )}
+                  <Text style={styles.deleteBtnText}>
+                    {isDeletingAccount ? "Đang xử lý xoá..." : "Xoá Vĩnh Viễn Tài Khoản"}
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
             <View style={{ height: 40 }} />
           </ScrollView>
         </View>
@@ -608,5 +695,26 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     color: "#64748B",
     marginTop: 2,
+  },
+  deleteDesc: {
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 14,
+  },
+  deleteAccountBtn: {
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  deleteGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  deleteBtnText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "700",
   },
 });

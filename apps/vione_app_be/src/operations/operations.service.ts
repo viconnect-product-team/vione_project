@@ -22,8 +22,8 @@ export interface TaskItem {
   assignee: string;
   assigneeAvatar?: string;
   department: string;
-  status: 'todo' | 'in_progress' | 'review' | 'done';
-  priority: 'high' | 'medium' | 'low';
+  status: 'todo' | 'in_progress' | 'review' | 'done' | 'assigned' | 'completed' | 'cancelled';
+  priority: 'urgent' | 'high' | 'normal' | 'medium' | 'low';
   deadline: string;
   isOverdue: boolean;
   progress: number;

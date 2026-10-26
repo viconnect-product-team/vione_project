@@ -63,6 +63,7 @@ import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/context/AuthContext";
 import { ProfileMenu } from "@/components/dashboard/ProfileMenu";
 import { EnterpriseTreeMenu } from "@/components/dashboard/EnterpriseTreeMenu";
+import { ReportsTreeMenu } from "@/components/dashboard/ReportsTreeMenu";
 import { SubscribePackageModal } from "@/components/dashboard/SubscribePackageModal";
 
 type Item = { key: TKey; icon: LucideIcon; to?: string; label?: string; badge?: string | number };
@@ -113,12 +114,6 @@ const superAdminPackagesSuite: Item[] = [
     icon: CheckCircle2,
     to: "/payment-approvals",
     label: "Phê Duyệt Đơn Hàng & Gia Hạn",
-  },
-  {
-    key: "nav.vioneGrowthReport" as TKey,
-    icon: Wallet,
-    to: "/finance-report",
-    label: "Doanh Thu Toàn Nền Tảng",
   },
 ];
 
@@ -202,7 +197,7 @@ const companyWorkflowSuite: Item[] = [
   },
 ];
 
-// NHÓM 2: CHĂM SÓC KHÁCH HÀNG & DOANH THU (CRM & REVENUE)
+// NHÓM 2: CHĂM SÓC KHÁCH HÀNG (CRM) & TRỢ LÝ AI
 const companyCrmRevenueSuite: Item[] = [
   {
     key: "nav.vioneCrmCustomers" as TKey,
@@ -210,12 +205,6 @@ const companyCrmRevenueSuite: Item[] = [
     to: "/members",
     label: "Chăm Sóc Khách Hàng (CRM)",
     badge: "CRM",
-  },
-  {
-    key: "nav.vioneRevenue" as TKey,
-    icon: Wallet,
-    to: "/fees",
-    label: "Thống Kê Doanh Thu Công Ty",
   },
   {
     key: "nav.vioneAi" as TKey,
@@ -699,10 +688,10 @@ export function Sidebar({
                 />
               )}
 
-              {/* ── NHÓM TÀI CHÍNH, DOANH THU & BÁO CÁO (platform_finance) ── */}
+              {/* ── NHÓM TÀI CHÍNH, DOANH THU & GÓI (platform_finance) ── */}
               {(isSuperAdmin || isFinanceStaff || isExecutiveStaff) && (
                 <Group
-                  label="GÓI DỊCH VỤ & DOANH THU"
+                  label="GÓI DỊCH VỤ NỀN TẢNG"
                   items={superAdminPackagesSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
@@ -710,6 +699,15 @@ export function Sidebar({
                   badges={badges}
                 />
               )}
+
+              {/* ── NHÓM THỐNG KÊ & BÁO CÁO (TREE MENU RIÊNG BIỆT) ── */}
+              <div className={isCollapsed ? "px-2" : "px-3"}>
+                <ReportsTreeMenu
+                  collapsed={isCollapsed}
+                  pathname={pathname}
+                  onNavigate={onNavigate}
+                />
+              </div>
 
               {/* ── HỆ THỐNG & BẢO MẬT (Chỉ Super Admin & Ban Quản Trị) ── */}
               {(isSuperAdmin || isQuanTri) && (
@@ -767,9 +765,18 @@ export function Sidebar({
                 badges={badges}
               />
 
-              {/* NHÓM 2: CHĂM SÓC KHÁCH HÀNG & DOANH THU */}
+              {/* ── NHÓM THỐNG KÊ & BÁO CÁO DOANH NGHIỆP (TREE MENU RIÊNG BIỆT) ── */}
+              <div className={isCollapsed ? "px-2" : "px-3"}>
+                <ReportsTreeMenu
+                  collapsed={isCollapsed}
+                  pathname={pathname}
+                  onNavigate={onNavigate}
+                />
+              </div>
+
+              {/* NHÓM 2: CHĂM SÓC KHÁCH HÀNG (CRM) & AI */}
               <Group
-                label="CHĂM SÓC KHÁCH HÀNG & DOANH THU"
+                label="CHĂM SÓC KHÁCH HÀNG (CRM) & AI"
                 items={companyCrmRevenueSuite}
                 pathname={pathname}
                 collapsed={isCollapsed}

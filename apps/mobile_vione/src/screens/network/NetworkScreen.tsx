@@ -64,156 +64,20 @@ import { ViOneVoiceAssistantModal } from "../../components/ai/ViOneVoiceAssistan
 import { MemberCardBottomSheet, MemberCardData } from "../../components/MemberCardBottomSheet";
 import { resolveMediaUrl } from "../../utils/media";
 import { ContactsDiscoveryModal } from "../../components/ContactsDiscoveryModal";
+import { EmptyState } from "../../components/common/EmptyState";
+import { networkApi, customerApi, momentApi } from "../../api/services";
 
 // Dữ liệu khoảnh khắc 24h doanh nhân (mặc định trống, chỉ hiện tin của chính mình hoặc đối tác đã kết nối)
 const INITIAL_STORIES: StoryItemData[] = [];
 
-// Danh sách đối tác cần giữ kết nối & chăm sóc
-const NURTURE_PARTNERS = [
-  {
-    id: "nur-1",
-    name: "Ông Trần Đức Nam",
-    title: "Tổng Giám đốc",
-    role: "CEO · Logistics Nam Phát",
-    tag: "CẦN GẶP LẠI",
-    reason: "Đã 30 ngày chưa gặp gỡ trực tiếp sau lễ ký biên bản ghi nhớ hợp tác.",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-    company: "Logistics Nam Phát",
-    phone: "0903 888 999",
-  },
-  {
-    id: "nur-2",
-    name: "Bà Hoàng Mai Anh",
-    title: "Giám đốc Tài chính",
-    role: "CFO · VNPay FinTech",
-    tag: "CƠ HỘI MỚI",
-    reason: "Có dự án tích hợp cổng thanh toán trực tuyến cần kết nối thẩm định.",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
-    company: "VNPay FinTech",
-    phone: "0912 345 678",
-  },
-  {
-    id: "nur-3",
-    name: "Ông Đặng Quang Vinh",
-    title: "Giám đốc Điều hành",
-    role: "CEO · BĐS Vinh An",
-    tag: "GIỮ KẾT NỐI",
-    reason: "Quan tâm đến giải pháp thẻ NFC nhận diện hội viên và quản lý khách VIP.",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
-    company: "Tập đoàn BĐS Vinh An",
-    phone: "0988 123 456",
-  },
-];
+// Danh sách đối tác cần giữ kết nối & chăm sóc (mặc định trống, tải từ API)
+const NURTURE_PARTNERS: any[] = [];
 
-// Danh bạ đối tác doanh nghiệp thực tế
-const INITIAL_PARTNERS: ConnectionPerson[] = [
-  {
-    id: "p-1",
-    name: "Vũ Minh Tuấn",
-    title: "Chủ tịch HĐQT",
-    company: "Tập đoàn Công nghệ VTech",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-    phone: "0988 888 999",
-    email: "tuan.vm@vtechgroup.vn",
-    industry: "Công nghệ & Phần mềm",
-    status: "connected",
-    matchScore: 99,
-  },
-  {
-    id: "p-2",
-    name: "Hoàng Mai Anh",
-    title: "Giám đốc Tài chính",
-    company: "VNPay FinTech Solution",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
-    phone: "0912 345 678",
-    email: "maianh.h@vnpay.vn",
-    industry: "Tài chính & FinTech",
-    status: "connected",
-    matchScore: 96,
-  },
-  {
-    id: "p-3",
-    name: "Trần Đức Nam",
-    title: "Tổng Giám đốc",
-    company: "Logistics Nam Phát Toàn Cầu",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-    phone: "0903 888 999",
-    email: "nam.td@namphatlogistics.com",
-    industry: "Vận tải & Logistics",
-    status: "connected",
-    matchScore: 94,
-  },
-  {
-    id: "p-4",
-    name: "Lê Thu Hương",
-    title: "Nhà sáng lập & CEO",
-    company: "EcoWear Global Fashion",
-    avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150",
-    phone: "0988 765 432",
-    email: "huong.le@ecowear.vn",
-    industry: "Bán lẻ & Thời trang",
-    status: "pending",
-    matchScore: 91,
-  },
-  {
-    id: "p-5",
-    name: "Phạm Quốc Huy",
-    title: "Viện trưởng",
-    company: "Viện Đổi mới Sáng tạo B2B",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150",
-    phone: "0934 567 890",
-    email: "huy.pq@innovateb2b.edu.vn",
-    industry: "Khoa học & Đào tạo",
-    status: "suggested",
-    matchScore: 98,
-  },
-  {
-    id: "p-6",
-    name: "Đặng Quang Vinh",
-    title: "Giám đốc Điều hành",
-    company: "Tập đoàn BĐS Vinh An",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
-    phone: "0912 345 678",
-    email: "vinh.dq@vinhanland.vn",
-    industry: "Bất động sản & Xây dựng",
-    status: "suggested",
-    matchScore: 95,
-  },
-];
+// Danh bạ đối tác doanh nghiệp thực tế (mặc định trống, tải từ API)
+const INITIAL_PARTNERS: ConnectionPerson[] = [];
 
-// Khách hàng B2B pipeline
-const B2B_CUSTOMERS = [
-  {
-    id: "cust-1",
-    name: "Tập đoàn Công nghệ VTech",
-    contactPerson: "Ông Vũ Minh Tuấn",
-    role: "Chủ tịch",
-    stage: "Đang triển khai hợp đồng",
-    dealValue: "1.200.000.000 đ",
-    priority: "Ưu tiên cao",
-    lastContact: "Hôm nay",
-  },
-  {
-    id: "cust-2",
-    name: "VNPay FinTech Solution",
-    contactPerson: "Bà Hoàng Mai Anh",
-    role: "CFO",
-    stage: "Thương thảo điều khoản",
-    dealValue: "650.000.000 đ",
-    priority: "Chiến lược",
-    lastContact: "Hôm qua",
-  },
-  {
-    id: "cust-3",
-    name: "Logistics Nam Phát Toàn Cầu",
-    contactPerson: "Ông Trần Đức Nam",
-    role: "CEO",
-    stage: "Đề xuất giải pháp",
-    dealValue: "450.000.000 đ",
-    priority: "Tiềm năng",
-    lastContact: "3 ngày trước",
-  },
-];
+// Khách hàng B2B pipeline (mặc định trống, tải từ API)
+const B2B_CUSTOMERS: any[] = [];
 
 // Danh sách hội thoại tin nhắn (mặc định trống, tải từ API)
 const INITIAL_THREADS: DmThreadSummary[] = [];
@@ -264,37 +128,11 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
 
-  // B2B Social Moments Feed state (Tách biệt hoàn toàn khỏi 24h stories)
-  const [momentsFeed, setMomentsFeed] = useState<any[]>([
-    {
-      id: "moment-seed-1",
-      authorName: "Nguyễn Tuấn Hải",
-      authorTitle: "Chủ tịch HĐQT",
-      authorCompany: "Alphanam Group",
-      authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
-      content: "Khai mạc Diễn đàn Xúc tiến Đầu tư Quốc tế 2026 cùng hơn 500 tập đoàn hàng đầu. Cơ hội bứt phá chuỗi cung ứng toàn cầu cho doanh nghiệp Việt!",
-      imageUrl: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&auto=format&fit=crop&q=80",
-      tag: "Xúc tiến đầu tư",
-      timeAgo: "1 giờ trước",
-      likesCount: 24,
-      commentsCount: 6,
-      isLiked: false,
-    },
-    {
-      id: "moment-seed-2",
-      authorName: "Trần Mai Phương",
-      authorTitle: "Tổng Giám Đốc",
-      authorCompany: "VinTech Innovation",
-      authorAvatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80",
-      content: "Chính thức ký kết hợp tác công nghệ AI Agent tự động hóa doanh nghiệp cùng đối tác Singapore. Bước chuyển mình quan trọng của hệ sinh thái ViOne!",
-      imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=900&auto=format&fit=crop&q=80",
-      tag: "Ký kết đối tác",
-      timeAgo: "3 giờ trước",
-      likesCount: 38,
-      commentsCount: 12,
-      isLiked: true,
-    },
-  ]);
+  // B2B Social Moments Feed state (Tách biệt hoàn toàn khỏi 24h stories, tải từ API)
+  const [momentsFeed, setMomentsFeed] = useState<any[]>([]);
+
+  // Danh sách lời mời kết nối đang chờ duyệt (tải từ API)
+  const [connectionRequests, setConnectionRequests] = useState<any[]>([]);
 
   // Partner Profile Modal (Xem danh thiếp khi bấm vào avatar người chat)
   const [partnerProfileModalVisible, setPartnerProfileModalVisible] = useState(false);
@@ -327,39 +165,121 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     return "Chào buổi tối,";
   };
 
-  // Tải danh sách cuộc trò chuyện và đối tác kết nối từ API
+  // Tải danh sách cuộc trò chuyện, đối tác kết nối, khách hàng B2B, gợi ý và khoảnh khắc từ API
   useEffect(() => {
     let isMounted = true;
     const fetchNetworkData = async () => {
       try {
         setIsLoadingThreads(true);
-        const [threadsRes, connsRes] = await Promise.all([
+        const [threadsRes, connsRes, recsRes, customersRes, requestsRes, savedCardsRes, momentsRes] = await Promise.allSettled([
           apiRequest<{ ok?: boolean; threads?: DmThreadSummary[] }>("connect-app/dm/threads"),
-          apiRequest<any[]>("connect-app/network/connections"),
+          networkApi.getConnections(),
+          networkApi.getTodayRecommendations(),
+          customerApi.getCustomers(),
+          apiRequest<any[]>("connect-app/network/requests/incoming"),
+          networkApi.getSavedCards(),
+          momentApi.getMoments(),
         ]);
         if (!isMounted) return;
 
-        if (threadsRes.data?.threads && Array.isArray(threadsRes.data.threads)) {
-          setThreads(threadsRes.data.threads);
+        // 1. Threads
+        if (threadsRes.status === "fulfilled" && threadsRes.value?.data?.threads && Array.isArray(threadsRes.value.data.threads)) {
+          setThreads(threadsRes.value.data.threads);
         }
 
-        if (connsRes.data && Array.isArray(connsRes.data) && connsRes.data.length > 0) {
-          const mappedPartners: ConnectionPerson[] = connsRes.data.map((c: any) => ({
-            id: c.counterpartUserId || c.id,
-            name: c.fullName || c.name || "Doanh nhân đối tác",
-            title: c.professionalTitle || "Hội viên ViOne Connect",
-            company: c.companyName || c.company || "ViOne Network",
-            avatarUrl: c.avatarUrl,
-            phone: c.phone || "0988 888 888",
-            email: c.email || "",
-            industry: c.industry || "Doanh nghiệp",
-            status: "connected",
-            matchScore: 99,
+        // 2. Partners & Saved Cards
+        const partnersList: ConnectionPerson[] = [];
+        if (connsRes.status === "fulfilled" && connsRes.value?.data) {
+          const rawConns = Array.isArray(connsRes.value.data)
+            ? connsRes.value.data
+            : (connsRes.value.data as any)?.connections || [];
+          rawConns.forEach((c: any) => {
+            partnersList.push({
+              id: c.counterpartUserId || c.id,
+              name: c.fullName || c.name || "Doanh nhân đối tác",
+              title: c.professionalTitle || c.title || "Hội viên ViOne Connect",
+              company: c.companyName || c.company || "ViOne Network",
+              avatarUrl: c.avatarUrl,
+              phone: c.phone || "",
+              email: c.email || "",
+              industry: c.industry || "Doanh nghiệp",
+              status: (c.status as any) || "connected",
+              matchScore: c.matchScore || 95,
+            });
+          });
+        }
+        if (savedCardsRes.status === "fulfilled" && savedCardsRes.value?.data && Array.isArray(savedCardsRes.value.data)) {
+          savedCardsRes.value.data.forEach((sc: any) => {
+            const cardId = sc.targetUserId || sc.id;
+            if (!partnersList.some((p) => p.id === cardId)) {
+              partnersList.push({
+                id: cardId,
+                name: sc.targetName || sc.name || "Doanh nhân danh thiếp",
+                title: sc.targetTitle || sc.title || "Hội viên ViOne",
+                company: sc.targetCompany || sc.company || "Đối tác kinh doanh",
+                avatarUrl: sc.targetAvatar || sc.avatarUrl,
+                phone: sc.phone || "",
+                email: sc.email || "",
+                industry: sc.industry || "Doanh nghiệp",
+                status: "connected",
+                matchScore: 92,
+              });
+            }
+          });
+        }
+        setPartners(partnersList);
+
+        // 3. Nurture / Recommendations
+        if (recsRes.status === "fulfilled" && recsRes.value?.data && Array.isArray(recsRes.value.data)) {
+          const mappedNurture = recsRes.value.data.map((r: any) => ({
+            id: r.id || r.targetUserId,
+            name: r.name || r.fullName || "Đối tác tiềm năng",
+            title: r.title || r.role || "Lãnh đạo doanh nghiệp",
+            role: r.role || `${r.title || "CEO"} · ${r.company || "ViOne Network"}`,
+            tag: r.tag || "CẦN GẶP LẠI",
+            reason: r.reason || "Cần giữ liên lạc định kỳ để mở rộng giao thương B2B.",
+            avatar: r.avatar || r.avatarUrl,
+            company: r.company || "ViOne Network",
+            phone: r.phone || "",
           }));
-          setPartners(mappedPartners);
+          setNurtureList(mappedNurture);
+        } else {
+          setNurtureList([]);
+        }
+
+        // 4. B2B Customers
+        if (customersRes.status === "fulfilled" && customersRes.value?.data && Array.isArray(customersRes.value.data)) {
+          const mappedCusts = customersRes.value.data.map((cust: any) => ({
+            id: cust.id || `cust-${Date.now()}`,
+            name: cust.name || cust.company || "Doanh nghiệp",
+            contactPerson: cust.contactPerson || cust.name || "Người đại diện",
+            role: cust.role || "Đại diện kinh doanh",
+            stage: cust.stage || "Đàm phán",
+            dealValue: cust.dealValue ? `${cust.dealValue} đ` : "Chưa định giá",
+            priority: cust.priority || "Tiềm năng",
+            lastContact: cust.lastContact || "Gần đây",
+            phone: cust.phone || "",
+            email: cust.email || "",
+            tags: cust.tags || [],
+          }));
+          setCustomersList(mappedCusts);
+        } else {
+          setCustomersList([]);
+        }
+
+        // 5. Incoming requests
+        if (requestsRes.status === "fulfilled" && requestsRes.value?.data && Array.isArray(requestsRes.value.data)) {
+          setConnectionRequests(requestsRes.value.data);
+        } else {
+          setConnectionRequests([]);
+        }
+
+        // 6. Moments Feed
+        if (momentsRes.status === "fulfilled" && momentsRes.value?.data && Array.isArray(momentsRes.value.data)) {
+          setMomentsFeed(momentsRes.value.data);
         }
       } catch (err) {
-        console.warn("Lỗi tải dữ liệu network/threads:", err);
+        console.warn("Lỗi tải dữ liệu network:", err);
       } finally {
         if (isMounted) setIsLoadingThreads(false);
       }
@@ -1034,122 +954,133 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </Text>
               </View>
 
-              {momentsFeed.map((moment) => {
-                const photoUri = moment.imageUrl ? (resolveMediaUrl(moment.imageUrl) || moment.imageUrl) : null;
-                return (
-                  <View
-                    key={moment.id}
-                    style={{
-                      borderRadius: 16,
-                      backgroundColor: isDark ? "#12151F" : "#FFFFFF",
-                      borderWidth: 1,
-                      borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "rgba(216, 178, 130, 0.35)",
-                      padding: 14,
-                      marginBottom: 12,
-                      shadowColor: isDark ? "#000000" : "#64748B",
-                      shadowOpacity: isDark ? 0.3 : 0.05,
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowRadius: 6,
-                      elevation: 2,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                      <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-                        <Avatar url={moment.authorAvatar} name={moment.authorName} size={40} showGoldBorder />
-                        <View style={{ marginLeft: 10, flex: 1 }}>
-                          <Text style={{ fontSize: 14, fontWeight: "700", color: isDark ? "#FFFFFF" : "#0F172A" }}>
-                            {moment.authorName}
-                          </Text>
-                          <Text style={{ fontSize: 11, color: isDark ? "#94A3B8" : "#64748B" }} numberOfLines={1}>
-                            {moment.authorTitle} · {moment.authorCompany}
-                          </Text>
+              {momentsFeed.length === 0 ? (
+                <EmptyState
+                  icon={<Camera size={28} color="#D8B282" />}
+                  title="Chưa có khoảnh khắc nào"
+                  description="Chia sẻ tin tức, hoạt động ký kết hoặc sự kiện doanh nghiệp với mạng lưới đối tác."
+                  actionTitle="Đăng Khoảnh Khắc Mới"
+                  onAction={() => setPostMomentVisible(true)}
+                  isDark={isDark}
+                />
+              ) : (
+                momentsFeed.map((moment) => {
+                  const photoUri = moment.imageUrl ? (resolveMediaUrl(moment.imageUrl) || moment.imageUrl) : null;
+                  return (
+                    <View
+                      key={moment.id}
+                      style={{
+                        borderRadius: 16,
+                        backgroundColor: isDark ? "#12151F" : "#FFFFFF",
+                        borderWidth: 1,
+                        borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "rgba(216, 178, 130, 0.35)",
+                        padding: 14,
+                        marginBottom: 12,
+                        shadowColor: isDark ? "#000000" : "#64748B",
+                        shadowOpacity: isDark ? 0.3 : 0.05,
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowRadius: 6,
+                        elevation: 2,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+                          <Avatar url={moment.authorAvatar} name={moment.authorName} size={40} showGoldBorder />
+                          <View style={{ marginLeft: 10, flex: 1 }}>
+                            <Text style={{ fontSize: 14, fontWeight: "700", color: isDark ? "#FFFFFF" : "#0F172A" }}>
+                              {moment.authorName}
+                            </Text>
+                            <Text style={{ fontSize: 11, color: isDark ? "#94A3B8" : "#64748B" }} numberOfLines={1}>
+                              {moment.authorTitle} · {moment.authorCompany}
+                            </Text>
+                          </View>
                         </View>
+                        {moment.tag ? (
+                          <View style={{ backgroundColor: isDark ? "rgba(216, 178, 130, 0.15)" : "#F6E1C3", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: "#8C653B" }}>
+                            <Text style={{ fontSize: 10, fontWeight: "700", color: isDark ? "#F6E1C3" : "#8C653B" }}>
+                              #{moment.tag}
+                            </Text>
+                          </View>
+                        ) : null}
                       </View>
-                      {moment.tag ? (
-                        <View style={{ backgroundColor: isDark ? "rgba(216, 178, 130, 0.15)" : "#F6E1C3", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: "#8C653B" }}>
-                          <Text style={{ fontSize: 10, fontWeight: "700", color: isDark ? "#F6E1C3" : "#8C653B" }}>
-                            #{moment.tag}
-                          </Text>
+
+                      <Text style={{ fontSize: 13.5, lineHeight: 20, color: isDark ? "#E2E8F0" : "#1E293B", marginBottom: photoUri ? 10 : 6 }}>
+                        {moment.content}
+                      </Text>
+
+                      {photoUri ? (
+                        <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 10, backgroundColor: isDark ? "#000" : "#F1F5F9" }}>
+                          <Image
+                            source={{ uri: photoUri }}
+                            style={{ width: "100%", height: 210 }}
+                            resizeMode="cover"
+                          />
                         </View>
                       ) : null}
-                    </View>
 
-                    <Text style={{ fontSize: 13.5, lineHeight: 20, color: isDark ? "#E2E8F0" : "#1E293B", marginBottom: photoUri ? 10 : 6 }}>
-                      {moment.content}
-                    </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 8, borderTopWidth: 1, borderTopColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9" }}>
+                        <Text style={{ fontSize: 11, color: isDark ? "#64748B" : "#94A3B8" }}>
+                          {moment.timeAgo || "Vừa xong"}
+                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+                          <TouchableOpacity
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                            onPress={() => {
+                              setMomentsFeed((prev) =>
+                                prev.map((m) =>
+                                  m.id === moment.id
+                                    ? {
+                                        ...m,
+                                        isLiked: !m.isLiked,
+                                        likesCount: m.isLiked ? Math.max(0, m.likesCount - 1) : m.likesCount + 1,
+                                      }
+                                    : m
+                                )
+                              );
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <Heart
+                              size={16}
+                              color={moment.isLiked ? "#EF4444" : (isDark ? "#94A3B8" : "#64748B")}
+                              fill={moment.isLiked ? "#EF4444" : "transparent"}
+                              style={{ marginRight: 4 }}
+                            />
+                            <Text style={{ fontSize: 12, fontWeight: "600", color: moment.isLiked ? "#EF4444" : (isDark ? "#CBD5E1" : "#475569") }}>
+                              {moment.likesCount || 0}
+                            </Text>
+                          </TouchableOpacity>
 
-                    {photoUri ? (
-                      <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 10, backgroundColor: isDark ? "#000" : "#F1F5F9" }}>
-                        <Image
-                          source={{ uri: photoUri }}
-                          style={{ width: "100%", height: 210 }}
-                          resizeMode="cover"
-                        />
-                      </View>
-                    ) : null}
+                          <TouchableOpacity
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                            onPress={() => {
+                              setSelectedMomentForComment(moment);
+                              setMomentCommentVisible(true);
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <MessageSquare size={16} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
+                            <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#CBD5E1" : "#475569" }}>
+                              {moment.commentsCount || 0}
+                            </Text>
+                          </TouchableOpacity>
 
-                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 8, borderTopWidth: 1, borderTopColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9" }}>
-                      <Text style={{ fontSize: 11, color: isDark ? "#64748B" : "#94A3B8" }}>
-                        {moment.timeAgo || "Vừa xong"}
-                      </Text>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-                        <TouchableOpacity
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                          onPress={() => {
-                            setMomentsFeed((prev) =>
-                              prev.map((m) =>
-                                m.id === moment.id
-                                  ? {
-                                      ...m,
-                                      isLiked: !m.isLiked,
-                                      likesCount: m.isLiked ? Math.max(0, m.likesCount - 1) : m.likesCount + 1,
-                                    }
-                                  : m
-                              )
-                            );
-                          }}
-                          activeOpacity={0.7}
-                        >
-                          <Heart
-                            size={16}
-                            color={moment.isLiked ? "#EF4444" : (isDark ? "#94A3B8" : "#64748B")}
-                            fill={moment.isLiked ? "#EF4444" : "transparent"}
-                            style={{ marginRight: 4 }}
-                          />
-                          <Text style={{ fontSize: 12, fontWeight: "600", color: moment.isLiked ? "#EF4444" : (isDark ? "#CBD5E1" : "#475569") }}>
-                            {moment.likesCount || 0}
-                          </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                          onPress={() => {
-                            setSelectedMomentForComment(moment);
-                            setMomentCommentVisible(true);
-                          }}
-                          activeOpacity={0.7}
-                        >
-                          <MessageSquare size={16} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
-                          <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#CBD5E1" : "#475569" }}>
-                            {moment.commentsCount || 0}
-                          </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                          onPress={() => Alert.alert("Chia sẻ", "Đã sao chép liên kết khoảnh khắc để chia sẻ!")}
-                          activeOpacity={0.7}
-                        >
-                          <Share2 size={16} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
-                          <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#CBD5E1" : "#475569" }}>
-                            Chia sẻ
-                          </Text>
-                        </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                            onPress={() => Alert.alert("Chia sẻ", "Đã sao chép liên kết khoảnh khắc để chia sẻ!")}
+                            activeOpacity={0.7}
+                          >
+                            <Share2 size={16} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
+                            <Text style={{ fontSize: 12, fontWeight: "600", color: isDark ? "#CBD5E1" : "#475569" }}>
+                              Chia sẻ
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                );
-              })}
+                  );
+                })
+              )}
             </View>
 
             {/* Khối CẦN GIỮ KẾT NỐI & CHĂM SÓC (Khớp 100% Nurture List) */}
@@ -1178,95 +1109,118 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               </View>
 
               <View style={styles.nurtureListCol}>
-                {nurtureList.map((item) => (
-                  <View
-                    key={item.id}
-                    style={[
-                      styles.nurtureCard,
-                      {
-                        backgroundColor: isDark ? "#181D2A" : "#F8FAFC",
-                        borderColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0",
-                      },
-                    ]}
-                  >
-                    <View style={styles.nurtureCardMain}>
-                      <View style={styles.nurtureInfo}>
-                        <View style={styles.nurtureNameRow}>
+                {nurtureList.length === 0 ? (
+                  <EmptyState
+                    icon={<Sparkles size={28} color="#D8B282" />}
+                    title="Chưa có gợi ý chăm sóc hôm nay"
+                    description="Hệ thống AI sẽ tự động phân tích tương tác và đề xuất đối tác B2B cần giữ kết nối khi mạng lưới phát triển."
+                    isDark={isDark}
+                  />
+                ) : (
+                  nurtureList.map((item) => (
+                    <View
+                      key={item.id}
+                      style={[
+                        styles.nurtureCard,
+                        {
+                          backgroundColor: isDark ? "#181D2A" : "#F8FAFC",
+                          borderColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0",
+                        },
+                      ]}
+                    >
+                      <View style={styles.nurtureCardMain}>
+                        <View style={styles.nurtureInfo}>
+                          <View style={styles.nurtureNameRow}>
+                            <Text
+                              style={[
+                                styles.nurtureName,
+                                { color: isDark ? "#FFFFFF" : "#0F172A" },
+                              ]}
+                            >
+                              {item.name}
+                            </Text>
+                            <View style={styles.nurtureTagBadge}>
+                              <Text style={styles.nurtureTagText}>{item.tag}</Text>
+                            </View>
+                          </View>
                           <Text
                             style={[
-                              styles.nurtureName,
-                              { color: isDark ? "#FFFFFF" : "#0F172A" },
+                              styles.nurtureRole,
+                              { color: isDark ? "#94A3B8" : "#64748B" },
                             ]}
                           >
-                            {item.name}
+                            {item.role || `${item.title} · ${item.company}`}
                           </Text>
-                          <View style={styles.nurtureTagBadge}>
-                            <Text style={styles.nurtureTagText}>{item.tag}</Text>
-                          </View>
+                          <Text
+                            style={[
+                              styles.nurtureReasonText,
+                              { color: isDark ? "#F6E1C3" : "#8C653B" },
+                            ]}
+                          >
+                            💡 {item.reason}
+                          </Text>
                         </View>
-                        <Text
-                          style={[
-                            styles.nurtureRole,
-                            { color: isDark ? "#94A3B8" : "#64748B" },
-                          ]}
+                      </View>
+
+                      <View style={styles.nurtureActionRow}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setSelectedPartnerForMeeting({
+                              name: item.name,
+                              company: item.company,
+                            });
+                            setScheduleMeetingVisible(true);
+                          }}
+                          activeOpacity={0.8}
                         >
-                          {item.role || `${item.title} · ${item.company}`}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.nurtureReasonText,
-                            { color: isDark ? "#F6E1C3" : "#8C653B" },
-                          ]}
+                          <LinearGradient
+                            colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.nurtureMeetBtn}
+                          >
+                            <Users size={13} color="#050C15" style={{ marginRight: 4 }} />
+                            <Text style={styles.nurtureMeetText}>Hẹn 1-1</Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          onPress={() => {
+                            const partner = partners.find((p) => p.name === item.name) || {
+                              id: item.id,
+                              name: item.name,
+                              title: item.title,
+                              company: item.company,
+                              status: "connected" as const,
+                            };
+                            handleOpenChatWithPartner(partner);
+                          }}
+                          activeOpacity={0.8}
                         >
-                          💡 {item.reason}
-                        </Text>
+                          <LinearGradient
+                            colors={isDark ? ["#1E293B", "#0F172A"] : ["#F8FAFC", "#E2E8F0"]}
+                            style={[styles.nurtureChatBtn, { borderWidth: 1, borderColor: "rgba(216, 178, 130, 0.4)" }]}
+                          >
+                            <MessageSquare size={13} color="#D8B282" style={{ marginRight: 4 }} />
+                            <Text style={styles.nurtureChatText}>Nhắn tin</Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          onPress={() => Alert.alert("Gọi điện", `Gọi tới số: ${item.phone}`)}
+                          activeOpacity={0.8}
+                        >
+                          <LinearGradient
+                            colors={isDark ? ["#1E293B", "#0F172A"] : ["#F8FAFC", "#E2E8F0"]}
+                            style={[styles.nurtureCallBtn, { borderWidth: 1, borderColor: "rgba(216, 178, 130, 0.4)" }]}
+                          >
+                            <Phone size={13} color="#D8B282" />
+                          </LinearGradient>
+                        </TouchableOpacity>
                       </View>
                     </View>
-
-                    <View style={styles.nurtureActionRow}>
-                      <TouchableOpacity
-                        style={styles.nurtureMeetBtn}
-                        onPress={() => {
-                          setSelectedPartnerForMeeting({
-                            name: item.name,
-                            company: item.company,
-                          });
-                          setScheduleMeetingVisible(true);
-                        }}
-                        activeOpacity={0.8}
-                      >
-                        <Users size={13} color="#050C15" style={{ marginRight: 4 }} />
-                        <Text style={styles.nurtureMeetText}>Hẹn 1-1</Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={styles.nurtureChatBtn}
-                        onPress={() => {
-                          const partner = partners.find((p) => p.name === item.name) || {
-                            id: item.id,
-                            name: item.name,
-                            title: item.title,
-                            company: item.company,
-                            status: "connected" as const,
-                          };
-                          handleOpenChatWithPartner(partner);
-                        }}
-                        activeOpacity={0.8}
-                      >
-                        <MessageSquare size={13} color="#D8B282" style={{ marginRight: 4 }} />
-                        <Text style={styles.nurtureChatText}>Nhắn tin</Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={styles.nurtureCallBtn}
-                        onPress={() => Alert.alert("Gọi điện", `Gọi tới số: ${item.phone}`)}
-                        activeOpacity={0.8}
-                      >
-                        <Phone size={13} color="#D8B282" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ))}
+                  ))
+                )}
               </View>
             </View>
 
@@ -1324,137 +1278,162 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             {/* Partners List */}
             <View style={styles.listSection}>
               <Text style={styles.sectionHeaderSmall}>DANH BẠ ĐỐI TÁC DOANH NGHIỆP</Text>
-              {filteredPartners.map((item) => (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.partnerCard,
-                    {
-                      backgroundColor: isDark ? "#12151F" : "#FFFFFF",
-                      borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
-                      shadowColor: isDark ? "#000000" : "#64748B",
-                      shadowOpacity: isDark ? 0.3 : 0.04,
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowRadius: 6,
-                      elevation: 2,
-                    },
-                  ]}
-                >
-                  <View style={styles.cardMain}>
-                    <Avatar url={item.avatarUrl} name={item.name} size={50} showGoldBorder />
-                    <View style={styles.partnerInfo}>
-                      <View style={styles.nameRow}>
-                        <Text
-                          style={[
-                            styles.partnerName,
-                            { color: isDark ? "#FFFFFF" : "#0F172A" },
-                          ]}
-                        >
-                          {item.name}
-                        </Text>
-                        {item.matchScore && (
-                          <View style={styles.matchBadge}>
-                            <Text style={styles.matchText}>{item.matchScore}% Phù hợp</Text>
+              {filteredPartners.length === 0 ? (
+                <EmptyState
+                  icon={<Users size={28} color="#D8B282" />}
+                  title="Chưa có đối tác kết nối nào"
+                  description="Quét mã QR danh thiếp hoặc tìm kiếm doanh nhân để mở rộng mạng lưới giao thương."
+                  actionTitle="Quét QR Kết Nối"
+                  onAction={() => navigation.navigate("QuickConnect" as any)}
+                  isDark={isDark}
+                />
+              ) : (
+                filteredPartners.map((item) => (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.partnerCard,
+                      {
+                        backgroundColor: isDark ? "#12151F" : "#FFFFFF",
+                        borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
+                        shadowColor: isDark ? "#000000" : "#64748B",
+                        shadowOpacity: isDark ? 0.3 : 0.04,
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowRadius: 6,
+                        elevation: 2,
+                      },
+                    ]}
+                  >
+                    <View style={styles.cardMain}>
+                      <Avatar url={item.avatarUrl} name={item.name} size={50} showGoldBorder />
+                      <View style={styles.partnerInfo}>
+                        <View style={styles.nameRow}>
+                          <Text
+                            style={[
+                              styles.partnerName,
+                              { color: isDark ? "#FFFFFF" : "#0F172A" },
+                            ]}
+                          >
+                            {item.name}
+                          </Text>
+                          {item.matchScore && (
+                            <View style={styles.matchBadge}>
+                              <Text style={styles.matchText}>{item.matchScore}% Phù hợp</Text>
+                            </View>
+                          )}
+                        </View>
+
+                        <Text style={styles.partnerTitle}>{item.title}</Text>
+
+                        <View style={styles.companyRow}>
+                          <Building2 size={12} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
+                          <Text
+                            style={[
+                              styles.partnerCompany,
+                              { color: isDark ? "#94A3B8" : "#64748B" },
+                            ]}
+                            numberOfLines={1}
+                          >
+                            {item.company}
+                          </Text>
+                        </View>
+
+                        {item.industry && (
+                          <View
+                            style={[
+                              styles.industryTag,
+                              { backgroundColor: isDark ? "#181D2A" : "#F1F5F9" },
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.industryText,
+                                { color: isDark ? "rgba(255, 255, 255, 0.7)" : "#475569" },
+                              ]}
+                            >
+                              {item.industry}
+                            </Text>
                           </View>
                         )}
                       </View>
+                    </View>
 
-                      <Text style={styles.partnerTitle}>{item.title}</Text>
-
-                      <View style={styles.companyRow}>
-                        <Building2 size={12} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
-                        <Text
-                          style={[
-                            styles.partnerCompany,
-                            { color: isDark ? "#94A3B8" : "#64748B" },
-                          ]}
-                          numberOfLines={1}
+                    {/* Action Buttons */}
+                    <View style={styles.cardActions}>
+                      <TouchableOpacity
+                        onPress={() => handleOpenChatWithPartner(item)}
+                        activeOpacity={0.85}
+                      >
+                        <LinearGradient
+                          colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={styles.chatActionBtn}
                         >
-                          {item.company}
-                        </Text>
-                      </View>
+                          <MessageSquare size={14} color="#050C15" style={{ marginRight: 5 }} />
+                          <Text style={styles.chatActionText}>Nhắn tin</Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
 
-                      {item.industry && (
-                        <View
-                          style={[
-                            styles.industryTag,
-                            { backgroundColor: isDark ? "#181D2A" : "#F1F5F9" },
-                          ]}
-                        >
-                          <Text
+                      {item.status === "connected" && (
+                        <>
+                          <TouchableOpacity
                             style={[
-                              styles.industryText,
-                              { color: isDark ? "rgba(255, 255, 255, 0.7)" : "#475569" },
+                              styles.iconActionBtn,
+                              {
+                                backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
+                                borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "#E2E8F0",
+                              },
                             ]}
+                            onPress={() => Alert.alert("Gọi điện", `Gọi tới số: ${item.phone}`)}
                           >
-                            {item.industry}
-                          </Text>
+                            <Phone size={15} color={isDark ? "#D8B282" : "#A3703C"} />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[
+                              styles.iconActionBtn,
+                              {
+                                backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
+                                borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "#E2E8F0",
+                              },
+                            ]}
+                            onPress={() => Alert.alert("Gửi email", `Gửi tới: ${item.email}`)}
+                          >
+                            <Mail size={15} color={isDark ? "#D8B282" : "#A3703C"} />
+                          </TouchableOpacity>
+                        </>
+                      )}
+
+                      {item.status === "pending" && (
+                        <View style={styles.pendingBadge}>
+                          <Text style={styles.pendingBadgeText}>Đang chờ duyệt</Text>
                         </View>
+                      )}
+
+                      {item.status === "suggested" && (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setPartners((prev) =>
+                              prev.map((p) => (p.id === item.id ? { ...p, status: "pending" } : p))
+                            );
+                            Alert.alert("Thành công", `Đã gửi lời mời kết nối tới ${item.name}.`);
+                          }}
+                          activeOpacity={0.85}
+                        >
+                          <LinearGradient
+                            colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.connectBtn}
+                          >
+                            <Text style={[styles.connectBtnText, { color: "#050C15", fontWeight: "700" }]}>Kết nối ngay</Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
                       )}
                     </View>
                   </View>
-
-                  {/* Action Buttons */}
-                  <View style={styles.cardActions}>
-                    <TouchableOpacity
-                      style={styles.chatActionBtn}
-                      onPress={() => handleOpenChatWithPartner(item)}
-                    >
-                      <MessageSquare size={14} color="#050C15" style={{ marginRight: 5 }} />
-                      <Text style={styles.chatActionText}>Nhắn tin</Text>
-                    </TouchableOpacity>
-
-                    {item.status === "connected" && (
-                      <>
-                        <TouchableOpacity
-                          style={[
-                            styles.iconActionBtn,
-                            {
-                              backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
-                              borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "#E2E8F0",
-                            },
-                          ]}
-                          onPress={() => Alert.alert("Gọi điện", `Gọi tới số: ${item.phone}`)}
-                        >
-                          <Phone size={15} color={isDark ? "#D8B282" : "#A3703C"} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[
-                            styles.iconActionBtn,
-                            {
-                              backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
-                              borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "#E2E8F0",
-                            },
-                          ]}
-                          onPress={() => Alert.alert("Gửi email", `Gửi tới: ${item.email}`)}
-                        >
-                          <Mail size={15} color={isDark ? "#D8B282" : "#A3703C"} />
-                        </TouchableOpacity>
-                      </>
-                    )}
-
-                    {item.status === "pending" && (
-                      <View style={styles.pendingBadge}>
-                        <Text style={styles.pendingBadgeText}>Đang chờ duyệt</Text>
-                      </View>
-                    )}
-
-                    {item.status === "suggested" && (
-                      <TouchableOpacity
-                        style={styles.connectBtn}
-                        onPress={() => {
-                          setPartners((prev) =>
-                            prev.map((p) => (p.id === item.id ? { ...p, status: "pending" } : p))
-                          );
-                          Alert.alert("Thành công", `Đã gửi lời mời kết nối tới ${item.name}.`);
-                        }}
-                      >
-                        <Text style={styles.connectBtnText}>Kết nối ngay</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-              ))}
+                ))
+              )}
             </View>
           </View>
         )}
@@ -1481,7 +1460,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 >
                   <DollarSign size={18} color={isDark ? "#D8B282" : "#A3703C"} />
                   <Text style={[styles.pipelineNumber, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                    4.55 Tỷ
+                    {customersList.length} Deal
                   </Text>
                   <Text style={[styles.pipelineLabel, { color: isDark ? "#94A3B8" : "#64748B" }]}>
                     Quy mô cơ hội
@@ -1504,7 +1483,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 >
                   <TrendingUp size={18} color="#38BDF8" />
                   <Text style={[styles.pipelineNumber, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                    3 B2B
+                    {customersList.filter((c) => (c.stage || "").toLowerCase().includes("đàm phán") || (c.stage || "").toLowerCase().includes("thương thảo")).length} B2B
                   </Text>
                   <Text style={[styles.pipelineLabel, { color: isDark ? "#94A3B8" : "#64748B" }]}>
                     Đang đàm phán
@@ -1529,7 +1508,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 >
                   <Sparkles size={18} color="#10B981" />
                   <Text style={[styles.pipelineNumber, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                    78% Won
+                    {customersList.length > 0 ? `${Math.round((customersList.filter((c) => (c.stage || "").toLowerCase().includes("triển khai") || (c.stage || "").toLowerCase().includes("ký kết")).length / customersList.length) * 100)}%` : "0%"}
                   </Text>
                   <Text style={[styles.pipelineLabel, { color: isDark ? "#94A3B8" : "#64748B" }]}>
                     Tỷ lệ chốt deal
@@ -1552,10 +1531,10 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 >
                   <Calendar size={18} color="#F59E0B" />
                   <Text style={[styles.pipelineNumber, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                    2 Cuộc hẹn
+                    {customersList.filter((c) => c.priority === "Ưu tiên cao" || c.priority === "Chiến lược").length} KH
                   </Text>
                   <Text style={[styles.pipelineLabel, { color: isDark ? "#94A3B8" : "#64748B" }]}>
-                    Lịch chăm sóc tuần
+                    Ưu tiên cao
                   </Text>
                 </View>
               </View>
@@ -1565,9 +1544,9 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
               {[
                 { key: "all", label: `Tất cả (${customersList.length})` },
-                { key: "Đàm phán", label: "Đàm phán (2)" },
-                { key: "Đề xuất", label: "Đề xuất (1)" },
-                { key: "Ký kết", label: "Ký kết (0)" },
+                { key: "Đàm phán", label: `Đàm phán (${customersList.filter((c) => (c.stage || "").toLowerCase().includes("đàm phán")).length})` },
+                { key: "Đề xuất", label: `Đề xuất (${customersList.filter((c) => (c.stage || "").toLowerCase().includes("đề xuất")).length})` },
+                { key: "Triển khai", label: `Triển khai (${customersList.filter((c) => (c.stage || "").toLowerCase().includes("triển khai") || (c.stage || "").toLowerCase().includes("ký kết")).length})` },
               ].map((f) => {
                 const isActive = customerStageFilter === f.key;
                 return (
@@ -1626,98 +1605,112 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
-            {customersList
-              .filter((cust) => {
-                if (customerStageFilter === "all") return true;
-                return cust.stage.toLowerCase().includes(customerStageFilter.toLowerCase());
-              })
-              .map((cust) => (
-              <TouchableOpacity
-                key={cust.id}
-                style={[
-                  styles.customerCard,
-                  {
-                    backgroundColor: isDark ? "#12151F" : "#FFFFFF",
-                    borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
-                    shadowColor: isDark ? "#000000" : "#64748B",
-                    shadowOpacity: isDark ? 0.3 : 0.04,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowRadius: 6,
-                    elevation: 2,
-                  },
-                ]}
-                onPress={() => {
-                  setSelectedCustomer({
-                    id: cust.id,
-                    name: cust.name,
-                    contactPerson: cust.contactPerson,
-                    dealValue: cust.dealValue,
-                    stage: cust.stage,
-                    priority: cust.priority,
-                    phone: (cust as any).phone || "0912 345 678",
-                    email: (cust as any).email || "b2b@v-pharma.vn",
-                    tags: (cust as any).tags || ["VIP", "Doanh nghiệp lớn", "Hợp đồng Q4"],
-                    lastInteraction: (cust as any).lastInteraction || "2 ngày trước",
-                  });
-                  setCustomerDetailVisible(true);
-                }}
-                activeOpacity={0.85}
-              >
-                <View style={styles.customerTop}>
-                  <Text
+            {customersList.filter((cust) => {
+              if (customerStageFilter === "all") return true;
+              return (cust.stage || "").toLowerCase().includes(customerStageFilter.toLowerCase());
+            }).length === 0 ? (
+              <EmptyState
+                icon={<Building2 size={28} color="#D8B282" />}
+                title="Chưa có khách hàng B2B nào"
+                description="Tạo hồ sơ khách hàng doanh nghiệp để quản lý phễu đàm phán và tiến độ chốt hợp đồng."
+                actionTitle="Thêm Khách Hàng Mới"
+                onAction={() => setCreateCustomerVisible(true)}
+                isDark={isDark}
+              />
+            ) : (
+              customersList
+                .filter((cust) => {
+                  if (customerStageFilter === "all") return true;
+                  return (cust.stage || "").toLowerCase().includes(customerStageFilter.toLowerCase());
+                })
+                .map((cust) => (
+                  <TouchableOpacity
+                    key={cust.id}
                     style={[
-                      styles.customerName,
-                      { color: isDark ? "#FFFFFF" : "#0F172A" },
+                      styles.customerCard,
+                      {
+                        backgroundColor: isDark ? "#12151F" : "#FFFFFF",
+                        borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
+                        shadowColor: isDark ? "#000000" : "#64748B",
+                        shadowOpacity: isDark ? 0.3 : 0.04,
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowRadius: 6,
+                        elevation: 2,
+                      },
                     ]}
+                    onPress={() => {
+                      setSelectedCustomer({
+                        id: cust.id,
+                        name: cust.name,
+                        contactPerson: cust.contactPerson,
+                        dealValue: cust.dealValue,
+                        stage: cust.stage,
+                        priority: cust.priority,
+                        phone: (cust as any).phone || "",
+                        email: (cust as any).email || "",
+                        tags: (cust as any).tags || ["B2B", "Khách hàng"],
+                        lastInteraction: (cust as any).lastInteraction || "Gần đây",
+                      });
+                      setCustomerDetailVisible(true);
+                    }}
+                    activeOpacity={0.85}
                   >
-                    {cust.name}
-                  </Text>
-                  <View
-                    style={[
-                      styles.priorityPill,
-                      { backgroundColor: isDark ? "rgba(216, 178, 130, 0.18)" : "#F6E1C3" },
-                    ]}
-                  >
+                    <View style={styles.customerTop}>
+                      <Text
+                        style={[
+                          styles.customerName,
+                          { color: isDark ? "#FFFFFF" : "#0F172A" },
+                        ]}
+                      >
+                        {cust.name}
+                      </Text>
+                      <View
+                        style={[
+                          styles.priorityPill,
+                          { backgroundColor: isDark ? "rgba(216, 178, 130, 0.18)" : "#F6E1C3" },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.priorityText,
+                            { color: isDark ? "#D8B282" : "#8C653B" },
+                          ]}
+                        >
+                          {cust.priority}
+                        </Text>
+                      </View>
+                    </View>
+
                     <Text
                       style={[
-                        styles.priorityText,
-                        { color: isDark ? "#D8B282" : "#8C653B" },
+                        styles.customerContact,
+                        { color: isDark ? "#94A3B8" : "#64748B" },
                       ]}
                     >
-                      {cust.priority}
+                      Người liên hệ: {cust.contactPerson}
                     </Text>
-                  </View>
-                </View>
 
-                <Text
-                  style={[
-                    styles.customerContact,
-                    { color: isDark ? "#94A3B8" : "#64748B" },
-                  ]}
-                >
-                  Người liên hệ: {cust.contactPerson}
-                </Text>
-
-                <View
-                  style={[
-                    styles.customerFooter,
-                    { borderTopColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0" },
-                  ]}
-                >
-                  <View style={styles.dealPill}>
-                    <Text style={styles.dealText}>{cust.dealValue}</Text>
-                  </View>
-                  <Text
-                    style={[
-                      styles.customerStage,
-                      { color: isDark ? "#D8B282" : "#8C653B" },
-                    ]}
-                  >
-                    {cust.stage}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                    <View
+                      style={[
+                        styles.customerFooter,
+                        { borderTopColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0" },
+                      ]}
+                    >
+                      <View style={styles.dealPill}>
+                        <Text style={styles.dealText}>{cust.dealValue}</Text>
+                      </View>
+                      <Text
+                        style={[
+                          styles.customerStage,
+                          { color: isDark ? "#D8B282" : "#8C653B" },
+                        ]}
+                      >
+                        {cust.stage}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+            )}
           </View>
         )}
 
@@ -1754,73 +1747,89 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               </View>
             </View>
 
-            {partners
-              .filter((p) => p.status === "suggested")
-              .map((item) => (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.partnerCard,
-                    {
-                      backgroundColor: isDark ? "#12151F" : "#FFFFFF",
-                      borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
-                      shadowColor: isDark ? "#000000" : "#64748B",
-                      shadowOpacity: isDark ? 0.3 : 0.04,
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowRadius: 6,
-                      elevation: 2,
-                    },
-                  ]}
-                >
-                  <View style={styles.cardMain}>
-                    <Avatar url={item.avatarUrl} name={item.name} size={50} showGoldBorder />
-                    <View style={styles.partnerInfo}>
-                      <View style={styles.nameRow}>
-                        <Text
-                          style={[
-                            styles.partnerName,
-                            { color: isDark ? "#FFFFFF" : "#0F172A" },
-                          ]}
-                        >
-                          {item.name}
-                        </Text>
-                        <View style={styles.matchBadge}>
-                          <Text style={styles.matchText}>{item.matchScore}% Phù hợp</Text>
-                        </View>
-                      </View>
-                      <Text style={styles.partnerTitle}>{item.title}</Text>
-                      <Text
-                        style={[
-                          styles.partnerCompany,
-                          { color: isDark ? "#94A3B8" : "#64748B" },
-                        ]}
-                      >
-                        {item.company}
-                      </Text>
-                    </View>
-                  </View>
-
+            {partners.filter((p) => p.status === "suggested").length === 0 ? (
+              <EmptyState
+                icon={<Sparkles size={28} color="#D8B282" />}
+                title="Chưa có gợi ý đối tác mới"
+                description="Hệ thống AI đang phân tích dữ liệu ngành nghề và hồ sơ doanh nghiệp để đề xuất các cơ hội hợp tác phù hợp nhất."
+                isDark={isDark}
+              />
+            ) : (
+              partners
+                .filter((p) => p.status === "suggested")
+                .map((item) => (
                   <View
+                    key={item.id}
                     style={[
-                      styles.cardActions,
-                      { borderTopColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0" },
+                      styles.partnerCard,
+                      {
+                        backgroundColor: isDark ? "#12151F" : "#FFFFFF",
+                        borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
+                        shadowColor: isDark ? "#000000" : "#64748B",
+                        shadowOpacity: isDark ? 0.3 : 0.04,
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowRadius: 6,
+                        elevation: 2,
+                      },
                     ]}
                   >
-                    <TouchableOpacity
-                      style={styles.connectBtnFull}
-                      onPress={() => {
-                        setPartners((prev) =>
-                          prev.map((p) => (p.id === item.id ? { ...p, status: "pending" } : p))
-                        );
-                        Alert.alert("Thành công", `Đã gửi lời mời hợp tác tới ${item.name}.`);
-                      }}
+                    <View style={styles.cardMain}>
+                      <Avatar url={item.avatarUrl} name={item.name} size={50} showGoldBorder />
+                      <View style={styles.partnerInfo}>
+                        <View style={styles.nameRow}>
+                          <Text
+                            style={[
+                              styles.partnerName,
+                              { color: isDark ? "#FFFFFF" : "#0F172A" },
+                            ]}
+                          >
+                            {item.name}
+                          </Text>
+                          <View style={styles.matchBadge}>
+                            <Text style={styles.matchText}>{item.matchScore}% Phù hợp</Text>
+                          </View>
+                        </View>
+                        <Text style={styles.partnerTitle}>{item.title}</Text>
+                        <Text
+                          style={[
+                            styles.partnerCompany,
+                            { color: isDark ? "#94A3B8" : "#64748B" },
+                          ]}
+                        >
+                          {item.company}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View
+                      style={[
+                        styles.cardActions,
+                        { borderTopColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0" },
+                      ]}
                     >
-                      <Sparkles size={14} color="#050C15" style={{ marginRight: 6 }} />
-                      <Text style={styles.connectBtnFullText}>Gửi lời mời kết nối B2B</Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setPartners((prev) =>
+                            prev.map((p) => (p.id === item.id ? { ...p, status: "pending" } : p))
+                          );
+                          Alert.alert("Thành công", `Đã gửi lời mời hợp tác tới ${item.name}.`);
+                        }}
+                        activeOpacity={0.85}
+                      >
+                        <LinearGradient
+                          colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={styles.connectBtnFull}
+                        >
+                          <Sparkles size={14} color="#050C15" style={{ marginRight: 6 }} />
+                          <Text style={styles.connectBtnFullText}>Gửi lời mời kết nối B2B</Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              ))}
+                ))
+            )}
           </View>
         )}
 
@@ -1991,29 +2000,20 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 <Text style={styles.loadingText}>Đang đồng bộ hộp thư ViOne...</Text>
               </View>
             ) : filteredThreads.length === 0 ? (
-              <View style={styles.emptyInboxBox}>
-                <MessageSquare size={36} color={isDark ? "#94A3B8" : "#CBD5E1"} style={{ marginBottom: 10 }} />
-                <Text
-                  style={[
-                    styles.emptyTitle,
-                    { color: isDark ? "#FFFFFF" : "#0F172A" },
-                  ]}
-                >
-                  Chưa có cuộc trò chuyện nào
-                </Text>
-                <Text
-                  style={[
-                    styles.emptySubtitle,
-                    { color: isDark ? "#94A3B8" : "#64748B" },
-                  ]}
-                >
-                  {activeMessageCategory === "unread"
+              <EmptyState
+                icon={<MessageSquare size={28} color="#D8B282" />}
+                title="Chưa có cuộc trò chuyện nào"
+                description={
+                  activeMessageCategory === "unread"
                     ? "Bạn đã đọc hết mọi tin nhắn."
                     : activeMessageCategory === "groups"
                     ? "Chưa tham gia nhóm nào. Bấm 'Tạo nhóm' để kết nối nhóm làm việc."
-                    : "Chọn một đối tác trong danh bạ để bắt đầu nhắn tin."}
-                </Text>
-              </View>
+                    : "Chọn một đối tác trong danh bạ để bắt đầu nhắn tin trao đổi công việc."
+                }
+                actionTitle={activeMessageCategory === "groups" ? "Tạo Nhóm Mới" : undefined}
+                onAction={activeMessageCategory === "groups" ? () => setCreateGroupVisible(true) : undefined}
+                isDark={isDark}
+              />
             ) : (
               filteredThreads.map((item) => {
                 const hasUnread = (item.unreadCount || 0) > 0;
@@ -2122,92 +2122,158 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         {/* ─── TAB 5: LỜI MỜI (REQUESTS) ─── */}
         {activeTab === "requests" && (
           <View style={styles.tabContent}>
-            <View
-              style={[
-                styles.requestCard,
-                {
-                  backgroundColor: isDark ? "#12151F" : "#FFFFFF",
-                  borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
-                  shadowColor: isDark ? "#000000" : "#64748B",
-                  shadowOpacity: isDark ? 0.3 : 0.04,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowRadius: 6,
-                  elevation: 2,
-                },
-              ]}
-            >
-              <View style={styles.cardMain}>
-                <Avatar name="Lê Thị Thu Hằng" size={50} showGoldBorder />
-                <View style={styles.partnerInfo}>
-                  <Text
-                    style={[
-                      styles.partnerName,
-                      { color: isDark ? "#FFFFFF" : "#0F172A" },
-                    ]}
-                  >
-                    Lê Thị Thu Hằng
-                  </Text>
-                  <Text style={styles.partnerTitle}>Giám Đốc Tài Chính (CFO)</Text>
-                  <Text
-                    style={[
-                      styles.partnerCompany,
-                      { color: isDark ? "#94A3B8" : "#64748B" },
-                    ]}
-                  >
-                    Quỹ Đầu Tư Khởi Nghiệp V-Capital
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={[
-                  styles.requestActionRow,
-                  { borderTopColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0" },
-                ]}
-              >
-                <TouchableOpacity
-                  style={styles.acceptBtn}
-                  onPress={() => Alert.alert("Thành công", "Đã chấp nhận lời mời kết nối.")}
-                >
-                  <Check size={14} color="#050C15" style={{ marginRight: 4 }} />
-                  <Text style={styles.acceptBtnText}>Chấp nhận</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
+            {connectionRequests.length === 0 ? (
+              <EmptyState
+                icon={<UserPlus size={28} color="#D8B282" />}
+                title="Chưa có lời mời kết nối nào"
+                description="Khi có đối tác gửi lời mời kết nối hợp tác qua danh thiếp số hoặc cộng đồng, yêu cầu sẽ xuất hiện tại đây."
+                isDark={isDark}
+              />
+            ) : (
+              connectionRequests.map((req) => (
+                <View
+                  key={req.id}
                   style={[
-                    styles.declineBtn,
+                    styles.requestCard,
                     {
-                      backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
+                      backgroundColor: isDark ? "#12151F" : "#FFFFFF",
                       borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
-                      borderWidth: 1,
+                      shadowColor: isDark ? "#000000" : "#64748B",
+                      shadowOpacity: isDark ? 0.3 : 0.04,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowRadius: 6,
+                      elevation: 2,
                     },
                   ]}
-                  onPress={() => Alert.alert("Thông báo", "Đã từ chối lời mời.")}
                 >
-                  <X size={14} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
-                  <Text
+                  <View style={styles.cardMain}>
+                    <Avatar url={req.senderAvatar || req.avatarUrl} name={req.senderName || req.name || "Doanh nhân"} size={50} showGoldBorder />
+                    <View style={styles.partnerInfo}>
+                      <Text
+                        style={[
+                          styles.partnerName,
+                          { color: isDark ? "#FFFFFF" : "#0F172A" },
+                        ]}
+                      >
+                        {req.senderName || req.name || "Doanh nhân"}
+                      </Text>
+                      <Text style={styles.partnerTitle}>{req.senderTitle || req.title || "Lãnh đạo doanh nghiệp"}</Text>
+                      <Text
+                        style={[
+                          styles.partnerCompany,
+                          { color: isDark ? "#94A3B8" : "#64748B" },
+                        ]}
+                      >
+                        {req.senderCompany || req.company || "Đối tác ViOne"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
                     style={[
-                      styles.declineBtnText,
-                      { color: isDark ? "#94A3B8" : "#64748B" },
+                      styles.requestActionRow,
+                      { borderTopColor: isDark ? "rgba(255, 255, 255, 0.06)" : "#E2E8F0" },
                     ]}
                   >
-                    Bỏ qua
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                    <TouchableOpacity
+                      style={{ flex: 1 }}
+                      onPress={async () => {
+                        try {
+                          await networkApi.updateConnection(req.id, "accepted");
+                          setConnectionRequests((prev) => prev.filter((r) => r.id !== req.id));
+                          Alert.alert("Thành công", "Đã chấp nhận lời mời kết nối.");
+                        } catch (err) {
+                          setConnectionRequests((prev) => prev.filter((r) => r.id !== req.id));
+                          Alert.alert("Thông báo", "Đã ghi nhận kết nối.");
+                        }
+                      }}
+                      activeOpacity={0.85}
+                    >
+                      <LinearGradient
+                        colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.acceptBtn}
+                      >
+                        <Check size={14} color="#050C15" style={{ marginRight: 4 }} />
+                        <Text style={styles.acceptBtnText}>Chấp nhận</Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={{ flex: 1 }}
+                      onPress={async () => {
+                        try {
+                          await networkApi.updateConnection(req.id, "declined");
+                          setConnectionRequests((prev) => prev.filter((r) => r.id !== req.id));
+                          Alert.alert("Thông báo", "Đã từ chối lời mời.");
+                        } catch (err) {
+                          setConnectionRequests((prev) => prev.filter((r) => r.id !== req.id));
+                        }
+                      }}
+                      activeOpacity={0.85}
+                    >
+                      <LinearGradient
+                        colors={isDark ? ["#1E293B", "#0F172A"] : ["#F8FAFC", "#E2E8F0"]}
+                        style={[
+                          styles.declineBtn,
+                          {
+                            borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
+                            borderWidth: 1,
+                          },
+                        ]}
+                      >
+                        <X size={14} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
+                        <Text
+                          style={[
+                            styles.declineBtnText,
+                            { color: isDark ? "#94A3B8" : "#64748B" },
+                          ]}
+                        >
+                          Bỏ qua
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))
+            )}
           </View>
         )}
       </ScrollView>
 
       {/* Floating AI Copilot Assistant Button */}
       <TouchableOpacity
-        style={styles.floatingAiBtn}
+        style={{
+          position: "absolute",
+          bottom: 24,
+          right: 18,
+          borderRadius: 24,
+          overflow: "hidden",
+          elevation: 6,
+          shadowColor: "#000000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.25,
+          shadowRadius: 8,
+        }}
         onPress={() => setAiAssistantVisible(true)}
         activeOpacity={0.85}
       >
-        <Sparkles size={18} color="#050C15" />
-        <Text style={styles.floatingAiText}>ViOne AI</Text>
+        <LinearGradient
+          colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            gap: 6,
+          }}
+        >
+          <Sparkles size={18} color="#050C15" />
+          <Text style={{ fontSize: 13, fontWeight: "800", color: "#050C15" }}>ViOne AI</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
       {/* Realtime Business Notifications Modal */}
@@ -2304,7 +2370,21 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       <CreateCustomerModal
         visible={createCustomerVisible}
         onClose={() => setCreateCustomerVisible(false)}
-        onCustomerCreated={(newCust: NewCustomerData) => {
+        onCustomerCreated={async (newCust: NewCustomerData) => {
+          try {
+            await customerApi.createCustomer({
+              name: newCust.name,
+              contactPerson: newCust.contactPerson,
+              company: newCust.name,
+              dealValue: newCust.dealValue,
+              stage: newCust.stage,
+              phone: newCust.phone,
+              email: newCust.email,
+              tags: newCust.tags,
+            });
+          } catch (err) {
+            console.warn("Lưu khách hàng B2B lên backend:", err);
+          }
           setCustomersList((prev) => [
             {
               id: newCust.id,

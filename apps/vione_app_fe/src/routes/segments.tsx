@@ -297,18 +297,18 @@ export function PackageManagementPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Header Hero Banner */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#D8B282]/35 bg-gradient-to-r from-[#050C15] via-[#111827] to-[#0A101D] p-6 shadow-xl">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-[#D8B282]/35 bg-gradient-to-r from-amber-50/90 via-white to-amber-50/60 dark:from-[#050C15] dark:via-[#111827] dark:to-[#0A101D] p-6 shadow-xl">
           <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-[#D8B282]/10 blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D8B282]/15 border border-[#D8B282]/40 text-[#F6E1C3] text-xs font-black uppercase tracking-wider mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D8B282]/15 border border-[#D8B282]/40 text-amber-800 dark:text-[#F6E1C3] text-xs font-black uppercase tracking-wider mb-2">
                 <Package className="w-3.5 h-3.5 text-[#D8B282]" />
                 <span>ViOne Platform Licensing & Subscription Engine</span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                 Quản Trị Gói Dịch Vụ & Xét Duyệt Hồ Sơ Doanh Nghiệp
               </h1>
-              <p className="text-sm text-slate-300 mt-1 max-w-2xl">
+              <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
                 Cấu hình phân chia gói dịch vụ theo số lượng tài khoản (mặc định thấp nhất 30 tài khoản),
                 tích hợp mã thanh toán VietQR Napas 24/7 và duyệt hồ sơ đăng ký tự động bắn email thông tin gói.
               </p>
@@ -319,7 +319,7 @@ export function PackageManagementPage() {
                 type="button"
                 onClick={loadData}
                 disabled={loading}
-                className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-900/80 text-slate-200 hover:text-white font-medium text-xs flex items-center gap-2 transition cursor-pointer"
+                className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white font-medium text-xs flex items-center gap-2 transition cursor-pointer shadow-sm"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
                 <span>Làm mới</span>
@@ -337,14 +337,14 @@ export function PackageManagementPage() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-3 mt-6 border-t border-slate-800/80 pt-4">
+          <div className="flex items-center gap-3 mt-6 border-t border-slate-200 dark:border-slate-800/80 pt-4">
             <button
               type="button"
               onClick={() => setActiveTab("orders")}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
                 activeTab === "orders"
                   ? "bg-[#D8B282] text-slate-950 shadow-md"
-                  : "bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800"
+                  : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800"
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -362,7 +362,7 @@ export function PackageManagementPage() {
               className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
                 activeTab === "packages"
                   ? "bg-[#D8B282] text-slate-950 shadow-md"
-                  : "bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800"
+                  : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800"
               }`}
             >
               <Package className="w-4 h-4" />
@@ -389,8 +389,8 @@ export function PackageManagementPage() {
                     key={pkg.id}
                     className={`rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 relative ${
                       pkg.isActive
-                        ? "border-[#D8B282]/40 bg-slate-900/90 shadow-lg hover:border-[#D8B282]"
-                        : "border-slate-800 bg-slate-950/60 opacity-60"
+                        ? "border-slate-200 dark:border-[#D8B282]/40 bg-white dark:bg-slate-900/90 shadow-md hover:border-[#D8B282]"
+                        : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 opacity-60"
                     }`}
                   >
                     <div>
@@ -399,8 +399,8 @@ export function PackageManagementPage() {
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
                             isTrial
-                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                              : "bg-[#D8B282]/20 text-[#F6E1C3] border border-[#D8B282]/50"
+                              ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40"
+                              : "bg-[#D8B282]/20 text-amber-800 dark:text-[#F6E1C3] border border-[#D8B282]/50"
                           }`}
                         >
                           {isTrial ? "FREE 30 NGÀY" : "GÓI CÓ PHÍ"}
@@ -408,41 +408,41 @@ export function PackageManagementPage() {
 
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                            pkg.isActive ? "bg-emerald-500/10 text-emerald-400" : "bg-slate-800 text-slate-400"
+                            pkg.isActive ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                           }`}
                         >
                           {pkg.isActive ? "Đang phát hành" : "Tạm ẩn"}
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-black text-white mb-1">{pkg.name}</h3>
-                      <div className="text-[11px] font-mono text-[#D8B282] mb-3">Mã: {pkg.code}</div>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white mb-1">{pkg.name}</h3>
+                      <div className="text-[11px] font-mono text-amber-700 dark:text-[#D8B282] mb-3">Mã: {pkg.code}</div>
 
                       {/* Pricing */}
-                      <div className="mb-4 p-3 rounded-xl bg-slate-950 border border-slate-800">
-                        <div className="text-2xl font-black text-[#F6E1C3]">
+                      <div className="mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        <div className="text-2xl font-black text-amber-700 dark:text-[#F6E1C3]">
                           {isTrial ? "0 đ" : `${new Intl.NumberFormat("vi-VN").format(pkg.price)} đ`}
-                          <span className="text-xs font-normal text-slate-400"> / {pkg.durationDays} ngày</span>
+                          <span className="text-xs font-normal text-slate-500 dark:text-slate-400"> / {pkg.durationDays} ngày</span>
                         </div>
-                        <div className="text-xs text-slate-400 mt-1 flex items-center gap-1.5 font-medium">
-                          <Users className="w-3.5 h-3.5 text-[#D8B282]" />
+                        <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-1.5 font-medium">
+                          <Users className="w-3.5 h-3.5 text-amber-600 dark:text-[#D8B282]" />
                           <span>
-                            Tối đa: <strong className="text-white">{pkg.maxSlots} tài khoản</strong> thành viên
+                            Tối đa: <strong className="text-slate-900 dark:text-white">{pkg.maxSlots} tài khoản</strong> thành viên
                           </span>
                         </div>
                       </div>
 
-                      <p className="text-xs text-slate-300 leading-relaxed mb-4">{pkg.description}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">{pkg.description}</p>
 
                       {/* Features List */}
                       {Array.isArray(pkg.features) && pkg.features.length > 0 && (
-                        <div className="space-y-1.5 mb-4 border-t border-slate-800 pt-3">
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                        <div className="space-y-1.5 mb-4 border-t border-slate-200 dark:border-slate-800 pt-3">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                             Tính năng nổi bật:
                           </div>
                           {pkg.features.slice(0, 5).map((f, idx) => (
-                            <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                            <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                               <span className="line-clamp-1">{f}</span>
                             </div>
                           ))}
@@ -451,9 +451,9 @@ export function PackageManagementPage() {
 
                       {/* VietQR Preview */}
                       {qrUrl && (
-                        <div className="p-3 rounded-xl bg-white/5 border border-slate-800 text-center mb-4">
-                          <div className="text-[10px] font-bold text-slate-400 mb-2 uppercase flex items-center justify-center gap-1">
-                            <QrCode className="w-3 h-3 text-[#D8B282]" />
+                        <div className="p-3 rounded-xl bg-slate-100/80 dark:bg-white/5 border border-slate-200 dark:border-slate-800 text-center mb-4">
+                          <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase flex items-center justify-center gap-1">
+                            <QrCode className="w-3 h-3 text-amber-600 dark:text-[#D8B282]" />
                             <span>Mã VietQR Napas 24/7 Gói Cước</span>
                           </div>
                           <img
@@ -461,7 +461,7 @@ export function PackageManagementPage() {
                             alt="VietQR"
                             className="w-32 h-32 mx-auto rounded-lg bg-white p-1 shadow"
                           />
-                          <div className="text-[10px] font-mono text-slate-400 mt-1.5">
+                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-1.5">
                             {pkg.bankName} - {pkg.bankAccount}
                           </div>
                         </div>
@@ -469,13 +469,13 @@ export function PackageManagementPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 mt-2">
+                    <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 mt-2">
                       <button
                         type="button"
                         onClick={() => openEditPkgModal(pkg)}
-                        className="flex-1 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 flex items-center justify-center gap-1.5 transition cursor-pointer"
+                        className="flex-1 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1.5 transition cursor-pointer"
                       >
-                        <Edit3 className="w-3.5 h-3.5 text-[#D8B282]" />
+                        <Edit3 className="w-3.5 h-3.5 text-amber-600 dark:text-[#D8B282]" />
                         <span>Sửa</span>
                       </button>
 
@@ -484,8 +484,8 @@ export function PackageManagementPage() {
                         onClick={() => handleTogglePkgActive(pkg)}
                         className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition cursor-pointer ${
                           pkg.isActive
-                            ? "border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
-                            : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                            ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20"
+                            : "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20"
                         }`}
                       >
                         {pkg.isActive ? "Tạm ẩn" : "Kích hoạt"}
@@ -502,7 +502,7 @@ export function PackageManagementPage() {
         {activeTab === "orders" && (
           <div className="space-y-4">
             {/* Filter and Search Bar */}
-            <div className="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/60 backdrop-blur flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
               <div className="relative w-full md:w-96">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -510,12 +510,12 @@ export function PackageManagementPage() {
                   placeholder="Tìm theo tên doanh nghiệp, người đại diện, SĐT, email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 text-xs focus:outline-none focus:border-[#D8B282]"
+                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs focus:outline-none focus:border-[#D8B282]"
                 />
               </div>
 
               <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
-                <span className="text-xs text-slate-400 font-semibold mr-1">Trạng thái:</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold mr-1">Trạng thái:</span>
                 {[
                   { key: "all", label: "Tất cả" },
                   { key: "pending", label: "Chờ duyệt" },
@@ -529,7 +529,7 @@ export function PackageManagementPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                       statusFilter === st.key
                         ? "bg-[#D8B282] text-slate-950 shadow"
-                        : "bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white"
+                        : "bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
                     {st.label}
@@ -539,11 +539,11 @@ export function PackageManagementPage() {
             </div>
 
             {/* Table Hồ Sơ Đăng Ký */}
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 shadow-xl">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 shadow-xl">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-slate-800 bg-slate-950/80 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-100/90 dark:bg-slate-950/80 text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400">
                       <th className="py-3.5 px-4">Doanh nghiệp đăng ký</th>
                       <th className="py-3.5 px-4">Người đại diện & Liên hệ</th>
                       <th className="py-3.5 px-4">Gói cước đã chọn</th>
@@ -554,13 +554,13 @@ export function PackageManagementPage() {
                       <th className="py-3.5 px-4 text-right">Thao tác</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/80">
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
                     {filteredOrders.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="py-12 text-center text-slate-500">
-                          <Package className="w-10 h-10 mx-auto text-slate-600 mb-2 opacity-50" />
+                          <Package className="w-10 h-10 mx-auto text-slate-400 dark:text-slate-600 mb-2 opacity-50" />
                           <p className="text-sm font-medium">Chưa có hồ sơ đăng ký gói cước nào</p>
-                          <p className="text-xs text-slate-600 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-600 mt-0.5">
                             Khi người dùng đăng ký gói tại App ViOne, hồ sơ sẽ hiển thị ngay tại đây.
                           </p>
                         </td>
@@ -572,37 +572,37 @@ export function PackageManagementPage() {
                         const isRejected = order.status === "rejected";
 
                         return (
-                          <tr key={order.id} className="hover:bg-slate-800/40 transition-colors">
+                          <tr key={order.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                             <td className="py-3.5 px-4">
-                              <div className="font-bold text-white text-sm">{order.companyName}</div>
-                              <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                              <div className="font-bold text-slate-900 dark:text-white text-sm">{order.companyName}</div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
                                 {order.taxId && <span>MST: {order.taxId}</span>}
                                 {order.industry && <span>· {order.industry}</span>}
                               </div>
                             </td>
 
                             <td className="py-3.5 px-4">
-                              <div className="font-semibold text-slate-200">{order.representativeName}</div>
-                              <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                              <div className="font-semibold text-slate-800 dark:text-slate-200">{order.representativeName}</div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
                                 <span>{order.phone}</span>
                                 <span>· {order.email}</span>
                               </div>
                             </td>
 
                             <td className="py-3.5 px-4">
-                              <span className="font-bold text-[#F6E1C3] bg-[#D8B282]/15 px-2.5 py-1 rounded-md border border-[#D8B282]/30 inline-block">
+                              <span className="font-bold text-amber-800 dark:text-[#F6E1C3] bg-[#D8B282]/20 px-2.5 py-1 rounded-md border border-[#D8B282]/40 inline-block">
                                 {order.packageName}
                               </span>
                             </td>
 
-                            <td className="py-3.5 px-4 font-bold text-white">
+                            <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
                               <div className="flex items-center gap-1.5">
-                                <Users className="w-3.5 h-3.5 text-[#D8B282]" />
+                                <Users className="w-3.5 h-3.5 text-amber-600 dark:text-[#D8B282]" />
                                 <span>{order.maxSlots} tài khoản</span>
                               </div>
                             </td>
 
-                            <td className="py-3.5 px-4 font-bold text-[#F6E1C3]">
+                            <td className="py-3.5 px-4 font-bold text-amber-700 dark:text-[#F6E1C3]">
                               {order.price === 0
                                 ? "0 đ (Free Trial)"
                                 : `${new Intl.NumberFormat("vi-VN").format(order.price)} đ`}
@@ -610,26 +610,26 @@ export function PackageManagementPage() {
 
                             <td className="py-3.5 px-4 text-center">
                               {isPending && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 border border-amber-500/50 text-amber-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 border border-amber-500/50 text-amber-700 dark:text-amber-300">
                                   <Clock className="w-3 h-3" />
                                   <span>Chờ duyệt</span>
                                 </span>
                               )}
                               {isApproved && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 border border-emerald-500/50 text-emerald-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 border border-emerald-500/50 text-emerald-700 dark:text-emerald-300">
                                   <CheckCircle2 className="w-3 h-3" />
                                   <span>Đã duyệt</span>
                                 </span>
                               )}
                               {isRejected && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 border border-rose-500/50 text-rose-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 border border-rose-500/50 text-rose-700 dark:text-rose-300">
                                   <XCircle className="w-3 h-3" />
                                   <span>Từ chối</span>
                                 </span>
                               )}
                             </td>
 
-                            <td className="py-3.5 px-4 text-slate-400">
+                            <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                               {new Date(order.createdAt).toLocaleDateString("vi-VN")}
                             </td>
 
@@ -641,9 +641,9 @@ export function PackageManagementPage() {
                                     setSelectedOrder(order);
                                     setIsOrderModalOpen(true);
                                   }}
-                                  className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 font-semibold text-xs flex items-center gap-1 transition cursor-pointer"
+                                  className="px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold text-xs flex items-center gap-1 transition cursor-pointer"
                                 >
-                                  <Eye className="w-3.5 h-3.5 text-[#D8B282]" />
+                                  <Eye className="w-3.5 h-3.5 text-amber-600 dark:text-[#D8B282]" />
                                   <span>Xem hồ sơ</span>
                                 </button>
 
@@ -673,18 +673,18 @@ export function PackageManagementPage() {
 
         {/* MODAL 1: TẠO / SỬA GÓI DỊCH VỤ */}
         {isPkgModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
-            <div className="relative w-full max-w-2xl rounded-2xl border border-[#D8B282]/50 bg-[#0F172A] p-6 shadow-2xl space-y-5 my-8">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+            <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 dark:border-[#D8B282]/50 bg-white dark:bg-[#0F172A] p-6 shadow-2xl space-y-5 my-8 text-slate-900 dark:text-white">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-[#D8B282] flex items-center justify-center text-slate-950 font-bold">
                     <Package className="w-4 h-4 text-slate-950" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
                       {editingPkg ? `Chỉnh Sửa Gói: ${editingPkg.name}` : "Tạo Mới Gói Dịch Vụ ViOne Platform"}
                     </h3>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Thiết lập số lượng người, giá tiền và thông tin thanh toán VietQR
                     </p>
                   </div>
@@ -692,7 +692,7 @@ export function PackageManagementPage() {
                 <button
                   type="button"
                   onClick={() => setIsPkgModalOpen(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -701,33 +701,33 @@ export function PackageManagementPage() {
               <form onSubmit={handleSavePkg} className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Mã Gói Cước (Code) *</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Mã Gói Cước (Code) *</label>
                     <input
                       type="text"
                       required
                       value={pkgCode}
                       onChange={(e) => setPkgCode(e.target.value.toUpperCase())}
                       placeholder="VD: VIONE_STARTER_30"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:border-[#D8B282] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono focus:border-[#D8B282] outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Tên Gói Dịch Vụ *</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Tên Gói Dịch Vụ *</label>
                     <input
                       type="text"
                       required
                       value={pkgName}
                       onChange={(e) => setPkgName(e.target.value)}
                       placeholder="VD: Gói Tiêu Chuẩn (30 Tài Khoản)"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Loại Gói</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Loại Gói</label>
                     <select
                       value={pkgType}
                       onChange={(e) => {
@@ -735,7 +735,7 @@ export function PackageManagementPage() {
                         setPkgType(val);
                         if (val === "free_trial") setPkgPrice(0);
                       }}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                     >
                       <option value="paid">Có phí (Paid)</option>
                       <option value="free_trial">Dùng thử Free (0 đ)</option>
@@ -743,7 +743,7 @@ export function PackageManagementPage() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">
                       Số Tài Khoản Tối Đa (Slots) *
                     </label>
                     <input
@@ -753,15 +753,15 @@ export function PackageManagementPage() {
                       value={pkgSlots}
                       onChange={(e) => setPkgSlots(Number(e.target.value))}
                       placeholder="Mặc định thấp nhất 30"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold focus:border-[#D8B282] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-bold focus:border-[#D8B282] outline-none"
                     />
-                    <span className="text-[10px] text-slate-400 mt-0.5 block">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
                       Mặc định tối thiểu 30 tài khoản
                     </span>
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Giá Tiền (VND) *</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Giá Tiền (VND) *</label>
                     <input
                       type="number"
                       min={0}
@@ -770,30 +770,30 @@ export function PackageManagementPage() {
                       value={pkgPrice}
                       onChange={(e) => setPkgPrice(Number(e.target.value))}
                       placeholder="VD: 1500000"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-[#F6E1C3] font-black focus:border-[#D8B282] outline-none disabled:opacity-50"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-amber-700 dark:text-[#F6E1C3] font-black focus:border-[#D8B282] outline-none disabled:opacity-50"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Thời Hạn Sử Dụng (Ngày) *</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Thời Hạn Sử Dụng (Ngày) *</label>
                     <input
                       type="number"
                       min={1}
                       required
                       value={pkgDuration}
                       onChange={(e) => setPkgDuration(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Chu Kỳ Thanh Toán</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Chu Kỳ Thanh Toán</label>
                     <select
                       value={pkgCycle}
                       onChange={(e) => setPkgCycle(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                     >
                       <option value="monthly">Theo tháng (Monthly)</option>
                       <option value="quarterly">Theo quý (Quarterly)</option>
@@ -804,56 +804,56 @@ export function PackageManagementPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Mô Tả Gói Dịch Vụ</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Mô Tả Gói Dịch Vụ</label>
                   <textarea
                     rows={2}
                     value={pkgDesc}
                     onChange={(e) => setPkgDesc(e.target.value)}
                     placeholder="Mô tả quyền lợi và đối tượng doanh nghiệp phù hợp..."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                   />
                 </div>
 
                 {/* Thông tin VietQR Ngân Hàng */}
-                <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3">
-                  <div className="text-[11px] font-bold text-[#F6E1C3] uppercase tracking-wider flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-[#D8B282]" />
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="text-[11px] font-bold text-amber-800 dark:text-[#F6E1C3] uppercase tracking-wider flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-amber-600 dark:text-[#D8B282]" />
                     <span>Cấu Hình Nhận Thanh Toán VietQR Napas 24/7</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-slate-400 text-[10px] mb-1">Ngân Hàng Nhận</label>
+                      <label className="block text-slate-500 dark:text-slate-400 text-[10px] mb-1">Ngân Hàng Nhận</label>
                       <input
                         type="text"
                         value={pkgBankName}
                         onChange={(e) => setPkgBankName(e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 text-[10px] mb-1">Số Tài Khoản</label>
+                      <label className="block text-slate-500 dark:text-slate-400 text-[10px] mb-1">Số Tài Khoản</label>
                       <input
                         type="text"
                         value={pkgBankAccount}
                         onChange={(e) => setPkgBankAccount(e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono focus:border-[#D8B282] outline-none"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono focus:border-[#D8B282] outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 text-[10px] mb-1">Tên Chủ Tài Khoản</label>
+                      <label className="block text-slate-500 dark:text-slate-400 text-[10px] mb-1">Tên Chủ Tài Khoản</label>
                       <input
                         type="text"
                         value={pkgAccountName}
                         onChange={(e) => setPkgAccountName(e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-[#D8B282] outline-none"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">
                     Danh Sách Tính Năng (Mỗi dòng 1 tính năng)
                   </label>
                   <textarea
@@ -861,15 +861,15 @@ export function PackageManagementPage() {
                     value={pkgFeatures}
                     onChange={(e) => setPkgFeatures(e.target.value)}
                     placeholder="VD:&#10;30 Tài khoản thành viên&#10;Quản lý công việc Kanban BPMN&#10;Chấm công thông minh thời gian thực"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-[#D8B282] outline-none font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:border-[#D8B282] outline-none font-mono"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setIsPkgModalOpen(false)}
-                    className="px-4 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition cursor-pointer"
+                    className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                   >
                     Hủy
                   </button>
@@ -888,26 +888,26 @@ export function PackageManagementPage() {
 
         {/* MODAL 2: XEM HỒ SƠ ĐĂNG KÝ GÓI (NHÂN VIÊN BẤM XEM HỒ SƠ) */}
         {isOrderModalOpen && selectedOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
-            <div className="relative w-full max-w-2xl rounded-2xl border border-[#D8B282]/50 bg-[#0F172A] p-6 shadow-2xl space-y-5 my-8">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+            <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 dark:border-[#D8B282]/50 bg-white dark:bg-[#0F172A] p-6 shadow-2xl space-y-5 my-8 text-slate-900 dark:text-white">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-xl bg-[#D8B282] flex items-center justify-center text-slate-950 font-bold shadow">
                     <Building2 className="w-5 h-5 text-slate-950" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
                       Hồ Sơ Đăng Ký Gói: {selectedOrder.companyName}
                     </h3>
-                    <p className="text-xs text-slate-400">
-                      Mã đơn: <span className="font-mono text-[#D8B282]">ORD-{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Mã đơn: <span className="font-mono text-amber-700 dark:text-[#D8B282]">ORD-{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
                     </p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsOrderModalOpen(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -916,85 +916,85 @@ export function PackageManagementPage() {
               {/* Thông tin chi tiết */}
               <div className="space-y-4 text-xs">
                 {/* Doanh nghiệp & Đại diện */}
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-3">
-                  <div className="text-xs font-black text-[#F6E1C3] uppercase tracking-wider flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-[#D8B282]" />
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 space-y-3">
+                  <div className="text-xs font-black text-amber-800 dark:text-[#F6E1C3] uppercase tracking-wider flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-amber-600 dark:text-[#D8B282]" />
                     <span>Thông Tin Doanh Nghiệp Đăng Ký</span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-700 dark:text-slate-300">
                     <div>
                       <span className="text-slate-500 block">Tên doanh nghiệp:</span>
-                      <strong className="text-white text-sm">{selectedOrder.companyName}</strong>
+                      <strong className="text-slate-900 dark:text-white text-sm">{selectedOrder.companyName}</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Mã số thuế:</span>
-                      <strong className="text-white font-mono">{selectedOrder.taxId || "Chưa cung cấp"}</strong>
+                      <strong className="text-slate-900 dark:text-white font-mono">{selectedOrder.taxId || "Chưa cung cấp"}</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Người đại diện / Liên hệ:</span>
-                      <strong className="text-white">{selectedOrder.representativeName}</strong>
+                      <strong className="text-slate-900 dark:text-white">{selectedOrder.representativeName}</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Số điện thoại:</span>
-                      <strong className="text-white font-mono">{selectedOrder.phone}</strong>
+                      <strong className="text-slate-900 dark:text-white font-mono">{selectedOrder.phone}</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Email nhận thông tin gói:</span>
-                      <strong className="text-white font-mono text-[#D8B282]">{selectedOrder.email}</strong>
+                      <strong className="text-amber-700 dark:text-[#D8B282] font-mono">{selectedOrder.email}</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Ngành nghề:</span>
-                      <strong className="text-white">{selectedOrder.industry || "Doanh nghiệp dịch vụ / Thương mại"}</strong>
+                      <strong className="text-slate-900 dark:text-white">{selectedOrder.industry || "Doanh nghiệp dịch vụ / Thương mại"}</strong>
                     </div>
                     <div className="md:col-span-2">
                       <span className="text-slate-500 block">Địa chỉ trụ sở:</span>
-                      <strong className="text-white">{selectedOrder.address || "Việt Nam"}</strong>
+                      <strong className="text-slate-900 dark:text-white">{selectedOrder.address || "Việt Nam"}</strong>
                     </div>
                   </div>
                 </div>
 
                 {/* Gói cước đã chọn & Thanh toán */}
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-3">
-                  <div className="text-xs font-black text-[#F6E1C3] uppercase tracking-wider flex items-center gap-1.5">
-                    <Package className="w-4 h-4 text-[#D8B282]" />
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 space-y-3">
+                  <div className="text-xs font-black text-amber-800 dark:text-[#F6E1C3] uppercase tracking-wider flex items-center gap-1.5">
+                    <Package className="w-4 h-4 text-amber-600 dark:text-[#D8B282]" />
                     <span>Gói Cước Đăng Ký & Thanh Toán</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                      <span className="text-slate-400 block text-[11px]">Tên gói cước:</span>
-                      <div className="text-sm font-black text-[#F6E1C3] mt-0.5">{selectedOrder.packageName}</div>
-                      <div className="text-[10px] font-mono text-slate-400">Mã: {selectedOrder.packageCode}</div>
+                    <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Tên gói cước:</span>
+                      <div className="text-sm font-black text-amber-800 dark:text-[#F6E1C3] mt-0.5">{selectedOrder.packageName}</div>
+                      <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400">Mã: {selectedOrder.packageCode}</div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                      <span className="text-slate-400 block text-[11px]">Số tài khoản tối đa:</span>
-                      <div className="text-lg font-black text-white mt-0.5 flex items-center gap-1.5">
-                        <Users className="w-4 h-4 text-[#D8B282]" />
+                    <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Số tài khoản tối đa:</span>
+                      <div className="text-lg font-black text-slate-900 dark:text-white mt-0.5 flex items-center gap-1.5">
+                        <Users className="w-4 h-4 text-amber-600 dark:text-[#D8B282]" />
                         <span>{selectedOrder.maxSlots} tài khoản</span>
                       </div>
-                      <div className="text-[10px] text-slate-400">Cố tạo thêm sẽ bị chặn</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400">Cố tạo thêm sẽ bị chặn</div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                      <span className="text-slate-400 block text-[11px]">Số tiền thanh toán:</span>
-                      <div className="text-lg font-black text-emerald-400 mt-0.5">
+                    <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Số tiền thanh toán:</span>
+                      <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
                         {selectedOrder.price === 0
                           ? "0 đ (Free)"
                           : `${new Intl.NumberFormat("vi-VN").format(selectedOrder.price)} đ`}
                       </div>
-                      <div className="text-[10px] text-slate-400">Hình thức: {selectedOrder.paymentMethod || "VietQR"}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400">Hình thức: {selectedOrder.paymentMethod || "VietQR"}</div>
                     </div>
                   </div>
 
                   {selectedOrder.paymentProofUrl && (
                     <div className="pt-2">
-                      <span className="text-slate-400 block mb-1">Ảnh ủy nhiệm chi / Chứng từ thanh toán:</span>
+                      <span className="text-slate-500 dark:text-slate-400 block mb-1">Ảnh ủy nhiệm chi / Chứng từ thanh toán:</span>
                       <img
                         src={selectedOrder.paymentProofUrl}
                         alt="Chứng từ"
-                        className="max-h-48 rounded-lg border border-slate-700 bg-slate-900"
+                        className="max-h-48 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
                       />
                     </div>
                   )}
@@ -1002,10 +1002,10 @@ export function PackageManagementPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
-                <div className="text-xs text-slate-400">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
                   Trạng thái hiện tại:{" "}
-                  <strong className="text-white uppercase">{selectedOrder.status}</strong>
+                  <strong className="text-slate-900 dark:text-white uppercase">{selectedOrder.status}</strong>
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -1015,7 +1015,7 @@ export function PackageManagementPage() {
                         type="button"
                         onClick={() => setIsRejectModalOpen(true)}
                         disabled={processingOrder}
-                        className="px-4 py-2 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-300 font-bold hover:bg-rose-500/20 transition cursor-pointer"
+                        className="px-4 py-2 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-300 font-bold hover:bg-rose-500/20 transition cursor-pointer"
                       >
                         Từ chối
                       </button>
@@ -1036,7 +1036,7 @@ export function PackageManagementPage() {
                     <button
                       type="button"
                       onClick={() => setIsOrderModalOpen(false)}
-                      className="px-5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition cursor-pointer"
+                      className="px-5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                     >
                       Đóng
                     </button>
@@ -1049,13 +1049,13 @@ export function PackageManagementPage() {
 
         {/* MODAL 3: NHẬP LÝ DO TỪ CHỐI */}
         {isRejectModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-            <div className="w-full max-w-md rounded-2xl border border-rose-500/40 bg-[#0F172A] p-5 shadow-2xl space-y-4">
-              <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-2xl border border-rose-500/40 bg-white dark:bg-[#0F172A] p-5 shadow-2xl space-y-4 text-slate-900 dark:text-white">
+              <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
                 <AlertCircle className="w-5 h-5" />
                 <span>Từ Chối Hồ Sơ Đăng Ký Gói</span>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
                 Vui lòng nhập lý do từ chối để hệ thống phản hồi tới khách hàng:
               </p>
               <textarea
@@ -1063,13 +1063,13 @@ export function PackageManagementPage() {
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 placeholder="VD: Thông tin ủy nhiệm chi chưa khớp số tiền, vui lòng liên hệ lại..."
-                className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:border-rose-500 outline-none"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:border-rose-500 outline-none"
               />
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setIsRejectModalOpen(false)}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800"
+                  className="px-3.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
                   Hủy
                 </button>
@@ -1077,7 +1077,7 @@ export function PackageManagementPage() {
                   type="button"
                   onClick={handleRejectOrder}
                   disabled={processingOrder}
-                  className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition disabled:opacity-50 cursor-pointer"
                 >
                   {processingOrder ? "Đang xử lý..." : "Xác Nhận Từ Chối"}
                 </button>

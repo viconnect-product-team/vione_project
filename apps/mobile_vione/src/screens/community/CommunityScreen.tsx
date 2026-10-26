@@ -69,6 +69,19 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
 
+  const isViconnectAdmin = useMemo(() => {
+    const email = (user?.email || '').toLowerCase();
+    const role = (user as any)?.role || '';
+    return (
+      email === 'admin@connect.vn' ||
+      email.endsWith('@connect.vn') ||
+      email.endsWith('@viconnect.vn') ||
+      role === 'admin' ||
+      role === 'super_admin' ||
+      role === 'platform_admin'
+    );
+  }, [user]);
+
   // Navigation State: null = CommunityHome (Level 1); string = CommunityDetail (Level 2)
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(
     route?.params?.communityId || null
@@ -195,32 +208,28 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     try {
       const eventsRes = await eventsApi.getEvents();
       const eventsList = Array.isArray(eventsRes) ? eventsRes : (eventsRes as any)?.data || [];
-      if (eventsList.length > 0) {
-        setEvents(eventsList);
-      }
+      setEvents(eventsList);
     } catch {
-      // Keep initial
+      setEvents([]);
     }
 
     try {
       const oppRes = await opportunityApi.getOpportunities();
       const oppList = Array.isArray(oppRes) ? oppRes : (oppRes as any)?.data || [];
-      if (oppList.length > 0) {
-        setOpportunities(
-          oppList.map((op: any, idx: number) => ({
-            id: op.id || `opp-${idx}`,
-            title: op.title || "Cơ hội kinh doanh B2B",
-            organization: op.organization || op.companyName || "Doanh nghiệp ViOne",
-            communityName: op.communityName || "Cộng đồng ViOne",
-            dealValue: op.budget ? `${op.budget.toLocaleString("vi-VN")} đ` : op.dealValue || "Thỏa thuận",
-            category: op.category || "Hợp tác kinh doanh",
-            daysLeft: op.duration || "Còn 7 ngày",
-            interested: !!op.interested,
-          }))
-        );
-      }
+      setOpportunities(
+        oppList.map((op: any, idx: number) => ({
+          id: op.id || `opp-${idx}`,
+          title: op.title || "Cơ hội kinh doanh B2B",
+          organization: op.organization || op.companyName || "Doanh nghiệp ViOne",
+          communityName: op.communityName || "Cộng đồng ViOne",
+          dealValue: op.budget ? `${op.budget.toLocaleString("vi-VN")} đ` : op.dealValue || "Thỏa thuận",
+          category: op.category || "Hợp tác kinh doanh",
+          daysLeft: op.duration || "Còn 7 ngày",
+          interested: !!op.interested,
+        }))
+      );
     } catch {
-      // Keep initial
+      setOpportunities([]);
     }
 
     try {
@@ -631,9 +640,10 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             setSelectedOppForMeeting(opp);
             setProposeMeetingVisible(true);
           }}
-          subStatus={subStatus}
+          subStatus={isViconnectAdmin ? { hasSubscription: true, isTrial: false, trialDaysLeft: 999999, plan: 'enterprise' } : subStatus}
           onActivateTrial={handleActivateTrial}
-          onOpenPackageRegistration={() => setPackageModalVisible(true)}
+          onOpenPackageRegistration={isViconnectAdmin ? undefined : () => setPackageModalVisible(true)}
+          isViconnectAdmin={isViconnectAdmin}
         />
       )}
 

@@ -46,6 +46,7 @@ import {
 import { B2BEvent } from "../../../types";
 import { CommunityOpportunityItem } from "../../../components/OpportunityDetailModal";
 import { MemberCardData } from "../../../components/MemberCardBottomSheet";
+import { EmptyState } from "../../../components/common/EmptyState";
 import {
   DetailTab,
   TaskFilterType,
@@ -790,12 +791,13 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
 
                 {/* Danh Sách Task Cards */}
                 {filteredTasks.length === 0 ? (
-                  <View style={styles.emptyContainer}>
-                    <Briefcase size={32} color="#94A3B8" />
-                    <Text style={[styles.emptyTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                      Không có công việc nào trong mục này
-                    </Text>
-                  </View>
+                  <EmptyState
+                    icon={Briefcase}
+                    title="Chưa có công việc nào"
+                    subtitle="Không tìm thấy nhiệm vụ nào trong phân loại hoặc phòng ban này."
+                    actionLabel={isExecutive ? "Giao việc mới" : undefined}
+                    onAction={isExecutive ? onOpenAssignTask : undefined}
+                  />
                 ) : (
                   <View style={styles.tasksListContainer}>
                     {filteredTasks.map((task) => {
@@ -1021,11 +1023,27 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                                     Đang xử lý · Cập nhật khi xong:
                                   </Text>
                                   <TouchableOpacity
-                                    style={styles.completeTaskBtn}
+                                    style={{ borderRadius: 10, overflow: "hidden" }}
                                     onPress={() => onCompleteTask(task)}
+                                    activeOpacity={0.85}
                                   >
-                                    <Check size={14} color="#050C15" strokeWidth={2.5} />
-                                    <Text style={styles.completeTaskBtnText}>Đánh dấu xong</Text>
+                                    <LinearGradient
+                                      colors={["#34D399", "#10B981", "#059669"]}
+                                      start={{ x: 0, y: 0 }}
+                                      end={{ x: 1, y: 0 }}
+                                      style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 5,
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 7,
+                                      }}
+                                    >
+                                      <Check size={14} color="#050C15" strokeWidth={2.5} />
+                                      <Text style={{ color: "#050C15", fontSize: 11.5, fontWeight: "900" }}>
+                                        Đánh dấu xong
+                                      </Text>
+                                    </LinearGradient>
                                   </TouchableOpacity>
                                 </>
                               ) : (
@@ -1090,61 +1108,71 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
             {/* ================================================================= */}
             {detailTab === "opportunities" && (
               <View style={styles.opportunitiesDetailSection}>
-                {opportunities.map((opp) => (
-                  <View
-                    key={opp.id}
-                    style={[
-                      styles.opportunityCard,
-                      {
-                        backgroundColor: isDark ? "#121824" : "#FFFFFF",
-                        borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "#E2E8F0",
-                      },
-                    ]}
-                  >
-                    <View style={styles.oppTopRow}>
-                      <View style={styles.oppBadge}>
-                        <Text style={styles.oppBadgeText}>{opp.category}</Text>
-                      </View>
-                      <Text style={styles.oppDaysLeft}>{opp.daysLeft}</Text>
-                    </View>
-
-                    <Text style={[styles.oppTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                      {opp.title}
-                    </Text>
-
-                    <View style={styles.oppOrgRow}>
-                      <Building2 size={13} color="#94A3B8" />
-                      <Text style={styles.oppOrgText}>{opp.organization}</Text>
-                    </View>
-
+                {opportunities.length === 0 ? (
+                  <EmptyState
+                    icon={Handshake}
+                    title="Chưa có cơ hội B2B"
+                    subtitle="Chưa có đề xuất hợp tác kinh doanh nào được đăng trong cộng đồng này."
+                    actionLabel="Đăng cơ hội mới"
+                    onAction={onOpenCreateOpp}
+                  />
+                ) : (
+                  opportunities.map((opp) => (
                     <View
+                      key={opp.id}
                       style={[
-                        styles.oppFooterRow,
-                        { borderTopColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#F1F5F9" },
+                        styles.opportunityCard,
+                        {
+                          backgroundColor: isDark ? "#121824" : "#FFFFFF",
+                          borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "#E2E8F0",
+                        },
                       ]}
                     >
-                      <View>
-                        <Text style={styles.oppValueLabel}>Giá trị dự kiến</Text>
-                        <Text style={styles.oppValueText}>{opp.dealValue}</Text>
+                      <View style={styles.oppTopRow}>
+                        <View style={styles.oppBadge}>
+                          <Text style={styles.oppBadgeText}>{opp.category}</Text>
+                        </View>
+                        <Text style={styles.oppDaysLeft}>{opp.daysLeft}</Text>
                       </View>
 
-                      <TouchableOpacity
-                        style={styles.oppConnectBtn}
-                        onPress={() => {
-                          onProposeMeeting(opp);
-                        }}
+                      <Text style={[styles.oppTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
+                        {opp.title}
+                      </Text>
+
+                      <View style={styles.oppOrgRow}>
+                        <Building2 size={13} color="#94A3B8" />
+                        <Text style={styles.oppOrgText}>{opp.organization}</Text>
+                      </View>
+
+                      <View
+                        style={[
+                          styles.oppFooterRow,
+                          { borderTopColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#F1F5F9" },
+                        ]}
                       >
-                        <LinearGradient
-                          colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
-                          style={styles.oppConnectGrad}
+                        <View>
+                          <Text style={styles.oppValueLabel}>Giá trị dự kiến</Text>
+                          <Text style={styles.oppValueText}>{opp.dealValue}</Text>
+                        </View>
+
+                        <TouchableOpacity
+                          style={styles.oppConnectBtn}
+                          onPress={() => {
+                            onProposeMeeting(opp);
+                          }}
                         >
-                          <Handshake size={13} color="#050C15" />
-                          <Text style={styles.oppConnectText}>Đề xuất gặp mặt</Text>
-                        </LinearGradient>
-                      </TouchableOpacity>
+                          <LinearGradient
+                            colors={["#F6E1C3", "#DFB76C", "#C99C47"]}
+                            style={styles.oppConnectGrad}
+                          >
+                            <Handshake size={13} color="#050C15" />
+                            <Text style={styles.oppConnectText}>Đề xuất gặp mặt</Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  ))
+                )}
               </View>
             )}
 
@@ -1173,7 +1201,16 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                   </TouchableOpacity>
                 </View>
 
-                {newsList.map((item) => (
+                {newsList.length === 0 ? (
+                  <EmptyState
+                    icon={Newspaper}
+                    title="Chưa có bài viết nào"
+                    subtitle="Hãy là người đầu tiên chia sẻ tin tức, sự kiện hoặc thông báo đến cộng đồng."
+                    actionLabel="Đăng bài viết"
+                    onAction={onOpenCreateNews}
+                  />
+                ) : (
+                  newsList.map((item) => (
                   <TouchableOpacity
                     key={item.id}
                     style={[
@@ -1255,7 +1292,7 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                       </TouchableOpacity>
                     </View>
                   </TouchableOpacity>
-                ))}
+                )))}
               </View>
             )}
 
@@ -1264,61 +1301,87 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
             {/* ================================================================= */}
             {detailTab === "events" && (
               <View style={styles.eventsSection}>
-                {events.map((ev) => (
-                  <View
-                    key={ev.id}
-                    style={[
-                      styles.upcomingEventCard,
-                      {
-                        backgroundColor: isDark ? "#121824" : "#FFFFFF",
-                        borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
-                      },
-                    ]}
-                  >
-                    <View style={styles.eventDateBox}>
-                      <Text style={styles.eventMonthText}>THÁNG 10</Text>
-                      <Text style={styles.eventDayText}>
-                        {ev.startsAt.split(" ")[0].split("-")[2] || "15"}
-                      </Text>
-                    </View>
-
-                    <View style={styles.eventInfoCol}>
-                      <Text
-                        numberOfLines={1}
-                        style={[styles.eventTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
-                      >
-                        {ev.title}
-                      </Text>
-                      <View style={styles.eventMetaRow}>
-                        <Clock size={12} color="#D8B282" />
-                        <Text style={styles.eventMetaText}>{ev.startsAt}</Text>
-                      </View>
-                      <View style={styles.eventMetaRow}>
-                        <MapPin size={12} color="#94A3B8" />
-                        <Text numberOfLines={1} style={styles.eventMetaText}>
-                          {ev.location}
+                {events.length === 0 ? (
+                  <EmptyState
+                    icon={Calendar}
+                    title="Chưa có sự kiện & lịch họp"
+                    subtitle="Các sự kiện và lịch họp sắp tới sẽ được thông báo tại đây."
+                    actionLabel="Chia sẻ sự kiện"
+                    onAction={onOpenShareEvent}
+                  />
+                ) : (
+                  events.map((ev) => (
+                    <View
+                      key={ev.id}
+                      style={[
+                        styles.upcomingEventCard,
+                        {
+                          backgroundColor: isDark ? "#121824" : "#FFFFFF",
+                          borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
+                        },
+                      ]}
+                    >
+                      <View style={styles.eventDateBox}>
+                        <Text style={styles.eventMonthText}>THÁNG 10</Text>
+                        <Text style={styles.eventDayText}>
+                          {ev.startsAt.split(" ")[0].split("-")[2] || "15"}
                         </Text>
                       </View>
-                    </View>
 
-                    <TouchableOpacity
-                      style={[
-                        styles.eventRegisterBtn,
-                        ev.isRegistered && styles.eventRegisteredBtn,
-                      ]}
-                      onPress={() => onRegisterEvent(ev)}
-                    >
-                      <Text
-                        style={[
-                          styles.eventRegisterBtnText,
-                          ev.isRegistered && styles.eventRegisteredBtnText,
-                        ]}
+                      <View style={styles.eventInfoCol}>
+                        <Text
+                          numberOfLines={1}
+                          style={[styles.eventTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
+                        >
+                          {ev.title}
+                        </Text>
+                        <View style={styles.eventMetaRow}>
+                          <Clock size={12} color="#D8B282" />
+                          <Text style={styles.eventMetaText}>{ev.startsAt}</Text>
+                        </View>
+                        <View style={styles.eventMetaRow}>
+                          <MapPin size={12} color="#94A3B8" />
+                          <Text numberOfLines={1} style={styles.eventMetaText}>
+                            {ev.location}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <TouchableOpacity
+                        style={{ borderRadius: 10, overflow: "hidden" }}
+                        onPress={() => onRegisterEvent(ev)}
+                        activeOpacity={0.85}
                       >
-                        {ev.isRegistered ? "Đã đ.ký" : "Đăng ký"}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                        <LinearGradient
+                          colors={
+                            ev.isRegistered
+                              ? ["rgba(216, 178, 130, 0.15)", "rgba(10, 16, 29, 0.9)"]
+                              : ["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]
+                          }
+                          style={{
+                            paddingHorizontal: 12,
+                            paddingVertical: 7,
+                            borderRadius: 10,
+                            borderWidth: ev.isRegistered ? 1 : 0,
+                            borderColor: "rgba(216, 178, 130, 0.4)",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 11,
+                              fontWeight: "800",
+                              color: ev.isRegistered ? "#D8B282" : "#050C15",
+                            }}
+                          >
+                            {ev.isRegistered ? "Đã đ.ký" : "Đăng ký"}
+                          </Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )}
               </View>
             )}
 
@@ -1327,56 +1390,31 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
             {/* ================================================================= */}
             {detailTab === "members" && (
               <View style={styles.membersSection}>
-                {(members && members.length > 0 ? members : INITIAL_MEMBERS).map((m: any) => {
-                  const mName = m.name || m.fullName || m.displayName || "Hội viên ViOne";
-                  const mTitle = m.title || m.jobTitle || m.role || m.department || "Thành viên";
-                  const mCompany = m.company || m.companyName || m.department || "Hệ sinh thái ViOne";
-                  const mAvatar = m.avatarUrl || m.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
-                  const isAdmin = m.role === "admin" || m.role === "Ban Giám Đốc" || m.title?.includes("Giám Đốc") || m.title?.includes("Admin");
-                  return (
-                    <TouchableOpacity
-                      key={m.id || m.memberRef || Math.random().toString()}
-                      style={[
-                        styles.memberCard,
-                        {
-                          backgroundColor: isDark ? "#121824" : "#FFFFFF",
-                          borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
-                        },
-                      ]}
-                      onPress={() => {
-                        onSelectMember({
-                          id: m.id || m.memberRef || "",
-                          name: mName,
-                          title: mTitle,
-                          company: mCompany,
-                          phone: m.phone || "",
-                          email: m.email || "",
-                          avatarUrl: mAvatar,
-                          role: isAdmin ? "admin" : "member",
-                        });
-                      }}
-                      activeOpacity={0.85}
-                    >
-                      <Image source={{ uri: resolveMediaUrl(mAvatar) || mAvatar }} style={styles.memberAvatar} />
-                      <View style={{ flex: 1, marginLeft: 12 }}>
-                        <View style={styles.memberNameRow}>
-                          <Text style={[styles.memberName, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                            {mName}
-                          </Text>
-                          {isAdmin && (
-                            <View style={styles.adminRolePill}>
-                              <Text style={styles.adminRoleText}>Admin</Text>
-                            </View>
-                          )}
-                        </View>
-                        <Text style={styles.memberTitle}>{mTitle}</Text>
-                        <Text numberOfLines={1} style={styles.memberCompany}>
-                          {mCompany}
-                        </Text>
-                      </View>
-
+                {!members || members.length === 0 ? (
+                  <EmptyState
+                    icon={Users}
+                    title="Chưa có hội viên trong danh sách"
+                    subtitle="Mời các doanh nghiệp, lãnh đạo và đối tác tham gia cộng đồng của bạn."
+                    actionLabel="Mời thành viên"
+                    onAction={onOpenInvite}
+                  />
+                ) : (
+                  members.map((m: any) => {
+                    const mName = m.name || m.fullName || m.displayName || "Hội viên ViOne";
+                    const mTitle = m.title || m.jobTitle || m.role || m.department || "Thành viên";
+                    const mCompany = m.company || m.companyName || m.department || "Hệ sinh thái ViOne";
+                    const mAvatar = m.avatarUrl || m.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80";
+                    const isAdmin = m.role === "admin" || m.role === "Ban Giám Đốc" || m.title?.includes("Giám Đốc") || m.title?.includes("Admin");
+                    return (
                       <TouchableOpacity
-                        style={styles.contactBtn}
+                        key={m.id || m.memberRef || Math.random().toString()}
+                        style={[
+                          styles.memberCard,
+                          {
+                            backgroundColor: isDark ? "#121824" : "#FFFFFF",
+                            borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
+                          },
+                        ]}
                         onPress={() => {
                           onSelectMember({
                             id: m.id || m.memberRef || "",
@@ -1389,12 +1427,47 @@ export const CommunityDetailView: React.FC<CommunityDetailViewProps> = ({
                             role: isAdmin ? "admin" : "member",
                           });
                         }}
+                        activeOpacity={0.85}
                       >
-                        <MessageSquare size={16} color="#D8B282" />
+                        <Image source={{ uri: resolveMediaUrl(mAvatar) || mAvatar }} style={styles.memberAvatar} />
+                        <View style={{ flex: 1, marginLeft: 12 }}>
+                          <View style={styles.memberNameRow}>
+                            <Text style={[styles.memberName, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
+                              {mName}
+                            </Text>
+                            {isAdmin && (
+                              <View style={styles.adminRolePill}>
+                                <Text style={styles.adminRoleText}>Admin</Text>
+                              </View>
+                            )}
+                          </View>
+                          <Text style={styles.memberTitle}>{mTitle}</Text>
+                          <Text numberOfLines={1} style={styles.memberCompany}>
+                            {mCompany}
+                          </Text>
+                        </View>
+
+                        <TouchableOpacity
+                          style={styles.contactBtn}
+                          onPress={() => {
+                            onSelectMember({
+                              id: m.id || m.memberRef || "",
+                              name: mName,
+                              title: mTitle,
+                              company: mCompany,
+                              phone: m.phone || "",
+                              email: m.email || "",
+                              avatarUrl: mAvatar,
+                              role: isAdmin ? "admin" : "member",
+                            });
+                          }}
+                        >
+                          <MessageSquare size={16} color="#D8B282" />
+                        </TouchableOpacity>
                       </TouchableOpacity>
-                    </TouchableOpacity>
-                  );
-                })}
+                    );
+                  })
+                )}
               </View>
             )}
 

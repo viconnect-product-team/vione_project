@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
   TrendingUp,
@@ -71,6 +71,16 @@ export function StatisticsHubPage() {
   const [crmData, setCrmData] = useState<any>(null);
   const [platformData, setPlatformData] = useState<any>(null);
   const [platformReports, setPlatformReports] = useState<any>(null);
+
+  const routerState = useRouterState();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const grp = params.get("group") as StatGroup | null;
+    if (grp && ["operations", "attendance", "finance", "crm", "platform"].includes(grp)) {
+      setActiveGroup(grp);
+    }
+  }, [routerState.location.search]);
 
   const loadData = async () => {
     setLoading(true);

@@ -47,8 +47,12 @@ export const ScanQrModal: React.FC<ScanQrModalProps> = ({
     let targetId = data;
     if (data.includes("/p/")) {
       targetId = data.split("/p/")[1].split("?")[0].split("#")[0];
+    } else if (data.includes("/card/")) {
+      targetId = data.split("/card/")[1].split("?")[0].split("#")[0];
     } else if (data.includes("/profile/")) {
       targetId = data.split("/profile/")[1].split("?")[0].split("#")[0];
+    } else if (data.includes("/identity/")) {
+      targetId = data.split("/identity/")[1].split("?")[0].split("#")[0];
     } else if (data.includes("/c/")) {
       targetId = data.split("/c/")[1].split("?")[0].split("#")[0];
     } else if (data.includes("userId=")) {
@@ -60,39 +64,57 @@ export const ScanQrModal: React.FC<ScanQrModalProps> = ({
 
     setFetchingProfile(true);
     let loadedProfile: Profile5Data | null = null;
-    try {
-      const res: any = await apiRequest<any>(`/public/p/${encodeURIComponent(targetId)}`).catch(() => null);
-      const card = res?.data?.card || res?.card;
-      if (card) {
-        loadedProfile = {
-          id: card.id,
-          userId: card.userId,
-          code: card.code || targetId,
-          name: card.displayName || card.fullName || "Doanh Nhân ViOne",
-          displayName: card.displayName,
-          title: card.jobTitle || card.headline,
-          company: card.companyName,
-          phone: card.primaryPhone,
-          email: card.primaryEmail,
-          website: card.website,
-          avatarUrl: card.avatarUrl,
-          coverUrl: card.coverUrl,
-          bio: card.bio || card.headline,
-          address: card.address,
-          city: card.city,
-          industry: card.industry,
-          shareUrl: card.shareUrl || `https://vione.viconnect.vn/p/${targetId}`,
-          verified: card.verified ?? true,
-        };
-      }
-    } catch {}
+    const endpointsToTry = [
+      `/public/p/${encodeURIComponent(targetId)}`,
+      `/public/identity/${encodeURIComponent(targetId)}`,
+      `/public/profile/${encodeURIComponent(targetId)}`,
+      `/business-cards/public-card/${encodeURIComponent(targetId)}`,
+    ];
+
+    for (const ep of endpointsToTry) {
+      try {
+        const res: any = await apiRequest<any>(ep).catch(() => null);
+        const card = res?.data?.card || res?.card || res?.data;
+        if (
+          card &&
+          (card.displayName ||
+            card.name ||
+            card.fullName ||
+            card.title ||
+            card.companyName ||
+            card.company)
+        ) {
+          loadedProfile = {
+            id: card.id || targetId,
+            userId: card.userId,
+            code: card.code || targetId,
+            name: card.displayName || card.fullName || card.name || "Doanh Nhân ViOne",
+            displayName: card.displayName || card.fullName || card.name,
+            title: card.jobTitle || card.title || card.headline,
+            company: card.companyName || card.company,
+            phone: card.primaryPhone || card.phone,
+            email: card.primaryEmail || card.email,
+            website: card.website,
+            avatarUrl: card.avatarUrl || card.photoUrl,
+            coverUrl: card.coverUrl,
+            bio: card.bio || card.headline,
+            address: card.address,
+            city: card.city || card.region,
+            industry: card.industry,
+            shareUrl: card.shareUrl || `https://vione.viconnect.vn/p/${targetId}`,
+            verified: card.verified ?? true,
+          };
+          break;
+        }
+      } catch {}
+    }
 
     if (!loadedProfile) {
       loadedProfile = {
         id: targetId,
         code: targetId,
-        name: targetId.startsWith("VIONE") ? `Hội Viên ${targetId}` : `Doanh Nhân Đối Tác`,
-        displayName: targetId.startsWith("VIONE") ? `Hội Viên ${targetId}` : `Doanh Nhân Đối Tác`,
+        name: targetId.startsWith("VIONE") || targetId.startsWith("VBA") ? `Hội Viên ${targetId}` : `Doanh Nhân Đối Tác`,
+        displayName: targetId.startsWith("VIONE") || targetId.startsWith("VBA") ? `Hội Viên ${targetId}` : `Doanh Nhân Đối Tác`,
         title: "Chủ Tịch HĐQT / CEO",
         company: "Hệ Sinh Thái Doanh Nhân ViOne",
         phone: "",
@@ -170,16 +192,11 @@ export const ScanQrModal: React.FC<ScanQrModalProps> = ({
 
             {/* Bottom Controls */}
             <View style={styles.overlayBottom}>
-              <TouchableOpacity
-                style={styles.simulateScanBtn}
-                onPress={() =>
-                  handleBarcodeScanned({
-                    data: "https://vione.vn/p/VIONE-VIP-8888",
-                  })
-                }
-              >
-                <Text style={styles.simulateText}>Thử nghiệm quét nhanh 5.0</Text>
-              </TouchableOpacity>
+              <View style={styles.scanHintContainer}>
+                <Text style={styles.scanHintText}>
+                  Nhận diện tự động danh thiếp số 5.0 & Thẻ hội viên
+                </Text>
+              </View>
             </View>
           </CameraView>
         )}
@@ -323,18 +340,18 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
     alignItems: "center",
   },
-  simulateScanBtn: {
-    backgroundColor: "rgba(255,255,255,0.15)",
+  scanHintContainer: {
+    backgroundColor: "rgba(10, 16, 26, 0.85)",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: "rgba(216, 178, 130, 0.35)",
   },
-  simulateText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "500",
+  scanHintText: {
+    color: "#F6E1C3",
+    fontSize: 12.5,
+    fontWeight: "600",
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,

@@ -39,6 +39,7 @@ import {
   CheckCircle2,
 } from "lucide-react-native";
 import { VIconMark } from "../../../components/VIconMark";
+import { EmptyState } from "../../../components/common/EmptyState";
 import { CommunityOpportunityItem } from "../../../components/OpportunityDetailModal";
 import { TodayPreferences } from "../../../components/TodayCustomizeSheet";
 import { VoiceMomentItem, TodayMeetingItem } from "./home.types";
@@ -672,34 +673,51 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
                       <View style={styles.todayMeetActionRow}>
                         {meet.format === "online" ? (
                           <TouchableOpacity
-                            style={[styles.meetPrimaryActionBtn, { backgroundColor: "#8C653B" }]}
+                            style={[styles.meetPrimaryActionBtn, { overflow: "hidden", borderRadius: 10 }]}
                             onPress={() => Linking.openURL("https://meet.google.com/new")}
                             activeOpacity={0.8}
                           >
-                            <Text style={[styles.meetPrimaryActionText, { color: "#FFFFFF", fontWeight: "700" }]}>
-                              Vào phòng họp Meet
-                            </Text>
+                            <LinearGradient
+                              colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                              start={{ x: 0, y: 0 }}
+                              end={{ x: 1, y: 1 }}
+                              style={{ paddingVertical: 10, paddingHorizontal: 16, alignItems: "center" }}
+                            >
+                              <Text style={[styles.meetPrimaryActionText, { color: "#050C15", fontWeight: "800" }]}>
+                                Vào phòng họp Meet
+                              </Text>
+                            </LinearGradient>
                           </TouchableOpacity>
                         ) : (
                           <TouchableOpacity
-                            style={[styles.meetPrimaryActionBtn, { backgroundColor: "#8C653B" }]}
+                            style={[styles.meetPrimaryActionBtn, { overflow: "hidden", borderRadius: 10 }]}
                             onPress={() => Linking.openURL("tel:0901234567")}
                             activeOpacity={0.8}
                           >
-                            <Text style={[styles.meetPrimaryActionText, { color: "#FFFFFF", fontWeight: "700" }]}>
-                              Gọi đối tác
-                            </Text>
+                            <LinearGradient
+                              colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                              start={{ x: 0, y: 0 }}
+                              end={{ x: 1, y: 1 }}
+                              style={{ paddingVertical: 10, paddingHorizontal: 16, alignItems: "center" }}
+                            >
+                              <Text style={[styles.meetPrimaryActionText, { color: "#050C15", fontWeight: "800" }]}>
+                                Gọi đối tác
+                              </Text>
+                            </LinearGradient>
                           </TouchableOpacity>
                         )}
                       </View>
                     </View>
                   ))
                 ) : (
-                  <View style={[styles.quietBox, { borderColor: "#8C653B", borderWidth: 1, backgroundColor: "#FAF6F0" }]}>
-                    <Text style={[styles.quietTitle, { color: "#050C15" }]}>
-                      Tài khoản hiện chưa có cuộc gặp nào
-                    </Text>
-                  </View>
+                  <EmptyState
+                    icon={<Handshake size={28} color="#D8B282" />}
+                    title="Chưa có cuộc gặp nào hôm nay"
+                    description="Lên lịch gặp gỡ đối tác 1-1 để mở rộng mạng lưới giao thương doanh nghiệp."
+                    actionTitle="Lên Lịch Hẹn"
+                    onAction={() => setScheduleMeetingVisible(true)}
+                    isDark={isDark}
+                  />
                 )}
               </View>
 
@@ -718,70 +736,92 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
                   </View>
                 </View>
 
-                {todayOpportunities.map((opp) => (
-                  <View
-                    key={opp.id}
-                    style={[
-                      styles.eventCard,
-                      { borderColor: "#DFB76C", borderWidth: 1, backgroundColor: isDark ? "#181410" : "#FFFDF9" },
-                    ]}
-                  >
-                    <View style={styles.cardHeaderRow}>
-                      <View style={[styles.cardTag, { backgroundColor: "#F6E1C3", borderColor: "#8C653B", borderWidth: 1 }]}>
-                        <Text style={[styles.cardTagText, { color: "#050C15", fontWeight: "700" }]}>
-                          {opp.communityName || "Cộng đồng ViOne"}
+                {todayOpportunities.length === 0 ? (
+                  <EmptyState
+                    icon={<Briefcase size={28} color="#D8B282" />}
+                    title="Chưa có cơ hội kinh doanh mới"
+                    description="Tham gia các cộng đồng doanh nhân để tiếp cận các yêu cầu chào mua, hợp tác và thầu dự án."
+                    actionTitle="Khám Phá Cộng Đồng"
+                    onAction={() => navigation.navigate("Community" as any)}
+                    isDark={isDark}
+                  />
+                ) : (
+                  todayOpportunities.map((opp) => (
+                    <View
+                      key={opp.id}
+                      style={[
+                        styles.eventCard,
+                        { borderColor: "#DFB76C", borderWidth: 1, backgroundColor: isDark ? "#181410" : "#FFFDF9" },
+                      ]}
+                    >
+                      <View style={styles.cardHeaderRow}>
+                        <View style={[styles.cardTag, { backgroundColor: "#F6E1C3", borderColor: "#8C653B", borderWidth: 1 }]}>
+                          <Text style={[styles.cardTagText, { color: "#050C15", fontWeight: "700" }]}>
+                            {opp.communityName || "Cộng đồng ViOne"}
+                          </Text>
+                        </View>
+                        <View style={{ backgroundColor: "#8C653B", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                          <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>CƠ HỘI ĐANG CÓ</Text>
+                        </View>
+                      </View>
+                      <Text style={[styles.cardTitle, { color: "#050C15" }]}>{opp.title}</Text>
+                      <View style={{ marginTop: 4 }}>
+                        <Text style={{ fontSize: 12, color: "#050C15" }}>
+                          Đơn vị: <Text style={{ fontWeight: "700" }}>{opp.organization || "Doanh nghiệp thành viên"}</Text>
+                        </Text>
+                        <Text style={{ fontSize: 12, color: "#050C15", marginTop: 2 }}>
+                          Giá trị: <Text style={{ fontWeight: "800" }}>{opp.dealValue}</Text> · {opp.daysLeft}
                         </Text>
                       </View>
-                      <View style={{ backgroundColor: "#8C653B", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                        <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>CƠ HỘI ĐANG CÓ</Text>
+                      <View style={{ marginTop: 10, borderTopWidth: 1, borderTopColor: isDark ? "rgba(223, 183, 108, 0.2)" : "rgba(223, 183, 108, 0.4)", paddingTop: 8, flexDirection: "row", gap: 8 }}>
+                        <TouchableOpacity
+                          style={{ flex: 1 }}
+                          onPress={() => {
+                            setSelectedOpportunityForAi({
+                              id: opp.id,
+                              title: opp.title,
+                              organization: opp.organization,
+                              dealValue: opp.dealValue,
+                            });
+                            setAiAssistantVisible(true);
+                          }}
+                          activeOpacity={0.85}
+                        >
+                          <LinearGradient
+                            colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.meetPrimaryActionBtn}
+                          >
+                            <Mic size={13} color="#050C15" style={{ marginRight: 4 }} />
+                            <Text style={[styles.meetPrimaryActionText, { color: "#050C15", fontWeight: "700" }]}>
+                              Nhờ AI Gửi Voice
+                            </Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.navigate("Community" as any, {
+                              communityId: "c-b2b-leaders",
+                              tab: "opportunities",
+                              opportunityId: opp.id,
+                            });
+                          }}
+                          activeOpacity={0.85}
+                        >
+                          <LinearGradient
+                            colors={isDark ? ["#1E293B", "#0F172A"] : ["#F8FAFC", "#E2E8F0"]}
+                            style={[styles.meetPrimaryActionBtn, { paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(216, 178, 130, 0.4)" }]}
+                          >
+                            <Text style={[styles.meetPrimaryActionText, { color: isDark ? "#F6E1C3" : "#8C653B", fontWeight: "700" }]}>
+                              Chi tiết
+                            </Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
                       </View>
                     </View>
-                    <Text style={[styles.cardTitle, { color: "#050C15" }]}>{opp.title}</Text>
-                    <View style={{ marginTop: 4 }}>
-                      <Text style={{ fontSize: 12, color: "#050C15" }}>
-                        Đơn vị: <Text style={{ fontWeight: "700" }}>{opp.organization || "Doanh nghiệp thành viên"}</Text>
-                      </Text>
-                      <Text style={{ fontSize: 12, color: "#050C15", marginTop: 2 }}>
-                        Giá trị: <Text style={{ fontWeight: "800" }}>{opp.dealValue}</Text> · {opp.daysLeft}
-                      </Text>
-                    </View>
-                    <View style={{ marginTop: 10, borderTopWidth: 1, borderTopColor: isDark ? "rgba(223, 183, 108, 0.2)" : "rgba(223, 183, 108, 0.4)", paddingTop: 8, flexDirection: "row", gap: 8 }}>
-                      <TouchableOpacity
-                        style={[styles.meetPrimaryActionBtn, { flex: 1, backgroundColor: "#DFB76C" }]}
-                        onPress={() => {
-                          setSelectedOpportunityForAi({
-                            id: opp.id,
-                            title: opp.title,
-                            organization: opp.organization,
-                            dealValue: opp.dealValue,
-                          });
-                          setAiAssistantVisible(true);
-                        }}
-                        activeOpacity={0.85}
-                      >
-                        <Mic size={13} color="#050C15" style={{ marginRight: 4 }} />
-                        <Text style={[styles.meetPrimaryActionText, { color: "#050C15", fontWeight: "700" }]}>
-                          Nhờ AI Gửi Voice
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.meetPrimaryActionBtn, { backgroundColor: isDark ? "#1E293B" : "#F1F5F9", paddingHorizontal: 14 }]}
-                        onPress={() => {
-                          navigation.navigate("Community" as any, {
-                            communityId: "c-b2b-leaders",
-                            tab: "opportunities",
-                            opportunityId: opp.id,
-                          });
-                        }}
-                        activeOpacity={0.85}
-                      >
-                        <Text style={[styles.meetPrimaryActionText, { color: isDark ? "#E2E8F0" : "#1E293B", fontWeight: "700" }]}>
-                          Chi tiết
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ))}
+                  ))
+                )}
               </View>
 
               {/* 3. SỰ KIỆN SẮP TỚI */}
@@ -800,23 +840,12 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
                 </View>
 
                 {upcomingEvents.length === 0 ? (
-                  <View
-                    style={{
-                      paddingVertical: 18,
-                      paddingHorizontal: 16,
-                      borderRadius: 12,
-                      borderWidth: 1,
-                      borderStyle: "dashed",
-                      borderColor: isDark ? "rgba(216, 178, 130, 0.3)" : "#E2E8F0",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "#FAFAFA",
-                    }}
-                  >
-                    <Text style={{ fontSize: 13, color: isDark ? "#A0AEC0" : "#718096", fontStyle: "italic" }}>
-                      Chưa có sự kiện nào sắp diễn ra
-                    </Text>
-                  </View>
+                  <EmptyState
+                    icon={<CalendarDays size={28} color="#D8B282" />}
+                    title="Chưa có sự kiện nào sắp diễn ra"
+                    description="Các buổi kết nối giao thương B2B, hội thảo và Gala sẽ được cập nhật liên tục."
+                    isDark={isDark}
+                  />
                 ) : (
                   upcomingEvents.map((ev) => (
                     <View
@@ -844,7 +873,6 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
                       </View>
                       <View style={{ marginTop: 10, borderTopWidth: 1, borderTopColor: "rgba(140, 101, 59, 0.2)", paddingTop: 8 }}>
                         <TouchableOpacity
-                          style={[styles.meetPrimaryActionBtn, { backgroundColor: "#8C653B" }]}
                           onPress={() => {
                             setSelectedEventForDetail({
                               id: ev.id,
@@ -859,9 +887,16 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
                           }}
                           activeOpacity={0.85}
                         >
-                          <Text style={[styles.meetPrimaryActionText, { color: "#FFFFFF", fontWeight: "700" }]}>
-                            Xem chi tiết sự kiện
-                          </Text>
+                          <LinearGradient
+                            colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.meetPrimaryActionBtn}
+                          >
+                            <Text style={[styles.meetPrimaryActionText, { color: "#050C15", fontWeight: "700" }]}>
+                              Xem chi tiết sự kiện
+                            </Text>
+                          </LinearGradient>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -875,10 +910,12 @@ export const TodayEditorialSection: React.FC<TodayEditorialSectionProps> = ({
           {activeTab === "upcoming" && (
             <View style={styles.listContainer}>
               {upcomingEvents.length === 0 ? (
-                <View style={styles.quietBox}>
-                  <CalendarDays size={28} color="#94A3B8" />
-                  <Text style={styles.quietTitle}>Chưa có sự kiện sắp diễn ra</Text>
-                </View>
+                <EmptyState
+                  icon={<CalendarDays size={28} color="#D8B282" />}
+                  title="Chưa có sự kiện sắp diễn ra"
+                  description="Lịch trình kết nối và sự kiện của các cộng đồng sẽ hiển thị tại đây."
+                  isDark={isDark}
+                />
               ) : (
                 upcomingEvents.map((ev) => (
                   <TouchableOpacity

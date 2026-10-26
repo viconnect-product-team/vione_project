@@ -54,6 +54,7 @@ import {
   HomeScreenProps,
   INITIAL_TODAY_OPPORTUNITIES,
   INITIAL_TODAY_MEETINGS,
+  HOME_STORIES,
 } from "./components/home.types";
 import { styles } from "./components/home.styles";
 import { EntrepreneurCard } from "./components/EntrepreneurCard";
@@ -67,49 +68,6 @@ export {
   TodayMeetingItem,
   HomeScreenProps,
 };
-
-const HOME_STORIES = [
-  {
-    id: "st-1",
-    name: "Vũ Minh Tuấn",
-    title: "Chủ tịch HĐQT",
-    company: "Tập đoàn VTech",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-    caption: "Ký kết thỏa thuận hợp tác phân phối độc quyền tại Diễn đàn Kinh tế 2026.",
-  },
-  {
-    id: "st-2",
-    name: "Hoàng Mai Anh",
-    title: "Giám đốc Tài chính",
-    company: "VNPay FinTech",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
-    caption: "Chuyến công tác thẩm định dự án năng lượng tái tạo tại Hải Phòng.",
-  },
-  {
-    id: "st-3",
-    name: "Trần Đức Nam",
-    title: "Tổng Giám đốc",
-    company: "Nam Phát Logistics",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-    caption: "Khai trương trung tâm kho bãi thông minh 10.000m2 tại Bắc Ninh.",
-  },
-  {
-    id: "st-4",
-    name: "Lê Thu Hương",
-    title: "CEO & Founder",
-    company: "EcoWear Global",
-    avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150",
-    caption: "Ra mắt bộ sưu tập thời trang doanh nhân xanh tuần lễ thời trang ASEAN.",
-  },
-  {
-    id: "st-5",
-    name: "Phạm Quốc Huy",
-    title: "Viện trưởng",
-    company: "Viện Đổi mới B2B",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150",
-    caption: "Bàn tròn chuyển đổi số doanh nghiệp vừa và nhỏ quý IV.",
-  },
-];
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) => {
   const { user, updateUser } = useAuth();
@@ -326,13 +284,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
           const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
           return m.dt >= start && m.dt <= todayEnd;
         });
-        setTodayMeetings(todayMeets.length > 0 ? todayMeets : INITIAL_TODAY_MEETINGS);
+        setTodayMeetings(todayMeets);
       } else {
         setRemindersList([]);
-        setTodayMeetings(INITIAL_TODAY_MEETINGS);
+        setTodayMeetings([]);
       }
     } catch {
-      setTodayMeetings(INITIAL_TODAY_MEETINGS);
+      setTodayMeetings([]);
     }
 
     try {
@@ -355,10 +313,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
           }))
         );
       } else {
-        setTodayOpportunities(INITIAL_TODAY_OPPORTUNITIES);
+        setTodayOpportunities([]);
       }
     } catch {
-      setTodayOpportunities(INITIAL_TODAY_OPPORTUNITIES);
+      setTodayOpportunities([]);
     }
 
     try {

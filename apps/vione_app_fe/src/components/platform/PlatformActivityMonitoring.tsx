@@ -277,92 +277,92 @@ export function PlatformActivityMonitoring() {
       {/* ── KPI TIÊU ĐIỂM NỀN TẢNG (PLATFORM EXECUTIVE METRICS) ─────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* KPI 1: Doanh nghiệp có gói ViOne Platform */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-amber-500/10 text-amber-400">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
+          <div className="absolute right-3 top-3 p-2 rounded-xl bg-amber-500/10 text-amber-500 dark:text-amber-400">
             <Building2 className="h-5 w-5" />
           </div>
-          <div className="text-xs font-medium text-slate-400">Doanh Nghiệp Kích Hoạt Gói</div>
-          <div className="mt-1 text-2xl font-black text-white">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Doanh Nghiệp Kích Hoạt Gói</div>
+          <div className="mt-1 text-2xl font-black text-slate-900 dark:text-white">
             {data?.summary.activeCompanies || 0}
-            <span className="text-xs font-normal text-slate-400 ml-1.5">
+            <span className="text-xs font-normal text-slate-500 dark:text-slate-400 ml-1.5">
               / {data?.summary.totalCompanies || 0} DN
             </span>
           </div>
-          <div className="mt-2 text-[11px] text-amber-300 font-medium flex items-center gap-1">
+          <div className="mt-2 text-[11px] text-amber-700 dark:text-amber-300 font-medium flex items-center gap-1">
             <Sparkles className="h-3 w-3" />
             <span>{data?.summary.trialCompanies || 0} DN đang dùng thử 30 ngày</span>
           </div>
         </div>
 
         {/* KPI 2: Người tham gia mới tháng này */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-blue-500/10 text-blue-400">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
+          <div className="absolute right-3 top-3 p-2 rounded-xl bg-blue-500/10 text-blue-500 dark:text-blue-400">
             <UserPlus className="h-5 w-5" />
           </div>
-          <div className="text-xs font-medium text-slate-400">Người Tham Gia Mới (30 Ngày)</div>
-          <div className="mt-1 text-2xl font-black text-white">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Người Tham Gia Mới (30 Ngày)</div>
+          <div className="mt-1 text-2xl font-black text-slate-900 dark:text-white">
             +{data?.summary.newUsersThisMonth || 0}
-            <span className="text-xs font-normal text-emerald-400 ml-1.5 font-semibold">
+            <span className="text-xs font-normal text-emerald-600 dark:text-emerald-400 ml-1.5 font-semibold">
               (Tăng trưởng)
             </span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
-            <TrendingUp className="h-3 w-3 text-emerald-400" />
+          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+            <TrendingUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
             <span>+{data?.summary.newCompaniesThisMonth || 0} DN mới đăng ký</span>
           </div>
         </div>
 
         {/* KPI 3: Tổng người dùng / Nhân sự */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
+          <div className="absolute right-3 top-3 p-2 rounded-xl bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
             <Users className="h-5 w-5" />
           </div>
-          <div className="text-xs font-medium text-slate-400">Tổng Nhân Sự & Thành Viên</div>
-          <div className="mt-1 text-2xl font-black text-white">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Tổng Nhân Sự & Thành Viên</div>
+          <div className="mt-1 text-2xl font-black text-slate-900 dark:text-white">
             {(data?.summary.totalUsers || 0).toLocaleString()}
           </div>
-          <div className="mt-2 text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+          <div className="mt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
             <CheckCircle2 className="h-3 w-3" />
             <span>{(data?.summary.totalTasks || 0).toLocaleString()} công việc đang chạy</span>
           </div>
         </div>
 
         {/* KPI 4: Ước lượng doanh thu gói cước */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-purple-500/10 text-purple-400">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 shadow-sm relative overflow-hidden">
+          <div className="absolute right-3 top-3 p-2 rounded-xl bg-purple-500/10 text-purple-500 dark:text-purple-400">
             <TrendingUp className="h-5 w-5" />
           </div>
-          <div className="text-xs font-medium text-slate-400">Doanh Thu Gói ViOne CRM</div>
-          <div className="mt-1 text-2xl font-black text-amber-300">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Doanh Thu Gói ViOne CRM</div>
+          <div className="mt-1 text-2xl font-black text-amber-600 dark:text-amber-300">
             {((data?.summary.platformRevenue || 0) / 1_000_000).toLocaleString()}
-            <span className="text-xs font-bold text-slate-300 ml-1">triệu đ</span>
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-300 ml-1">triệu đ</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
-            <ShieldCheck className="h-3 w-3 text-amber-400" />
+          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+            <ShieldCheck className="h-3 w-3 text-amber-500 dark:text-amber-400" />
             <span>100% Giao dịch thanh toán chính thức</span>
           </div>
         </div>
       </div>
 
       {/* ── BIỂU ĐỒ TĂNG TRƯỞNG NGƯỜI THAM GIA MỚI (GROWTH CHART) ────── */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-amber-500 dark:text-amber-400" />
               <span>Biểu Đồ Tăng Trưởng Người Tham Gia Mới & Doanh Nghiệp ViOne</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Theo dõi biến động số lượng thành viên, công ty đăng ký mới và quy mô mở rộng nền tảng
             </p>
           </div>
           <div className="flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-1.5 text-slate-300">
+            <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
               <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
               <span>Người tham gia mới</span>
             </div>
-            <div className="flex items-center gap-1.5 text-slate-300">
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+            <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
               <span>Doanh nghiệp mới</span>
             </div>
           </div>
@@ -384,7 +384,7 @@ export function PlatformActivityMonitoring() {
                   <stop offset="95%" stopColor="#d97706" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" className="dark:stroke-slate-800" />
               <XAxis dataKey="month" stroke="#64748b" tick={{ fontSize: 11 }} />
               <YAxis stroke="#64748b" tick={{ fontSize: 11 }} />
               <Tooltip
@@ -420,14 +420,14 @@ export function PlatformActivityMonitoring() {
       </div>
 
       {/* ── BẢNG THEO DÕI CHI TIẾT MỨC ĐỘ HOẠT ĐỘNG CỦA DOANH NGHIỆP ─── */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 shadow-sm space-y-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5 shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Activity className="h-4 w-4 text-emerald-400" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Activity className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
               <span>Theo Dõi Mức Độ Hoạt Động & Sức Khỏe Doanh Nghiệp (Health Score)</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Chi tiết các công ty có gói ViOne Platform, số lượng nhân sự, công việc, tài liệu và
               mức độ tương tác CRM
             </p>
@@ -451,7 +451,7 @@ export function PlatformActivityMonitoring() {
             <button
               onClick={loadData}
               disabled={loading}
-              className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer border border-slate-200 dark:border-slate-700 shadow-sm"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
               <span>Làm mới</span>
@@ -468,14 +468,14 @@ export function PlatformActivityMonitoring() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm kiếm theo tên công ty, chủ doanh nghiệp, email..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-400 shadow-sm"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs rounded-xl border border-slate-700 bg-slate-900 text-slate-200 focus:outline-none focus:border-amber-400 cursor-pointer"
+            className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-amber-400 cursor-pointer shadow-sm"
           >
             <option value="all">Tất cả trạng thái gói</option>
             <option value="active">Đang kích hoạt (Active)</option>
@@ -487,7 +487,7 @@ export function PlatformActivityMonitoring() {
           <select
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs rounded-xl border border-slate-700 bg-slate-900 text-slate-200 focus:outline-none focus:border-amber-400 cursor-pointer"
+            className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-amber-400 cursor-pointer shadow-sm"
           >
             <option value="all">Tất cả mức độ hoạt động</option>
             <option value="high">Rất tích cực (≥ 75%)</option>
@@ -497,9 +497,9 @@ export function PlatformActivityMonitoring() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[10.5px]">
+            <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider text-[10.5px]">
               <tr>
                 <th className="py-3 px-4">Doanh Nghiệp & Người Mua Gói</th>
                 <th className="py-3 px-3">Gói Dịch Vụ & Trạng Thái</th>
@@ -509,17 +509,17 @@ export function PlatformActivityMonitoring() {
                 <th className="py-3 px-4 text-right">Quản Trị Gói & Cộng Đồng</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400">
-                    <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-amber-400" />
+                    <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-amber-500" />
                     <span>Đang tải dữ liệu giám sát hoạt động doanh nghiệp...</span>
                   </td>
                 </tr>
               ) : filteredCompanies.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400">
                     Không tìm thấy doanh nghiệp phù hợp với bộ lọc.
                   </td>
                 </tr>
@@ -527,10 +527,10 @@ export function PlatformActivityMonitoring() {
                 filteredCompanies.map((c) => {
                   const healthColor =
                     c.healthScore >= 75
-                      ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
                       : c.healthScore >= 50
-                        ? "text-amber-300 bg-amber-500/10 border-amber-500/30"
-                        : "text-rose-400 bg-rose-500/10 border-rose-500/30";
+                        ? "text-amber-600 dark:text-amber-300 bg-amber-500/10 border-amber-500/30"
+                        : "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/30";
 
                   const slotPercent = Math.min(
                     100,
@@ -538,7 +538,7 @@ export function PlatformActivityMonitoring() {
                   );
 
                   return (
-                    <tr key={c.companyId} className="hover:bg-slate-900/50 transition-colors">
+                    <tr key={c.companyId} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
                       {/* Doanh nghiệp & Chủ sở hữu */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
@@ -546,10 +546,10 @@ export function PlatformActivityMonitoring() {
                             <img
                               src={c.logoUrl}
                               alt={c.companyName}
-                              className="h-9 w-9 rounded-xl object-contain bg-white p-0.5 border border-slate-700 shrink-0"
+                              className="h-9 w-9 rounded-xl object-contain bg-white p-0.5 border border-slate-300 dark:border-slate-700 shrink-0"
                             />
                           ) : (
-                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-700/20 border border-amber-500/30 flex items-center justify-center text-amber-300 font-bold text-sm shrink-0">
+                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-700/20 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-300 font-bold text-sm shrink-0">
                               {c.companyName.charAt(0)}
                             </div>
                           )}
@@ -557,7 +557,7 @@ export function PlatformActivityMonitoring() {
                             <Link
                               to="/companies/$companyId"
                               params={{ companyId: c.companyId }}
-                              className="font-bold text-white hover:text-amber-300 transition-colors truncate block text-[13px]"
+                              className="font-bold text-slate-900 dark:text-white hover:text-amber-600 dark:hover:text-amber-300 transition-colors truncate block text-[13px]"
                             >
                               {c.companyName}
                             </Link>

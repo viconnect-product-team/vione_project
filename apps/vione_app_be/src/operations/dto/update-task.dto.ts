@@ -2,8 +2,8 @@ import { IsOptional, IsString, IsEnum, IsNumber, IsArray, Min, Max } from 'class
 
 export class UpdateTaskDto {
   @IsOptional()
-  @IsEnum(['todo', 'in_progress', 'review', 'done'], { message: 'Trạng thái công việc không hợp lệ' })
-  status?: 'todo' | 'in_progress' | 'review' | 'done';
+  @IsEnum(['todo', 'in_progress', 'review', 'done', 'assigned', 'completed', 'cancelled'], { message: 'Trạng thái công việc không hợp lệ' })
+  status?: 'todo' | 'in_progress' | 'review' | 'done' | 'assigned' | 'completed' | 'cancelled';
 
   @IsOptional()
   @IsNumber({}, { message: 'Tiến độ hoàn thành phải là số' })
@@ -24,6 +24,6 @@ export class UpdateTaskDto {
   deadline?: string;
 
   @IsOptional()
-  @IsEnum(['high', 'medium', 'low'], { message: 'Độ ưu tiên phải là high, medium hoặc low' })
-  priority?: 'high' | 'medium' | 'low';
+  @IsEnum(['urgent', 'high', 'normal', 'medium', 'low'], { message: 'Độ ưu tiên phải là urgent, high, normal, medium hoặc low' })
+  priority?: 'urgent' | 'high' | 'normal' | 'medium' | 'low';
 }

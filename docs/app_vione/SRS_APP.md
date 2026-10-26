@@ -30,6 +30,9 @@
 | **UC-APP-16** | Trải Nghiệm Cài Đặt PWA 1-Chạm (Home Install Banner Card) | Người dùng PWA | P1 - Cao | Hoạt động |
 | **UC-APP-17** | Quét Mã QR Cá Nhân & Trải Nghiệm Profile 5.0 Chuẩn Doanh Nhân Hiện Đại | Doanh nhân, Đối tác | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-18** | Kích Hoạt Dùng Thử Miễn Phí 30 Ngày Cộng Đồng ViOne Platform | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-19** | Đăng Ký Gói ViOne Platform, Thanh Toán VietQR & Kiểm Soát Hạn Mức Slots | Chủ doanh nghiệp | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-20** | Xoá Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-21** | Đồng Bộ Dữ Liệu Thực Mạng Lưới B2B & Giao Diện EmptyState Luxury | Doanh nhân, Hội viên | P0 - Bắt buộc | Hoạt động |
 
 ---
 
@@ -244,3 +247,46 @@
        * **Kiểm tra biên giới hạn (Boundary Guard):** Khi doanh nghiệp đã sử dụng hết hạn mức (ví dụ gói chỉ tạo được 10 hoặc 30 tài khoản mà người dùng cố tạo thêm 1 tài khoản mới), hệ thống chặn lại ngay lập tức và bắn thông báo chính xác:
          `"Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản"`.
        * Backend API `POST /api/companies/:id/employees` đồng thời kiểm tra lại hạn mức trong CSDL, nếu `currentCount >= maxSlots` thì trả về lỗi HTTP 400 Bad Request kèm thông điệp cảnh báo trên.
+
+---
+
+### UC-APP-20: Xoá Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) (Account Deletion & Data Purge)
+* **Tác nhân:** Người dùng App ViOne (Cá nhân, Doanh nhân, Thành viên doanh nghiệp).
+* **Mục tiêu:** Tuân thủ 100% điều khoản Apple App Store Review Guideline 5.1.1(v) — cho phép người dùng tự khởi tạo và hoàn tất xoá tài khoản vĩnh viễn trực tiếp trong ứng dụng di động mà không cần liên hệ hỗ trợ hoặc mở web ngoài.
+* **Luồng sự kiện chính:**
+  1. Người dùng mở màn hình **"Thiết lập & Bảo mật tài khoản"** (`AccountSecurityModal.tsx`) từ Tab "Tôi" hoặc thanh cài đặt.
+  2. Tại phần đáy màn hình, hệ thống hiển thị khối nguy hiểm: **"Vùng Nguy Hiểm — Xoá Tài Khoản Vĩnh Viễn"**.
+  3. Thuyết minh rõ ràng hệ quả không thể đảo ngược: Xoá sạch toàn bộ danh thiếp số cá nhân, danh bạ kết nối, lịch hẹn, bài đăng và dữ liệu liên quan.
+  4. Người dùng bấm nút **"Xoá Tài Khoản Vĩnh Viễn"** (Nút Gradient Đỏ Ruby `gradient-destructive`).
+  5. Hệ thống hiển thị hộp thoại xác thực 2 bước (Two-step confirmation Alert):
+     - Tiêu đề: `"Xác nhận xoá tài khoản vĩnh viễn"`.
+     - Thông điệp: `"Hành động này không thể hoàn tác. Toàn bộ danh thiếp số, dữ liệu đối tác và lịch sử kết nối của bạn sẽ bị xoá vĩnh viễn khỏi hệ thống ViOne."`.
+     - Nút Hủy và Nút xác nhận `"Xoá Vĩnh Viễn"` (destructive).
+  6. Khi người dùng xác nhận:
+     - Client gửi request `DELETE /api/me/account` (hoặc `POST /api/auth/account/delete`).
+     - Backend thực thi purge dữ liệu tài khoản, vô hiệu hóa token và khóa tài khoản vĩnh viễn.
+     - Ứng dụng dọn sạch bộ nhớ cache cục bộ: `AsyncStorage.clear()`.
+     - Tự động gọi `logout()` và điều hướng người dùng về màn hình đăng nhập công khai.
+
+---
+
+### UC-APP-21: Đồng Bộ Dữ Liệu Thực Mạng Lưới B2B & Giao Diện EmptyState Luxury (Zero-Mock Data Rule)
+* **Tác nhân:** Doanh nhân, Thành viên kết nối B2B trên App ViOne.
+* **Mục tiêu:** Thực hiện nghiêm ngặt quy tắc **Zero-Mock Data Rule (Rule 7)** và **Dual-App Parity (Rule 4)** trên toàn bộ phân hệ Mạng lưới (`NetworkScreen.tsx`), Trang chủ (`HomeScreen.tsx`), và Cộng đồng (`CommunityHomeScreen.tsx`, `CommunityDetailView.tsx`). 100% dữ liệu hiển thị phải phản ánh trung thực từ RESTful API / PostgreSQL backend.
+* **Luồng sự kiện chính:**
+  1. **Nạp Dữ Liệu Thực Đồng Bộ (Real Backend Data Hydration):**
+     - Tại `NetworkScreen.tsx`: Nạp song song qua `Promise.allSettled` danh bạ đối tác (`networkApi.getConnections()`), thẻ đã lưu (`networkApi.getSavedCards()`), đối tác gợi ý AI (`networkApi.getTodayRecommendations()`), khách hàng CRM (`customerApi.getCustomers()`), tin nhắn (`/connect-app/dm/threads`), và lời mời kết nối (`/connect-app/network/requests/incoming`).
+     - Tab Khách hàng CRM: Tính toán các chỉ số pipeline tự động từ danh sách thật; nút "Thêm khách hàng" gọi `customerApi.createCustomer` lưu thực tế vào PostgreSQL.
+     - Tab Lời mời kết nối: Hiển thị lời mời thật gửi đến; nút "Chấp nhận" gọi `networkApi.updateConnection(id, 'accepted')`, nút "Bỏ qua" gọi `updateConnection(id, 'declined')`.
+  2. **Xử Lý Trạng Thái Dữ Liệu Trống Chuẩn Luxury (`EmptyState` Component):**
+     - Khi CSDL trống hoặc chưa có dữ liệu ở bất kỳ màn hình nào:
+       * TUYỆT ĐỐI KHÔNG hiển thị dữ liệu giả lập (mock placeholder) hoặc mảng hardcode.
+       * BẮT BUỘC hiển thị component `EmptyState` sang trọng Đen Thạch Anh Obsidian `#050C15` kết hợp Vàng Champagne Gold `#D8B282`.
+       * Icon Lucide đặt trong vòng tròn Gradient viền mạ vàng tinh xảo.
+       * Tiêu đề và mô tả giải thích trung thực lý do danh sách trống, kèm nút hành động kêu gọi (CTA) nếu người dùng có quyền (ví dụ: "Tạo cộng đồng ngay", "Giao việc mới", "Đăng bài viết", "Chia sẻ sự kiện", "Mời thành viên").
+  3. **Đồng Bộ Nút Bấm Gradient Thương Hiệu (Gradient-Only Button Rule):**
+     - 100% tất cả các nút bấm CTAs trên ViOne App (cả PWA và Native) sử dụng `LinearGradient` theo đúng bảng quy chuẩn thương hiệu:
+       * Primary Action: Gradient Vàng Hoàng Gia Champagne Gold (`["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]`), chữ Đen Obsidian `#050C15` font-bold.
+       * Secondary Action: Gradient Đen Thạch Anh Mạ Vàng viền mạ vàng `border-[#D8B282]/40`, chữ Vàng `#F6E1C3`.
+       * Destructive Action: Gradient Đỏ Ruby (`["#EF4444", "#DC2626", "#991B1B"]`), chữ Trắng.
+       * Success Action: Gradient Ngọc Lục Bảo (`["#34D399", "#10B981", "#059669"]`), chữ Đen/Trắng font-bold.

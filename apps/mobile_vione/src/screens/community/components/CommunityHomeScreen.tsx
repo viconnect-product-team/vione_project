@@ -28,6 +28,7 @@ import {
   Package,
 } from "lucide-react-native";
 import { StickyBrandHeader } from "../../../components/common/StickyBrandHeader";
+import { EmptyState } from "../../../components/common/EmptyState";
 import { B2BEvent } from "../../../types";
 import { CommunityOpportunityItem } from "../../../components/OpportunityDetailModal";
 import {
@@ -69,6 +70,7 @@ export interface CommunityHomeScreenProps {
     plan?: string;
   };
   onActivateTrial?: () => void;
+  isViconnectAdmin?: boolean;
 }
 
 export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
@@ -94,6 +96,7 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
   onProposeMeeting,
   subStatus,
   onActivateTrial,
+  isViconnectAdmin,
 }) => {
   return (
     <>
@@ -181,14 +184,16 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                     style={styles.createCommunityGrad}
                   >
                     <Plus size={16} color="#050C15" strokeWidth={2.5} />
-                    <Text style={styles.createCommunityText}>+ Tạo cộng đồng (30 ngày free)</Text>
+                    <Text style={styles.createCommunityText}>
+                      + Tạo cộng đồng{isViconnectAdmin ? "" : " (30 ngày free)"}
+                    </Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Banner Kích Hoạt 30 Ngày Dùng Thử Miễn Phí nếu tài khoản chưa có gói */}
-            {subStatus && !subStatus.hasSubscription && (
+            {!isViconnectAdmin && subStatus && !subStatus.hasSubscription && (
               <View style={{ marginHorizontal: 16, marginBottom: 14 }}>
                 <LinearGradient
                   colors={["rgba(216, 178, 130, 0.22)", "rgba(11, 15, 25, 0.95)"]}
@@ -410,15 +415,17 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
 
                 {/* Danh Sách Thẻ Cộng Đồng */}
                 {filteredCommunities.length === 0 ? (
-                  <View style={styles.emptyContainer}>
-                    <Users size={36} color="#94A3B8" />
-                    <Text style={[styles.emptyTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
-                      Không tìm thấy cộng đồng phù hợp
-                    </Text>
-                    <Text style={[styles.emptySubtitle, { color: isDark ? "#94A3B8" : "#64748B" }]}>
-                      Thử tìm kiếm với từ khóa khác hoặc tạo cộng đồng mới của riêng bạn.
-                    </Text>
-                  </View>
+                  <EmptyState
+                    icon={Users}
+                    title="Chưa có cộng đồng nào"
+                    subtitle={
+                      searchQuery.trim().length > 0
+                        ? "Không tìm thấy cộng đồng phù hợp với từ khóa tìm kiếm."
+                        : "Khám phá các liên minh doanh nghiệp hoặc khởi tạo cộng đồng mới."
+                    }
+                    actionLabel="Tạo cộng đồng ngay"
+                    onAction={onOpenCreateCommunity}
+                  />
                 ) : (
                   <View style={styles.communitiesList}>
                     {filteredCommunities.map((community) => {
@@ -626,64 +633,88 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                 </View>
 
                 <View style={styles.upcomingEventsList}>
-                  {events.map((ev) => (
-                    <TouchableOpacity
-                      key={ev.id}
-                      style={[
-                        styles.upcomingEventCard,
-                        {
-                          backgroundColor: isDark ? "#121824" : "#FFFFFF",
-                          borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
-                        },
-                      ]}
-                      onPress={() => {
-                        onSelectEvent(ev);
-                      }}
-                    >
-                      <View style={styles.eventDateBox}>
-                        <Text style={styles.eventMonthText}>THÁNG 10</Text>
-                        <Text style={styles.eventDayText}>
-                          {ev.startsAt.split(" ")[0].split("-")[2] || "15"}
-                        </Text>
-                      </View>
-
-                      <View style={styles.eventInfoCol}>
-                        <Text
-                          numberOfLines={1}
-                          style={[styles.eventTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
-                        >
-                          {ev.title}
-                        </Text>
-                        <View style={styles.eventMetaRow}>
-                          <Clock size={12} color="#D8B282" />
-                          <Text style={styles.eventMetaText}>{ev.startsAt}</Text>
-                        </View>
-                        <View style={styles.eventMetaRow}>
-                          <MapPin size={12} color="#94A3B8" />
-                          <Text numberOfLines={1} style={styles.eventMetaText}>
-                            {ev.location}
+                  {events.length === 0 ? (
+                    <EmptyState
+                      icon={Calendar}
+                      title="Chưa có sự kiện nào"
+                      subtitle="Các sự kiện giao thương B2B và hội thảo sắp diễn ra sẽ được cập nhật tại đây."
+                    />
+                  ) : (
+                    events.map((ev) => (
+                      <TouchableOpacity
+                        key={ev.id}
+                        style={[
+                          styles.upcomingEventCard,
+                          {
+                            backgroundColor: isDark ? "#121824" : "#FFFFFF",
+                            borderColor: isDark ? "rgba(216, 178, 130, 0.2)" : "#E2E8F0",
+                          },
+                        ]}
+                        onPress={() => {
+                          onSelectEvent(ev);
+                        }}
+                      >
+                        <View style={styles.eventDateBox}>
+                          <Text style={styles.eventMonthText}>THÁNG 10</Text>
+                          <Text style={styles.eventDayText}>
+                            {ev.startsAt.split(" ")[0].split("-")[2] || "15"}
                           </Text>
                         </View>
-                      </View>
 
-                      <TouchableOpacity
-                        style={[
-                          styles.eventRegisterBtn,
-                          ev.isRegistered && styles.eventRegisteredBtn,
-                        ]}
-                        onPress={() => onRegisterEvent(ev)}
-                      >
-                        <Text
-                          style={[
-                            styles.eventRegisterBtnText,
-                            ev.isRegistered && styles.eventRegisteredBtnText,
-                          ]}
+                        <View style={styles.eventInfoCol}>
+                          <Text
+                            numberOfLines={1}
+                            style={[styles.eventTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
+                          >
+                            {ev.title}
+                          </Text>
+                          <View style={styles.eventMetaRow}>
+                            <Clock size={12} color="#D8B282" />
+                            <Text style={styles.eventMetaText}>{ev.startsAt}</Text>
+                          </View>
+                          <View style={styles.eventMetaRow}>
+                            <MapPin size={12} color="#94A3B8" />
+                            <Text numberOfLines={1} style={styles.eventMetaText}>
+                              {ev.location}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <TouchableOpacity
+                          style={{ borderRadius: 10, overflow: "hidden" }}
+                          onPress={() => onRegisterEvent(ev)}
+                          activeOpacity={0.85}
                         >
-                          {ev.isRegistered ? "Đã đ.ký" : "Đăng ký"}
-                        </Text>
+                          <LinearGradient
+                            colors={
+                              ev.isRegistered
+                                ? ["rgba(216, 178, 130, 0.15)", "rgba(10, 16, 29, 0.9)"]
+                                : ["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]
+                            }
+                            style={{
+                              paddingHorizontal: 12,
+                              paddingVertical: 7,
+                              borderRadius: 10,
+                              borderWidth: ev.isRegistered ? 1 : 0,
+                              borderColor: "rgba(216, 178, 130, 0.4)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 11,
+                                fontWeight: "800",
+                                color: ev.isRegistered ? "#D8B282" : "#050C15",
+                              }}
+                            >
+                              {ev.isRegistered ? "Đã đ.ký" : "Đăng ký"}
+                            </Text>
+                          </LinearGradient>
+                        </TouchableOpacity>
                       </TouchableOpacity>
-                    </TouchableOpacity>
-                  ))}
+                    ))
+                  )}
                 </View>
 
                 {/* Cơ hội kinh doanh trong cộng đồng (CommunityOpportunitiesSection) */}
@@ -697,69 +728,77 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                 </View>
 
                 <View style={styles.opportunitiesList}>
-                  {opportunities.map((opp) => (
-                    <TouchableOpacity
-                      key={opp.id}
-                      style={[
-                        styles.opportunityCard,
-                        {
-                          backgroundColor: isDark ? "#121824" : "#FFFFFF",
-                          borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "#E2E8F0",
-                        },
-                      ]}
-                      onPress={() => {
-                        onSelectOpportunity(opp);
-                      }}
-                    >
-                      <View style={styles.oppTopRow}>
-                        <View style={styles.oppBadge}>
-                          <Text style={styles.oppBadgeText}>{opp.category}</Text>
-                        </View>
-                        <Text style={styles.oppDaysLeft}>{opp.daysLeft}</Text>
-                      </View>
-
-                      <Text
-                        numberOfLines={2}
-                        style={[styles.oppTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
-                      >
-                        {opp.title}
-                      </Text>
-
-                      <View style={styles.oppOrgRow}>
-                        <Building2 size={13} color="#94A3B8" />
-                        <Text numberOfLines={1} style={styles.oppOrgText}>
-                          {opp.organization}
-                        </Text>
-                      </View>
-
-                      <View
+                  {opportunities.length === 0 ? (
+                    <EmptyState
+                      icon={Handshake}
+                      title="Chưa có cơ hội kinh doanh"
+                      subtitle="Hiện tại chưa có đề xuất cơ hội kinh doanh B2B nào được mở."
+                    />
+                  ) : (
+                    opportunities.map((opp) => (
+                      <TouchableOpacity
+                        key={opp.id}
                         style={[
-                          styles.oppFooterRow,
-                          { borderTopColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#F1F5F9" },
+                          styles.opportunityCard,
+                          {
+                            backgroundColor: isDark ? "#121824" : "#FFFFFF",
+                            borderColor: isDark ? "rgba(216, 178, 130, 0.25)" : "#E2E8F0",
+                          },
                         ]}
+                        onPress={() => {
+                          onSelectOpportunity(opp);
+                        }}
                       >
-                        <View>
-                          <Text style={styles.oppValueLabel}>Giá trị dự kiến</Text>
-                          <Text style={styles.oppValueText}>{opp.dealValue}</Text>
+                        <View style={styles.oppTopRow}>
+                          <View style={styles.oppBadge}>
+                            <Text style={styles.oppBadgeText}>{opp.category}</Text>
+                          </View>
+                          <Text style={styles.oppDaysLeft}>{opp.daysLeft}</Text>
                         </View>
 
-                        <TouchableOpacity
-                          style={styles.oppConnectBtn}
-                          onPress={() => {
-                            onProposeMeeting(opp);
-                          }}
+                        <Text
+                          numberOfLines={2}
+                          style={[styles.oppTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}
                         >
-                          <LinearGradient
-                            colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
-                            style={styles.oppConnectGrad}
+                          {opp.title}
+                        </Text>
+
+                        <View style={styles.oppOrgRow}>
+                          <Building2 size={13} color="#94A3B8" />
+                          <Text numberOfLines={1} style={styles.oppOrgText}>
+                            {opp.organization}
+                          </Text>
+                        </View>
+
+                        <View
+                          style={[
+                            styles.oppFooterRow,
+                            { borderTopColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#F1F5F9" },
+                          ]}
+                        >
+                          <View>
+                            <Text style={styles.oppValueLabel}>Giá trị dự kiến</Text>
+                            <Text style={styles.oppValueText}>{opp.dealValue}</Text>
+                          </View>
+
+                          <TouchableOpacity
+                            style={styles.oppConnectBtn}
+                            onPress={() => {
+                              onProposeMeeting(opp);
+                            }}
                           >
-                            <Handshake size={13} color="#050C15" />
-                            <Text style={styles.oppConnectText}>Đề xuất gặp mặt</Text>
-                          </LinearGradient>
-                        </TouchableOpacity>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
+                            <LinearGradient
+                              colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                              style={styles.oppConnectGrad}
+                            >
+                              <Handshake size={13} color="#050C15" />
+                              <Text style={styles.oppConnectText}>Đề xuất gặp mặt</Text>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </View>
+                      </TouchableOpacity>
+                    ))
+                  )}
                 </View>
 
                 {/* Quản trị yêu cầu tham gia (CommunityJoinAdminEntry) */}

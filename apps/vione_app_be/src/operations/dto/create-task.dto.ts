@@ -18,8 +18,8 @@ export class CreateTaskDto {
   department?: string;
 
   @IsOptional()
-  @IsEnum(['high', 'medium', 'low'], { message: 'Độ ưu tiên phải là high, medium hoặc low' })
-  priority?: 'high' | 'medium' | 'low';
+  @IsEnum(['urgent', 'high', 'normal', 'medium', 'low'], { message: 'Độ ưu tiên phải là urgent, high, normal, medium hoặc low' })
+  priority?: 'urgent' | 'high' | 'normal' | 'medium' | 'low';
 
   @IsOptional()
   @IsString({ message: 'Mô tả phải là chuỗi văn bản' })

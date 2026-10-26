@@ -506,20 +506,20 @@ export function CompanyTasksTab({
 
       {/* Modal Giao Việc Mới */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-lg rounded-2xl border border-[#DFB76C]/30 bg-slate-950 p-6 shadow-2xl relative text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-[#DFB76C]/30 bg-white dark:bg-slate-950 p-6 shadow-2xl relative text-slate-900 dark:text-white">
             <h3 className="text-xl font-bold flex items-center gap-2">
               <ListTodo className="w-5 h-5 text-[#DFB76C]" />
               <span>Giao Việc Cho Nhân Sự</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Phân công nhiệm vụ cụ thể, theo dõi thời hạn hoàn thành và khách hàng mục tiêu.
             </p>
 
             <form onSubmit={handleCreateTask} className="space-y-4 mt-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Tiêu đề nhiệm vụ <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Tiêu đề nhiệm vụ <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -527,12 +527,12 @@ export function CompanyTasksTab({
                   placeholder="Ví dụ: Gọi điện tư vấn giải pháp chuyển đổi số cho khách hàng"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Mô tả chi tiết công việc
                 </label>
                 <textarea
@@ -540,7 +540,7 @@ export function CompanyTasksTab({
                   placeholder="Mô tả các yêu cầu cụ thể cần hoàn thành..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-slate-800 bg-slate-900 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
+                  className="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                 />
               </div>
 
@@ -557,13 +557,13 @@ export function CompanyTasksTab({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Mức độ ưu tiên
                   </label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-sm text-white focus:outline-none focus:border-[#DFB76C]"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#DFB76C]"
                   >
                     <option value="normal">Bình thường</option>
                     <option value="high">Ưu tiên cao</option>
@@ -574,7 +574,7 @@ export function CompanyTasksTab({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Hạn hoàn thành (Deadline)
                 </label>
                 <input
@@ -582,13 +582,13 @@ export function CompanyTasksTab({
                   placeholder="Ví dụ: Thứ Sáu 17:00, 24/10/2026"
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                 />
               </div>
 
               {/* Optional customer info */}
-              <div className="p-3 rounded-xl border border-slate-800/80 bg-slate-900/60 space-y-3">
-                <div className="text-xs font-semibold text-[#DFB76C]">
+              <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/60 space-y-3">
+                <div className="text-xs font-semibold text-amber-700 dark:text-[#DFB76C]">
                   Thông tin khách hàng gắn với công việc (Tùy chọn)
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -597,14 +597,14 @@ export function CompanyTasksTab({
                     placeholder="Tên khách hàng"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
+                    className="w-full h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                   />
                   <input
                     type="tel"
                     placeholder="SĐT khách hàng"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
+                    className="w-full h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                   />
                 </div>
                 <input
@@ -612,15 +612,15 @@ export function CompanyTasksTab({
                   placeholder="Nội dung nhu cầu khách hàng..."
                   value={customerRequirements}
                   onChange={(e) => setCustomerRequirements(e.target.value)}
-                  className="w-full h-9 px-3 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
+                  className="w-full h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-medium transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-medium transition cursor-pointer"
                 >
                   Hủy
                 </button>

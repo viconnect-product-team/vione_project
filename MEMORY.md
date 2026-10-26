@@ -1,5 +1,158 @@
 # System Memory & Architecture
 
+## 0.0000000000.1. HOÀN THIỆN 5 HẠNG MỤC CRM & NỀN TẢNG VIONE: GỠ CHẶN PLATFORM, ADAPTIVE LIGHT THEME, TREE MENU BÁO CÁO, PHỤC HỒI GIAO VIỆC & CLEANUP CSDL (26/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Hạng mục 1**: Gỡ bỏ phần hiển thị đăng ký platform ViOne. Đối với những người thuộc ViConnect và admin, quản trị thì mặc định mở hết các chức năng.
+- **Hạng mục 2**: Sửa triệt để lỗi giao diện CRM bị loang lổ màu đen khi dùng Light Theme; đảm bảo chuẩn phong cách sang trọng Champagne Gold / Trắng ngà thanh lịch trên nền sáng.
+- **Hạng mục 3**: Tách riêng phân hệ Thống Kê Báo Cáo thành nhóm riêng ở Sidebar với thiết kế Tree Menu đa cấp (bấm chức năng cha sẽ xổ xuống các chức năng con chi tiết).
+- **Hạng mục 4**: Sửa chữa và kích hoạt lại chức năng Giao việc (Task Assignment) đang bị lỗi không hoạt động được.
+- **Hạng mục 5**: Dọn dẹp sạch toàn bộ dữ liệu CSDL PostgreSQL, chỉ giữ lại duy nhất tài khoản quản trị `admin@connect.vn`.
+
+---
+
+### 2. Chi Tiết Thực Hiện Kỹ Thuật
+
+#### 1. Gỡ Bỏ Khối Đăng Ký Platform & Mở Toàn Bộ Quyền Cho Admin / ViConnect
+- **Frontend PWA (`EnterpriseTreeMenu.tsx`)**:
+  * Tích hợp hook `useAuth()` kiểm tra cờ `isViconnectAdmin`:
+    - Email `admin@connect.vn` hoặc có domain `@connect.vn`, `@viconnect.vn`.
+    - Vai trò hệ thống thuộc nhóm `admin`, `super_admin`, `platform_admin`.
+  * Gỡ bỏ hoàn toàn khối Card cảnh báo/quảng cáo "Yêu Cầu Gói ViOne Platform" / "Đăng ký gói ngay".
+  * Thay thế badge "Khóa" màu cam bằng badge "Active" màu ngọc lục bảo tinh tế.
+- **Frontend PWA (`routes/companies.index.tsx`)**:
+  * Gỡ bỏ hoàn toàn khối chặn truy cập `hasSubscription === false ? (...)` hiển thị modal/banner cảnh báo khóa gói.
+- **Frontend Native Mobile (`CommunityScreen.tsx` & `CommunityHomeScreen.tsx`)**:
+  * Tích hợp cờ `isViconnectAdmin`, tự động kích hoạt `hasSubscription: true, isTrial: false`.
+  * Ẩn nút "Đăng Ký Gói" và banner "FREE 30 NGÀY DÙNG THỬ" đối với tài khoản Admin / ViConnect.
+  * Tinh chỉnh nút tạo cộng đồng thành "+ Tạo cộng đồng" (không hiển thị hậu tố dùng thử cho admin).
+- **Backend API (`companies.service.ts`)**:
+  * Hàm `checkPlatformSubscription` tự động nhận diện tài khoản Admin / ViConnect, trả về `hasSubscription: true`, `isTrial: false`, `slots: 999999` (không giới hạn).
+
+#### 2. Khắc Phục Lỗi Giao Diện Loang Màu Đen CRM (Adaptive Light/Dark Theme)
+- Khắc phục tình trạng các màn hình CRM hardcode màu đen sâu (`bg-[#0B0F19]`, `bg-slate-950`) gây lỗi lệch màu nghiêm trọng khi chuyển sang Light Mode:
+  * `PlatformStaffManagement.tsx`: Hero Banner, 4 Cards KPI, Thanh tìm kiếm & Dropdown filter, Bảng danh sách nhân sự và 3 Modals quản trị (Cấp tài khoản, Sửa nhóm quyền, Cấp lại mật khẩu) chuyển hoàn toàn sang adaptive Light/Dark (`bg-white dark:bg-slate-900 border-slate-200 dark:border-[#D8B282]/50 text-slate-900 dark:text-white`).
+  * `PlatformActivityMonitoring.tsx`: Chuyển 4 KPI Cards, biểu đồ tăng trưởng doanh nghiệp và bảng giám sát sang adaptive Light/Dark.
+  * `routes/segments.tsx`: Chuyển Hero Banner, Package Cards, Orders Table, Search/Filter, và 3 Modals (Tạo gói, Xem hồ sơ, Từ chối) sang adaptive Light/Dark.
+  * `CompanyTasksTab.tsx`: Chuyển toàn bộ khung viền, nền form modal "Giao Việc Cho Nhân Sự" từ đen kịt sang adaptive Light/Dark sang trọng.
+
+#### 3. Tách Phân Hệ Thống Kê & Báo Cáo Thành Tree Menu Đa Cấp
+- Tạo mới component `ReportsTreeMenu.tsx` ([ReportsTreeMenu.tsx](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/apps/vione_app_fe/src/components/dashboard/ReportsTreeMenu.tsx)):
+  * Cấu trúc Tree Menu dạng cây thu gọn/mở rộng trực quan, đường chỉ nhánh tinh tế, highlight mục đang active.
+  * Phân loại thành 4 nhánh cha logic:
+    1. **Báo Cáo Tài Chính & Doanh Thu**:
+       - *Thống Kê Doanh Thu & Dòng Tiền* -> `/statistics?group=finance`
+       - *Doanh Thu Toàn Nền Tảng* -> `/finance-report` hoặc *Sổ Quỹ & Doanh Thu DN* -> `/fees`
+       - *Báo Cáo Phê Duyệt Chi Tiền* -> `/payment-approvals`
+    2. **Thống Kê Vận Hành & Nhân Sự**:
+       - *Tiến Độ & Hiệu Suất Kanban BPMN* -> `/statistics?group=operations`
+       - *Báo Cáo Chấm Công & Ca Làm* -> `/statistics?group=attendance`
+       - *Báo Cáo Phân Công Giao Việc* -> `/workflow`
+    3. **Báo Cáo Khách Hàng CRM**:
+       - *Phân Tích Phễu Khách Hàng CRM* -> `/statistics?group=crm`
+       - *Báo Cáo Chăm Sóc & Tương Tác* -> `/members`
+    4. **Giám Sát Nền Tảng ViOne (Super Admin)**:
+       - *Chỉ Số Tăng Trưởng Nền Tảng* -> `/statistics?group=platform`
+       - *Theo Dõi Mức Độ Hoạt Động DN* -> `/platform`
+       - *Nhật Ký Kiểm Toán Toàn Hệ Thống* -> `/activity`
+- Tích hợp `ReportsTreeMenu` vào `Sidebar.tsx` ở cả 2 view Platform và Company, loại bỏ các mục báo cáo rời rạc ở các nhóm khác.
+- Cập nhật `routes/statistics.tsx` tự động nhận URL query search params (`?group=...`) để tự động kích hoạt tab thống kê tương ứng khi bấm từ Sidebar.
+
+#### 4. Khắc Phục Lỗi Chức Năng Giao Việc (Company Task Assignment)
+- **Database Schema**: Bổ sung 6 cột thiếu vào bảng `public.company_employees`:
+  * `can_assign_tasks` (boolean, default true)
+  * `can_manage_members` (boolean, default true)
+  * `can_manage_finance` (boolean, default true)
+  * `can_manage_docs` (boolean, default true)
+  * `can_manage_crm` (boolean, default true)
+  * `permissions` (text[], default '{}')
+- **Backend DTO & Service**:
+  * Cập nhật `CreateTaskDto` và `UpdateTaskDto` chấp nhận đầy đủ các status (`todo`, `in_progress`, `review`, `done`, `assigned`, `completed`, `cancelled`) và priority (`urgent`, `high`, `normal`, `medium`, `low`).
+  * Mở rộng kiểu dữ liệu `TaskItem.status` trong `operations.service.ts` để đồng bộ hoàn toàn với DTO.
+- **Frontend Sync**:
+  * Đồng bộ `CompanyTasksTab.tsx` gọi chính xác API cập nhật trạng thái `PATCH /companies/:id/tasks/:taskId/status` và API giao việc hàng loạt `POST /companies/:id/tasks/bulk`.
+
+#### 5. Dọn Dẹp CSDL PostgreSQL & Giữ Lại Duy Nhất Tài Khoản Admin
+- Chạy script dọn dẹp an toàn `scratch/cleanup_db_keep_admin.js`:
+  * Xóa sạch 100% dữ liệu thử nghiệm ở các bảng: `chat_messages`, `chat_channels`, `notifications`, `audit_logs`, `company_tasks`, `company_employees`, `companies`, `user_roles`, `user_profiles`, `vione_users`, `auth.users`.
+  * Bảo lưu duy nhất 1 tài khoản quản trị tối cao:
+    - **Email**: `admin@connect.vn`
+    - **Mật khẩu**: `123456` (Password Hash bcrypt chuẩn)
+    - **UUID**: `00000000-0000-4000-8000-000000000002`
+    - **Roles**: `admin`, `platform_admin`
+    - **Doanh nghiệp sở hữu**: 1 doanh nghiệp quản trị mẫu (`c1000000-0000-4000-8000-000000000001`), 1 nhân viên quản trị và 1 task mẫu.
+
+---
+
+### 3. Kiểm Tra Chất Lượng Mã Nguồn (Strict Quality & Verification)
+- **1. Backend ViOne (`apps/vione_app_be`)**: `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **2. PWA Web App ViOne (`apps/vione_app_fe`)**: `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **3. Native Mobile ViOne (`apps/mobile_vione`)**: `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **4. Dual-App Parity (Rule 4)**: Cả 2 bản Native và PWA đều đồng nhất 100% về cơ chế phân quyền tài khoản quản trị ViConnect, không hiển thị bất kỳ khối khóa gói nào cho Admin.
+
+---
+
+## 0.0000000000. ĐỒNG BỘ TOÀN DIỆN VIONE NATIVE APP & VIONE PWA APP ĐẠT CHUẨN APPLE APP STORE GUIDELINES (THÁNG 10/2026)
+
+### 1. Bối cảnh & Yêu cầu Nghiệp Vụ
+- Người dùng đã nâng cấp rất nhiều tính năng trên bản ViOne PWA (`apps/vione_app_fe`). Yêu cầu so sánh toàn diện response API, luồng nghiệp vụ và giao diện giữa PWA và Native Mobile (`apps/mobile_vione`), bổ sung các phần còn thiếu trên Native để đạt độ đồng bộ 100%.
+- Ứng dụng ViOne Native Mobile bắt buộc phải hoàn thiện theo tiêu chuẩn nghiêm ngặt của Apple App Store Guidelines (iOS) để chuẩn bị submit lên App Store mà không bị reject về giao diện (UI/UX), tính năng hoặc chính sách tài khoản.
+
+### 2. Các Hạng Mục Chuẩn Hoá Apple App Store (iOS Guidelines)
+- **Guideline 5.1.1(v) - Xoá Tài Khoản Vĩnh Viễn (Account Deletion)**:
+  * Apple quy định bất kỳ ứng dụng nào hỗ trợ tạo tài khoản đều BẮT BUỘC phải cho phép người dùng xoá tài khoản vĩnh viễn trực tiếp từ bên trong app.
+  * Đã bổ sung tính năng "Xoá Tài Khoản Vĩnh Viễn" tại `AccountSecurityModal.tsx` trên Native Mobile:
+    - Hiển thị khối cảnh báo màu Đỏ Ruby về việc toàn bộ danh thiếp, danh bạ kết nối, lịch hẹn và dữ liệu CRM sẽ bị xoá hoàn toàn khỏi hệ thống không thể phục hồi.
+    - Hộp thoại Alert xác nhận 2 bước: "Xác nhận xoá tài khoản" -> Bấm "Xoá Vĩnh Viễn".
+    - Gọi API `DELETE /me/account` (hoặc `/auth/account/delete`).
+    - Dọn dẹp bộ nhớ tạm cục bộ: `AsyncStorage.clear()`.
+    - Gọi hàm `logout()` đưa người dùng về màn hình đăng nhập an toàn.
+    - Nút bấm sử dụng `LinearGradient` Đỏ Ruby (`gradient-destructive` `["#EF4444", "#DC2626", "#991B1B"]`).
+- **Guideline 2.1 - Tính Đầy Đủ & Hoàn Thiện (App Completeness & Zero-Mock Data)**:
+  * Loại bỏ nút "Thử nghiệm quét nhanh 5.0" tại `ScanQrModal.tsx` để ngăn Apple Tester nghi ngờ ứng dụng còn ở trạng thái beta/demo.
+  * Loại bỏ triệt để 100% các mảng dữ liệu giả lập tĩnh (mock data): `NURTURE_PARTNERS = []`, `INITIAL_PARTNERS = []`, `B2B_CUSTOMERS = []`, `INITIAL_STORIES = []`, `HOME_STORIES = []`, `INITIAL_TODAY_OPPORTUNITIES = []`, `INITIAL_TODAY_MEETINGS = []`, `INITIAL_COMMUNITIES = []`, `INITIAL_MEMBERS = []`.
+  * Thay thế toàn bộ bằng luồng gọi API thật từ PostgreSQL backend. Khi CSDL trống, hiển thị component `EmptyState` tinh tế, trang trọng với icon Lucide viền mạ vàng, thông điệp trung thực và nút CTA nếu có quyền (Rule 7).
+- **Guideline 4.0 - Thiết Kế Giao Diện & Trải Nghiệm Người Dùng (HIG Compliant)**:
+  * Nút bấm có kích thước chạm tối thiểu đạt 44x44pt chuẩn Apple Human Interface Guidelines.
+  * Các màn hình, modal và drawer tuân thủ nghiêm ngặt SafeAreaView và insets chống che khuất bởi Dynamic Island, tai thỏ (notch) và thanh điều hướng đáy (Home Indicator).
+- **Guideline 3.1.1 - Đăng Ký Gói & Dùng Thử B2B Enterprise**:
+  * Chuẩn hoá `PackageRegistrationModal.tsx` trên Native: Cho phép doanh nghiệp kích hoạt dùng thử 30 ngày (Free Trial 0đ) hoặc gửi hồ sơ đăng ký gói giải pháp SME/Enterprise qua chuyển khoản VietQR Napas 24/7 trực tiếp về CRM ViConnect.
+
+### 3. Chi Tiết Triển Khai Kỹ Thuật (Technical Implementation)
+- **1. Component `EmptyState` Luxury Obsidian & Gold (`apps/mobile_vione/src/components/common/EmptyState.tsx`)**:
+  * Thiết kế theo phong cách Obsidian `#050C15` kết hợp Champagne Gold `#D8B282`.
+  * Hỗ trợ icon linh hoạt: ReactNode, LucideIcon component hoặc custom SVG; hiển thị trong vòng tròn LinearGradient viền vàng.
+  * Hỗ trợ đầy đủ `title`, `description` / `subtitle`, `actionTitle` / `actionLabel`, nút thứ cấp và nút bấm `GoldButton` chuẩn gradient.
+- **2. Quét Mã QR Thông Minh (`apps/mobile_vione/src/screens/quick-connect/ScanQrModal.tsx`)**:
+  * Tích hợp bộ parser regex nhận diện tất cả các cấu trúc URL danh thiếp và định danh ViOne: `/card/`, `/p/`, `/profile/`, `/identity/`, `/c/`, `userId=`.
+  * Cơ chế truy vấn fallback đa endpoint backend: `/public/p/:id`, `/public/identity/:id`, `/public/profile/:id`, `/business-cards/public-card/:code` đồng bộ 100% với PWA Web App.
+- **3. Màn Hình Kết Nối Đối Tác (`apps/mobile_vione/src/screens/network/NetworkScreen.tsx`)**:
+  * Tái cấu trúc toàn diện hàm nạp dữ liệu `fetchNetworkData`: Gọi song song qua `Promise.allSettled` các endpoints:
+    - `/connect-app/dm/threads` (Tin nhắn trực tiếp)
+    - `networkApi.getConnections()` (Danh bạ đối tác chính thức)
+    - `networkApi.getSavedCards()` (Thẻ danh thiếp đã lưu)
+    - `networkApi.getTodayRecommendations()` (Đối tác gợi ý AI)
+    - `customerApi.getCustomers()` (Khách hàng CRM)
+    - `/connect-app/network/requests/incoming` (Lời mời kết nối đang chờ duyệt)
+    - `momentApi.getMoments()` (Bảng tin khoảnh khắc)
+  * Tab 2 (Khách hàng CRM): Tính toán các chỉ số pipeline tự động từ danh sách thật; nút "Thêm khách hàng" gọi `customerApi.createCustomer` lưu thực tế vào PostgreSQL.
+  * Tab 5 (Lời mời kết nối): Nạp danh sách lời mời nhận được thật; nút "Chấp nhận" gọi `networkApi.updateConnection(req.id, "accepted")` với Gradient Gold, nút "Bỏ qua" gọi `updateConnection(req.id, "declined")` với Gradient Secondary.
+  * Tích hợp `EmptyState` cho tất cả các tab khi chưa có dữ liệu.
+- **4. Màn Hình Trang Chủ (`apps/mobile_vione/src/screens/home/HomeScreen.tsx` & `TodayEditorialSection.tsx`)**:
+  * Nạp dữ liệu meetings và opportunities từ API thật, loại bỏ fallback mock data.
+  * Tích hợp `EmptyState` khi không có cuộc gặp hoặc cơ hội hôm nay.
+  * Toàn bộ nút bấm ("Hẹn gặp", "Vào họp", "Chi tiết", "Voice AI") đều dùng `LinearGradient` ViOne Gold.
+- **5. Màn Hình Cộng Đồng (`CommunityHomeScreen.tsx` & `CommunityDetailView.tsx`)**:
+  * Thay thế tất cả các khối placeholder trống bằng component `EmptyState` chuẩn.
+  * Chuẩn hoá nút đăng ký sự kiện và nút "Đánh dấu xong" nhiệm vụ sang `LinearGradient` Ngọc Lục Bảo `#10B981`.
+
+### 4. Kiểm Tra Chất Lượng Mã Nguồn & Xác Thực Bắt Buộc (Strict Verification)
+- **1. Native Mobile ViOne (`apps/mobile_vione`)**: `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **2. PWA Web App ViOne (`apps/vione_app_fe`)**: `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- **3. Dual-App Parity (Rule 4)**: Cả 2 bản Native và PWA đều có tính năng, luồng nghiệp vụ, giao diện, bảng màu Obsidian / Champagne Gold đồng nhất 100%.
+- **4. Gradient-Only Buttons (Rule 8)**: Toàn bộ nút bấm đều sử dụng LinearGradient thương hiệu ViOne (Gold/Obsidian/Emerald/Ruby).
+- **5. Zero-Mock Data Rule (Rule 7)**: 100% dữ liệu hiển thị trung thực từ API backend PostgreSQL.
+
 ## 0.000000000. QUẢN LÝ GÓI VIONE PLATFORM (BẢNG GIÁ THEO SỐ LƯỢNG SLOTS), ĐĂNG KÝ GÓI KÈM MÃ VIETQR, DUYỆT ĐƠN BẮN MAIL & KIỂM SOÁT HẠN MỨC TÀI KHOẢN (THÁNG 10/2026)
 
 ### 1. Bối cảnh & Yêu cầu Nghiệp Vụ Cốt Lõi

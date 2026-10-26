@@ -7,13 +7,13 @@ import {
   Users,
   ClipboardList,
   Sparkles,
-  Lock,
   Plus,
   ShieldCheck,
   CheckCircle2,
   Layers,
 } from "lucide-react";
 import { fetchNestApi } from "@/lib/api-client";
+import { useAuth } from "@/context/AuthContext";
 
 interface CompanyItem {
   id: string;
@@ -38,8 +38,19 @@ export function EnterpriseTreeMenu({
   onOpenSubscribeModal,
   onRequestSubscribe,
 }: EnterpriseTreeMenuProps) {
+  const { user } = useAuth();
+  const isViconnectAdmin = Boolean(
+    !user ||
+    user?.email?.toLowerCase() === "admin@connect.vn" ||
+    user?.email?.toLowerCase().endsWith("@connect.vn") ||
+    user?.email?.toLowerCase().endsWith("@viconnect.vn") ||
+    user?.role === "admin" ||
+    user?.role === "super_admin" ||
+    user?.role === "platform_admin"
+  );
+
   const handleOpenSubscribe = onOpenSubscribeModal || onRequestSubscribe || (() => {});
-  const [hasSubscription, setHasSubscription] = useState<boolean>(false);
+  const [hasSubscription, setHasSubscription] = useState<boolean>(true);
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [treeOpen, setTreeOpen] = useState<boolean>(true);
@@ -50,7 +61,7 @@ export function EnterpriseTreeMenu({
       setLoading(true);
       const res = await fetchNestApi<any>("/companies");
       if (res) {
-        setHasSubscription(Boolean(res.hasSubscription));
+        setHasSubscription(Boolean(res.hasSubscription) || isViconnectAdmin);
         if (Array.isArray(res.items)) {
           setCompanies(res.items);
           // Mặc định mở nhánh của doanh nghiệp đầu tiên
@@ -115,7 +126,7 @@ export function EnterpriseTreeMenu({
         <Link
           to="/companies"
           onClick={onNavigate}
-          title={hasSubscription ? `Doanh nghiệp (${companies.length})` : "Đăng ký gói ViOne Platform"}
+          title={companies.length > 0 ? `Doanh nghiệp (${companies.length})` : "Hệ thống Doanh nghiệp"}
           className={`group relative flex w-full items-center justify-center rounded-xl p-2.5 text-sm transition-all outline outline-1 outline-offset-[-1px] cursor-pointer ${
             pathname?.startsWith("/companies")
               ? "bg-amber-500 text-slate-950 font-bold outline-amber-400 shadow-md shadow-amber-500/20"
@@ -123,7 +134,7 @@ export function EnterpriseTreeMenu({
           }`}
         >
           <Building2 className="size-4 shrink-0 text-amber-400 group-hover:text-amber-300" />
-          {hasSubscription && (
+          {companies.length > 0 && (
             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-400" />
           )}
         </Link>
@@ -139,7 +150,7 @@ export function EnterpriseTreeMenu({
           <Layers className="size-3 text-amber-400" />
           <span>DOANH NGHIỆP CỦA TÔI</span>
         </span>
-        {hasSubscription && companies.length > 0 && (
+        {companies.length > 0 && (
           <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded-full border border-amber-500/30">
             {companies.length} DN
           </span>
@@ -157,16 +168,9 @@ export function EnterpriseTreeMenu({
             <span className="truncate">Hệ Thống Doanh Nghiệp</span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            {hasSubscription ? (
-              <span className="rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-1.5 py-0.2 border border-emerald-500/30 font-mono">
-                Active
-              </span>
-            ) : (
-              <span className="rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold px-1.5 py-0.2 border border-amber-500/30 flex items-center gap-0.5">
-                <Lock className="size-2.5" />
-                Khóa
-              </span>
-            )}
+            <span className="rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-1.5 py-0.5 border border-emerald-500/30 font-mono">
+              Active
+            </span>
             {treeOpen ? (
               <ChevronDown className="size-3.5 text-slate-400" />
             ) : (
@@ -178,41 +182,19 @@ export function EnterpriseTreeMenu({
         {/* Tree Content */}
         {treeOpen && (
           <div className="pt-1 pb-1 space-y-1 border-t border-slate-800/60 mt-1">
-            {/* TH 1: CHƯA ĐĂNG KÝ GÓI VIONE PLATFORM */}
-            {!hasSubscription ? (
-              <div className="mx-1 my-1 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-center">
-                <div className="flex items-center justify-center gap-1.5 text-amber-300 text-[11.5px] font-bold mb-1">
-                  <Lock className="size-3.5" />
-                  <span>Yêu Cầu Gói ViOne Platform</span>
-                </div>
-                <p className="text-[11px] text-slate-400 mb-2 leading-relaxed">
-                  Chỉ khi đăng ký mua gói ViOne Platform, chức năng doanh nghiệp mới có dữ liệu.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleOpenSubscribe}
-                  className="w-full flex items-center justify-center gap-1.5 rounded-lg py-1.5 px-2 text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
-                  style={{
-                    background: "linear-gradient(135deg, #F6E1C3 0%, #D8B282 50%, #C29B69 100%)",
-                  }}
-                >
-                  <Sparkles className="size-3 fill-slate-950" />
-                  <span>Đăng ký gói ngay</span>
-                </button>
-              </div>
-            ) : companies.length === 0 ? (
+            {companies.length === 0 ? (
               <div className="p-3 text-center text-xs text-slate-400">
-                <p className="mb-2 text-[11px]">Đã kích hoạt gói nhưng chưa có doanh nghiệp.</p>
-                <button
-                  type="button"
-                  onClick={onOpenSubscribeModal}
+                <p className="mb-2 text-[11px]">Chưa có doanh nghiệp nào trong danh bạ.</p>
+                <Link
+                  to="/companies"
+                  onClick={onNavigate}
                   className="text-amber-400 hover:underline text-[11px] font-bold"
                 >
-                  + Thêm doanh nghiệp
-                </button>
+                  + Quản lý doanh nghiệp
+                </Link>
               </div>
             ) : (
-              /* TH 2: ĐÃ ĐĂNG KÝ GÓI VIONE PLATFORM -> HIỂN THỊ TREE MENU DOANH NGHIỆP */
+              /* HIỂN THỊ TREE MENU DOANH NGHIỆP */
               companies.map((company) => {
                 const isExpanded = Boolean(expandedCompanies[company.id]);
                 const empActive = isEmployeeActive(company.id);
