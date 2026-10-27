@@ -66,7 +66,9 @@ try {
                 $env:NODE_OPTIONS = "--max-old-space-size=4096"
                 $env:VITE_APP_SCOPE = "crm_platform"
                 $env:VITE_APP_NAME = "ViOne Connect CRM 5.0"
-                if ($EnableHttps) {
+                if ($TargetEnv -eq "prod") {
+                    $env:VITE_PUBLIC_APP_URL = "https://crm_vione.viconnect.vn"
+                } elseif ($EnableHttps) {
                     $env:VITE_PUBLIC_APP_URL = "https://dev-vione-crm.14-225-217-232.sslip.io:5446"
                 } else {
                     $env:VITE_PUBLIC_APP_URL = "http://14.225.217.232:5006"
@@ -148,7 +150,8 @@ try {
     $filesToUpload = @(
         (Resolve-Path "$DEPLOY_DIR/.env.production").Path,
         (Resolve-Path "$DEPLOY_DIR/.env.crm").Path,
-        (Resolve-Path "$DEPLOY_DIR/docker-compose.yml").Path
+        (Resolve-Path "$DEPLOY_DIR/docker-compose.yml").Path,
+        (Resolve-Path "$DEPLOY_DIR/setup-crm-subdomain.sh").Path
     )
     if (-not $SkipBuild) {
         if ($buildBE -and (Test-Path "vione-crm-backend.tar.gz")) { $filesToUpload += (Resolve-Path "vione-crm-backend.tar.gz").Path }
@@ -170,7 +173,7 @@ try {
         $remoteLoadCmd += "docker load -i vione-crm-frontend.tar.gz; rm -f vione-crm-frontend.tar.gz; "
     }
 
-    $REMOTE_CMD = "cd $REMOTE_PATH; cp -f .env.production .env.crm 2>/dev/null || true; touch .env.crm; sed -i 's/\r//g' .env.crm docker-compose.yml; docker network create vione-network 2>/dev/null || true; $remoteLoadCmd docker compose -f docker-compose.yml stop 2>/dev/null || true; docker rm -f vione-crm-frontend-prod vione-crm-backend-prod 2>/dev/null || true; docker compose -f docker-compose.yml up -d --force-recreate"
+    $REMOTE_CMD = "cd $REMOTE_PATH; cp -f .env.production .env.crm 2>/dev/null || true; touch .env.crm; sed -i 's/\r//g' .env.crm docker-compose.yml setup-crm-subdomain.sh 2>/dev/null || true; docker network create vione-network 2>/dev/null || true; $remoteLoadCmd docker compose -f docker-compose.yml stop 2>/dev/null || true; docker rm -f vione-crm-frontend-prod vione-crm-backend-prod 2>/dev/null || true; docker compose -f docker-compose.yml up -d --force-recreate; bash setup-crm-subdomain.sh 2>&1 || true;"
 
     Invoke-CheckedCommand -Description "Thuc thi cau truc container doc lap ViOne CRM Platform" -MaxRetries 3 -Action {
         ssh @SSH_OPTS "${SERVER_USER}@${SERVER_IP}" $REMOTE_CMD
@@ -186,7 +189,10 @@ try {
 
     Write-Host "=================================================================" -ForegroundColor Green
     Write-Host "TRIEN KHAI DOC LAP VIONE ENTERPRISE CRM THANH CONG!" -ForegroundColor Green
-    if ($EnableHttps) {
+    if ($TargetEnv -eq "prod") {
+        Write-Host "Subdomain ViOne CRM (Prod)  : https://crm_vione.viconnect.vn" -ForegroundColor Yellow
+        Write-Host "URL Dev ViOne CRM (HTTPS)   : https://${SERVER_IP}:5446" -ForegroundColor Cyan
+    } elseif ($EnableHttps) {
         Write-Host "URL ViOne CRM HTTPS         : https://${SERVER_IP}:5446" -ForegroundColor Yellow
         Write-Host "Domain Dev ViOne CRM        : https://dev-vione-crm.14-225-217-232.sslip.io:5446" -ForegroundColor Yellow
         Write-Host "Cong HTTP truc tiep         : http://${SERVER_IP}:5006" -ForegroundColor DarkGray

@@ -48,7 +48,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            mkdir -p ~/vione ~/ssl-proxy
+            mkdir -p ~/vione ~/vione-ssl-proxy
 
       - name: Copy Built Artifacts via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -74,9 +74,9 @@ jobs:
             cp -f ~/vione_deploy_temp/deploy/vione/.env.production ~/vione/.env 2>/dev/null || true
             
             # Move SSL & Nginx config
-            cp -f ~/vione_deploy_temp/deploy/ssl/nginx.conf ~/ssl-proxy/ 2>/dev/null || true
-            cp -f ~/vione_deploy_temp/deploy/ssl/docker-compose.ssl.yml ~/ssl-proxy/ 2>/dev/null || true
-            cp -f ~/vione_deploy_temp/deploy/ssl/setup-ssl.sh ~/ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/ssl/nginx.conf ~/vione-ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/ssl/docker-compose.ssl.yml ~/vione-ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_deploy_temp/deploy/ssl/setup-ssl.sh ~/vione-ssl-proxy/ 2>/dev/null || true
             rm -rf ~/vione_deploy_temp
 
             # Load Docker images & Restart Services
@@ -95,7 +95,7 @@ jobs:
             docker compose up -d minio 2>/dev/null || true
 
             # Reload or recreate Nginx SSL proxy
-            cd ~/ssl-proxy
+            cd ~/vione-ssl-proxy
             sed -i 's/\r$//' setup-ssl.sh 2>/dev/null || true
             bash setup-ssl.sh || docker compose -f docker-compose.ssl.yml restart 2>/dev/null || true
             echo "========================================================"

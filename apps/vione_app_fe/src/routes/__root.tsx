@@ -570,6 +570,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/vione") ||
     pathname.startsWith("/connect-app") ||
     pathname.startsWith("/business-connect") ||
+    pathname.startsWith("/platform-app") ||
     (pathname === "/" && tenantHost);
 
   useEffect(() => {

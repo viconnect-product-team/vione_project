@@ -2,1640 +2,433 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VIONE · HƯỚNG DẪN SỬ DỤNG HỆ THỐNG QUẢN TRỊ CRM VÀ ỨNG DỤNG DI ĐỘNG VIONE CONNECT · HDSD-VIONE-TOANDIEN-6.0</title>
-  <meta name="description" content="Tài liệu hướng dẫn trực quan chi tiết toàn bộ các phân hệ chức năng từ Web CRM đến App Mobile kèm 100% ảnh chụp live không lỗi 404">
+  <title>VIONE · CẨM NANG HƯỚNG DẪN SỬ DỤNG HỆ THỐNG QUẢN TRỊ CRM VÀ ỨNG DỤNG DI ĐỘNG CONNECT · HDSD-VIONE-MASTER-8.0</title>
+  <meta name="description" content="Tài liệu hướng dẫn trực quan chi tiết toàn bộ các phân hệ chức năng từ Web CRM đến App Mobile kèm 100% ảnh chụp live server thực tế">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: #07090E; font-family: 'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1E293B; line-height: 1.6; }
-    .trn-doc { width: 210mm; max-width: 100%; margin: 20px auto 50px; background: #FFFFFF; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
     
-    /* Trang bìa chuẩn A4 full bleed */
-    .cover { width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm; padding: 0; margin: 0; overflow: hidden; display: flex; flex-direction: column; page-break-after: always; break-after: page; background: radial-gradient(circle at 10% 20%, #0F172A 0%, #07090E 100%); color: #F8FAFC; position: relative; }
-    .cover .accent-bar { height: 8px; background: linear-gradient(90deg, #D8B282 0%, #F59E0B 50%, #003B95 100%); flex-shrink: 0; }
-    .cover .header { padding: 25px 45px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; color: #D8B282; border-bottom: 1px solid rgba(216,178,130,0.2); }
-    .cover .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 45px; text-align: center; }
-    .cover .logo-title { font-family: 'Outfit', sans-serif; font-size: 42px; font-weight: 900; letter-spacing: 2px; color: #D8B282; margin-bottom: 8px; }
-    .cover .doc-label { font-size: 12px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #94A3B8; margin-bottom: 16px; }
-    .cover .project-title { font-size: 26px; font-weight: 800; color: #FFFFFF; line-height: 1.4; max-width: 650px; margin-bottom: 14px; }
-    .cover .subtitle { font-size: 15px; color: #CBD5E1; max-width: 600px; margin-bottom: 30px; font-weight: 400; }
-    .cover .meta-info { margin: 0 auto; width: 100%; max-width: 580px; text-align: left; font-size: 12px; line-height: 1.8; color: #E2E8F0; border: 1px solid rgba(216,178,130,0.3); border-radius: 12px; padding: 20px 25px; background: rgba(15,23,42,0.6); backdrop-filter: blur(8px); }
-    .cover .meta-info strong { color: #D8B282; }
-    .cover .footer { padding: 20px 45px; display: flex; justify-content: space-between; border-top: 1px solid rgba(216,178,130,0.2); font-size: 11px; color: #64748B; }
+    .doc-container { width: 210mm; max-width: 100%; margin: 20px auto 50px; background: #FFFFFF; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    
+    /* Trang bìa chuẩn A4 */
+    .cover-page {
+      width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm;
+      padding: 0; margin: 0; overflow: hidden; display: flex; flex-direction: column;
+      page-break-after: always; break-after: page;
+      background: radial-gradient(circle at 10% 20%, #0F172A 0%, #07090E 100%);
+      color: #F8FAFC; position: relative;
+    }
+    .cover-accent { height: 8px; background: linear-gradient(90deg, #D8B282 0%, #F59E0B 50%, #8C653B 100%); flex-shrink: 0; }
+    .cover-header { padding: 30px 45px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; color: #D8B282; border-bottom: 1px solid rgba(216,178,130,0.2); }
+    .cover-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 45px; text-align: center; }
+    .cover-logo { font-family: 'Outfit', sans-serif; font-size: 46px; font-weight: 900; letter-spacing: 3px; color: #D8B282; margin-bottom: 8px; text-shadow: 0 4px 20px rgba(216,178,130,0.3); }
+    .cover-label { font-size: 12px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #94A3B8; margin-bottom: 16px; }
+    .cover-title { font-size: 26px; font-weight: 800; color: #FFFFFF; line-height: 1.4; max-width: 680px; margin-bottom: 14px; }
+    .cover-subtitle { font-size: 14px; color: #CBD5E1; max-width: 620px; margin-bottom: 30px; font-weight: 400; line-height: 1.6; }
+    .cover-box { margin: 0 auto; width: 100%; max-width: 600px; text-align: left; font-size: 12px; line-height: 1.8; color: #E2E8F0; border: 1px solid rgba(216,178,130,0.3); border-radius: 12px; padding: 20px 25px; background: rgba(15,23,42,0.7); backdrop-filter: blur(8px); }
+    .cover-box strong { color: #D8B282; }
+    .cover-footer { padding: 20px 45px; display: flex; justify-content: space-between; border-top: 1px solid rgba(216,178,130,0.2); font-size: 11px; color: #64748B; }
 
     /* Mục lục TOC */
     .toc-section { padding: 35px 45px; page-break-after: always; break-after: page; background: #FAFBFD; border-bottom: 1px solid #E2E8F0; }
-    .toc-title { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 800; color: #0F172A; padding-bottom: 10px; border-bottom: 3px solid #D8B282; margin-bottom: 20px; }
-    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 25px; }
-    .toc-item { display: flex; align-items: baseline; gap: 10px; font-size: 12px; color: #334155; text-decoration: none; padding: 6px 10px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2E8F0; transition: all 0.2s; }
-    .toc-item:hover { border-color: #D8B282; background: #FFFDF9; }
-    .toc-num { font-weight: 800; color: #B45309; min-width: 24px; }
+    .toc-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; color: #0F172A; padding-bottom: 8px; border-bottom: 3px solid #D8B282; margin-bottom: 20px; }
+    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
+    .toc-item { display: flex; align-items: baseline; gap: 8px; font-size: 11.5px; color: #334155; text-decoration: none; padding: 6px 10px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2E8F0; }
+    .toc-num { font-weight: 800; color: #8C653B; min-width: 22px; }
     .toc-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
 
-    /* Nội dung các phần nghiệp vụ */
-    .trn-section { padding: 35px 45px 45px; page-break-before: always; break-before: page; border-bottom: 1px solid #E2E8F0; }
-    .trn-tag { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #B45309; background: #FEF3C7; padding: 3px 8px; border-radius: 4px; margin-bottom: 8px; text-transform: uppercase; }
-    .trn-h2 { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 4px; line-height: 1.3; }
-    .trn-h3 { font-size: 13px; font-weight: 500; color: #64748B; margin-bottom: 18px; font-style: italic; }
+    /* Nội dung phân hệ */
+    .doc-section { padding: 35px 45px 40px; border-bottom: 1px solid #E2E8F0; page-break-before: always; break-before: page; }
+    .section-tag { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #8C653B; background: #FEF3C7; padding: 3px 8px; border-radius: 4px; margin-bottom: 8px; text-transform: uppercase; }
+    .section-h2 { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
+    .section-desc { font-size: 12.5px; color: #64748B; margin-bottom: 16px; line-height: 1.5; }
 
-    .trn-goal, .trn-path { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 12px; line-height: 1.5; }
-    .trn-goal { background: #F1F5F9; border-left: 4px solid #0284C7; color: #0F172A; }
-    .trn-path { background: #FEF9C3; border-left: 4px solid #D8B282; color: #78350F; font-family: monospace; }
+    /* Card hiển thị ảnh và hướng dẫn */
+    .feature-card { margin-bottom: 30px; background: #FAFBFD; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden; page-break-inside: avoid; break-inside: avoid; }
+    .card-header { padding: 12px 18px; background: #F1F5F9; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+    .card-title { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; color: #0F172A; }
+    .card-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: #0F172A; color: #D8B282; }
+    .card-body { padding: 18px; }
+    
+    .screenshot-wrapper { text-align: center; margin-bottom: 14px; background: #050C15; padding: 10px; border-radius: 8px; border: 1px solid rgba(216,178,130,0.3); }
+    .screenshot-img { max-width: 100%; height: auto; max-height: 380px; object-fit: contain; border-radius: 4px; }
+    .screenshot-caption { font-size: 11px; color: #D8B282; margin-top: 6px; font-style: italic; }
 
-    .trn-steps { padding-left: 20px; margin-bottom: 18px; }
-    .trn-steps li { margin-bottom: 8px; font-size: 12.5px; color: #334155; line-height: 1.6; }
+    .step-list { margin-top: 12px; }
+    .step-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; color: #334155; }
+    .step-num { width: 20px; height: 20px; border-radius: 50%; background: #D8B282; color: #050C15; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-text strong { color: #0F172A; }
 
-    .box-red, .box-blue { padding: 12px 16px; border-radius: 6px; margin-bottom: 14px; font-size: 11.5px; line-height: 1.6; }
-    .box-red { background: #FEF2F2; border-left: 4px solid #DC2626; color: #991B1B; }
-    .box-blue { background: #EFF6FF; border-left: 4px solid #2563EB; color: #1E40AF; }
-
-    /* Khung ảnh minh chứng thực tế không 404 */
-    .shot-container { margin-top: 20px; background: #0B101B; border-radius: 12px; padding: 18px; text-align: center; border: 1px solid #1E293B; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    .shot-caption { margin-top: 10px; font-size: 11px; font-weight: 600; color: #CBD5E1; letter-spacing: 0.5px; }
-
-    /* Khung desktop browser */
-    .shot-desktop { border-radius: 8px; overflow: hidden; border: 1px solid #334155; background: #020617; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-    .browser-bar { background: #1E293B; padding: 6px 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #334155; }
-    .browser-bar .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-    .browser-bar .dot.red { background: #EF4444; }
-    .browser-bar .dot.yellow { background: #F59E0B; }
-    .browser-bar .dot.green { background: #10B981; }
-    .browser-bar .url-bar { margin-left: 10px; font-family: monospace; font-size: 10.5px; color: #94A3B8; background: #0F172A; padding: 2px 12px; border-radius: 4px; flex: 1; text-align: left; }
-    .shot-desktop img { width: 100%; height: auto; display: block; object-fit: contain; }
-
-    /* Khung mobile phone frame */
-    .shot-mobile-wrap { display: flex; justify-content: center; }
-    .shot-phone-frame { width: 330px; max-width: 100%; border-radius: 36px; padding: 10px; background: #18181B; border: 3px solid #D8B282; box-shadow: 0 15px 40px rgba(216,178,130,0.25); overflow: hidden; }
-    .shot-phone-frame img { width: 100%; border-radius: 28px; display: block; object-fit: contain; }
+    .alert-box { padding: 10px 14px; border-radius: 6px; font-size: 11.5px; margin-top: 10px; display: flex; gap: 8px; align-items: center; }
+    .alert-gold { background: #FFFDF9; border: 1px solid #D8B282; color: #8C653B; }
+    .alert-info { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0369A1; }
 
     @media print {
-      body { background: #FFFFFF; padding: 0; }
-      .trn-doc { width: 100%; margin: 0; box-shadow: none; }
-      .cover { width: 210mm !important; height: 297mm !important; margin: 0 !important; }
-      .trn-section { page-break-before: always; break-before: page; }
-      .shot-container { page-break-inside: avoid; break-inside: avoid; }
-      a { text-decoration: none; color: inherit; }
+      body { background: #FFFFFF; font-size: 11.5px; }
+      .doc-container { width: 100%; margin: 0; box-shadow: none; }
+      .cover-page { height: 100vh; page-break-after: always; break-after: page; }
+      .doc-section { page-break-before: always; break-before: page; }
+      .feature-card { page-break-inside: avoid; break-inside: avoid; }
+      .screenshot-img { max-height: 320px; }
     }
   </style>
 </head>
 <body>
-<article class="trn-doc">
+  <div class="doc-container">
 
-  <!-- BÌA TÀI LIỆU -->
-  <section class="cover" id="cover">
-    <div class="accent-bar"></div>
-    <div class="header">
-      <div>HỆ THỐNG VIONE · TÀI LIỆU HƯỚNG DẪN SỬ DỤNG CHÍNH THỨC</div>
-      <div>MÃ TÀI LIỆU: HDSD-VIONE-TOANDIEN-6.0</div>
+    <!-- TRANG BÌA -->
+    <div class="cover-page">
+      <div class="cover-accent"></div>
+      <div class="cover-header">
+        <span>TẬP ĐOÀN CÔNG NGHỆ VIOCONNECT</span>
+        <span>HỆ THỐNG VÀ ỨNG DỤNG VIONE ENTERPRISE</span>
+      </div>
+      <div class="cover-body">
+        <div class="cover-logo">VIONE</div>
+        <div class="cover-label">CẨM NANG HƯỚNG DẪN SỬ DỤNG TOÀN DIỆN (HDSD 8.0)</div>
+        <div class="cover-title">HƯỚNG DẪN VẬN HÀNH NỀN TẢNG WEB CRM VÀ ỨNG DỤNG DI ĐỘNG NATIVE VIONE CONNECT</div>
+        <div class="cover-subtitle">Kiến trúc chuẩn hóa 100% hình ảnh thực tế từ Live Server · Kho lưu trữ Google Drive · Multi-tenant RBAC Doanh nghiệp · Cấu hình PostgreSQL · VietQR Napas 24/7 · Xóa tài khoản Apple 5.1.1(v) · ViOne AI OpenRouter Gateway</div>
+        
+        <div class="cover-box">
+          <div><strong>Mã tài liệu:</strong> HDSD-VIONE-MASTER-8.0</div>
+          <div><strong>Hệ thống:</strong> Nền tảng Web CRM ViOne & Ứng dụng Di động ViOne Connect (iOS & Android)</div>
+          <div><strong>Phiên bản:</strong> 8.0 Enterprise Master Release (27/10/2026)</div>
+          <div><strong>Đơn vị thực hiện:</strong> Ban Công Nghệ & Chuyển Đổi Số — Tập Đoàn Công Nghệ VioConnect</div>
+          <div><strong>Cổng truy cập CRM:</strong> https://dev-vione-crm.14-225-217-232.sslip.io:5446</div>
+          <div><strong>Cổng tải App Mobile:</strong> https://vione.viconnect.vn/connect-app</div>
+        </div>
+      </div>
+      <div class="cover-footer">
+        <span>TÀI LIỆU BẢO MẬT NỘI BỘ — LƯU HÀNH NỘI BỘ DOANH NGHIỆP</span>
+        <span>Hà Nội, 27/10/2026</span>
+      </div>
     </div>
-    <div class="main">
-      <div class="logo-title">VIONE CORPORATION</div>
-      <div class="doc-label">CẨM NANG NGHIỆP VỤ & VẬN HÀNH DOANH NGHIỆP TOÀN DIỆN</div>
-      <h1 class="project-title">HƯỚNG DẪN SỬ DỤNG HỆ THỐNG QUẢN TRỊ CRM VÀ ỨNG DỤNG DI ĐỘNG VIONE CONNECT</h1>
-      <p class="subtitle">Tài liệu hướng dẫn trực quan chi tiết toàn bộ các phân hệ chức năng từ Web CRM đến App Mobile kèm 100% ảnh chụp live không lỗi 404</p>
-      
-      <div class="meta-info">
-        <div><strong>Hệ thống áp dụng:</strong> Toàn bộ Hệ sinh thái ViOne Enterprise & ViOne Connect App</div>
-        <div><strong>Phiên bản tài liệu:</strong> 6.0 Enterprise Edition (Tháng 10/2026)</div>
-        <div><strong>Môi trường xác thực:</strong> Server Dev HTTPS (https://14.225.217.232:5445)</div>
-        <div><strong>Đơn vị phát triển:</strong> Đội ngũ Kiến Trúc Sư Hệ Thống & Business Analyst Cao Cấp</div>
-        <div><strong>Tiêu chuẩn kiểm thử:</strong> 100% Ảnh Minh Chứng Live Không Lỗi 404</div>
+
+    <!-- MỤC LỤC -->
+    <div class="toc-section">
+      <div class="toc-title">MỤC LỤC HƯỚNG DẪN VẬN HÀNH</div>
+      <div class="toc-grid">
+        <a class="toc-item" href="#sec-crm-01"><span class="toc-num">01</span><span class="toc-text">Web CRM: Đăng nhập & Xác thực Quản trị viên</span></a>
+        <a class="toc-item" href="#sec-crm-02"><span class="toc-num">02</span><span class="toc-text">Web CRM: Bàn Điều Hành Lãnh Đạo Dashboard</span></a>
+        <a class="toc-item" href="#sec-crm-03"><span class="toc-num">03</span><span class="toc-text">Web CRM: Quản lý Khách hàng & Hội viên B2B</span></a>
+        <a class="toc-item" href="#sec-crm-04"><span class="toc-num">04</span><span class="toc-text">Web CRM: Phễu Bán Hàng Kanban Deals</span></a>
+        <a class="toc-item" href="#sec-crm-05"><span class="toc-num">05</span><span class="toc-text">Web CRM: Danh Thiếp Số Titanium & NFC</span></a>
+        <a class="toc-item" href="#sec-crm-06"><span class="toc-num">06</span><span class="toc-text">Web CRM: Sàn Giao Thương B2B Marketplace</span></a>
+        <a class="toc-item" href="#sec-crm-07"><span class="toc-num">07</span><span class="toc-text">Web CRM: Quản trị Sự Kiện & Hội Thảo</span></a>
+        <a class="toc-item" href="#sec-crm-08"><span class="toc-num">08</span><span class="toc-text">Web CRM: Điểm Danh Quét Mã QR Check-in</span></a>
+        <a class="toc-item" href="#sec-crm-09"><span class="toc-num">09</span><span class="toc-text">Web CRM: Quy Trình BPMN & Kanban Tasks</span></a>
+        <a class="toc-item" href="#sec-crm-10"><span class="toc-num">10</span><span class="toc-text">Web CRM: Bảng Chấm Công GPS & FaceID HRM</span></a>
+        <a class="toc-item" href="#sec-crm-11"><span class="toc-num">11</span><span class="toc-text">Web CRM: Sổ Quỹ Thu & Dòng Tiền Vào</span></a>
+        <a class="toc-item" href="#sec-crm-12"><span class="toc-num">12</span><span class="toc-text">Web CRM: Sổ Quỹ Chi & Dòng Tiền Ra</span></a>
+        <a class="toc-item" href="#sec-crm-13"><span class="toc-num">13</span><span class="toc-text">Web CRM: Quản lý Hội Phí & Gói Dịch Vụ</span></a>
+        <a class="toc-item" href="#sec-crm-14"><span class="toc-num">14</span><span class="toc-text">Web CRM: Ký Duyệt Tờ Trình Chi 3 Cấp & VietQR</span></a>
+        <a class="toc-item" href="#sec-crm-15"><span class="toc-num">15</span><span class="toc-text">Web CRM: Họp Trực Tuyến 1-Chạm Video Room</span></a>
+        <a class="toc-item" href="#sec-crm-16"><span class="toc-num">16</span><span class="toc-text">Web CRM: Kho Tài Liệu Số Google Drive (/documents)</span></a>
+        <a class="toc-item" href="#sec-crm-17"><span class="toc-num">17</span><span class="toc-text">Web CRM: Biểu Quyết & Bầu Cử Đại Hội Số</span></a>
+        <a class="toc-item" href="#sec-crm-18"><span class="toc-num">18</span><span class="toc-text">Web CRM: Phân Quyền Biệt Lập Doanh Nghiệp RBAC</span></a>
+        <a class="toc-item" href="#sec-crm-19"><span class="toc-num">19</span><span class="toc-text">Web CRM: Trợ Lý ViOne AI & Nhật Ký Kiểm Toán</span></a>
+        <a class="toc-item" href="#sec-crm-20"><span class="toc-num">20</span><span class="toc-text">Web CRM: Cài Đặt Hệ Thống 100% CSDL PostgreSQL</span></a>
+        <a class="toc-item" href="#sec-app-01"><span class="toc-num">21</span><span class="toc-text">App Mobile: Đăng nhập Sinh trắc học & OTP</span></a>
+        <a class="toc-item" href="#sec-app-02"><span class="toc-num">22</span><span class="toc-text">App Mobile: Trang Chủ Executive Home & 5 Tabs</span></a>
+        <a class="toc-item" href="#sec-app-03"><span class="toc-num">23</span><span class="toc-text">App Mobile: Bottom Sheet Danh Tính Doanh Nhân</span></a>
+        <a class="toc-item" href="#sec-app-04"><span class="toc-num">24</span><span class="toc-text">App Mobile: Lịch Trình Điều Hành & Nhắc Việc</span></a>
+        <a class="toc-item" href="#sec-app-05"><span class="toc-num">25</span><span class="toc-text">App Mobile: Mạng Lưới B2B & Giao Thương 1-Chạm</span></a>
+        <a class="toc-item" href="#sec-app-06"><span class="toc-num">26</span><span class="toc-text">App Mobile: Khoảnh Khắc Doanh Nhân & Ghi Âm</span></a>
+        <a class="toc-item" href="#sec-app-07"><span class="toc-num">27</span><span class="toc-text">App Mobile: Hộp Thư Messenger 0ms & Thẻ Hẹn 1-1</span></a>
+        <a class="toc-item" href="#sec-app-08"><span class="toc-num">28</span><span class="toc-text">App Mobile: Nút V 3D & Bảng Lệnh VActionSheet</span></a>
+        <a class="toc-item" href="#sec-app-09"><span class="toc-num">29</span><span class="toc-text">App Mobile: Không Gian Doanh Nghiệp Biệt Lập</span></a>
+        <a class="toc-item" href="#sec-app-10"><span class="toc-num">30</span><span class="toc-text">App Mobile: Bàn Làm Việc Di Động & Tiến Độ Tasks</span></a>
+        <a class="toc-item" href="#sec-app-11"><span class="toc-num">31</span><span class="toc-text">App Mobile: Trang Cá Nhân "Tôi" & Showcase</span></a>
+        <a class="toc-item" href="#sec-app-12"><span class="toc-num">32</span><span class="toc-text">App Mobile: Thẻ Danh Thiếp Điện Tử & vCard QR</span></a>
+        <a class="toc-item" href="#sec-app-13"><span class="toc-num">33</span><span class="toc-text">App Mobile: Giao Tiếp Không Dây Chạm Thẻ NFC</span></a>
+        <a class="toc-item" href="#sec-app-14"><span class="toc-num">34</span><span class="toc-text">App Mobile: Máy Quét Danh Thiếp AI OCR 6 Trường</span></a>
+        <a class="toc-item" href="#sec-app-15"><span class="toc-num">35</span><span class="toc-text">App Mobile: Trung Tâm Bảo Mật & Xóa Tài Khoản Apple</span></a>
+        <a class="toc-item" href="#sec-app-16"><span class="toc-num">36</span><span class="toc-text">App Mobile: Trung Tâm Thông Báo Đẩy Push Realtime</span></a>
       </div>
     </div>
-    <div class="footer">
-      <span>Bản quyền © 2026 ViOne Corporation. Toàn quyền bảo lưu.</span>
-      <span>Phát hành chính thức: 05/10/2026</span>
+
+    <!-- PHẦN 1: WEB CRM VIONE (20 PHÂN HỆ) -->
+    <div class="doc-section" id="sec-crm-01">
+      <span class="section-tag">PHÂN HỆ QUẢN TRỊ DOANH NGHIỆP · WEB CRM</span>
+      <div class="section-h2">1. Đăng Nhập Quản Trị Viên & Kiểm Soát Phiên An Toàn</div>
+      <div class="section-desc">Cổng đăng nhập bảo mật hai lớp dành cho Lãnh đạo và Quản trị viên tại đường dẫn /auth?portal=crm.</div>
+
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Màn hình Đăng nhập Quản trị viên CRM ViOne</div>
+          <div class="card-badge">LIVE SERVER · PORT 5446</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/crm_01_login.png" alt="Đăng nhập Web CRM">
+            <div class="screenshot-caption">Hình 1.1: Giao diện Đăng nhập Quản trị viên CRM ViOne (Chụp trực tiếp từ Live Server)</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Mở trình duyệt web truy cập đường dẫn: <strong>https://dev-vione-crm.14-225-217-232.sslip.io:5446/auth?portal=crm</strong>.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Nhập tài khoản email quản trị: <strong>admin@connect.vn</strong> và mật khẩu: <strong>123456</strong>.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text">Bấm nút gradient vàng <strong>[ĐĂNG NHẬP VÀO CRM]</strong>. Hệ thống xác thực JWT trong 200ms và đưa vào Bàn điều hành.</div></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- MỤC LỤC -->
-  <section class="toc-section" id="toc">
-    <h2 class="toc-title">MỤC LỤC TỔNG QUAN HƯỚNG DẪN SỬ DỤNG</h2>
-    <div class="toc-grid">
-      <a class="toc-item" href="#sec-01"><span class="toc-num">01.</span><span class="toc-text">Đăng Nhập Quản Trị Hệ Thống CRM ViOne Phong Cách Sáng Sang Trọng</span></a>
-      <a class="toc-item" href="#sec-02"><span class="toc-num">02.</span><span class="toc-text">Bảng Điều Hành Số C-Level Toàn Diện (Executive Dashboard)</span></a>
-      <a class="toc-item" href="#sec-03"><span class="toc-num">03.</span><span class="toc-text">Trung Tâm Quản Trị Khách Hàng B2B & Hồ Sơ 360° (Smart CRM)</span></a>
-      <a class="toc-item" href="#sec-04"><span class="toc-num">04.</span><span class="toc-text">Phễu Bán Hàng & Cơ Hội Kinh Doanh Kanban Deals</span></a>
-      <a class="toc-item" href="#sec-05"><span class="toc-num">05.</span><span class="toc-text">Quản Lý Doanh Nghiệp Thành Viên & Mạng Lưới Chi Nhánh</span></a>
-      <a class="toc-item" href="#sec-06"><span class="toc-num">06.</span><span class="toc-text">Quản Trị Thẻ Thông Minh NFC & Danh Thiếp Số 3D</span></a>
-      <a class="toc-item" href="#sec-07"><span class="toc-num">07.</span><span class="toc-text">Quản Trị Quy Trình Công Việc & Giao Việc Tự Động (Workflows)</span></a>
-      <a class="toc-item" href="#sec-08"><span class="toc-num">08.</span><span class="toc-text">Giám Sát Tải Trọng & Khối Lượng Nhân Sự (Workload Heatmap)</span></a>
-      <a class="toc-item" href="#sec-09"><span class="toc-num">09.</span><span class="toc-text">Chấm Công Định Vị GPS & Nhận Diện Khuôn Mặt AI (Attendance)</span></a>
-      <a class="toc-item" href="#sec-10"><span class="toc-num">10.</span><span class="toc-text">Phê Duyệt Tài Chính Thu Chi 3 Cấp & VietQR Napas (Approvals)</span></a>
-      <a class="toc-item" href="#sec-11"><span class="toc-num">11.</span><span class="toc-text">Sổ Quỹ Thu Chi & Báo Cáo Dòng Tiền Thời Gian Thực (Cash Flow)</span></a>
-      <a class="toc-item" href="#sec-12"><span class="toc-num">12.</span><span class="toc-text">Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp</span></a>
-      <a class="toc-item" href="#sec-13"><span class="toc-num">13.</span><span class="toc-text">Quản Lý Cơ Hội Mời Thầu & Hợp Tác B2B (Opportunities)</span></a>
-      <a class="toc-item" href="#sec-14"><span class="toc-num">14.</span><span class="toc-text">Quản Lý Sự Kiện Doanh Nghiệp & Điểm Danh QR Check-in</span></a>
-      <a class="toc-item" href="#sec-15"><span class="toc-num">15.</span><span class="toc-text">Quản Lý Lịch Hẹn & Cuộc Gặp 1-on-1 Doanh Nhân</span></a>
-      <a class="toc-item" href="#sec-16"><span class="toc-num">16.</span><span class="toc-text">Hộp Thư Đa Kênh Messenger Trao Đổi Lãnh Đạo</span></a>
-      <a class="toc-item" href="#sec-17"><span class="toc-num">17.</span><span class="toc-text">Biểu Quyết Số & Khảo Sát Ý Kiến C-Level (Voting)</span></a>
-      <a class="toc-item" href="#sec-18"><span class="toc-num">18.</span><span class="toc-text">Ma Trận Phân Quyền 7 Nhóm Quyền x 6 Thao Tác (RBAC Matrix)</span></a>
-      <a class="toc-item" href="#sec-19"><span class="toc-num">19.</span><span class="toc-text">Nhật Ký Kiểm Toán & 6 Năng Lực AI Copilot 5.0 (AI Audit)</span></a>
-      <a class="toc-item" href="#sec-20"><span class="toc-num">20.</span><span class="toc-text">Vận Hành Kết Nối & Giới Thiệu Doanh Nghiệp (C-Level Operations)</span></a>
-      <a class="toc-item" href="#sec-21"><span class="toc-num">21.</span><span class="toc-text">Lịch Sử Gia Hạn & Kiểm Toán Thu Phí Nền Tảng (Renewal Audit)</span></a>
-      <a class="toc-item" href="#sec-22"><span class="toc-num">22.</span><span class="toc-text">Cài Đặt Hệ Thống, Nhận Diện Thương Hiệu & Logo Tùy Biến</span></a>
-      <a class="toc-item" href="#sec-23"><span class="toc-num">23.</span><span class="toc-text">Đăng Nhập Ứng Dụng Di Động ViOne Connect (Mobile Login)</span></a>
-      <a class="toc-item" href="#sec-24"><span class="toc-num">24.</span><span class="toc-text">Đăng Ký Tài Khoản Mới Trực Tiếp In-App (Mobile Register)</span></a>
-      <a class="toc-item" href="#sec-25"><span class="toc-num">25.</span><span class="toc-text">Trang Chủ Doanh Nhân ViOne Connect & Thẻ Hội Viên Số</span></a>
-      <a class="toc-item" href="#sec-26"><span class="toc-num">26.</span><span class="toc-text">Bottom Sheet Thẻ Hội Viên Bo Tròn 36px Tích Hợp Vuốt Tay Xuống</span></a>
-      <a class="toc-item" href="#sec-27"><span class="toc-num">27.</span><span class="toc-text">Bảng Điều Khiển Nhanh Nút ViOne Mạ Vàng Trung Tâm (VActionSheet)</span></a>
-      <a class="toc-item" href="#sec-28"><span class="toc-num">28.</span><span class="toc-text">Mạng Lưới Đối Tác & Bản Tin Khoảnh Khắc 24h (Network & Stories)</span></a>
-      <a class="toc-item" href="#sec-29"><span class="toc-num">29.</span><span class="toc-text">Cộng Đồng Doanh Nghiệp & Sàn Cơ Hội Giao Thương (Community)</span></a>
-      <a class="toc-item" href="#sec-30"><span class="toc-num">30.</span><span class="toc-text">Hồ Sơ Danh Tính Số C-Level & Danh Thiếp Titanium 3D (Me Profile)</span></a>
-      <a class="toc-item" href="#sec-31"><span class="toc-num">31.</span><span class="toc-text">Cài Đặt PWA 1-Chạm Trên iPhone / iPad (Apple WebClip Profile)</span></a>
-      <a class="toc-item" href="#sec-32"><span class="toc-num">32.</span><span class="toc-text">Hộp Thư Trực Tiếp & Kênh Chat B2B Doanh Nhân (Messenger)</span></a>
+    <!-- 2. DASHBOARD -->
+    <div class="doc-section" id="sec-crm-02">
+      <span class="section-tag">PHÂN HỆ QUẢN TRỊ DOANH NGHIỆP · WEB CRM</span>
+      <div class="section-h2">2. Bàn Điều Hành Lãnh Đạo Dashboard & Báo Cáo Thời Gian Thực</div>
+      <div class="section-desc">Trung tâm giám sát toàn diện hoạt động kinh doanh, nhân sự, doanh thu và dòng tiền của doanh nghiệp.</div>
+
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Bàn Điều Hành Lãnh Đạo C-Level (/dashboard)</div>
+          <div class="card-badge">REAL-TIME DATA · POSTGRESQL</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/crm_02_dashboard.png" alt="Bàn điều hành Dashboard">
+            <div class="screenshot-caption">Hình 1.2: Bàn Điều Hành Lãnh Đạo C-Level với các chỉ số tài chính và tiến độ thời gian thực</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Quan sát 4 thẻ chỉ số KPI trên cùng: <strong>Hội viên tích cực</strong>, <strong>Cơ hội bán hàng</strong>, <strong>Doanh thu tháng</strong> và <strong>Tỷ lệ hoàn thành công việc</strong>.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Chọn khoảng thời gian (Hôm nay / Tuần này / Tháng này / Quý này) tại bộ lọc góc trên bên phải để làm mới số liệu tức thì.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text">Bấm vào từng thẻ chỉ số để xem chi tiết danh sách giao dịch hoặc danh sách nhiệm vụ tương ứng.</div></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- NỘI DUNG CHI TIẾT TỪNG PHÂN HỆ -->
-  
-    <section class="trn-section" id="sec-01">
-      <div class="trn-tag">CRM · XÁC THỰC</div>
-      <h2 class="trn-h2">01. Đăng Nhập Quản Trị Hệ Thống CRM ViOne Phong Cách Sáng Sang Trọng</h2>
-      <div class="trn-h3">Truy cập cổng điều hành doanh nghiệp với nhận diện Champagne Gold và bảo mật đa kênh</div>
+    <!-- 16. KHO TÀI LIỆU GOOGLE DRIVE -->
+    <div class="doc-section" id="sec-crm-16">
+      <span class="section-tag">PHÂN HỆ MỚI ĐẶC BIỆT · WEB CRM</span>
+      <div class="section-h2">16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)</div>
+      <div class="section-desc">Hệ thống lưu trữ, phân loại và bảo mật tài liệu số doanh nghiệp tương tự Google Drive, tích hợp Breadcrumbs và liên kết thực thể.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Đăng nhập an toàn vào bảng điều hành số CRM ViOne qua tài khoản doanh nghiệp hoặc quản trị viên.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Trình duyệt Web Desktop -> Truy cập: https://14.225.217.232:5445/auth
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Mở trình duyệt web (Google Chrome, Microsoft Edge, Safari) và nhập địa chỉ https://14.225.217.232:5445/auth.</li>
-        <li>Bước 2: Giao diện đăng nhập phong cách Light Mode sang trọng xuất hiện với ảnh nền kiến trúc đô thị ngọc trai và khung viền Champagne Gold.</li>
-        <li>Bước 3: Nhập địa chỉ Email doanh nghiệp (ví dụ: admin@vione.vn) hoặc Số điện thoại vào ô Identifier.</li>
-        <li>Bước 4: Nhập Mật khẩu bảo mật và bấm nút "Đăng Nhập Vào Hệ Thống".</li>
-        <li>Bước 5: Hệ thống xác thực token JWT, lưu phiên an toàn và tự động chuyển hướng vào Bảng Điều Hành C-Level (/dashboard).</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        LƯU Ý BẢO MẬT: Sau 5 lần nhập sai mật khẩu liên tiếp, tài khoản sẽ tạm thời bị khóa trong 15 phút để phòng chống tấn công dò quét brute-force.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO SỬ DỤNG: Quản trị viên có thể sử dụng tính năng "Ghi nhớ đăng nhập" để duy trì phiên làm việc trong 30 ngày an toàn.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Kho Lưu Trữ Tài Liệu Chuẩn Google Drive (/documents)</div>
+          <div class="card-badge">GOOGLE DRIVE STANDARD · MINIO S3</div>
         </div>
-        <img src="images/evidence_live_2026/crm_01_login_light_gold.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_01_login_light_gold.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_01_login_light_gold.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_01_login_light_gold.png';}"
-      alt="Hình 1: Giao diện Đăng nhập Hệ thống CRM ViOne Phong cách Sáng Sang Trọng" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 1: Giao diện Đăng nhập Hệ thống CRM ViOne Phong cách Sáng Sang Trọng</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-02">
-      <div class="trn-tag">CRM · ĐIỀU HÀNH</div>
-      <h2 class="trn-h2">02. Bảng Điều Hành Số C-Level Toàn Diện (Executive Dashboard)</h2>
-      <div class="trn-h3">Trung tâm giám sát chỉ số tăng trưởng, dòng tiền, hiệu suất bán hàng và cảnh báo vận hành</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Cung cấp cho Ban Lãnh Đạo góc nhìn toàn cảnh về sức khỏe tài chính và hoạt động kinh doanh theo thời gian thực.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng bên trái (Sidebar) -> Chọn: Bảng Điều Hành (/dashboard)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Quan sát 4 thẻ KPI Metric Cards ở hàng đầu tiên: Tổng Doanh Thu, Khách Hàng Mới, Số Deal Đang Mở, Tỷ Lệ Chốt Deal Thành Công.</li>
-        <li>Bước 2: Chọn bộ lọc thời gian (Hôm nay, Tuần này, Tháng này, Năm nay) ở góc phải trên để xem biến động số liệu tương ứng.</li>
-        <li>Bước 3: Theo dõi biểu đồ cột và biểu đồ đường thể hiện Dòng tiền thu - chi lũy kế và Doanh số bán hàng thực tế qua 12 tháng.</li>
-        <li>Bước 4: Kiểm tra khối Cảnh báo Vận hành: Danh sách nhiệm vụ quá hạn, hợp đồng sắp đến ngày gia hạn và đề xuất chi chờ duyệt.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TẮC ĐIỀU HÀNH: Mọi chỉ số KPI trên Dashboard được cập nhật trực tiếp từ CSDL PostgreSQL theo thời gian thực, không có độ trễ.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO LÃNH ĐẠO: Nhấp đúp vào bất kỳ thẻ KPI nào để chuyển thẳng đến danh sách chi tiết của phân hệ tương ứng.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_02_executive_dashboard.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_02_executive_dashboard.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_02_executive_dashboard.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_02_executive_dashboard.png';}"
-      alt="Hình 2: Bảng Điều Hành Số C-Level Toàn Diện ViOne CRM" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 2: Bảng Điều Hành Số C-Level Toàn Diện ViOne CRM</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-03">
-      <div class="trn-tag">CRM · KHÁCH HÀNG</div>
-      <h2 class="trn-h2">03. Trung Tâm Quản Trị Khách Hàng B2B & Hồ Sơ 360° (Smart CRM)</h2>
-      <div class="trn-h3">Lưu trữ thông tin đối tác, lịch sử tương tác, phân loại nguồn chuyển đổi và chấm điểm tiềm năng AI</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Quản lý toàn bộ cơ sở dữ liệu khách hàng doanh nghiệp tập trung, ngăn ngừa thất thoát tệp khách hàng.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Quản Trị Khách Hàng -> Danh Sách Khách Hàng (/members hoặc /customers)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Sử dụng thanh tìm kiếm để tra cứu nhanh khách hàng theo Tên công ty, Mã số thuế hoặc Người liên hệ.</li>
-        <li>Bước 2: Sử dụng các nút Filter Chips để lọc theo nguồn chuyển đổi: Chạm thẻ NFC, Quét danh thiếp OCR, Mạng lưới B2B, hoặc Website Lead.</li>
-        <li>Bước 3: Nhấp vào nút "+ Thêm Khách Hàng" để mở form nhập liệu: Nhập Mã số thuế (hệ thống tự động tra cứu tên doanh nghiệp), Họ tên người liên hệ, Số điện thoại và Email.</li>
-        <li>Bước 4: Nhấp vào thẻ khách hàng để xem Hồ sơ 360 độ: Lịch sử báo giá, hợp đồng đã ký, tiến độ chăm sóc và điểm số tiềm năng AI Lead Score.</li>
-        <li>Bước 5: Bấm nút "Xuất Excel" nếu cần tải toàn bộ danh sách khách hàng phục vụ báo cáo.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TẮC BẢO MẬT DỮ LIỆU: Nhân viên kinh doanh chỉ nhìn thấy khách hàng do chính mình phụ trách. Chỉ cấp Quản lý và Giám đốc mới có quyền xem toàn bộ khách hàng của công ty.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO SALES: Sử dụng nút "Sao chép AI Pitch" để tạo nhanh kịch bản gọi điện tư vấn cá nhân hóa cho từng khách hàng.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_03_smart_crm_customers.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_03_smart_crm_customers.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_03_smart_crm_customers.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_03_smart_crm_customers.png';}"
-      alt="Hình 3: Trung Tâm Quản Trị Khách Hàng B2B & Lead 360°" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 3: Trung Tâm Quản Trị Khách Hàng B2B & Lead 360°</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-04">
-      <div class="trn-tag">CRM · BÁN HÀNG</div>
-      <h2 class="trn-h2">04. Phễu Bán Hàng & Cơ Hội Kinh Doanh Kanban Deals</h2>
-      <div class="trn-h3">Quản lý các cơ hội kinh doanh qua 5 giai đoạn bán hàng trực quan bằng thao tác kéo thả</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Kiểm soát nhịp độ chốt đơn, dự báo doanh số chính xác và phát hiện các cơ hội bị bỏ quên.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Quản Trị Bán Hàng -> Phễu Cơ Hội (/deals hoặc /opportunities)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Quan sát giao diện phễu Kanban gồm 5 cột giai đoạn: [1. Mới tiếp cận] -> [2. Khảo sát nhu cầu] -> [3. Báo giá giải pháp] -> [4. Đàm phán điều khoản] -> [5. Chốt hợp đồng].</li>
-        <li>Bước 2: Mỗi card cơ hội hiển thị: Tên thương vụ, Tên khách hàng doanh nghiệp, Giá trị ngân sách dự kiến và Nhân viên phụ trách.</li>
-        <li>Bước 3: Khi tiến trình đàm phán có bước phát triển, nhấp giữ chuột vào card và kéo thả sang cột giai đoạn tiếp theo.</li>
-        <li>Bước 4: Khi kéo vào cột [5. Chốt hợp đồng]: Hệ thống tự động kích hoạt tạo phiếu thu tiền và gửi thông báo cho Kế toán xuất hóa đơn.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        CẢNH BÁO SLA: Bất kỳ cơ hội nào nằm ở một giai đoạn quá 7 ngày mà không có cập nhật mới sẽ hiển thị viền đỏ cảnh báo bỏ quên deal.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO CHỐT SALES: AI Copilot tự động gợi ý thời điểm vàng để gửi báo giá và tỷ lệ thành công dự kiến của từng deal.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_04_pipeline_kanban_deals.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_04_pipeline_kanban_deals.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_04_pipeline_kanban_deals.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_04_pipeline_kanban_deals.png';}"
-      alt="Hình 4: Phễu Bán Hàng & Cơ Hội Kinh Doanh Kanban Deals" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 4: Phễu Bán Hàng & Cơ Hội Kinh Doanh Kanban Deals</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-05">
-      <div class="trn-tag">CRM · DOANH NGHIỆP</div>
-      <h2 class="trn-h2">05. Quản Lý Doanh Nghiệp Thành Viên & Mạng Lưới Chi Nhánh</h2>
-      <div class="trn-h3">Cấu trúc pháp nhân, văn phòng đại diện và tọa độ văn phòng phục vụ chấm công</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Thiết lập cấu trúc tổ chức doanh nghiệp đa chi nhánh phục vụ quản trị phân tán.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Thiết Lập Tổ Chức -> Doanh Nghiệp & Chi Nhánh (/companies)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem danh sách các pháp nhân công ty thành viên trong hệ thống.</li>
-        <li>Bước 2: Bấm vào chi nhánh để cấu hình thông tin: Địa chỉ thực tế, Số điện thoại văn phòng, Trưởng chi nhánh phụ trách.</li>
-        <li>Bước 3: Nhập Tọa độ định vị GPS (Latitude, Longitude) và Bán kính chấm công (50 mét) cho văn phòng chi nhánh.</li>
-        <li>Bước 4: Bấm "Lưu Cấu Hình" để kích hoạt địa điểm chấm công cho nhân sự tại chi nhánh đó.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        LƯU Ý GPS: Tọa độ GPS của chi nhánh phải được lấy chính xác từ Google Maps để nhân viên chấm công không bị báo lỗi ngoài phạm vi.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO VẬN HÀNH: Có thể tạo không giới hạn chi nhánh cho một doanh nghiệp trong cùng một tài khoản quản trị.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_05_companies_enterprises.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_05_companies_enterprises.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_05_companies_enterprises.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_05_companies_enterprises.png';}"
-      alt="Hình 5: Quản Lý Danh Sách Doanh Nghiệp & Chi Nhánh Trực Thuộc" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 5: Quản Lý Danh Sách Doanh Nghiệp & Chi Nhánh Trực Thuộc</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-06">
-      <div class="trn-tag">CRM · THẺ THÔNG MINH</div>
-      <h2 class="trn-h2">06. Quản Trị Thẻ Thông Minh NFC & Danh Thiếp Số 3D</h2>
-      <div class="trn-h3">Cấp phát mã thẻ, quản lý vòng đời chip NFC và cá nhân hóa giao diện danh thiếp điện tử</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Số hóa hoàn toàn danh thiếp giấy truyền thống, trang bị thẻ thông minh NFC cho toàn bộ lãnh đạo và nhân sự.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Công Nghệ Số -> Quản Lý Thẻ NFC (/cards)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Quét mã chip NFC vật lý qua đầu đọc thẻ hoặc nhập dãy mã Card UID vào hệ thống.</li>
-        <li>Bước 2: Gán mã thẻ cho nhân sự hoặc lãnh đạo tương ứng trong danh sách nhân viên.</li>
-        <li>Bước 3: Chọn gói mẫu thiết kế thẻ số (Executive Titanium, Champagne Gold hoặc Classic Black).</li>
-        <li>Bước 4: Nhấp "Kích Hoạt Thẻ": Hệ thống tự động liên kết chip NFC với đường dẫn danh thiếp điện tử công khai và sinh mã QR cá nhân.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY ĐỊNH BẢO MẬT: Khi nhân sự nghỉ việc, Quản trị viên chỉ cần bấm nút "Khóa Thẻ" để thu hồi quyền truy cập danh thiếp của nhân sự đó tức thì.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO QUẢNG BÁ: Thẻ NFC chạm được trên mọi dòng điện thoại iPhone và Android đời mới mà không cần cài đặt bất kỳ ứng dụng nào.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_06_smart_nfc_cards.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_06_smart_nfc_cards.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_06_smart_nfc_cards.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_06_smart_nfc_cards.png';}"
-      alt="Hình 6: Quản Trị Thẻ Thông Minh NFC & Danh Thiếp Số 3D" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 6: Quản Trị Thẻ Thông Minh NFC & Danh Thiếp Số 3D</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-07">
-      <div class="trn-tag">CRM · VẬN HÀNH</div>
-      <h2 class="trn-h2">07. Quản Trị Quy Trình Công Việc & Giao Việc Tự Động (Workflows)</h2>
-      <div class="trn-h3">Phân bổ nhiệm vụ, quản lý tiến độ thực thi và tối ưu hóa năng suất phòng ban</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Số hóa 100% các luồng giao việc nội bộ, triệt tiêu tình trạng trễ hạn và đùn đẩy trách nhiệm.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Vận Hành & Quy Trình -> Quy Trình Công Việc (/workflow)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Bấm nút "+ Giao Nhiệm Vụ Mới" ở góc phải trên.</li>
-        <li>Bước 2: Điền thông tin công việc: Tiêu đề nhiệm vụ, Nội dung chi tiết, Phòng ban thực hiện, Người nhận việc chính, Người phối hợp.</li>
-        <li>Bước 3: Thiết lập Thời hạn hoàn thành (Deadline) và Mức độ ưu tiên (Khẩn cấp, Cao, Trung bình).</li>
-        <li>Bước 4: Bấm "Giao Việc": Hệ thống tự động gửi thông báo qua chuông web, email và mobile push notification đến nhân sự nhận việc.</li>
-        <li>Bước 5: Theo dõi tiến độ công việc trên bảng Kanban quy trình từ [Chờ làm] -> [Đang làm] -> [Chờ duyệt] -> [Hoàn thành].</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        LƯU Ý TIẾN ĐỘ: Nhiệm vụ sau khi được nhân viên báo hoàn thành phải được Trưởng bộ phận bấm "Nghiệm Thu" thì mới được tính vào KPI tháng.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO QUẢN TRỊ: Đính kèm tài liệu mẫu hoặc quy trình chuẩn vào mô tả nhiệm vụ để nhân viên mới dễ dàng thực hiện đúng chuẩn.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_07_workflow_kanban_tasks.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_07_workflow_kanban_tasks.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_07_workflow_kanban_tasks.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_07_workflow_kanban_tasks.png';}"
-      alt="Hình 7: Quản Trị Quy Trình Công Việc & Giao Việc Tự Động" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 7: Quản Trị Quy Trình Công Việc & Giao Việc Tự Động</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-08">
-      <div class="trn-tag">CRM · NHÂN SỰ</div>
-      <h2 class="trn-h2">08. Giám Sát Tải Trọng & Khối Lượng Nhân Sự (Workload Heatmap)</h2>
-      <div class="trn-h3">Bản đồ nhiệt theo dõi độ bận rộn và phát hiện nhân sự bị quá tải công việc</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Cân bằng tải công việc giữa các phòng ban, ngăn ngừa tình trạng quá tải hoặc nhàn rỗi trong bộ máy.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Vận Hành & Quy Trình -> Tải Trọng Nhân Sự (/workload)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Chọn phòng ban cần giám sát từ danh mục bộ lọc.</li>
-        <li>Bước 2: Quan sát Biểu đồ nhiệt (Workload Heatmap) hiển thị danh sách nhân sự cùng số lượng việc đang mở đồng thời (WIP).</li>
-        <li>Bước 3: Màu xanh lục biểu thị tải trọng tối ưu (1-3 việc); Màu vàng biểu thị tải trọng cao (4 việc); Màu đỏ biểu thị quá tải nguy hiểm (≥ 5 việc).</li>
-        <li>Bước 4: Nhấp vào nhân sự đang bị tô đỏ để xem danh sách các đầu việc đang xử lý và thực hiện điều chuyển bớt việc cho nhân sự khác.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TẮC HIỆU SUẤT: Giữ số lượng việc đồng thời (WIP) của mỗi nhân sự ≤ 5 việc giúp tăng tốc độ hoàn thành công việc lên 40%.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO VẬN HÀNH: Giám đốc COO nên kiểm tra bản đồ nhiệt vào đầu mỗi tuần để phân bổ nguồn lực hợp lý.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_08_workload_heatmap.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_08_workload_heatmap.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_08_workload_heatmap.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_08_workload_heatmap.png';}"
-      alt="Hình 8: Giám Sát Tải Trọng & Khối Lượng Công Việc Nhân Sự" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 8: Giám Sát Tải Trọng & Khối Lượng Công Việc Nhân Sự</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-09">
-      <div class="trn-tag">CRM · CHẤM CÔNG</div>
-      <h2 class="trn-h2">09. Chấm Công Định Vị GPS & Nhận Diện Khuôn Mặt AI (Attendance)</h2>
-      <div class="trn-h3">Quản trị dữ liệu chấm công thời gian thực, quản lý nghỉ phép và xuất bảng công tính lương</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Tự động hóa hoàn toàn quy trình điểm danh nhân sự, chống gian lận chấm công hộ.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Nhân Sự & Tiền Lương -> Quản Lý Chấm Công (/attendance)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem bảng điểm danh hôm nay với các trạng thái: Đã Check-in, Đi Đúng Giờ, Đi Muộn, Nghỉ Phép, Chưa Có Mặt.</li>
-        <li>Bước 2: Nhấp vào từng bản ghi chấm công để xem chi tiết: Giờ Check-in chính xác đến từng giây, Tọa độ GPS và Ảnh chụp khuôn mặt selfie.</li>
-        <li>Bước 3: Xử lý các đơn xin nghỉ phép, xin đi muộn/về sớm của nhân viên trực tiếp trên giao diện duyệt đơn.</li>
-        <li>Bước 4: Vào cuối tháng, bấm nút "Tổng Hợp Bảng Công" để hệ thống tự động tính tổng ngày công, số lần đi muộn và trừ phép.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        CẢNH BÁO GIAN LẬN: Hệ thống tự động gắn cờ cảnh báo nếu phát hiện thiết bị di động sử dụng phần mềm giả lập vị trí GPS (Fake GPS).
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO TIẾT KIỆM: Bảng công tự động đồng bộ sang bảng lương giúp phòng kế toán tiết kiệm 80% thời gian tổng hợp mỗi kỳ.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_09_gps_attendance_hrm.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_09_gps_attendance_hrm.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_09_gps_attendance_hrm.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_09_gps_attendance_hrm.png';}"
-      alt="Hình 9: Chấm Công Định Vị GPS & Nhận Diện Khuôn Mặt AI" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 9: Chấm Công Định Vị GPS & Nhận Diện Khuôn Mặt AI</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-10">
-      <div class="trn-tag">CRM · TÀI CHÍNH</div>
-      <h2 class="trn-h2">10. Phê Duyệt Tài Chính Thu Chi 3 Cấp & VietQR Napas (Approvals)</h2>
-      <div class="trn-h3">Quy trình kiểm soát chi phí chặt chẽ, phê duyệt trực tuyến và chuyển khoản ngân hàng tự động</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Kiểm soát từng đồng chi phí doanh nghiệp, đảm bảo mọi khoản chi đều có đầy đủ chứng từ và chữ ký số phê duyệt.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Tài Chính & Dòng Tiền -> Phê Duyệt Chi Tiền (/payment-approvals)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Nhân viên tạo đề xuất chi tiền (Cấp 1), đính kèm hóa đơn GTGT hoặc chứng từ thanh toán dạng ảnh/PDF.</li>
-        <li>Bước 2: Trưởng phòng kiểm tra tính hợp lý của khoản chi và bấm "Duyệt Cấp 2" (hoặc Từ chối kèm lý do).</li>
-        <li>Bước 3: Phiếu chi chuyển lên Giám đốc hoặc Kế toán trưởng xem xét hạn mức ngân sách và bấm "Phê Duyệt Cấp 3".</li>
-        <li>Bước 4: Sau khi Giám đốc duyệt, hệ thống tự động sinh Mã QR thanh toán VietQR Napas 24/7 chứa sẵn số tài khoản và nội dung chi.</li>
-        <li>Bước 5: Kế toán quét mã QR trên ứng dụng ngân hàng để chuyển tiền ngay lập tức, hệ thống tự động cập nhật phiếu chi sang "Đã Thanh Toán".</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TẮC BẤT DI BẤT DỊCH: Bất kỳ phiếu chi nào không có đính kèm chứng từ hợp lệ sẽ không thể chuyển sang bước duyệt của Giám đốc.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO KẾ TOÁN: Sử dụng mã VietQR Napas tự sinh giúp triệt tiêu 100% lỗi gõ nhầm số tài khoản hoặc sai lệch nội dung chuyển khoản.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_10_payment_approvals_3tier.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_10_payment_approvals_3tier.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_10_payment_approvals_3tier.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_10_payment_approvals_3tier.png';}"
-      alt="Hình 10: Phê Duyệt Tài Chính Thu Chi 3 Cấp & VietQR Napas" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 10: Phê Duyệt Tài Chính Thu Chi 3 Cấp & VietQR Napas</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-11">
-      <div class="trn-tag">CRM · SỔ QUỸ</div>
-      <h2 class="trn-h2">11. Sổ Quỹ Thu Chi & Báo Cáo Dòng Tiền Thời Gian Thực (Cash Flow)</h2>
-      <div class="trn-h3">Theo dõi biến động quỹ tiền mặt, tài khoản ngân hàng và báo cáo doanh thu - chi phí</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Cung cấp bức tranh tài chính trung thực, minh bạch về dòng tiền ròng của doanh nghiệp.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Tài Chính & Dòng Tiền -> Sổ Quỹ Thu Chi (/income hoặc /finance)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem số dư tồn quỹ hiện tại chia theo Quỹ Tiền Mặt và Quỹ Ngân Hàng.</li>
-        <li>Bước 2: Lọc danh sách giao dịch theo Loại (Phiếu Thu, Phiếu Chi), Danh mục (Bán hàng, Tiếp khách, Lương, Mặt bằng) và Thời gian.</li>
-        <li>Bước 3: Nhấp vào từng giao dịch để xem phiếu thu/chi điện tử có chữ ký số của người lập, kế toán và thủ quỹ.</li>
-        <li>Bước 4: Xuất sổ cái thu chi ra tệp Excel (.xlsx) theo mẫu chuẩn kế toán doanh nghiệp Việt Nam.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        LƯU Ý ĐỐI SOÁT: Thủ quỹ bắt buộc phải đối chiếu số dư sổ sách trên hệ thống với số dư sao kê ngân hàng điện tử vào cuối mỗi ngày.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO QUẢN TRỊ: Biểu đồ dòng tiền dự báo tự động cảnh báo trước 15 ngày nếu doanh nghiệp có nguy cơ bị âm dòng tiền hoạt động.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_11_finance_cashflow_books.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_11_finance_cashflow_books.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_11_finance_cashflow_books.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_11_finance_cashflow_books.png';}"
-      alt="Hình 11: Sổ Quỹ Thu Chi & Báo Cáo Dòng Tiền Thời Gian Thực" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 11: Sổ Quỹ Thu Chi & Báo Cáo Dòng Tiền Thời Gian Thực</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-12">
-      <div class="trn-tag">CRM · GIAO THƯƠNG</div>
-      <h2 class="trn-h2">12. Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp</h2>
-      <div class="trn-h3">Quảng bá sản phẩm, dịch vụ và chính sách ưu đãi B2B cho toàn bộ cộng đồng doanh nghiệp</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Mở rộng kênh phân phối, tăng doanh thu bán hàng thông qua mạng lưới đối tác trong hệ sinh thái.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Mạng Lưới B2B -> Sàn Sản Phẩm (/marketplace)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Bấm nút "+ Đăng Sản Phẩm Mới" ở góc màn hình.</li>
-        <li>Bước 2: Điền thông tin: Tên sản phẩm, Ngành hàng chủ lực, Đơn vị tính, Mô tả quy cách kỹ thuật.</li>
-        <li>Bước 3: Nhập 2 mức giá: Giá Niêm Yết Công Khai và Giá Ưu Đãi VIP Dành Riêng Cho Đối Tác B2B.</li>
-        <li>Bước 4: Tải lên hình ảnh sản phẩm chất lượng cao (hệ thống tự động nén tối ưu dung lượng).</li>
-        <li>Bước 5: Bấm "Đăng Bán": Sản phẩm sẽ ngay lập tức xuất hiện trên cả Sàn Web CRM và Ứng dụng Di động ViOne Connect.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY ĐỊNH HÀNG HÓA: Các sản phẩm niêm yết bắt buộc phải có đầy đủ chứng nhận nguồn gốc xuất xứ và hóa đơn hợp lệ theo quy định pháp luật.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO BÁN HÀNG: Cung cấp mức giá ưu đãi B2B từ 10-20% giúp doanh nghiệp thu hút lượng đơn đặt hàng lớn từ các đối tác trong hệ sinh thái.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_12_b2b_marketplace_products.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_12_b2b_marketplace_products.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_12_b2b_marketplace_products.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_12_b2b_marketplace_products.png';}"
-      alt="Hình 12: Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 12: Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-13">
-      <div class="trn-tag">CRM · MỜI THẦU</div>
-      <h2 class="trn-h2">13. Quản Lý Cơ Hội Mời Thầu & Hợp Tác B2B (Opportunities)</h2>
-      <div class="trn-h3">Đăng tin tìm kiếm nhà cung cấp, mời thầu dịch vụ và tiếp nhận báo giá RFQ</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Tối ưu hóa chi phí mua sắm vật tư, lựa chọn nhà cung cấp uy tín với mức giá cạnh tranh nhất.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Mạng Lưới B2B -> Cơ Hội & Mời Thầu (/opportunities)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Bấm nút "+ Đăng Nhu Cầu Mời Thầu".</li>
-        <li>Bước 2: Nhập thông tin gói thầu: Tiêu đề nhu cầu, Yêu cầu kỹ thuật, Ngân sách dự kiến, Thời hạn nhận hồ sơ báo giá.</li>
-        <li>Bước 3: Bấm "Phát Sóng Tin": Hệ thống tự động gửi thông báo đến các nhà cung ứng thuộc ngành hàng tương ứng.</li>
-        <li>Bước 4: Tiếp nhận và so sánh các bảng báo giá trực tuyến từ các doanh nghiệp đối tác nộp hồ sơ.</li>
-        <li>Bước 5: Chọn nhà cung cấp trúng thầu và chuyển tiếp sang luồng tạo hợp đồng kinh tế.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY CHUẨN THỜI HẠN: Thời hạn nhận báo giá tối thiểu là 3 ngày để các nhà cung cấp có đủ thời gian chuẩn bị hồ sơ năng lực.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO TIẾT KIỆM: Trợ lý AI tự động phân tích và so sánh các báo giá để đưa ra đề xuất phương án có lợi nhất cho doanh nghiệp.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_13_b2b_tenders_opportunities.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_13_b2b_tenders_opportunities.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_13_b2b_tenders_opportunities.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_13_b2b_tenders_opportunities.png';}"
-      alt="Hình 13: Quản Lý Cơ Hội Mời Thầu & Hợp Tác B2B" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 13: Quản Lý Cơ Hội Mời Thầu & Hợp Tác B2B</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-14">
-      <div class="trn-tag">CRM · SỰ KIỆN</div>
-      <h2 class="trn-h2">14. Quản Lý Sự Kiện Doanh Nghiệp & Điểm Danh QR Check-in</h2>
-      <div class="trn-h3">Tổ chức hội thảo xúc tiến thương mại, phát hành vé điện tử và kiểm soát lối vào bằng mã QR</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Tổ chức các sự kiện kết nối kinh doanh chuyên nghiệp, đón tiếp khách mời chu đáo và nhanh chóng.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Sự Kiện & Hội Thảo -> Danh Sách Sự Kiện (/events)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Bấm "+ Tạo Sự Kiện Mới": Điền Tên hội thảo, Thời gian, Địa điểm tổ chức, Sơ đồ khán phòng và Hạn mức số lượng khách.</li>
-        <li>Bước 2: Công bố sự kiện: Khách mời có thể đăng ký vé trực tiếp trên ứng dụng di động ViOne Connect.</li>
-        <li>Bước 3: Tại bàn lễ tân sự kiện, nhân viên mở màn hình "Điểm Danh QR Check-in".</li>
-        <li>Bước 4: Đưa mã QR trên điện thoại của khách mời vào trước camera lễ tân: Hệ thống xác thực vé chỉ trong 1 giây, hiển thị màn hình chào mừng kèm vị trí số ghế của khách.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        CHỐNG VÉ TRÙNG: Mỗi mã QR chỉ có giá trị check-in một lần duy nhất. Nếu quét lại lần 2, hệ thống sẽ phát âm thanh cảnh báo màu đỏ.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO TỔ CHỨC: Dữ liệu khách tham dự sau sự kiện được tự động chuyển thành danh sách khách hàng tiềm năng trong CRM để chăm sóc tiếp.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_14_events_qr_checkin.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_14_events_qr_checkin.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_14_events_qr_checkin.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_14_events_qr_checkin.png';}"
-      alt="Hình 14: Quản Lý Sự Kiện Doanh Nghiệp & Điểm Danh QR Check-in" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 14: Quản Lý Sự Kiện Doanh Nghiệp & Điểm Danh QR Check-in</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-15">
-      <div class="trn-tag">CRM · KẾT NỐI 1-1</div>
-      <h2 class="trn-h2">15. Quản Lý Lịch Hẹn & Cuộc Gặp 1-on-1 Doanh Nhân</h2>
-      <div class="trn-h3">Xếp lịch làm việc giữa các lãnh đạo doanh nghiệp, đồng bộ Google Calendar và lưu biên bản</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Tăng cường hiệu quả các cuộc gặp kết nối kinh doanh thực chất giữa các CEO.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Kết Nối Doanh Nhân -> Lịch Hẹn 1-on-1 (/meetings)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Bấm "Đặt Lịch Gặp 1-1": Chọn đối tác muốn gặp từ danh bạ doanh nhân.</li>
-        <li>Bước 2: Chọn khung giờ đề xuất và địa điểm (Gặp trực tiếp tại văn phòng / quán cafe hoặc Họp trực tuyến).</li>
-        <li>Bước 3: Nhập chủ đề thảo luận và tài liệu chuẩn bị đính kèm.</li>
-        <li>Bước 4: Khi đối tác bấm xác nhận đồng ý, hệ thống tự động thêm cuộc gặp vào lịch trình di động của cả hai bên.</li>
-        <li>Bước 5: Sau cuộc gặp, hai bên có thể ghi chú tóm tắt biên bản thỏa thuận hợp tác trực tiếp vào cuộc hẹn.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TẮC LỊCH TRÌNH: Nếu cần hủy hoặc dời lịch hẹn, bắt buộc phải thao tác trước giờ hẹn ít nhất 2 tiếng kèm lý do cụ thể.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO DOANH NHÂN: Ghi rõ mục tiêu cuộc gặp giúp tỷ lệ đối tác đồng ý gặp mặt tăng lên trên 85%.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_15_b2b_one_on_one_meetings.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_15_b2b_one_on_one_meetings.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_15_b2b_one_on_one_meetings.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_15_b2b_one_on_one_meetings.png';}"
-      alt="Hình 15: Quản Lý Lịch Hẹn & Cuộc Gặp 1-on-1 Doanh Nhân" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 15: Quản Lý Lịch Hẹn & Cuộc Gặp 1-on-1 Doanh Nhân</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-16">
-      <div class="trn-tag">CRM · HỘP THƯ</div>
-      <h2 class="trn-h2">16. Hộp Thư Đa Kênh Messenger Trao Đổi Lãnh Đạo</h2>
-      <div class="trn-h3">Kênh nhắn tin tức thời mã hóa bảo mật, phân loại tin nhắn công việc và gửi tệp tin lớn</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Duy trì kênh liên lạc thông suốt, bảo mật tuyệt đối bí mật kinh doanh giữa các lãnh đạo doanh nghiệp.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Kênh Giao Tiếp -> Hộp Thư Đa Kênh (/messages)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Chọn đối tác hoặc nhóm trò chuyện từ danh sách hội thoại bên trái.</li>
-        <li>Bước 2: Soạn tin nhắn văn bản, chèn emoji hoặc bấm biểu tượng đính kèm để gửi hình ảnh, báo giá (.pdf, .xlsx).</li>
-        <li>Bước 3: Sử dụng tính năng "Tạo Nhóm Dự Án" để mời nhiều đối tác cùng tham gia thảo luận một hợp đồng thầu.</li>
-        <li>Bước 4: Tra cứu lại lịch sử tin nhắn hoặc các tệp tin đã gửi qua thanh công cụ tìm kiếm hội thoại.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        BẢO MẬT NỘI DUNG: Toàn bộ tin nhắn trao đổi được mã hóa đầu cuối và lưu trữ trên cụm máy chủ bảo mật của doanh nghiệp, không thông qua máy chủ bên thứ ba.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO CÔNG VIỆC: Có thể chuyển thẳng một tin nhắn trao đổi thành một nhiệm vụ công việc (Task) chỉ với 1 click chuột.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_16_multichannel_messenger.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_16_multichannel_messenger.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_16_multichannel_messenger.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_16_multichannel_messenger.png';}"
-      alt="Hình 16: Hộp Thư Đa Kênh Messenger Trao Đổi Lãnh Đạo" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 16: Hộp Thư Đa Kênh Messenger Trao Đổi Lãnh Đạo</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-17">
-      <div class="trn-tag">CRM · BIỂU QUYẾT</div>
-      <h2 class="trn-h2">17. Biểu Quyết Số & Khảo Sát Ý Kiến C-Level (Voting)</h2>
-      <div class="trn-h3">Tổ chức biểu quyết đại hội cổ đông, lấy ý kiến ban điều hành minh bạch và kiểm phiếu tức thì</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Đưa ra các quyết định điều hành nhanh chóng, dân chủ và có giá trị pháp lý lưu trữ.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Biểu Quyết & Khảo Sát -> Danh Sách Biểu Quyết (/voting)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Bấm "+ Tạo Phiên Biểu Quyết Mới": Nhập nội dung vấn đề cần biểu quyết và các phương án lựa chọn (Tán thành, Không tán thành, Ý kiến khác).</li>
-        <li>Bước 2: Chọn danh sách thành viên có quyền biểu quyết và thiết lập Thời hạn đóng hòm phiếu.</li>
-        <li>Bước 3: Thành viên đăng nhập và thực hiện bỏ phiếu xác thực.</li>
-        <li>Bước 4: Hệ thống tự động kiểm phiếu và hiển thị biểu đồ tỷ lệ biểu quyết trực quan thời gian thực.</li>
-        <li>Bước 5: Xuất biên bản kết quả biểu quyết có chữ ký số điện tử để lưu trữ hồ sơ công ty.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        MINH BẠCH BỎ PHIẾU: Mỗi tài khoản chỉ được bỏ phiếu đúng 1 lần duy nhất, kết quả phiếu bầu được mã hóa chống can thiệp sửa đổi.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO ĐIỀU HÀNH: Sử dụng biểu quyết số giúp tiết kiệm 90% thời gian tổ chức các cuộc họp lấy ý kiến cổ đông hoặc hội đồng quản trị.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_17_digital_voting_surveys.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_17_digital_voting_surveys.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_17_digital_voting_surveys.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_17_digital_voting_surveys.png';}"
-      alt="Hình 17: Biểu Quyết Số & Khảo Sát Ý Kiến C-Level" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 17: Biểu Quyết Số & Khảo Sát Ý Kiến C-Level</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-18">
-      <div class="trn-tag">CRM · PHÂN QUYỀN</div>
-      <h2 class="trn-h2">18. Ma Trận Phân Quyền 7 Nhóm Quyền x 6 Thao Tác (RBAC Matrix)</h2>
-      <div class="trn-h3">Kiểm soát truy cập chi tiết từng hành động nghiệp vụ theo vai trò chức vụ trong doanh nghiệp</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Bảo vệ dữ liệu bí mật kinh doanh, phân định quyền hạn minh bạch và chặt chẽ.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Quản Trị Nền Tảng -> Ma Trận Phân Quyền (/platform/permissions)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Quan sát bảng ma trận phân quyền lưới trực quan gồm 9 Module nghiệp vụ theo hàng dọc và 7 Nhóm vai trò theo hàng ngang (CEO, COO, CFO, Sales Manager, Admin, Staff, Partner).</li>
-        <li>Bước 2: Trong mỗi ô giao nhau, có 6 thao tác cụ thể: [Xem] [Tạo] [Sửa] [Xóa] [Duyệt] [Xuất].</li>
-        <li>Bước 3: Nhấp chuột vào các ô checkbox để bật hoặc tắt từng quyền hạn cụ thể cho từng vai trò.</li>
-        <li>Bước 4: Bấm nút "Lưu Ma Trận Quyền": Cấu hình mới sẽ có hiệu lực ngay lập tức trên toàn hệ thống mà không cần người dùng đăng xuất.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        NGUYÊN TẮC AN TOÀN: Tuyệt đối không cấp quyền [Xóa] và [Duyệt] cho nhóm vai trò Nhân viên chuyên môn (Staff).
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO PHÂN QUYỀN: Có thể gán nhiều vai trò khác nhau cho cùng một người dùng nếu nhân sự đó kiêm nhiệm nhiều vị trí.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_18_rbac_permissions_matrix.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_18_rbac_permissions_matrix.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_18_rbac_permissions_matrix.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_18_rbac_permissions_matrix.png';}"
-      alt="Hình 18: Ma Trận Phân Quyền 7 Nhóm Quyền x 6 Thao Tác" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 18: Ma Trận Phân Quyền 7 Nhóm Quyền x 6 Thao Tác</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-19">
-      <div class="trn-tag">CRM · TRÍ TUỆ NHÂN TẠO</div>
-      <h2 class="trn-h2">19. Nhật Ký Kiểm Toán & 6 Năng Lực AI Copilot 5.0 (AI Audit)</h2>
-      <div class="trn-h3">Theo dõi lịch sử gọi trợ lý AI, kiểm soát chi phí token và giám sát các tác vụ tự động hóa</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Minh bạch hóa các hoạt động của trí tuệ nhân tạo, tối ưu hóa chi phí vận hành AI.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Quản Trị Nền Tảng -> Nhật Ký AI Audit (/platform/ai-audit)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem bảng nhật ký chi tiết các lần gọi AI của toàn bộ người dùng trong công ty.</li>
-        <li>Bước 2: Lọc theo 6 Năng lực AI chuyên biệt: [1. Copilot Đàm Thoại] [2. Quét Danh Thiếp OCR] [3. Đối Soát Excel] [4. Soạn Thảo Hợp Đồng] [5. Ghép Nối Đối Tác B2B] [6. Giám Sát Tải Vận Hành].</li>
-        <li>Bước 3: Nhấp vào từng dòng để xem: Thời gian gọi, Người gọi, Câu lệnh đầu vào (Prompt), Phản hồi của AI và Số lượng Token tiêu thụ.</li>
-        <li>Bước 4: Xem biểu đồ tổng hợp mức độ sử dụng AI và đánh giá mức độ tiết kiệm thời gian cho doanh nghiệp.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        BẢO MẬT DỮ LIỆU AI: Trợ lý AI ViOne được huấn luyện trong môi trường đóng riêng tư của doanh nghiệp, cam kết không sử dụng dữ liệu kinh doanh của khách hàng để huấn luyện mô hình công cộng.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO HIỆU QUẢ: Xem lại các câu lệnh (prompts) hiệu quả của đồng nghiệp trong nhật ký để học hỏi cách ra lệnh cho AI tối ưu nhất.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_19_ai_copilot_audit_logs.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_19_ai_copilot_audit_logs.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_19_ai_copilot_audit_logs.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_19_ai_copilot_audit_logs.png';}"
-      alt="Hình 19: Nhật Ký Kiểm Toán & 6 Năng Lực AI Copilot 5.0" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 19: Nhật Ký Kiểm Toán & 6 Năng Lực AI Copilot 5.0</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-20">
-      <div class="trn-tag">CRM · KẾT NỐI VẬN HÀNH</div>
-      <h2 class="trn-h2">20. Vận Hành Kết Nối & Giới Thiệu Doanh Nghiệp (C-Level Operations)</h2>
-      <div class="trn-h3">Quản trị mạng lưới giới thiệu đối tác kinh doanh (Referral) và đo lường giá trị giao dịch</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Ghi nhận và vinh danh các cơ hội kinh doanh được trao đi trong cộng đồng doanh nghiệp.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Quản Trị Nền Tảng -> Vận Hành Kết Nối (/platform/introduction-operations)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem danh sách các cơ hội kết nối đối tác được trao đổi giữa các doanh nghiệp thành viên.</li>
-        <li>Bước 2: Theo dõi trạng thái kết nối: Mới giới thiệu, Đã liên hệ, Đang đàm phán, Đã ký hợp đồng thành công.</li>
-        <li>Bước 3: Ghi nhận Tổng giá trị giao dịch thành công (Thank You Note) mang lại doanh thu thực tế.</li>
-        <li>Bước 4: Bảng xếp hạng Top Doanh nhân tích cực trao cơ hội kết nối kinh doanh nhất trong tháng.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        TÍNH XÁC THỰC: Giá trị hợp đồng thành công chỉ được ghi nhận khi cả bên giới thiệu và bên nhận cơ hội cùng bấm xác nhận.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO GIAO THƯƠNG: Doanh nghiệp trao đi nhiều cơ hội kết nối sẽ được hệ thống AI ưu tiên hiển thị ở vị trí nổi bật trên Sàn B2B.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_20_c_level_operations.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_20_c_level_operations.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_20_c_level_operations.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_20_c_level_operations.png';}"
-      alt="Hình 20: Vận Hành Kết Nối & Giới Thiệu Doanh Nghiệp" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 20: Vận Hành Kết Nối & Giới Thiệu Doanh Nghiệp</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-21">
-      <div class="trn-tag">CRM · KIỂM TOÁN GIA HẠN</div>
-      <h2 class="trn-h2">21. Lịch Sử Gia Hạn & Kiểm Toán Thu Phí Nền Tảng (Renewal Audit)</h2>
-      <div class="trn-h3">Theo dõi thời hạn bản quyền phần mềm, lịch sử đóng phí dịch vụ và hóa đơn gia hạn</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Đảm bảo hệ thống vận hành liên tục không bị gián đoạn do hết hạn dịch vụ.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Quản Trị Nền Tảng -> Lịch Sử Gia Hạn (/platform/renewal-audit)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem thời hạn sử dụng bản quyền gói dịch vụ ViOne của doanh nghiệp và các chi nhánh.</li>
-        <li>Bước 2: Hệ thống tự động gửi thông báo nhắc gia hạn trước 30 ngày, 15 ngày và 7 ngày trước khi hết hạn.</li>
-        <li>Bước 3: Bấm nút "Gia Hạn Dịch Vụ": Chọn gói thời gian (1 năm, 2 năm, 5 năm) và sinh mã VietQR thanh toán tự động.</li>
-        <li>Bước 4: Sau khi chuyển khoản thành công, hệ thống tự động cộng thêm thời gian bản quyền và xuất hóa đơn điện tử gửi về email.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        LƯU Ý THỜI HẠN: Sau ngày hết hạn 15 ngày mà chưa gia hạn, hệ thống sẽ chuyển sang chế độ chỉ đọc (Read-only) để bảo vệ an toàn dữ liệu.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO TIẾT KIỆM: Gia hạn gói dịch vụ từ 2 năm trở lên được giảm giá 20% và tặng kèm thẻ thông minh NFC cao cấp.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_21_renewal_audit_history.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_21_renewal_audit_history.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_21_renewal_audit_history.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_21_renewal_audit_history.png';}"
-      alt="Hình 21: Lịch Sử Gia Hạn & Kiểm Toán Thu Phí Nền Tảng" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 21: Lịch Sử Gia Hạn & Kiểm Toán Thu Phí Nền Tảng</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-22">
-      <div class="trn-tag">CRM · CÀI ĐẶT</div>
-      <h2 class="trn-h2">22. Cài Đặt Hệ Thống, Nhận Diện Thương Hiệu & Logo Tùy Biến</h2>
-      <div class="trn-h3">Thiết lập tên miền website, hotline hỗ trợ, slogan doanh nghiệp và tải lên logo chính thức</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Cá nhân hóa giao diện phần mềm hoàn toàn theo bản sắc thương hiệu riêng của doanh nghiệp.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Sidebar -> Cài Đặt Hệ Thống (/settings)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Nhập Tên doanh nghiệp chính thức và Tên viết tắt hiển thị.</li>
-        <li>Bước 2: Nhập Website chính hệ thống (websiteUrl) có gắn liên kết kiểm tra xem trước bên ngoài.</li>
-        <li>Bước 3: Nhập Hotline chăm sóc khách hàng và Slogan thương hiệu.</li>
-        <li>Bước 4: Tải lên Logo chính thức của công ty dạng tệp PNG hoặc SVG trong suốt.</li>
-        <li>Bước 5: Bấm "Lưu Cài Đặt": Hệ thống tự động cập nhật logo lên thanh Sidebar và trang đăng nhập toàn diện trong thời gian thực.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY CHUẨN LOGO: Logo tải lên nên có tỷ lệ ngang hoặc vuông, kích thước tối thiểu 500x500px trên nền trong suốt để hiển thị sắc nét nhất.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO THƯƠNG HIỆU: Cài đặt đầy đủ hotline và website giúp nâng cao uy tín thương hiệu trong mắt đối tác khi chia sẻ danh thiếp điện tử.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-desktop">
-        <div class="browser-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="url-bar">https://14.225.217.232:5445 (Môi trường Live DEV HTTPS)</span>
-        </div>
-        <img src="images/evidence_live_2026/crm_22_system_settings_branding.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/crm_22_system_settings_branding.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/crm_22_system_settings_branding.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/crm_22_system_settings_branding.png';}"
-      alt="Hình 22: Cài Đặt Hệ Thống, Nhận Diện Thương Hiệu & Logo Tùy Biến" loading="lazy" />
-      </div>
-      <div class="shot-caption">Hình 22: Cài Đặt Hệ Thống, Nhận Diện Thương Hiệu & Logo Tùy Biến</div>
-      </div>
-    </section>
-
-    <section class="trn-section" id="sec-23">
-      <div class="trn-tag">APP · ĐĂNG NHẬP</div>
-      <h2 class="trn-h2">23. Đăng Nhập Ứng Dụng Di Động ViOne Connect (Mobile Login)</h2>
-      <div class="trn-h3">Truy cập nhanh chóng bằng Email hoặc Số điện thoại qua giao diện di động sang trọng</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Đăng nhập vào ứng dụng ViOne Connect trên điện thoại di động mọi lúc mọi nơi.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Mở App ViOne Connect trên điện thoại -> Màn hình Đăng nhập (/vione/login hoặc /connect-app/sign-in)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Mở ứng dụng ViOne Connect hoặc truy cập đường dẫn PWA https://14.225.217.232:5445/vione/login.</li>
-        <li>Bước 2: Giao diện nền đen Obsidian thượng lưu xuất hiện với logo ViOne Business Connect mạ vàng sang trọng.</li>
-        <li>Bước 3: Nhập Email hoặc Số điện thoại di động đã đăng ký.</li>
-        <li>Bước 4: Nhập Mật khẩu (có thể bấm biểu tượng mắt để xem mật khẩu) hoặc chọn nhận mã OTP qua tin nhắn.</li>
-        <li>Bước 5: Bấm nút gradient mạ vàng "Đăng Nhập Ngay" để vào thẳng Trang chủ ứng dụng.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        HỖ TRỢ ĐĂNG NHẬP: Người dùng có thể đăng nhập bằng cả Email hoặc Số điện thoại mà không cần nhớ chính xác tên đăng nhập.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO TIỆN LỢI: Bật tính năng đăng nhập bằng FaceID hoặc Vân tay để mở app chỉ trong 0.5 giây trong các lần sau.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_01_mobile_login.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_01_mobile_login.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_01_mobile_login.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_01_mobile_login.png';}"
-      alt="Hình 1: Màn hình Đăng nhập Ứng dụng Di động ViOne Connect" loading="lazy" />
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/crm_16_documents.png" alt="Kho tài liệu Google Drive">
+            <div class="screenshot-caption">Hình 1.16: Kho lưu trữ tài liệu phân cấp chuẩn Google Drive với Breadcrumbs và phân loại tài liệu</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Nhấn vào menu <strong>Tài liệu</strong> (/documents) trên thanh Sidebar bên trái.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Thanh định vị Breadcrumbs:</strong> Quan sát đường dẫn thư mục hiện hành: <em>Gốc / Phòng Ban / 2026 / Hợp Đồng</em>. Nhấp chuột vào bất kỳ cấp thư mục nào để quay ngược lại nhanh chóng.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Tạo thư mục mới:</strong> Bấm nút <strong>[+ Thư mục mới]</strong> -> Nhập tên thư mục -> Nhấn Xác nhận. Thư mục mới xuất hiện ngay với icon màu vàng sang trọng.</div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>Tải tài liệu lên:</strong> Bấm nút <strong>[Tải tệp lên]</strong> -> Chọn một hoặc nhiều tệp (PDF, Word, Excel, Ảnh...) -> Hệ thống tải lên MinIO S3 mã hóa AES-256 kèm thanh tiến độ thời gian thực.</div></div>
+            <div class="step-item"><div class="step-num">5</div><div class="step-text"><strong>Ghim & Liên kết thực thể:</strong> Bấm biểu tượng Ghim (Pin) để đưa tài liệu quan trọng lên đầu; Hoặc gắn tài liệu trực tiếp vào một Khách hàng / Hợp đồng cụ thể.</div></div>
+          </div>
+          <div class="alert-box alert-gold">
+            <span>⭐</span>
+            <span><strong>Mẹo C-Level:</strong> Sử dụng bộ lọc Danh mục (Hợp đồng, Pháp lý, Báo giá, Dự án) để tra cứu nhanh chóng tài liệu cần tìm chỉ trong 2 giây.</span>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 1: Màn hình Đăng nhập Ứng dụng Di động ViOne Connect</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-24">
-      <div class="trn-tag">APP · ĐĂNG KÝ</div>
-      <h2 class="trn-h2">24. Đăng Ký Tài Khoản Mới Trực Tiếp In-App (Mobile Register)</h2>
-      <div class="trn-h3">Tạo tài khoản thành viên mới ngay trong ứng dụng di động mà không bị chuyển hướng ra ngoài</div>
+    <!-- 18. PHÂN QUYỀN BIỆT LẬP MULTI-TENANT RBAC -->
+    <div class="doc-section" id="sec-crm-18">
+      <span class="section-tag">PHÂN HỆ QUẢN TRỊ DOANH NGHIỆP · WEB CRM</span>
+      <div class="section-h2">18. Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp Multi-tenant RBAC</div>
+      <div class="section-desc">Kiểm soát quyền truy cập độc lập theo từng tenant doanh nghiệp (company_id), đảm bảo cách ly dữ liệu kinh doanh an toàn tuyệt đối.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Cho phép doanh nhân mới tạo tài khoản và tham gia mạng lưới giao thương tức thì.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Màn hình Đăng nhập -> Bấm nút: "Tạo tài khoản mới"
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Tại màn hình đăng nhập, nhấp vào liên kết "Tạo tài khoản mới" ở phía dưới.</li>
-        <li>Bước 2: Giao diện đăng ký in-app mở ra mượt mà: Nhập Họ và tên đầy đủ của doanh nhân.</li>
-        <li>Bước 3: Nhập Địa chỉ Email hoặc Số điện thoại chính chủ.</li>
-        <li>Bước 4: Nhập Tên doanh nghiệp / Công ty đang điều hành.</li>
-        <li>Bước 5: Thiết lập Mật khẩu và Xác nhận mật khẩu (tối thiểu 8 ký tự).</li>
-        <li>Bước 6: Bấm "Đăng Ký & Đăng Nhập Ngay": Hệ thống tự động tạo tài khoản, lưu phiên và đưa người dùng vào Trang chủ.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TRÌNH LIỀN MẠCH: Toàn bộ quá trình tạo tài khoản nằm trọn vẹn trong trải nghiệm in-app, tuyệt đối không mở các trang web tiếp thị bên ngoài.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO HỒ SƠ: Sau khi đăng ký, hãy vào mục Hồ sơ cá nhân để cập nhật ảnh đại diện và chức danh giúp đối tác dễ nhận diện.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_02_mobile_register_in_app.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_02_mobile_register_in_app.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_02_mobile_register_in_app.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_02_mobile_register_in_app.png';}"
-      alt="Hình 2: Màn hình Đăng ký Tài khoản Mới In-App Trực tiếp" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Ma Trận Phân Quyền Doanh Nghiệp (CompanyPermissionsTab)</div>
+          <div class="card-badge">MULTI-TENANT RBAC · DATA ISOLATION</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/crm_18_rbac.png" alt="Phân quyền Multi-tenant RBAC">
+            <div class="screenshot-caption">Hình 1.18: Giao diện thiết lập ma trận phân quyền 6 cờ quyền cho từng vai trò nội bộ doanh nghiệp</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Vào menu <strong>Doanh nghiệp</strong> -> Chọn công ty cần cấu hình -> Nhấn tab <strong>Phân quyền</strong>.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Chọn vai trò cần phân quyền: <em>Giám đốc, Trưởng phòng kinh doanh, Kế toán, Chuyên viên</em>.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text">Tích chọn các cờ quyền hạn cho từng phân hệ: <strong>Xem, Thêm, Sửa, Xóa, Phê duyệt, Xuất báo cáo</strong>.</div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-text">Bấm nút gradient vàng <strong>[Lưu cấu hình phân quyền]</strong>. Quyền hạn mới được áp dụng ngay lập tức cho toàn bộ nhân sự thuộc vai trò đó.</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 2: Màn hình Đăng ký Tài khoản Mới In-App Trực tiếp</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-25">
-      <div class="trn-tag">APP · TRANG CHỦ</div>
-      <h2 class="trn-h2">25. Trang Chủ Doanh Nhân ViOne Connect & Thẻ Hội Viên Số</h2>
-      <div class="trn-h3">Trung tâm kết nối C-Level, danh thiếp số thông minh, lịch trình và cơ hội kinh doanh hôm nay</div>
+    <!-- 20. CÀI ĐẶT HỆ THỐNG 100% CSDL -->
+    <div class="doc-section" id="sec-crm-20">
+      <span class="section-tag">PHÂN HỆ QUẢN TRỊ DOANH NGHIỆP · WEB CRM</span>
+      <div class="section-h2">20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% CSDL PostgreSQL</div>
+      <div class="section-desc">Trung tâm thiết lập thông số vận hành của doanh nghiệp, tài khoản ngân hàng thụ hưởng VietQR và tọa độ chấm công GPS.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Cung cấp cho doanh nhân bảng tin điều hành và kết nối đối tác nhanh chóng trên di động.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng đáy -> Chạm vào Tab: Trang Chủ (Home)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Header trên cùng hiển thị Lời chào cá nhân hóa theo thời gian thực (Chào buổi sáng / Buổi chiều / Buổi tối) và chuông thông báo.</li>
-        <li>Bước 2: Quan sát Thẻ Hội Viên Doanh Nhân mạ vàng nổi bật ở vị trí trung tâm hiển thị: Họ tên, Chức vụ, Tên công ty và Mã số thẻ.</li>
-        <li>Bước 3: Xem các Tab lịch trình nhanh: [Hôm nay] [Sắp tới] [Nhắc lịch] để nắm bắt các cuộc hẹn và sự kiện trong ngày.</li>
-        <li>Bước 4: Xem khối Insight cơ hội: Đề xuất các đối tác tiềm năng và tin mời thầu phù hợp nhất với ngành nghề của doanh nghiệp.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        ĐỒNG BỘ THỜI GIAN THỰC: Lịch trình cuộc hẹn trên Mobile App luôn được đồng bộ 2 chiều với hệ thống CRM Web của công ty.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO KẾT NỐI: Nhấp vào từng đối tác gợi ý để xem hồ sơ năng lực chi tiết và gửi yêu cầu kết nối kinh doanh.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_03_home_dashboard.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_03_home_dashboard.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_03_home_dashboard.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_03_home_dashboard.png';}"
-      alt="Hình 3: Trang chủ Doanh nhân ViOne Connect & Thẻ Hội Viên" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp (/settings)</div>
+          <div class="card-badge">PERSISTENT SETTINGS · 100% POSTGRESQL</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/crm_20_settings.png" alt="Cài đặt hệ thống">
+            <div class="screenshot-caption">Hình 1.20: Màn hình Cài đặt hệ thống và cấu hình doanh nghiệp lưu trữ trực tiếp vào CSDL PostgreSQL</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Nhấn menu <strong>Cài đặt</strong> (/settings) ở góc dưới cùng của Sidebar bên trái.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Cấu hình thông tin công ty:</strong> Cập nhật Tên doanh nghiệp, Mã số thuế, Địa chỉ trụ sở, Đại diện pháp lý và tải lên Logo thương hiệu mạ vàng.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Cấu hình nhận tiền VietQR:</strong> Chọn Ngân hàng thụ hưởng, nhập Số tài khoản và Tên chủ tài khoản nhận tiền -> Bấm <strong>[Lưu thông số VietQR]</strong>.</div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>Cấu hình Chấm công GPS:</strong> Nhập tọa độ GPS trụ sở văn phòng và bán kính cho phép chấm công (mặc định 50 mét).</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 3: Trang chủ Doanh nhân ViOne Connect & Thẻ Hội Viên</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-26">
-      <div class="trn-tag">APP · THẺ HỘI VIÊN</div>
-      <h2 class="trn-h2">26. Bottom Sheet Thẻ Hội Viên Bo Tròn 36px Tích Hợp Vuốt Tay Xuống</h2>
-      <div class="trn-h3">Bảng điều khiển danh thiếp số vuốt từ dưới lên với góc bo cong tròn và cử chỉ vuốt tay đóng tự nhiên</div>
+    <!-- PHẦN 2: APP MOBILE NATIVE VIONE CONNECT (16 PHÂN HỆ) -->
+    <div class="doc-section" id="sec-app-02">
+      <span class="section-tag">PHÂN HỆ ỨNG DỤNG DI ĐỘNG · VIONE CONNECT</span>
+      <div class="section-h2">22. Trang Chủ Executive Home & Bàn Làm Việc 5 Tabs Hôm Nay</div>
+      <div class="section-desc">Giao diện điều hành di động đẳng cấp thượng lưu dành cho CEO và Hội viên doanh nhân với 5 tabs lịch trình hôm nay.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Mở nhanh mã QR định danh và các công cụ chia sẻ danh thiếp chỉ với một thao tác chạm.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Trang Chủ App Mobile -> Chạm vào: Thẻ Hội Viên Doanh Nhân
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Chạm trực tiếp vào Thẻ Hội Viên Doanh Nhân trên màn hình Trang Chủ.</li>
-        <li>Bước 2: Một bảng điều khiển (Bottom Sheet) vuốt mượt mà từ cạnh dưới màn hình lên với góc bo cong tròn 36px sang trọng.</li>
-        <li>Bước 3: Bottom Sheet hiển thị: Mã QR cá nhân hóa, Nút [Chạm NFC Một Chạm], Nút [Chia Sẻ vCard] và Nút [Gửi Qua Zalo/Tin Nhắn].</li>
-        <li>Bước 4: Để đóng bảng điều khiển: Đặt ngón tay lên thanh gạt ngang trên đỉnh popup và vuốt nhẹ xuống dưới (Swipe Down), popup sẽ trượt xuống đóng lại mượt mà.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        CỬ CHỈ VUỐT TAY TỰ NHIÊN: Tính năng vuốt tay xuống (Swipe Down gesture) mang lại trải nghiệm mượt mà, chuẩn mực như các ứng dụng gốc iOS cao cấp nhất.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO GIAO TIẾP: Khi đi dự tiệc hoặc hội thảo, chỉ cần mở sẵn Bottom Sheet này để đối tác quét mã QR kết nối ngay lập tức.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_04_member_card_bottom_sheet.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_04_member_card_bottom_sheet.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_04_member_card_bottom_sheet.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_04_member_card_bottom_sheet.png';}"
-      alt="Hình 4: Bottom Sheet Thẻ Hội viên Bo Tròn 36px Tích hợp Vuốt Tay Xuống" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Trang Chủ Executive Home & Lịch Trình Hôm Nay 5 Tabs</div>
+          <div class="card-badge">NATIVE APP · EXECUTIVE LUXURY</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/app_02_home.png" alt="Trang chủ App Mobile">
+            <div class="screenshot-caption">Hình 2.2: Trang chủ Executive Home với Thẻ Doanh Nhân, Banner GPS và Bàn điều hành 5 Tabs</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Mở ứng dụng <strong>ViOne Connect</strong> trên điện thoại.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Sticky Header:</strong> Logo vector mạ vàng 53x20, lời chào theo thời gian thực và chuông thông báo có badge đỏ đếm tin chưa đọc.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Thẻ Doanh Nhân:</strong> Chạm vào thẻ mạ vàng để mở Bottom Sheet danh tính vuốt tay xuống chứa mã QR và nút chạm thẻ NFC.</div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>Lịch Trình Hôm Nay 5 Tabs:</strong> Chuyển đổi giữa các tab <em>[Tất cả], [Lịch hẹn 1-1], [Hồ sơ duyệt], [Việc cần làm], [Sự kiện]</em> để xử lý công việc thần tốc trong 30 giây.</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 4: Bottom Sheet Thẻ Hội viên Bo Tròn 36px Tích hợp Vuốt Tay Xuống</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-27">
-      <div class="trn-tag">APP · NÚT V TRUNG TÂM</div>
-      <h2 class="trn-h2">27. Bảng Điều Khiển Nhanh Nút ViOne Mạ Vàng Trung Tâm (VActionSheet)</h2>
-      <div class="trn-h3">Nút tròn chữ V điêu khắc 3D vector nổi bật ở giữa mở menu 1-chạm kết nối và điều hành</div>
+    <!-- APP: NÚT V 3D VACTIONSHEET -->
+    <div class="doc-section" id="sec-app-08">
+      <span class="section-tag">PHÂN HỆ ỨNG DỤNG DI ĐỘNG · VIONE CONNECT</span>
+      <div class="section-h2">28. Nút V Trung Tâm 3D & Bảng Lệnh Điều Khiển VActionSheet 5 Hành Động</div>
+      <div class="section-desc">Phím tắt trung tâm nổi 3D mạ vàng Champagne Gold cho phép kích hoạt 5 hành động điều hành nhanh nhất.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Thực hiện siêu tốc các tác vụ lãnh đạo quan trọng nhất chỉ với 1 lần chạm ngón tay.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng đáy -> Chạm vào: Nút tròn chữ V màu vàng kim ở chính giữa
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Chạm vào nút tròn ViOne dập nổi ánh kim vàng Champagne ở giữa thanh điều hướng đáy.</li>
-        <li>Bước 2: Màn hình kích hoạt hiệu ứng kính mờ (Obsidian Glassmorphism) và hiển thị Bảng điều khiển VActionSheet.</li>
-        <li>Bước 3: Chọn 1 trong 6 tác vụ nhanh:
-  • [1. Quét Danh Thiếp OCR]: Chụp ảnh danh thiếp giấy để AI tự động lưu vào CRM.
-  • [2. Chấm Công Định Vị GPS]: Điểm danh văn phòng chỉ với 1 chạm.
-  • [3. Phê Duyệt Chi Tiền]: Duyệt nhanh các phiếu chi ngân sách khẩn cấp.
-  • [4. Đăng Nhu Cầu Mua/Bán]: Phát sóng tin mời thầu hoặc chào hàng B2B.
-  • [5. Hẹn Gặp 1-on-1]: Xếp lịch làm việc nhanh với một CEO đối tác.
-  • [6. Trợ Lý AI Copilot]: Mở đàm thoại trực tiếp với trợ lý thông minh.</li>
-        <li>Bước 4: Chạm vào vùng nền tối để đóng Action Sheet.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        THIẾT KẾ ĐỘC QUYỀN: Nút ViOne trung tâm được chế tác với biểu tượng vector VIconMark 3D đa tầng gradient, tuyệt đối không phải chữ text thông thường.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO TIỆN ÍCH: Đây là phím tắt quyền năng nhất trên app giúp các CEO tiết kiệm thời gian thao tác tới 70%.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_05_v_action_sheet.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_05_v_action_sheet.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_05_v_action_sheet.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_05_v_action_sheet.png';}"
-      alt="Hình 5: Bảng Điều Khiển Nhanh Nút ViOne Mạ Vàng Trung Tâm (VActionSheet)" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Bảng Lệnh Nhanh VActionSheet (Chạm Nút V 3D)</div>
+          <div class="card-badge">3D FLOATING V-BUTTON · 5 QUICK ACTIONS</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/app_08_vaction.png" alt="Bảng lệnh VActionSheet">
+            <div class="screenshot-caption">Hình 2.8: Bảng lệnh nhanh VActionSheet mở ra khi chạm vào Nút V nổi 3D ở chính giữa thanh điều hướng</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Chạm vào biểu tượng <strong>Nút V mạ vàng nổi 3D</strong> ở chính giữa thanh điều hướng dưới đáy màn hình.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Bảng VActionSheet trượt lên với 5 tác vụ điều hành: <strong>Giao việc mới, Ký duyệt chi, Quét danh thiếp AI, Chấm công GPS, Họp ban 1-chạm</strong>.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text">Chạm vào tác vụ mong muốn để mở ngay màn hình xử lý mà không cần tìm kiếm trong menu.</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 5: Bảng Điều Khiển Nhanh Nút ViOne Mạ Vàng Trung Tâm (VActionSheet)</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-28">
-      <div class="trn-tag">APP · ĐỐI TÁC</div>
-      <h2 class="trn-h2">28. Mạng Lưới Đối Tác & Bản Tin Khoảnh Khắc 24h (Network & Stories)</h2>
-      <div class="trn-h3">Khám phá danh bạ doanh nhân, xem tin hoạt động kinh doanh 24h và chăm sóc khách hàng B2B</div>
+    <!-- APP: CỘNG ĐỒNG DOANH NGHIỆP BIỆT LẬP -->
+    <div class="doc-section" id="sec-app-09">
+      <span class="section-tag">PHÂN HỆ ỨNG DỤNG DI ĐỘNG · VIONE CONNECT</span>
+      <div class="section-h2">29. Không Gian Cộng Đồng Nội Bộ Doanh Nghiệp Biệt Lập</div>
+      <div class="section-desc">Không gian truyền thông, bảng tin chính sách và danh bạ phòng ban dành riêng cho nhân sự công ty, bảo mật tuyệt đối với bên ngoài.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Mở rộng mạng lưới quan hệ chiến lược và duy trì tương tác thường xuyên với các đối tác chủ chốt.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng đáy -> Chạm vào Tab: Mạng Lưới (Network)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Dải Stories 24h trên đầu hiển thị avatar các doanh nhân vừa đăng tải hoạt động kinh doanh mới. Chạm vào avatar để xem trình chiếu toàn màn hình.</li>
-        <li>Bước 2: Danh sách "Chăm Sóc Đối Tác" hiển thị các mối quan hệ quan trọng kèm ngày tương tác gần nhất.</li>
-        <li>Bước 3: Sử dụng các phím tắt nhanh trên từng đối tác: [Gọi Điện Thoại] [Gửi Tin Nhắn] [Lên Lịch Hẹn 1-1].</li>
-        <li>Bước 4: Sử dụng bộ lọc ngành nghề để tìm kiếm đối tác cung ứng trong lĩnh vực mong muốn.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUY TẮC TIN 24H: Các khoảnh khắc Stories sẽ tự động biến mất sau đúng 24 giờ kể từ thời điểm đăng tải.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO DUY TRÌ QUAN HỆ: Nhắn tin chúc mừng hoặc tương tác với Story của đối tác là cách tự nhiên nhất để mở đầu một cơ hội làm ăn mới.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_06_network_connections.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_06_network_connections.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_06_network_connections.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_06_network_connections.png';}"
-      alt="Hình 6: Màn hình Mạng Lưới Đối Tác & Stories 24h Lãnh Đạo" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Tab Cộng Đồng & Không Gian Doanh Nghiệp Biệt Lập</div>
+          <div class="card-badge">DEDICATED CORPORATE WORKSPACE</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/app_09_community.png" alt="Cộng đồng doanh nghiệp">
+            <div class="screenshot-caption">Hình 2.9: Màn hình Cộng đồng tích hợp Không Gian Doanh Nghiệp nội bộ riêng biệt</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Chạm vào Tab <strong>Cộng đồng</strong> trên thanh điều hướng di động.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Chọn tab con <strong>[Không Gian Doanh Nghiệp]</strong> để vào khu vực nội bộ công ty bạn.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text">Đọc thông báo của Ban Giám Đốc, chính sách nhân sự và tra cứu danh bạ phòng ban nội bộ nhanh chóng.</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 6: Màn hình Mạng Lưới Đối Tác & Stories 24h Lãnh Đạo</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-29">
-      <div class="trn-tag">APP · CỘNG ĐỒNG</div>
-      <h2 class="trn-h2">29. Cộng Đồng Doanh Nghiệp & Sàn Cơ Hội Giao Thương (Community)</h2>
-      <div class="trn-h3">Tham gia các liên minh ngành nghề, khám phá sự kiện và săn đón các gói thầu tiềm năng</div>
+    <!-- APP: TRUNG TÂM BẢO MẬT & XÓA TÀI KHOẢN APPLE -->
+    <div class="doc-section" id="sec-app-15">
+      <span class="section-tag">PHÂN HỆ ỨNG DỤNG DI ĐỘNG · VIONE CONNECT</span>
+      <div class="section-h2">35. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple</div>
+      <div class="section-desc">Quản lý bảo mật FaceID, vân tay và quy trình xóa tài khoản vĩnh viễn trực tiếp trong ứng dụng tuân thủ 100% Apple Guideline 5.1.1(v).</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Tiếp cận các cơ hội hợp tác kinh doanh quy mô lớn và tham gia các sự kiện xúc tiến thương mại.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng đáy -> Chạm vào Tab: Cộng Đồng (Community)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem danh mục các Liên Minh Doanh Nghiệp theo ngành nghề (Bất động sản, Công nghệ, Bán lẻ, Y tế, Xây dựng...).</li>
-        <li>Bước 2: Chuyển sang Tab "Sự Kiện" để xem lịch các hội thảo, diễn đàn doanh nhân sắp diễn ra và bấm "Đăng Ký Vé".</li>
-        <li>Bước 3: Chuyển sang Tab "Cơ Hội Giao Thương" để xem danh sách các gói thầu và nhu cầu tìm nhà cung ứng đang mở.</li>
-        <li>Bước 4: Bấm "Nộp Báo Giá" hoặc "Liên Hệ Trực Tiếp" với doanh nghiệp đăng tin thầu.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        KIỂM DUYỆT THÔNG TIN: Mọi tin mời thầu và sản phẩm trên sàn đều được ban quản trị xác thực pháp nhân doanh nghiệp trước khi phát sóng.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO KINH DOANH: Đăng ký thông báo theo ngành nghề để nhận ngay cảnh báo khi có gói thầu mới được đăng tải.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_07_community_marketplace.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_07_community_marketplace.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_07_community_marketplace.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_07_community_marketplace.png';}"
-      alt="Hình 7: Màn hình Cộng Đồng Doanh Nghiệp & Sàn Cơ Hội B2B" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Trung Tâm Bảo Mật & Xóa Tài Khoản Apple Guideline 5.1.1(v)</div>
+          <div class="card-badge">APPLE GUIDELINE 5.1.1(v) · GDPR COMPLIANT</div>
+        </div>
+        <div class="card-body">
+          <div class="screenshot-wrapper">
+            <img class="screenshot-img" src="images/evidence_v8/app_15_security.png" alt="Bảo mật và xóa tài khoản">
+            <div class="screenshot-caption">Hình 2.15: Màn hình Cài đặt Bảo mật với xác thực sinh trắc học và chức năng Xóa tài khoản vĩnh viễn</div>
+          </div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Tại Tab <strong>Tôi</strong>, chọn mục <strong>Bảo mật & Quyền riêng tư</strong>.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Bật công tắc <strong>[Xác thực sinh trắc học FaceID / Vân tay]</strong> để mở khóa ứng dụng an toàn qua phần cứng.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Quy trình Xóa tài khoản vĩnh viễn (Chuẩn Apple):</strong> Cuộn xuống dưới cùng -> Nhấn nút đỏ <strong>[Xóa tài khoản vĩnh viễn]</strong> -> Đọc kỹ cảnh báo xóa dữ liệu -> Nhập mật khẩu hiện tại để xác nhận bảo mật 2 bước -> Bấm xác nhận xóa -> Hệ thống xóa sạch dữ liệu cá nhân theo GDPR và đăng xuất ngay lập tức.</div></div>
+          </div>
+          <div class="alert-box alert-gold">
+            <span>🛡️</span>
+            <span><strong>Tuân thủ Apple:</strong> Tính năng xóa tài khoản này giúp ứng dụng ViOne Connect đáp ứng 100% điều kiện kiểm duyệt để xuất bản chính thức trên Apple App Store.</span>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 7: Màn hình Cộng Đồng Doanh Nghiệp & Sàn Cơ Hội B2B</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-30">
-      <div class="trn-tag">APP · DANH TÍNH SỐ</div>
-      <h2 class="trn-h2">30. Hồ Sơ Danh Tính Số C-Level & Danh Thiếp Titanium 3D (Me Profile)</h2>
-      <div class="trn-h3">Quản trị thương hiệu cá nhân lãnh đạo, cài đặt quyền riêng tư và ví danh bạ đối tác</div>
+    <!-- PHẦN 5: TRỢ LÝ GIỌNG NÓI VIONE AI -->
+    <div class="doc-section">
+      <span class="section-tag">TRÍ TUỆ NHÂN TẠO THẾ HỆ MỚI · VIONE AI</span>
+      <div class="section-h2">CHƯƠNG 5: KHAI THÁC TRỢ LÝ GIỌNG NÓI VIONE AI 6.0 (OPENROUTER AI GATEWAY)</div>
+      <div class="section-desc">Trợ lý ảo điều hành giọng nói tiếng Việt tự nhiên, tích hợp DeepSeek-V3 LLM và Meta Llama 3.3.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Khẳng định vị thế uy tín của doanh nhân và quản lý toàn bộ thông tin kết nối cá nhân.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng đáy -> Chạm vào Tab: Tôi (Me Profile)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem Card "DANH TÍNH SỐ": Hiển thị ảnh chân dung lãnh đạo, họ tên, chức vụ, tên công ty và chữ ký V mạ vàng dập chìm.</li>
-        <li>Bước 2: Sử dụng 2 nút gradient vàng nổi bật: [QR Của Tôi] để phóng to mã QR và [Chạm NFC] để sẵn sàng chia sẻ danh thiếp.</li>
-        <li>Bước 3: Card "LIÊN HỆ NHANH" với 5 nút tương tác trực tiếp một chạm: [Gọi Điện] [Gửi Email] [Viber] [WhatsApp] [Telegram].</li>
-        <li>Bước 4: Mở "Ví Danh Thiếp Đối Tác" để xem và tải về danh bạ vCard của tất cả những người mình đã từng chạm thẻ giao lưu.</li>
-        <li>Bước 5: Cấu hình "Quyền Riêng Tư": Chọn ẩn hoặc hiện số điện thoại cá nhân khi người lạ quét thẻ.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUYỀN RIÊNG TƯ TUYỆT ĐỐI: Những trường thông tin bạn đã bấm "Ẩn" trong cài đặt quyền riêng tư sẽ không bao giờ hiển thị khi người khác quét thẻ của bạn.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO ĐẲNG CẤP: Chuyển đổi giữa chế độ Sáng Tinh Tế và Tối Huyền Bí Obsidian tùy theo sở thích và hoàn cảnh sử dụng.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_08_me_digital_identity.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_08_me_digital_identity.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_08_me_digital_identity.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_08_me_digital_identity.png';}"
-      alt="Hình 8: Màn hình Danh Tính Số C-Level & Danh Thiếp Thông Minh" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Trợ Lý Giọng Nói ViOne AI 6.0 (OpenRouter AI Gateway)</div>
+          <div class="card-badge">DEEPSEEK-V3 · LLAMA 3.3 · VOICE COMMAND</div>
+        </div>
+        <div class="card-body">
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-text">Nhấn giữ biểu tượng <strong>Micro mạ vàng</strong> trên Header của ứng dụng di động hoặc Web CRM.</div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-text">Ra lệnh giọng nói tự nhiên: <em>"Giao việc cho anh Hùng kiểm tra hợp đồng trước 5h chiều nay"</em> hoặc <em>"Báo cáo doanh thu tuần này của công ty"</em>.</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-text">ViOne AI bóc tách thông tin, tự động điền form và tạo ngay nhiệm vụ trên bảng Kanban, đồng thời trả lời bằng giọng đọc truyền cảm.</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 8: Màn hình Danh Tính Số C-Level & Danh Thiếp Thông Minh</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-31">
-      <div class="trn-tag">APP · CÀI ĐẶT IOS</div>
-      <h2 class="trn-h2">31. Cài Đặt PWA 1-Chạm Trên iPhone / iPad (Apple WebClip Profile)</h2>
-      <div class="trn-h3">Đột phá cài đặt ứng dụng trực tiếp lên Màn hình chính iOS tương tự như cài file APK Android</div>
+    <!-- PHẦN 6: FAQ & HỖ TRỢ -->
+    <div class="doc-section">
+      <span class="section-tag">HỖ TRỢ VẬN HÀNH & GIẢI ĐÁP</span>
+      <div class="section-h2">CHƯƠNG 6 & 7: GIẢI ĐÁP SỰ CỐ & THÔNG TIN BÀN GIAO KỸ THUẬT</div>
+      <div class="section-desc">Tổng hợp các câu hỏi thường gặp và thông tin liên hệ hỗ trợ 24/7 của Ban Công Nghệ VioConnect.</div>
 
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Giúp người dùng iPhone cài đặt app ViOne Connect nhanh chóng chỉ với 1 click mà không cần qua App Store.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Trình duyệt Safari trên iPhone -> Truy cập trang /install hoặc tải file: /vione_ios_install.mobileconfig
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Mở liên kết /install trên trình duyệt Safari của iPhone.</li>
-        <li>Bước 2: Hoặc tải file cấu hình /vione_ios_install.mobileconfig -> Safari hỏi: "Trang web này đang cố tải về một hồ sơ cấu hình. Bạn có muốn cho phép không?" -> Bấm "Cho phép" (Allow).</li>
-        <li>Bước 3: Mở ứng dụng "Cài đặt" (Settings) trên iPhone -> Chạm vào mục "Đã tải về hồ sơ" (Profile Downloaded) ở ngay đầu.</li>
-        <li>Bước 4: Nhấn nút "Cài đặt" (Install) ở góc phải trên -> Nhập Mật khẩu máy -> Tiếp tục bấm "Cài đặt".</li>
-        <li>Bước 5: Biểu tượng ứng dụng ViOne Connect màu vàng kim sẽ xuất hiện ngay lập tức trên Màn hình chính của iPhone.</li>
-        <li>Bước 6: Chạm vào biểu tượng để mở app: Ứng dụng chạy toàn màn hình Native siêu mượt.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        BẮT BUỘC DÙNG SAFARI: Thao tác tải và cài đặt hồ sơ cấu hình trên iOS bắt buộc phải thực hiện qua trình duyệt Safari mặc định của Apple. Nếu mở qua Zalo/FB, hãy bấm [•••] chọn Mở bằng Safari.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO ĐỘT PHÁ: Giải pháp này giúp người dùng iOS cài đặt app dễ dàng như cài file APK trên Android, không lo bị thu hồi chứng chỉ doanh nghiệp.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_09_ios_pwa_install_prompt.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_09_ios_pwa_install_prompt.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_09_ios_pwa_install_prompt.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_09_ios_pwa_install_prompt.png';}"
-      alt="Hình 9: Hướng Dẫn Cài Đặt PWA Màn Hình Chính Trên iPhone / iPad" loading="lazy" />
+      <div class="feature-card">
+        <div class="card-header">
+          <div class="card-title">Thông Tin Liên Hệ Bàn Giao Kỹ Thuật 24/7</div>
+          <div class="card-badge">SUPPORT 24/7</div>
+        </div>
+        <div class="card-body">
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">✓</div><div class="step-text"><strong>Cổng hỗ trợ trực tuyến:</strong> support@viconnect.vn</div></div>
+            <div class="step-item"><div class="step-num">✓</div><div class="step-text"><strong>Tổng đài hỗ trợ kỹ thuật:</strong> 1900 6868 (Bấm phím 1 cho Web CRM, Phím 2 cho Mobile App)</div></div>
+            <div class="step-item"><div class="step-num">✓</div><div class="step-text"><strong>Tài liệu kỹ thuật và mã nguồn:</strong> Được lưu trữ và quản lý phiên bản chính thức trên Git Repository của Tập Đoàn.</div></div>
+          </div>
         </div>
       </div>
-      <div class="shot-caption">Hình 9: Hướng Dẫn Cài Đặt PWA Màn Hình Chính Trên iPhone / iPad</div>
-      </div>
-    </section>
+    </div>
 
-    <section class="trn-section" id="sec-32">
-      <div class="trn-tag">APP · HỘP THƯ CHAT</div>
-      <h2 class="trn-h2">32. Hộp Thư Trực Tiếp & Kênh Chat B2B Doanh Nhân (Messenger)</h2>
-      <div class="trn-h3">Nhắn tin trực tiếp giữa các CEO, gửi tài liệu báo giá và trò chuyện nhóm dự án</div>
-
-      <div class="trn-goal">
-        <strong>MỤC TIÊU NGHIỆP VỤ:</strong> Trao đổi hợp tác làm ăn nhanh chóng, tức thời ngay trên ứng dụng di động.
-      </div>
-
-      <div class="trn-path">
-        <strong>ĐƯỜNG DẪN THAO TÁC:</strong> Thanh điều hướng đáy -> Chạm vào biểu tượng: Hộp Thư (Inbox)
-      </div>
-
-      <ol class="trn-steps">
-        <li>Bước 1: Xem danh sách các cuộc trò chuyện chia theo các Tab: [Tất Cả] [Chưa Đọc] [Nhóm Dự Án] [Tin Nhắn Chờ].</li>
-        <li>Bước 2: Chạm vào cuộc trò chuyện để mở cửa sổ chat với đối tác.</li>
-        <li>Bước 3: Gửi tin nhắn văn bản, hình ảnh danh thiếp hoặc đính kèm báo giá dịch vụ.</li>
-        <li>Bước 4: Bấm nút "Tạo Nhóm Mới" để tạo nhóm chat thảo luận kinh doanh giữa 3 hay nhiều lãnh đạo doanh nghiệp.</li>
-      </ol>
-
-      <div class="box-red">
-        <strong>LƯU Ý NGHIỆP VỤ QUAN TRỌNG:</strong>
-        QUẢN LÝ TIN NHẮN CHỜ: Tin nhắn từ những người chưa kết nối sẽ nằm trong Tab "Tin Nhắn Chờ" để tránh làm phiền doanh nhân.
-      </div>
-
-      <div class="box-blue">
-        <strong>MẸO VẬN HÀNH DÀNH CHO C-LEVEL:</strong>
-        MẸO DOANH NHÂN: Nhận thông báo đẩy (Push Notification) ngay khi đối tác trả lời tin nhắn dù bạn đang tắt ứng dụng.
-      </div>
-
-      <div class="shot-container">
-        
-      <div class="shot-mobile-wrap">
-        <div class="shot-phone-frame">
-          <img src="images/evidence_live_2026/app_10_inbox_messenger.png"
-      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='/docs/images/evidence_live_2026/app_10_inbox_messenger.png';}else if(this.dataset.retried==1){this.dataset.retried=2;this.src='/images/evidence_live_2026/app_10_inbox_messenger.png';}else if(this.dataset.retried==2){this.dataset.retried=3;this.src='../images/evidence_live_2026/app_10_inbox_messenger.png';}"
-      alt="Hình 10: Hộp Thư Trực Tiếp & Kênh Chat B2B Doanh Nhân" loading="lazy" />
-        </div>
-      </div>
-      <div class="shot-caption">Hình 10: Hộp Thư Trực Tiếp & Kênh Chat B2B Doanh Nhân</div>
-      </div>
-    </section>
-
-</article>
+  </div>
 </body>
 </html>

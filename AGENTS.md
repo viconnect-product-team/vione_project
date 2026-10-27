@@ -30,7 +30,7 @@
     * **CEO 1983 Subdomains**:
       - CRM CEO 1983: `https://crm.ceo1983.viconnect.vn/`
       - App Hội viên CEO 1983: `https://ceo1983.viconnect.vn/`
-    * **ViOne CRM Enterprise**: Chưa khai báo Subdomain chính thức (chỉ chạy Dev Port 5006 / 5446).
+    * **ViOne CRM Enterprise**: Subdomain chính thức `https://crm_vione.viconnect.vn/` (cùng alias `crm.viconnect.vn`). Điều phối qua kịch bản `.\deploy-subdomain-crm.ps1` hoặc `.\deploy.ps1 -Target subdomain-crm`. Tự động kích hoạt khi push Git qua GitHub Actions `.github/workflows/deploy-crm.yml`.
   - **Phân Tách Proxy Độc Lập Giữa CEO 1983 và ViOne (STRICT PROXY SEPARATION)**:
     * `ceo1983-ssl-proxy`: Container proxy của riêng hiệp hội CEO 1983 (quản lý các cổng 5443, 5444).
     * `vione-ssl-proxy`: Container proxy độc lập của riêng hệ sinh thái ViOne (quản lý các cổng 5445 ViOne App và 5446 ViOne CRM).

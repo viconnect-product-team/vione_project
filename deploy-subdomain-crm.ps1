@@ -16,7 +16,7 @@ chcp 65001 > $null
 
 # =========================================================================
 # LỆNH ĐỘC LẬP: TRIỂN KHAI TRỰC TIẾP SUBDOMAIN VIONE CRM
-# URL: https://crm.viconnect.vn (Cổng 80 & 443 SSL)
+# URL: https://crm_vione.viconnect.vn (Cổng 80 & 443 SSL)
 # =========================================================================
 
 $bound = [System.Collections.Generic.Dictionary[string, object]]::new($PSBoundParameters)

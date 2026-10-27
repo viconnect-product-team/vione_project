@@ -25,6 +25,9 @@ import {
   Globe,
   Contact,
   Wallet,
+  Landmark,
+  Flame,
+  Sparkles,
 } from "lucide-react-native";
 import { Colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
@@ -47,6 +50,7 @@ interface VActionSheetProps {
   onOpenAssignTask?: () => void;
   onOpenStaffActivity?: () => void;
   onOpenAiAssistant?: () => void;
+  onOpenPlatformApp?: () => void;
   hasCompanyWithStaff?: boolean;
 }
 
@@ -63,6 +67,7 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
   onOpenAssignTask,
   onOpenStaffActivity,
   onOpenAiAssistant,
+  onOpenPlatformApp,
   hasCompanyWithStaff = false,
 }) => {
   const { user } = useAuth();
@@ -204,6 +209,42 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
                       <ChevronRight size={18} color={isDark ? "#D8B282" : "#8A5C1E"} />
                     </View>
                   </TouchableOpacity>
+
+                  {/* Action 1.5: Hệ Sinh Thái Di Sản & Thể Thao ViConnect */}
+                  {onOpenPlatformApp && (
+                    <TouchableOpacity
+                      style={[
+                        styles.actionRow,
+                        {
+                          backgroundColor: isDark ? "#0A101D" : "#F1F5F9",
+                          borderColor: "rgba(216, 178, 130, 0.4)",
+                        },
+                      ]}
+                      onPress={() => {
+                        onClose();
+                        onOpenPlatformApp();
+                      }}
+                      activeOpacity={0.75}
+                    >
+                      <View style={[styles.actionIconBox, { backgroundColor: "rgba(216, 178, 130, 0.15)" }]}>
+                        <Landmark size={22} color="#D8B282" />
+                      </View>
+                      <View style={styles.actionTexts}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                          <Text style={[styles.actionTitle, { color: isDark ? "#F6E1C3" : "#0F172A", fontWeight: "800" }]}>
+                            Di Sản & Thể Thao
+                          </Text>
+                          <View style={{ backgroundColor: "#D8B282", paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4 }}>
+                            <Text style={{ fontSize: 9, fontWeight: "800", color: "#050C15" }}>BẢN MỚI</Text>
+                          </View>
+                        </View>
+                        <Text style={[styles.actionSubtitle, { color: isDark ? "#94A3B8" : "#64748B" }]}>
+                          Bảo tàng số 3D • Giải chạy • Timing RFID
+                        </Text>
+                      </View>
+                      <ChevronRight size={16} color="#D8B282" />
+                    </TouchableOpacity>
+                  )}
 
                   {/* Action 2: Chạm thẻ NFC */}
                   <TouchableOpacity

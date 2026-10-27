@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ActivityIndicator, StyleSheet, Modal } from "react-native";
 import {
   NavigationContainer,
   DefaultTheme,
@@ -18,6 +18,7 @@ import { HomeScreen } from "../screens/home/HomeScreen";
 import { NetworkScreen } from "../screens/network/NetworkScreen";
 import { CommunityScreen } from "../screens/community/CommunityScreen";
 import { ProfileScreen } from "../screens/me/ProfileScreen";
+import { PlatformAppScreen } from "../screens/platform/PlatformAppScreen";
 
 // Navigation & Modals
 import { CustomBottomTabBar } from "./CustomBottomTabBar";
@@ -88,6 +89,7 @@ export const AppNavigator: React.FC = () => {
   const [staffActivityVisible, setStaffActivityVisible] = useState(false);
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
   const [postMomentVisible, setPostMomentVisible] = useState(false);
+  const [platformAppVisible, setPlatformAppVisible] = useState(false);
   const [incomingRequester, setIncomingRequester] = useState<QrRequesterProfile | null>(null);
 
   if (isLoading) {
@@ -124,7 +126,12 @@ export const AppNavigator: React.FC = () => {
         onOpenAssignTask={() => setAssignTaskVisible(true)}
         onOpenStaffActivity={() => setStaffActivityVisible(true)}
         onOpenAiAssistant={() => setAiAssistantVisible(true)}
+        onOpenPlatformApp={() => setPlatformAppVisible(true)}
       />
+
+      <Modal visible={platformAppVisible} animationType="slide">
+        <PlatformAppScreen onBack={() => setPlatformAppVisible(false)} />
+      </Modal>
 
       <MyQrModal visible={myQrVisible} onClose={() => setMyQrVisible(false)} />
       <ScanQrModal visible={scanQrVisible} onClose={() => setScanQrVisible(false)} />

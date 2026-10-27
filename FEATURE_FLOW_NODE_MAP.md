@@ -259,3 +259,111 @@
   - Controller & Service: `src/companies/companies.controller.ts`, `companies.service.ts` (`POST /companies/:id/tasks/bulk`)
 * **Bảng CSDL:** `public.company_tasks`, `public.company_employees`.
 
+---
+
+## 🏛️ PHẦN 3: BẢN ĐỒ NODE HỆ SINH THÁI NỀN TẢNG VICONNECT (VĂN HÓA & THỂ THAO ĐỘC LẬP DOANH NGHIỆP)
+
+> **Nguyên tắc cốt lõi:** 4 danh mục dưới đây thuộc quyền sở hữu, điều hành và phân phối của **ViConnect Central Platform** (Cổng Quốc Gia / Hệ Sinh Thái Nền Tảng), hoàn toàn KHÔNG thuộc quyền sở hữu hay quản trị của bất kỳ doanh nghiệp đơn lẻ nào trong hệ thống CRM Tenant. Các doanh nghiệp chỉ tham gia với vai trò Nhà Tài Trợ (Sponsor), Đơn vị Đồng Hành (Partner) hoặc Cử đoàn VĐV Doanh nghiệp tham gia thi đấu.
+
+### 🏛️ [NODE-PLATFORM-HERITAGE-01]: ViOne Heritage — Quản Lý, Số Hóa Di Sản Văn Hóa & VR360
+* **Tên luồng:** Số hóa hồ sơ di sản quốc gia/UNESCO, bản đồ GIS khoanh vùng bảo vệ, mô hình thực tế ảo 3D/VR360 và thuyết minh di sản tự động theo tọa độ định vị GPS.
+* **Mã SRS:** `UC-APP-25`.
+* **Cơ quan chủ quản:** ViConnect Central Platform phối hợp Cục Di sản văn hóa / Ban Quản lý Di tích.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/platform.heritage.tsx`, `src/routes/heritage.$id.tsx`
+  - Component: `src/components/heritage/HeritageMapViewer.tsx`, `src/components/heritage/HeritageVr360Tour.tsx`, `src/components/heritage/HeritagePassportSheet.tsx`
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/heritage/HeritageListScreen.tsx`, `src/screens/heritage/HeritageDetailScreen.tsx`
+  - Component: `src/components/heritage/GeoAudioGuidePlayer.tsx`, `src/components/heritage/HeritageStampBadge.tsx`
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/modules/heritage/heritage.controller.ts`
+  - Service: `src/modules/heritage/heritage.service.ts`
+* **Bảng CSDL PostgreSQL:** `public.vione_heritage_sites`, `public.vione_heritage_zones`, `public.vione_user_heritage_stamps`.
+* **Quy chuẩn UI/UX:** Nút "Nghe thuyết minh", "Khám phá 3D", "Lưu dấu ấn di sản" bắt buộc 100% Nút Gradient Vàng Hoàng Gia Champagne Gold viền mạ vàng 3D.
+
+---
+
+### 🏛️ [NODE-PLATFORM-MUSEUM-01]: ViOne Museum — Bảo Tàng Số, Trưng Bày Hiện Vật 3D & Thuyết Minh 1-Chạm NFC
+* **Tên luồng:** Không gian trưng bày ảo chuyên đề, xoay phóng to hiện vật 3D Photogrammetry/AR, chạm điện thoại NFC tại kệ hiện vật để nghe audio guide, liên thông bán vé điện tử ViOne Ticket.
+* **Mã SRS:** `UC-APP-26`.
+* **Cơ quan chủ quản:** ViConnect Central Platform phối hợp Hội đồng Bảo tàng học & Ban Giám đốc các Bảo tàng.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/platform.museum.tsx`, `src/routes/museum.$id.artifacts.tsx`
+  - Component: `src/components/museum/Artifact3DViewer.tsx`, `src/components/museum/VirtualExhibitionRoom.tsx`, `src/components/museum/MuseumTicketBookingModal.tsx`
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/museum/MuseumExplorerScreen.tsx`, `src/screens/museum/ArtifactDetailScreen.tsx`
+  - Component: `src/components/museum/NfcArtifactListener.tsx`, `src/components/museum/SmartAudioGuideModal.tsx`
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/modules/museum/museum.controller.ts`
+  - Service: `src/modules/museum/museum.service.ts`
+* **Bảng CSDL PostgreSQL:** `public.vione_museums`, `public.vione_museum_galleries`, `public.vione_museum_artifacts`, `public.vione_museum_nfc_tags`.
+* **Quy chuẩn UI/UX:** Nút "Trải nghiệm AR", "Nghe câu chuyện hiện vật", "Đặt vé tham quan" dùng Gradient Vàng Hoàng Gia hoặc Gradient Đen Mạ Vàng sang trọng.
+
+---
+
+### ⚽ [NODE-PLATFORM-SPORT-01]: ViOne Sport — Giải Đấu Thể Thao Đa Môn, Sơ Đồ Bracket & Mạng Lưới CLB
+* **Tên luồng:** Khởi tạo giải đấu thể thao đa môn (Pickleball, Bóng đá, Golf, Tennis), tự động sinh sơ đồ nhánh thi đấu (Bracket), cập nhật tỷ số trực tiếp, điều phối tổ trọng tài và cấp Hộ chiếu VĐV số.
+* **Mã SRS:** `UC-APP-27`.
+* **Cơ quan chủ quản:** ViConnect Central Platform bảo trợ & phối hợp các Liên đoàn Thể thao / Ban Trọng tài.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/platform.sport.tsx`, `src/routes/sport.tournaments.$id.tsx`
+  - Component: `src/components/sport/TournamentBracketView.tsx`, `src/components/sport/LiveMatchScoreboard.tsx`, `src/components/sport/SportClubsDirectory.tsx`
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/sport/SportHubScreen.tsx`, `src/screens/sport/TournamentDetailScreen.tsx`, `src/screens/sport/MatchDetailScreen.tsx`
+  - Component: `src/components/sport/DigitalAthleteCard.tsx`, `src/components/sport/RefereeScoreModal.tsx`
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/modules/sport/sport.controller.ts`
+  - Service: `src/modules/sport/sport.service.ts`, `src/modules/sport/sport.gateway.ts` (WebSocket Live Score)
+* **Bảng CSDL PostgreSQL:** `public.vione_sport_tournaments`, `public.vione_sport_brackets`, `public.vione_sport_matches`, `public.vione_sport_clubs`, `public.vione_athlete_profiles`.
+* **Quy chuẩn UI/UX:** Nút "Đăng ký thi đấu", "Xem bảng đấu", "Cập nhật tỷ số" dùng Nút Gradient; thẻ tỷ số trực tiếp viền vàng phát sáng.
+
+---
+
+### 🏃 [NODE-PLATFORM-RUN-01]: ViOne Run — Giải Chạy Marathon/Trail, Cấp BIB, Timing RFID & Live Leaderboard
+* **Tên luồng:** Quản trị giải chạy marathon/trail, hiển thị trắc dọc độ cao GPX, tự động cấp phát số BIB & mã QR nhận RaceKit, tích hợp đồng bộ thảm chíp Timing RFID, bảng xếp hạng trực tiếp và xuất Finisher e-Certificate.
+* **Mã SRS:** `UC-APP-28`.
+* **Cơ quan chủ quản:** ViConnect Central Platform phối hợp Race Director & Hiệp hội Chạy bộ Quốc gia.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/platform.run.tsx`, `src/routes/run.races.$id.tsx`, `src/routes/run.results.tsx`
+  - Component: `src/components/run/RaceGpxElevatorMap.tsx`, `src/components/run/LiveRaceLeaderboard.tsx`, `src/components/run/FinisherCertificateGenerator.tsx`, `src/components/run/AiBibPhotoFinder.tsx`
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/run/RunHubScreen.tsx`, `src/screens/run/RaceDetailScreen.tsx`, `src/screens/run/MyBibPassScreen.tsx`
+  - Component: `src/components/run/LivePaceTrackerCard.tsx`, `src/components/run/CertificateShareModal.tsx`
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/modules/run/run.controller.ts`
+  - Service: `src/modules/run/run.service.ts`, `src/modules/run/rfid-timing.listener.ts` (Đầu nhận chíp thảm RFID UDP/WebSocket)
+* **Bảng CSDL PostgreSQL:** `public.vione_races`, `public.vione_race_distances`, `public.vione_race_bibs`, `public.vione_rfid_mats`, `public.vione_race_timing_logs`, `public.vione_race_certificates`.
+* **Quy chuẩn UI/UX:** Nút "Đăng ký BIB", "Tra cứu thành tích", "Tải chứng nhận Finish" dùng 100% Nút Gradient Vàng Hoàng Gia Champagne Gold viền mạ vàng.
+
+---
+
+### ⭐ [NODE-PLATFORM-REVIEW-01]: ViOne Review — Chạm Thẻ NFC Tăng Đánh Giá Google Maps & Tặng Voucher Cửa Hàng
+* **Tên luồng:** Giải pháp Standee/Thẻ NFC đặt tại quầy thu ngân cửa hàng, nhà hàng, điểm di tích. Khách chạm nhẹ smartphone vào chip NFC NTAG213 để mở ngay biểu mẫu đánh giá 5 sao, chuyển hướng Google Maps Review và tự động nhận mã ưu đãi voucher tức thì.
+* **Mã SRS:** `UC-APP-30`.
+* **Cơ quan chủ quản:** ViConnect Central Platform bảo trợ mạng lưới đối tác thương mại văn hóa & ẩm thực.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Component: `src/components/platform-app/NfcReviewHub.tsx`
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/platform/PlatformAppScreen.tsx` (Tab `review`)
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/platform-hub/platform-hub.controller.ts` (`GET /platform-hub/reviews/stores`, `POST /platform-hub/reviews/submit`)
+  - Service: `src/platform-hub/platform-hub.service.ts`
+* **Bảng CSDL PostgreSQL:** `public.vione_nfc_reviews`, `public.vione_store_feedback`.
+* **Quy chuẩn UI/UX:** Nút "Chạm NFC Đánh Giá", "Gửi Đánh Giá & Nhận Voucher" dùng 100% Nút Gradient Vàng Hoàng Gia Champagne Gold.
+
+---
+
+### 🎟️ [NODE-PLATFORM-TICKET-01]: ViOne Ticket — Bán Vé & Cổng Soát Vé Điện Tử QR/NFC Đa Năng
+* **Tên luồng:** Phát hành vé điện tử cho di tích, bảo tàng, giải chạy; tích hợp thanh toán Napas VietQR 24/7 và cổng soát vé (Ticket Validator) chuyển trạng thái vé từ `Hợp lệ` sang `Đã sử dụng` có đối soát nhân viên.
+* **Mã SRS:** `UC-APP-31`.
+* **Cơ quan chủ quản:** ViConnect Central Platform quản lý cổng thanh toán & mã hóa bảo mật vé.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Component: `src/components/platform-app/TicketWallet.tsx`
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/platform/PlatformAppScreen.tsx` (Tab `tickets`)
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/platform-hub/platform-hub.controller.ts` (`POST /platform-hub/tickets/validate`)
+* **Bảng CSDL PostgreSQL:** `public.vione_platform_tickets`.
+* **Quy chuẩn UI/UX:** Cổng soát vé có thông báo phân biệt rõ rệt: Xanh Ngọc Lục Bảo (Vé hợp lệ) vs Đỏ Ruby (Cảnh báo vé đã dùng).
+
+

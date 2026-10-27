@@ -39,6 +39,8 @@
 | **UC-CRM-25** | Quản Trị Giao Việc Cho Nhân Sự Doanh Nghiệp (Task Assignment & Checklist) | Giám đốc, Trưởng phòng, Quản lý | P0 - Bắt buộc | Hoạt động |
 | **UC-CRM-26** | Phân Quyền & Vai Trò Riêng Biệt Cho Từng Doanh Nghiệp (Tenant-Isolated RBAC & Role Matrix) | Chủ Doanh nghiệp, Ban Giám Đốc | P0 - Bắt buộc | Hoạt động |
 | **UC-CRM-27** | Quản Trị Cấu Hình Hệ Thống Đồng Bộ CSDL Toàn Diện (System Configuration & Third-party Integrations) | Quản trị viên Doanh nghiệp & Hệ thống | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-28** | Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (`/documents`) | Giám đốc, Kế toán, Nhân sự, Nhân viên | P0 - Bắt buộc | Hoạt động |
+| **UC-CRM-29** | Kiến Trúc Điều Hướng Phân Tách Doanh Nghiệp & Tooltip Đa Điểm Sidebar | Toàn bộ người dùng Web CRM | P0 - Bắt buộc | Hoạt động |
 
 ---
 
@@ -321,4 +323,49 @@
      - Lưu thông tin cập nhật vào `localStorage`.
      - Kích hoạt sự kiện trình duyệt `window.dispatchEvent(new CustomEvent('association-changed', { detail: { name, slogan } }))` và `vione-settings-updated`.
      - Tên tổ chức ở Header, Sidebar và Tab Title trên trình duyệt lập tức thay đổi theo tên mới mà không cần F5 lại trang.
+
+---
+
+### UC-CRM-28: Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (`/documents`)
+* **Tác nhân:** Giám đốc, Kế toán trưởng, Quản lý Nhân sự, Nhân viên các phòng ban.
+* **Màn hình thực hiện:** `/documents`, `routes/documents.index.tsx`, `lib/documents.functions.ts`.
+* **Tiền điều kiện:** Đăng nhập tài khoản doanh nghiệp hợp lệ.
+* **Mục tiêu:** Cung cấp kho lưu trữ số hóa tài liệu doanh nghiệp chuẩn mực theo kiến trúc Google Drive với cấu trúc thư mục lồng nhau đa cấp (Nested Folders), breadcrumbs điều hướng phân cấp, phân loại 6 danh mục nghiệp vụ cốt lõi, ghim sao, tìm kiếm và chuyển đổi linh hoạt giao diện Lưới (Grid) / Bảng (List).
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Quản Trị Thư Mục & Tài Liệu
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `name` | Tên thư mục / Tài liệu | `TextInput` | `VD: Hợp đồng kinh tế 2026` | Bắt buộc. Từ 2 đến 200 ký tự. Không chứa ký tự cấm: `\ / : * ? " < > \|`. | `Tên thư mục/tài liệu không hợp lệ!` |
+| `parent_id` | Thư mục cha | `SelectDropdown` / Breadcrumb | `Chọn thư mục cha (hoặc Thư mục gốc)` | Tùy chọn. UUID hợp lệ trong `public.document_folders`. Cho phép đa cấp không giới hạn. | `Thư mục cha không tồn tại!` |
+| `category` | Danh mục tài liệu | `SelectDropdown` / Chips | `Chọn danh mục nghiệp vụ` | Bắt buộc. Chọn từ 6 danh mục chuẩn: Pháp Lý & ĐKKD, Hợp Đồng & Phụ Lục, Tài Chính & Thuế, Nhân Sự & Tiền Lương, Quy Chế & Vận Hành, Kỹ Thuật & Dự Án. | `Vui lòng chọn danh mục tài liệu!` |
+| `color` | Màu sắc nhận diện thư mục | `ColorPicker` / Preset Dots | `Mặc định Champagne Gold (#D8B282)` | Tùy chọn. Mã màu Hex chuẩn. | N/A |
+| `file` | Tệp tin đính kèm | `FileInput` (Drag & Drop) | `Kéo thả tệp tin hoặc nhấn để chọn...` | Hỗ trợ PDF, DOCX, XLSX, PPTX, JPG, PNG. Dung lượng tối đa 50MB/file. | `Tệp vượt quá dung lượng 50MB hoặc không đúng định dạng!` |
+| `is_starred` | Ghim dấu sao ưu tiên | `IconButton` (Star Icon) | N/A | Boolean. Mặc định `false`. | N/A |
+
+#### 2. Vị Trí Hiển Thị & Cơ Chế Đồng Bộ
+* **Thanh điều hướng Breadcrumbs:** Hiển thị cây thư mục động `Kho Lưu Trữ > [Thư Mục Cấp 1] > [Thư Mục Cấp 2]` kèm nút quay lại cấp trước. Nhấn vào bất kỳ cấp nào sẽ chuyển thẳng đến thư mục đó.
+* **Lưới Thư Mục Obsidian Gold:** Hiển thị thẻ thư mục với số lượng tệp bên trong, danh mục và các tác vụ Đổi tên, Xóa.
+* **Cơ chế cập nhật:** Dữ liệu lưu vào bảng `public.document_folders`, `public.documents` và `public.document_categories` trong PostgreSQL. Khi tải lên tệp mới, danh sách tự động cập nhật và bộ đếm tệp tin của thư mục cha tự động tăng tức thời.
+
+---
+
+### UC-CRM-29: Kiến Trúc Điều Hướng Phân Tách Doanh Nghiệp & Tooltip Đa Điểm Sidebar
+* **Tác nhân:** Toàn bộ người dùng Web CRM ViOne.
+* **Màn hình thực hiện:** `components/dashboard/Sidebar.tsx`, `components/dashboard/EnterpriseTreeMenu.tsx`.
+* **Tiền điều kiện:** Đăng nhập vào hệ thống Web CRM ViOne.
+* **Mục tiêu:** Tinh giản cấu trúc điều hướng, phân tách độc lập giữa Phân hệ Doanh nghiệp và Phân hệ Quản trị Nền tảng, đồng thời trang bị Tooltip viền vàng Obsidian chống tràn chữ 3 dấu chấm (...).
+
+#### 1. Quy Chuẩn Phân Tách Phân Hệ (Two-Tier View Isolation)
+* **Phân hệ Doanh nghiệp (`effectiveView === 'company'`):**
+  - **LOẠI BỎ HOÀN TOÀN** chức năng Quản lý doanh nghiệp (`/companies`) vì doanh nghiệp không tự quản lý danh sách công ty khác. Quản lý nhân sự được điều hướng chuẩn qua `/members`.
+  - **LOẠI BỎ HOÀN TOÀN** cây menu "Doanh nghiệp của tôi" (EnterpriseTreeMenu); khi đăng nhập, hệ thống tự động hiển thị các chức năng khả dụng theo gói đã mua.
+  - Phân định thành 6 nhóm nghiệp vụ: `NHÂN SỰ & CHẤM CÔNG`, `VẬN HÀNH & CÔNG VIỆC`, `TÀI CHÍNH & DÒNG TIỀN`, `KINH DOANH & CRM`, `TRUYỀN THÔNG & TƯƠNG TÁC`, `CẤU HÌNH & TỔ CHỨC`.
+* **Phân hệ Quản trị Nền tảng ViConnect (`effectiveView === 'platform'`):**
+  - Dành riêng cho Super Admin và nhân sự ViConnect: `TỔNG QUAN NỀN TẢNG`, `QUẢN LÝ DOANH NGHIỆP & HỘI VIÊN`, `GÓI CƯỚC & DOANH THU`, `MẠNG LƯỚI & GIAO THƯƠNG`, `BÁO CÁO & THỐNG KÊ TOÀN DIỆN`, `AN NINH & HỆ THỐNG`.
+
+#### 2. Cơ Chế Tooltip Đa Điểm (Sidebar Tooltip Engine)
+* Tích hợp Radix UI Tooltip trên 100% các mục điều hướng (NavItems).
+* Hiển thị Tooltip sang trọng phong cách Đen Thạch Anh Mạ Vàng (`bg-[#0B0F17] text-[#F6E1C3] border border-[#D8B282]/40 shadow-2xl`) với độ trễ mở 150ms.
+* Khắc phục triệt để lỗi thẩm mỹ khi tên tính năng dài bị cắt thành dấu ba chấm (...) trên Sidebar, đảm bảo người dùng luôn đọc được trọn vẹn tên tính năng và badge trạng thái.
+
 

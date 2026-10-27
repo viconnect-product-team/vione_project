@@ -39,8 +39,9 @@ switch ($Target) {
         & "$PSScriptRoot/deploy-subdomain.ps1" @bound
     }
     { $_ -in @("subdomain-crm") } {
-        Write-Host ">>> ĐIỀU PHỐI: ViOne CRM chưa khai báo Subdomain chính thức. Tự động điều hướng sang Server Dev (Port 5446)..." -ForegroundColor Cyan
-        & "$PSScriptRoot/deploy-crm.ps1" @bound
+        Write-Host ">>> ĐIỀU PHỐI: Triển khai Subdomain CRM (https://crm_vione.viconnect.vn)..." -ForegroundColor Cyan
+        $bound["Subdomain"] = "crm"
+        & "$PSScriptRoot/deploy-subdomain.ps1" @bound
     }
     "subdomain-all" {
         Write-Host ">>> ĐIỀU PHỐI: Triển khai Cả 2 Subdomain (vione & crm)..." -ForegroundColor Magenta
@@ -80,7 +81,8 @@ switch ($Target) {
 Write-Host ""
 Write-Host "=================================================================" -ForegroundColor Green
 Write-Host "DANH SÁCH LỆNH TRIỂN KHAI PHÂN TÁCH SẴN CÓ:" -ForegroundColor Cyan
-Write-Host "1. Subdomain PWA (https://vione.viconnect.vn) : .\deploy-subdomain-vione.ps1 (hoặc .\deploy.ps1 -Target subdomain-vione)" -ForegroundColor Yellow
-Write-Host "2. Server DEV ViOne App (cổng 5445)          : .\deploy-vione.ps1" -ForegroundColor Yellow
-Write-Host "3. Server DEV ViOne CRM (cổng 5446)          : .\deploy-crm.ps1" -ForegroundColor Yellow
+Write-Host "1. Subdomain PWA (https://vione.viconnect.vn)    : .\deploy-subdomain-vione.ps1 (hoặc .\deploy.ps1 -Target subdomain-vione)" -ForegroundColor Yellow
+Write-Host "2. Subdomain CRM (https://crm_vione.viconnect.vn): .\deploy-subdomain-crm.ps1 (hoặc .\deploy.ps1 -Target subdomain-crm)" -ForegroundColor Cyan
+Write-Host "3. Server DEV ViOne App (cổng 5445)             : .\deploy-vione.ps1" -ForegroundColor DarkYellow
+Write-Host "4. Server DEV ViOne CRM (cổng 5446)             : .\deploy-crm.ps1" -ForegroundColor DarkYellow
 Write-Host "=================================================================" -ForegroundColor Green

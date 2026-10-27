@@ -1,4 +1,4 @@
-# TÀI LIỆU YÊU CẦU NGHIỆP VỤ DOANH NGHIỆP TOÀN DIỆN (BRD MASTER 7.0)
+# TÀI LIỆU YÊU CẦU NGHIỆP VỤ DOANH NGHIỆP TOÀN DIỆN (BRD MASTER 8.0)
 ## HỆ ĐIỀU HÀNH DOANH NGHIỆP TOÀN DIỆN VIONE & MẠNG XÃ HỘI GIAO THƯƠNG DOANH NHÂN VIONE CONNECT
 ### PHIÊN BẢN HỢP NHẤT TOÀN DIỆN 7.0 (ĐỒNG BỘ 100% TÍNH NĂNG VIONE PWA VÀ VIONE NATIVE APP, CHUẨN HÓA CÂN ĐỐI UI/UX TEXT & ICON, PHÂN QUYỀN PHÒNG BAN DEPARTMENT RBAC, BÀN GIAO TỰ ĐỘNG, HỌP BAN 1-CHẠM & IMPORT/EXPORT EXCEL/WORD)
 
@@ -7,9 +7,9 @@
 ### THÔNG TIN KIỂM SOÁT TÀI LIỆU (DOCUMENT CONTROL)
 * **Tên dự án:** Hệ Sinh Thái Quản Trị Doanh Nghiệp Toàn Diện ViOne & Mạng Xã Hội Giao Thương Doanh Nhân ViOne Connect
 * **Đơn vị phát triển:** Ban Công Nghệ & Chuyển Đổi Số — Tập Đoàn Công Nghệ VioConnect
-* **Mã tài liệu:** `BRD-VIONE-ENTERPRISE-CONNECT-MASTER-V7.0`
-* **Phiên bản:** `7.0 Master Enterprise Release` (Thẩm định khớp 100% mã nguồn Backend NestJS, Frontend Web CRM, Database PostgreSQL, PWA Web Mobile `/connect-app` và Native App `apps/mobile_vione`)
-* **Ngày phát hành:** 12/10/2026
+* **Mã tài liệu:** `BRD-VIONE-ENTERPRISE-CONNECT-MASTER-V8.0`
+* **Phiên bản:** `8.0 Enterprise Master Release` (Thẩm định khớp 100% mã nguồn Backend NestJS, Frontend Web CRM, Database PostgreSQL, PWA Web Mobile `/connect-app` và Native App `apps/mobile_vione`)
+* **Ngày phát hành:** 27/10/2026
 * **Cấp độ bảo mật:** TÀI LIỆU BẢO MẬT NỘI BỘ — LƯU HÀNH GIỚI HẠN
 * **Trạng thái thẩm định:** Đã kiểm thử thực tế trên Web CRM (Port 5446/5445), PWA Web Mobile (`/connect-app`), và Mobile Native App (`apps/mobile_vione` - Expo SDK 52 / React Native)
 
@@ -27,7 +27,10 @@
    - *5.3. Nút V Trung Tâm 3D & Bảng Hành Động VActionSheet*
    - *5.4. Tab 3: Mô Hình Cộng Đồng Hợp Nhất & Gói Dùng Thử 30 Ngày*
    - *5.5. Tab 4: Trang Cá Nhân "Tôi" - Danh Tính Số Thượng Lưu*
-   - *5.6. Siêu Trợ Lý Điều Khiển Bằng Giọng Nói AI Copilot 6.0*
+   - *5.6. Siêu Trợ Lý Điều Khiển Bằng Giọng Nói ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 LLM & Meta Llama 3.3)*
+   - *5.7. Không Gian Cộng Đồng Nội Bộ Doanh Nghiệp Biệt Lập (Dedicated Corporate Workspace)*
+   - *5.8. Đăng Ký & Kích Hoạt Gói Doanh Nghiệp In-App Qua VietQR Napas 24/7 (PackageRegistrationModal)*
+   - *5.9. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) & GDPR*
 6. **QUY CHUẨN CÂN ĐỐI GIAO DIỆN (UI/UX, TEXT, ICON & SAFE AREA) TRÊN VIONE NATIVE APP**
 7. **HỆ THỐNG 99 QUY TẮC NGHIỆP VỤ CỐT LÕI (BUSINESS RULES - 6 NHÓM)**
 8. **MA TRẬN PHÂN QUYỀN RBAC ĐA TẦNG (ROLE x DEPARTMENT) & CƠ CHẾ AUTO-HANDOVER**
@@ -109,7 +112,7 @@ Các doanh nghiệp Việt Nam và khu vực đang đối mặt với 4 rào c�
 ### 3.1. Role 1: Lãnh Đạo, Giám Đốc, CEO (Executive User)
 - **Đặc trưng:** Thời gian hạn hẹp, thường xuyên di chuyển, cần nắm bắt bức tranh toàn cảnh và xử lý quyết sách nhanh trong 5–10 giây.
 - **Quy chuẩn Chấm công Lãnh đạo:** Tuyệt đối không để tính năng tự chấm công cá nhân cho CEO. Thay vào đó là khối **Giám Sát Giờ Giấc & Chuyên Cần Nhân Sự Doanh Nghiệp**: Thống kê tỷ lệ có mặt thời gian thực (ví dụ: `42/45 nhân sự có mặt - 93.3%`), cảnh báo đi muộn/vắng mặt. Khối này chỉ hiển thị khi tài khoản sở hữu cộng đồng doanh nghiệp có nhân viên trực thuộc (`hasCompanyWithStaff === true`).
-- **Thư ký riêng toàn năng AI Copilot 6.0:** Ra lệnh bằng giọng nói tiếng Việt để tạo việc, duyệt chi, xem báo cáo doanh thu, ghim lịch họp mà không cần bấm phím.
+- **Thư ký riêng toàn năng ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 LLM & Meta Llama 3.3):** Ra lệnh bằng giọng nói tiếng Việt để tạo việc, duyệt chi, xem báo cáo doanh thu, ghim lịch họp mà không cần bấm phím.
 
 ### 3.2. Role 2: Nhân Viên Nội Bộ & Đối Tác Giao Thương B2B
 - **Nhân viên nội bộ:**
@@ -149,7 +152,7 @@ Hệ thống Web CRM ViOne bao gồm 25 modules hoàn chỉnh, liên kết chặ
 21. **Module 21: Danh Mục Ưu Đãi Độc Quyền (Exclusive Member Perks):** Voucher chiết khấu nội bộ giữa các doanh nghiệp trong hệ sinh thái.
 22. **Module 22: Phân Quyền Nền Tảng RBAC Ma Trận Thực Tế (Permissions Matrix):** 7 nhóm vai trò x 6 thao tác, cơ chế bảo vệ quyền sở hữu dữ liệu `canEditRecord`.
 23. **Module 23: Cài Đặt Hệ Thống & Cổng Thanh Toán (System Settings):** Cấu hình thương hiệu, hotline, logo động phát sự kiện thời gian thực.
-24. **Module 24: Báo Cáo Lưu Lượng & Nhật Ký Kiểm Toán (Audit Logs):** Báo cáo traffic, ghi vết bất biến 100% hành vi người dùng và lệnh AI Copilot.
+24. **Module 24: Báo Cáo Lưu Lượng & Nhật Ký Kiểm Toán (Audit Logs):** Báo cáo traffic, ghi vết bất biến 100% hành vi người dùng và lệnh ViOne AI (OpenRouter Gateway).
 25. **Module 25: Quản Trị Cơ Cấu Phòng Ban (Department RBAC) & Bàn Giao Tự Động (Auto-Handover):** Phân cấp Khối $\rightarrow$ Phòng ban $\rightarrow$ Nhóm chuyên trách, kiểm soát 5 cờ quyền, gom và chuyển giao việc hàng loạt khi nhân sự biến động.
 
 ---
@@ -329,7 +332,7 @@ Theo định hướng kiến trúc bản quyền ViOne mới:
 
 ---
 
-### 5.6. Siêu Trợ Lý Điều Khiển Bằng Giọng Nói AI Copilot 6.0
+### 5.6. Siêu Trợ Lý Điều Khiển Bằng Giọng Nói ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 LLM & Meta Llama 3.3)
 - **Dải Sóng Âm 16-Bar Holographic & Breathing Aura:**
   - Dải sóng âm động chuyển động nhịp nhàng theo tần số giọng nói khi AI lắng nghe hoặc đàm thoại.
   - Vòng hào quang thở (Breathing Aura) tông màu Champagne Gold `#DFB76C`.
@@ -344,6 +347,34 @@ Theo định hướng kiến trúc bản quyền ViOne mới:
     * *"Quét mã QR đối tác"* $\rightarrow$ Kích hoạt `onOpenScanQr()`.
     * *"Nhắn tin / Mạng lưới đối tác"* $\rightarrow$ Chuyển sang Tab `Network`.
 - **Xuất File Báo Cáo Tự Động:** Tự động tổng hợp số liệu và sinh thẻ tải trực tiếp các tệp Excel (`.xlsx`), Word (`.docx`), PDF (`.pdf`) từ CSDL PostgreSQL.
+
+
+
+### 5.7. Không Gian Cộng Đồng Nội Bộ Doanh Nghiệp Biệt Lập (Dedicated Corporate Workspace)
+- **Bối cảnh & Mục tiêu nghiệp vụ:** Đáp ứng nhu cầu truyền thông, thông báo chính sách và tương tác gắn kết nội bộ giữa các phòng ban trong từng công ty mà không bị lẫn lộn với luồng tin giao thương B2B công khai.
+- **Quy tắc & Luồng nghiệp vụ:**
+  1. Người dùng thuộc doanh nghiệp nào khi vào Tab Cộng Đồng sẽ có thêm tab con **[Không Gian Doanh Nghiệp]**.
+  2. Bảng tin nội bộ chỉ hiển thị các bài viết, thông báo chính sách, quyết định bổ nhiệm, vinh danh của Ban Giám Đốc công ty đó.
+  3. Danh bạ phòng ban hiển thị sơ đồ tổ chức, thành viên trực thuộc từng ban và trưởng bộ phận phụ trách.
+  4. Phân lập dữ liệu hoàn toàn: Người dùng thuộc công ty A tuyệt đối không nhìn thấy bài viết hoặc danh bạ nội bộ của công ty B.
+
+### 5.8. Đăng Ký & Kích Hoạt Gói Doanh Nghiệp In-App Qua VietQR Napas 24/7 (PackageRegistrationModal)
+- **Bối cảnh & Mục tiêu nghiệp vụ:** Cho phép các chủ doanh nghiệp nâng cấp gói cước phần mềm (Khởi sự, Tăng trưởng, Doanh nghiệp Vàng) ngay trên ứng dụng di động Native và PWA mà không cần liên hệ tổng đài thủ công.
+- **Quy tắc & Luồng nghiệp vụ:**
+  1. Người dùng mở `PackageRegistrationModal` với giao diện phong cách Obsidian Gold sang trọng.
+  2. Lựa chọn gói dịch vụ và chu kỳ thanh toán: 1 tháng hoặc 1 năm (tặng thêm 2 tháng ưu đãi).
+  3. Hệ thống gọi API NestJS sinh mã VietQR Napas 24/7 động chứa số tiền chính xác và cú pháp chuyển khoản định danh duy nhất.
+  4. Khách hàng quét mã bằng ứng dụng ngân hàng bất kỳ tại Việt Nam; Webhook ngân hàng gửi thông báo đối soát gạch nợ tự động trong 1 giây.
+  5. Hệ thống kích hoạt gói tức thì, nâng hạn mức nhân sự, mở khóa quyền Quản trị viên trên Web CRM và gửi email biên lai điện tử.
+
+### 5.9. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) & GDPR
+- **Bối cảnh & Mục tiêu nghiệp vụ:** Đáp ứng tiêu chuẩn kiểm duyệt phát hành nghiêm ngặt của Apple App Store (Guideline 5.1.1(v) Data Collection and Storage) và quy định bảo vệ dữ liệu cá nhân quốc tế GDPR.
+- **Quy tắc & Luồng nghiệp vụ:**
+  1. Tích hợp xác thực sinh trắc học FaceID / TouchID lưu trữ an toàn trong iOS Keychain và Android KeyStore.
+  2. Cung cấp chức năng **Xóa tài khoản vĩnh viễn (Delete Account)** trực tiếp trong màn hình Cài đặt Bảo mật của ứng dụng di động:
+     - Hiển thị bảng cảnh báo chi tiết về việc toàn bộ dữ liệu cá nhân, danh thiếp số, hợp đồng và lịch sử giao dịch sẽ bị xóa vĩnh viễn và không thể khôi phục.
+     - Yêu cầu người dùng xác nhận bảo mật 2 bước: Nhập lại mật khẩu hiện tại hoặc mã OTP xác thực.
+     - Khi xác nhận, Backend NestJS thực thi quy trình vô hiệu hóa tài khoản, thu hồi toàn bộ token, xóa hoặc ẩn danh hóa an toàn các bản ghi cá nhân trong CSDL PostgreSQL, đưa người dùng về màn hình Đăng nhập ban đầu.
 
 ---
 
@@ -421,8 +452,8 @@ Theo định hướng kiến trúc bản quyền ViOne mới:
 - **BR-71:** Nhân sự thuộc phòng ban nào chỉ được thực hiện các quyền hạn đã được cấp (`canAssign`, `canAccept`, `canReport`, `canHandover`, `canMeet`) trong phòng ban đó.
 - **BR-72:** Bàn giao công việc (Auto-Handover) bắt buộc phải nhập lý do, tự động gửi thông báo đến người nhận và lưu vết kiểm toán bất biến `handover_history`.
 
-### Nhóm VI: Quy Tắc Bảo Mật & AI Copilot (Rules 86 – 99)
-- **BR-86:** Toàn bộ lệnh thoại và thao tác tự động của AI Copilot phải được ghi nhật ký kiểm toán (AI Audit Trail).
+### Nhóm VI: Quy Tắc Bảo Mật & ViOne AI (OpenRouter Gateway) (Rules 86 – 99)
+- **BR-86:** Toàn bộ lệnh thoại và thao tác tự động của ViOne AI (OpenRouter Gateway) phải được ghi nhật ký kiểm toán (AI Audit Trail).
 - **BR-87:** Danh thiếp số chia sẻ qua NFC/QR chỉ hiển thị các trường dữ liệu mà chủ sở hữu cho phép công khai tại cài đặt quyền riêng tư.
 - **BR-88:** Dữ liệu tài liệu tải lên hệ thống được lưu trữ mã hóa trên MinIO S3, chỉ truy cập qua Pre-signed URL có thời hạn tối đa 60 phút.
 
@@ -494,7 +525,7 @@ Hệ thống vận hành trên 163 bảng CSDL chuẩn hóa 3NF, phân tách rõ
 2. **Giai đoạn 2 (26/08 – 25/09/2026):** Phát triển bộ API nghiệp vụ vận hành C-Level, chấm công GPS, duyệt chi VietQR và hộp thư Messenger Socket.IO.
 3. **Giai đoạn 3 (26/09 – 02/10/2026):** Đại tu giao diện Dark Luxury Obsidian & Champagne Gold, đóng gói Standalone Release APK và cấu hình iOS WebClip.
 4. **Giai đoạn 4 (03/10 – 11/10/2026):** Tích hợp phân quyền phòng ban Department RBAC, cơ chế bàn giao tự động Auto-Handover, họp ban 1-chạm và import/export Word/Excel.
-5. **Giai đoạn 5 (12/10/2026):** Đồng bộ hoàn toàn tính năng giữa ViOne PWA và ViOne Native App, chuẩn hóa cân đối UI/UX, kiểm thử 0 lỗi typecheck và phát hành chính thức bộ tài liệu BRD / SRS Master 7.0.
+5. **Giai đoạn 5 (27/10/2026):** Đồng bộ hoàn toàn tính năng giữa ViOne PWA và ViOne Native App, chuẩn hóa cân đối UI/UX, kiểm thử 0 lỗi typecheck và phát hành chính thức bộ tài liệu BRD / SRS Master 7.0.
 
 ### 10.2. Tiêu chuẩn nghiệm thu bàn giao (Acceptance Criteria)
 - 100% chức năng mô tả trong tài liệu phải hoạt động ổn định trên CSDL thực tế PostgreSQL (0% mock data).

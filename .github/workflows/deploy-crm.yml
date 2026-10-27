@@ -1,15 +1,13 @@
-name: Deploy CRM to Subdomain (crm.viconnect.vn)
+name: Auto Deploy CRM to Subdomain (crm_vione.viconnect.vn)
 
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - 'deploy/crm/**'
-      - '.github/workflows/deploy-crm.yml'
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Build & Deploy ViOne CRM (crm.viconnect.vn)
+    name: Build & Deploy ViOne CRM (crm_vione.viconnect.vn)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -31,14 +29,16 @@ jobs:
           export NODE_OPTIONS="--max-old-space-size=4096"
           export VITE_APP_SCOPE="crm_platform"
           export VITE_APP_NAME="ViOne Connect CRM 5.0"
-          export VITE_PUBLIC_APP_URL="https://crm.viconnect.vn"
+          export VITE_PUBLIC_APP_URL="https://crm_vione.viconnect.vn"
           export NEST_API_URL="http://vione-crm-backend:4000"
           npm run build --prefix apps/vione_app_fe
 
-      - name: Build Docker Frontend Image
+      - name: Build Docker Frontend & Backend Images
         run: |
           docker build --no-cache -t vione-crm-frontend:latest -f deploy/crm/Dockerfile.frontend .
           docker save vione-crm-frontend:latest | gzip -1 > vione-crm-frontend.tar.gz
+          docker build --no-cache -t vione-crm-backend:latest -f Dockerfile.backend .
+          docker save vione-crm-backend:latest | gzip -1 > vione-crm-backend.tar.gz
 
       - name: Prepare Remote Directories via SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -48,7 +48,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            mkdir -p ~/vione-crm ~/ssl-proxy
+            mkdir -p ~/vione-crm ~/vione-ssl-proxy
 
       - name: Copy Built Artifacts via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -56,7 +56,7 @@ jobs:
           host: ${{ secrets.REMOTE_HOST || '14.225.217.232' }}
           username: ${{ secrets.REMOTE_USER || 'root' }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "vione-crm-frontend.tar.gz,deploy/crm/docker-compose.yml,deploy/crm/.env.production,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
+          source: "vione-crm-frontend.tar.gz,vione-crm-backend.tar.gz,deploy/crm/docker-compose.yml,deploy/crm/.env.production,deploy/crm/setup-crm-subdomain.sh,deploy/ssl/nginx.conf,deploy/ssl/docker-compose.ssl.yml,deploy/ssl/setup-ssl.sh"
           target: "vione_crm_deploy_temp"
 
       - name: Activate New Container & Reload Nginx Proxy
@@ -67,28 +67,41 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            # Move frontend image & compose
+            # Move frontend and backend images & compose
             cp -f ~/vione_crm_deploy_temp/vione-crm-frontend.tar.gz ~/vione-crm/ 2>/dev/null || true
+            cp -f ~/vione_crm_deploy_temp/vione-crm-backend.tar.gz ~/vione-crm/ 2>/dev/null || true
             cp -f ~/vione_crm_deploy_temp/deploy/crm/docker-compose.yml ~/vione-crm/ 2>/dev/null || true
             cp -f ~/vione_crm_deploy_temp/deploy/crm/.env.production ~/vione-crm/.env.crm 2>/dev/null || true
             cp -f ~/vione_crm_deploy_temp/deploy/crm/.env.production ~/vione-crm/.env 2>/dev/null || true
+            cp -f ~/vione_crm_deploy_temp/deploy/crm/setup-crm-subdomain.sh ~/vione-crm/ 2>/dev/null || true
             
-            # Move SSL & Nginx config
-            cp -f ~/vione_crm_deploy_temp/deploy/ssl/nginx.conf ~/ssl-proxy/ 2>/dev/null || true
-            cp -f ~/vione_crm_deploy_temp/deploy/ssl/docker-compose.ssl.yml ~/ssl-proxy/ 2>/dev/null || true
-            cp -f ~/vione_crm_deploy_temp/deploy/ssl/setup-ssl.sh ~/ssl-proxy/ 2>/dev/null || true
+            # Move SSL & Nginx config to ~/vione-ssl-proxy (Rule 5 Strict Proxy Separation)
+            cp -f ~/vione_crm_deploy_temp/deploy/ssl/nginx.conf ~/vione-ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_crm_deploy_temp/deploy/ssl/docker-compose.ssl.yml ~/vione-ssl-proxy/ 2>/dev/null || true
+            cp -f ~/vione_crm_deploy_temp/deploy/ssl/setup-ssl.sh ~/vione-ssl-proxy/ 2>/dev/null || true
             rm -rf ~/vione_crm_deploy_temp
 
-            # Load Docker image & Restart Frontend
+            # Load Docker images & Restart CRM Containers
             cd ~/vione-crm
-            docker load -i vione-crm-frontend.tar.gz
-            rm -f vione-crm-frontend.tar.gz
-            docker compose up -d --force-recreate crm-frontend
+            if [ -f vione-crm-frontend.tar.gz ]; then
+              docker load -i vione-crm-frontend.tar.gz
+              rm -f vione-crm-frontend.tar.gz
+            fi
+            if [ -f vione-crm-backend.tar.gz ]; then
+              docker load -i vione-crm-backend.tar.gz
+              rm -f vione-crm-backend.tar.gz
+            fi
+            docker compose up -d --force-recreate crm-frontend crm-backend
 
-            # Reload or recreate Nginx SSL proxy
-            cd ~/ssl-proxy
+            # Configure and reload host Nginx for crm_vione.viconnect.vn
+            sed -i 's/\r$//' setup-crm-subdomain.sh 2>/dev/null || true
+            bash setup-crm-subdomain.sh 2>&1 || true
+
+            # Reload or recreate Nginx SSL proxy container (ports 5445 / 5446)
+            cd ~/vione-ssl-proxy
             sed -i 's/\r$//' setup-ssl.sh 2>/dev/null || true
             bash setup-ssl.sh || docker compose -f docker-compose.ssl.yml restart 2>/dev/null || true
+
             echo "========================================================"
-            echo ">>> SUBDOMAIN https://crm.viconnect.vn/ DEPLOYED! <<<"
+            echo ">>> SUBDOMAIN https://crm_vione.viconnect.vn/ DEPLOYED! <<<"
             echo "========================================================"

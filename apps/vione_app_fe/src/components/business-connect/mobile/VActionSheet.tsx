@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Wallet,
   X,
+  Landmark,
   type LucideIcon,
 } from "lucide-react";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from "@/components/ui/drawer";
@@ -235,6 +236,33 @@ export function VActionSheet({
               descKey="bc.mobile.sheet.tile.privacy.desc"
               onClick={() => go("/connect-app/me")}
             />
+          </div>
+
+          {/* Bản Ứng Dụng Di Sản & Thể Thao ViConnect */}
+          <div className="mt-5 border-t border-[var(--bc-mobile-border)] pt-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#D8B282] px-1 flex items-center justify-between">
+              <span>HỆ SINH THÁI DI SẢN & THỂ THAO</span>
+              <span className="rounded bg-[#D8B282]/20 px-1.5 py-0.2 text-[9px] text-[#F6E1C3] font-bold">BẢN MỚI</span>
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                onOpenChange(false);
+                void navigate({ to: "/platform-app" as any });
+              }}
+              className="mt-2.5 w-full flex items-center justify-between p-3.5 rounded-2xl border border-[#D8B282]/40 bg-gradient-to-r from-[#121A2A] via-[#0A101D] to-[#121A2A] text-left hover:border-[#D8B282] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-black shadow-md">
+                  <Landmark className="h-5 w-5" />
+                </span>
+                <div>
+                  <div className="text-xs font-bold text-[#F6E1C3]">Mở Bản Ứng Dụng Di Sản & Thể Thao</div>
+                  <div className="text-[10px] text-muted-foreground">Bảo tàng số 3D • Giải đấu • Giải chạy & Timing RFID</div>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-[#D8B282]" />
+            </button>
           </div>
 
           {/* Vận hành doanh nghiệp chuẩn BRD */}

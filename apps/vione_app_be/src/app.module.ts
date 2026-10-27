@@ -24,6 +24,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { RolesModule } from './roles/roles.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SettingsModule } from './settings/settings.module';
+import { PlatformHubModule } from './platform-hub/platform-hub.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SettingsModule } from './settings/settings.module';
     RolesModule,
     AnalyticsModule,
     SettingsModule,
+    PlatformHubModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,7 @@
 # TÀI LIỆU ĐẶC TẢ YÊU CẦU PHẦN MỀM (SRS) TOÀN DIỆN HỆ THỐNG VÀ APP VIONE
 ## CHUẨN QUỐC TẾ IEEE 830 - PHÂN RÃ MECE CHI TIẾT KHÔNG BỎ SÓT CHỨC NĂNG
 **Dự án:** Hệ Thống Quản Trị Doanh Nghiệp Toàn Diện ViOne & Mạng Xã Hội Giao Thương Doanh Nhân B2B ViOne Connect  
-**Mã tài liệu:** `SRS-VIONE-MASTER-7.0` | **Ngày ban hành:** 12/10/2026 | **Phiên bản:** `7.0 Enterprise Master Release`  
+**Mã tài liệu:** `SRS-VIONE-MASTER-8.0` | **Ngày ban hành:** 27/10/2026 | **Phiên bản:** `8.0 Enterprise Master Release`  
 *(Kiến Trúc Chuẩn Hóa Toàn Diện Giữa Nền Tảng Web CRM ViOne và Ứng Dụng Di Động Native ViOne Connect (iOS & Android), Chuẩn Hóa Cân Đối Giao Diện UI/UX Text & Icon, Phân Quyền Phòng Ban Department RBAC, Bàn Giao Tự Động, Họp Ban 1-Chạm & Import/Export Excel/Word)*  
 **Đơn vị thực hiện:** Senior Business Analyst & Solution Architect Team — Tập Đoàn VioConnect
 
@@ -19,7 +19,11 @@
    - 2.2 Kiến Trúc Ứng Dụng Di Động Native ViOne Connect (apps/mobile_vione) Chuẩn App Store & Google Play
    - 2.3 Môi Trường Hoạt Động & Yêu Cầu Hạ Tầng (Operating Environment)
 3. [PHẦN 3: ĐẶC TẢ YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)](#phần-3-đặc-tả-yêu-cầu-chức-năng-chi-tiết-functional-requirements)
-   - *Phân hệ I: Web CRM ViOne Platform (25 Modules Doanh Nghiệp)*
+   - *Phân hệ I: Web CRM ViOne Platform (29 Modules Doanh Nghiệp Chuẩn Hóa)*
+     * FR-CRM-26: Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (`/documents`)
+     * FR-CRM-27: Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp Multi-tenant RBAC (`CompanyPermissionsTab`)
+     * FR-CRM-28: Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% CSDL PostgreSQL (`/settings`)
+     * FR-CRM-29: Điều Hướng Phân Tách Doanh Nghiệp & Tooltip Đa Điểm Sidebar (`Sidebar.tsx`)
    - *Phân hệ II: Ứng Dụng Di Động Native ViOne Connect (iOS & Android) (13 Phân Hệ Toàn Năng)*
      * FR-APP-01: Header Thương Hiệu Dính & Lời Chào Năng Động (`StickyBrandHeader`)
      * FR-APP-02: Thẻ Doanh Nhân ViOne & Trạng Thái Định Vị GPS (`EntrepreneurCard`, `LocationBanner`)
@@ -34,7 +38,7 @@
      * FR-APP-11: Cơ Chế Bàn Giao Tự Động (Auto-Handover Engine & Bulk Reassignment)
      * FR-APP-12: Họp Ban Trực Tuyến 1-Chạm & Import/Export Excel/Word (`InstantMeetingModal`)
      * FR-APP-13: Trang Cá Nhân "Tôi" - Danh Tính Số Titanium, Showcase & 8 Ngôn Ngữ (`ProfileScreen`)
-     * FR-APP-14: Siêu Trợ Lý Điều Khiển Giọng Nói AI Copilot 6.0 (`ViOneVoiceAssistantModal`)
+     * FR-APP-14: Siêu Trợ Lý Điều Khiển Giọng Nói ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 & Meta Llama 3.3) (`ViOneVoiceAssistantModal`)
 4. [PHẦN 4: QUY CHUẨN KỸ THUẬT CÂN ĐỐI UI/UX, TEXT, ICON & SAFE AREA INSETS TRÊN MOBILE NATIVE APP](#phần-4-quy-chuẩn-kỹ-thuật-cân-đối-uiux-text-icon--safe-area-insets-trên-mobile-native-app)
 5. [PHẦN 5: YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS - NFR)](#phần-5-yêu-cầu-phi-chức-năng-non-functional-requirements---nfr)
    - 5.1 Hiệu Năng Hệ Thống (Performance)
@@ -53,8 +57,8 @@ Tài liệu Software Requirements Specification (SRS) này được biên soạn
 
 #### 1.2 Phạm Vi Dự Án
 Phạm vi dự án bao gồm hai trụ cột công nghệ hợp nhất:
-1. **Nền Tảng Quản Trị Doanh Nghiệp ViOne CRM (Web Portal):** Bộ công cụ quản trị B2B toàn diện gồm Quản lý quan hệ khách hàng, Phễu bán hàng Kanban Deals, Quản trị quy trình tự động, Chấm công định vị GPS & FaceID, Phê duyệt tài chính 3 cấp, Đối soát ngân hàng VietQR, Sàn giao thương B2B, Trí tuệ nhân tạo AI Copilot 6.0, và Ma trận phân quyền 7x6 theo kiến trúc Multi-Tenant (25 Phân hệ).
-2. **Ứng Dụng Di Động Native ViOne Connect (iOS trên App Store & Android trên Google Play):** Ứng dụng di động cao cấp dành cho lãnh đạo C-Level và nhân sự/đối tác B2B, tích hợp danh thiếp số NFC, Thẻ doanh nhân mở Bottom Sheet vuốt tay xuống, Sàn kết nối cung cầu B2B, Kênh chat trực tiếp gửi thẻ đề xuất hẹn gặp ghim lịch điều hành, Phân hệ cộng đồng hợp nhất All-in-One, Phân quyền phòng ban Department RBAC, Bàn giao công việc tự động Auto-Handover, Họp ban trực tuyến 1-chạm, Import/Export Word/Excel, Nhật ký ghi âm khoảnh khắc điều hành, Trợ lý AI Copilot 6.0 đa tác vụ tìm kiếm bằng giọng nói và quét đối tác quanh đây, Trung tâm duyệt hồ sơ 1-chạm di động và giải pháp cài đặt 1-chạm độc quyền cho iOS (.mobileconfig) (13 Phân hệ).
+1. **Nền Tảng Quản Trị Doanh Nghiệp ViOne CRM (Web Portal):** Bộ công cụ quản trị B2B toàn diện gồm Quản lý quan hệ khách hàng, Phễu bán hàng Kanban Deals, Quản trị quy trình tự động, Chấm công định vị GPS & FaceID, Phê duyệt tài chính 3 cấp, Đối soát ngân hàng VietQR, Sàn giao thương B2B, Trí tuệ nhân tạo ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 & Meta Llama 3.3), và Ma trận phân quyền 7x6 theo kiến trúc Multi-Tenant (25 Phân hệ).
+2. **Ứng Dụng Di Động Native ViOne Connect (iOS trên App Store & Android trên Google Play):** Ứng dụng di động cao cấp dành cho lãnh đạo C-Level và nhân sự/đối tác B2B, tích hợp danh thiếp số NFC, Thẻ doanh nhân mở Bottom Sheet vuốt tay xuống, Sàn kết nối cung cầu B2B, Kênh chat trực tiếp gửi thẻ đề xuất hẹn gặp ghim lịch điều hành, Phân hệ cộng đồng hợp nhất All-in-One, Phân quyền phòng ban Department RBAC, Bàn giao công việc tự động Auto-Handover, Họp ban trực tuyến 1-chạm, Import/Export Word/Excel, Nhật ký ghi âm khoảnh khắc điều hành, Trợ lý ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 & Meta Llama 3.3) đa tác vụ tìm kiếm bằng giọng nói và quét đối tác quanh đây, Trung tâm duyệt hồ sơ 1-chạm di động và giải pháp cài đặt 1-chạm độc quyền cho iOS (.mobileconfig) (13 Phân hệ).
 
 #### 1.3 Thuật Ngữ Và Viết Tắt
 - **CRM:** Customer Relationship Management (Quản lý quan hệ khách hàng).
@@ -74,7 +78,7 @@ Phạm vi dự án bao gồm hai trụ cột công nghệ hợp nhất:
 Hệ thống chuẩn hóa cấp bậc quyền lực và phân quyền dữ liệu chặt chẽ theo 2 nhóm người dùng:
 1. **Role 1 (Lãnh Đạo, Giám Đốc, CEO):**
    - ViOne gói gọn toàn bộ công việc điều hành vào một ứng dụng di động tinh gọn.
-   - Trí tuệ nhân tạo AI Copilot 6.0 đóng vai trò như **Thư ký riêng toàn năng**: (a) Giao việc thông minh cho nhân sự bằng giọng nói hoặc chat lệnh ngắn, (b) Giám sát quá trình và tiến độ công việc của toàn bộ nhân viên công ty, (c) Quản trị và tối ưu hóa lịch trình, cảnh báo xung đột và bảo vệ sức khỏe CEO, (d) Mở rộng mạng lưới kết nối đối tác B2B cấp cao.
+   - Trí tuệ nhân tạo ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 & Meta Llama 3.3) đóng vai trò như **Thư ký riêng toàn năng**: (a) Giao việc thông minh cho nhân sự bằng giọng nói hoặc chat lệnh ngắn, (b) Giám sát quá trình và tiến độ công việc của toàn bộ nhân viên công ty, (c) Quản trị và tối ưu hóa lịch trình, cảnh báo xung đột và bảo vệ sức khỏe CEO, (d) Mở rộng mạng lưới kết nối đối tác B2B cấp cao.
    - **Quy chuẩn Chấm công Lãnh đạo:** Tuyệt đối không để tính năng tự chấm công cá nhân cho CEO. Chức năng chuyển thành chế độ **Theo Dõi Giờ Giấc & Chuyên Cần Nhân Sự Doanh Nghiệp**: Thống kê tỷ lệ có mặt thời gian thực, chỉ hiển thị khi có cộng đồng công ty và có nhân viên trực thuộc.
 2. **Role 2 (Nhân Viên Nội Bộ / Bạn Bè, Đối Tác):**
    - **Nhân viên:** Nhận việc do sếp giao qua thông báo chuông, bấm nút **`[⚡ TIẾN HÀNH NHẬN VIỆC]`** để tiếp nhận, cập nhật thanh tiến độ % (0-100%) kèm báo cáo giải trình, nộp tài liệu nghiệm thu Word/Excel, chuyển giao việc có lý do.
@@ -148,6 +152,37 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 ---
 
 #### Phân Hệ II: Ứng Dụng Di Động Native ViOne Connect (iOS & Android) (13 Phân Hệ Toàn Năng)
+
+
+##### FR-CRM-26: Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (`/documents`)
+- **Mô tả:** Hệ thống lưu trữ, tổ chức và phân quyền tài liệu số doanh nghiệp trực quan tương tự Google Drive, tích hợp gắn nhãn thẻ danh mục, liên kết hồ sơ thực thể (deal, customer, contract, employee) và chia sẻ an toàn.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Cấu trúc cây thư mục đa tầng (Nested Folders) hiển thị qua thanh Breadcrumbs định vị trực quan: `Gốc / Phòng Ban / Năm 2026 / Hợp Đồng`.
+  - Hỗ trợ tải lên đa tệp (Multi-file Upload) với thanh tiến độ thời gian thực, lưu trữ trên MinIO S3 Object Storage với cơ chế mã hóa AES-256.
+  - Phân loại tài liệu đa dạng: Hợp đồng kinh tế, Hồ sơ pháp lý, Đề xuất dự án, Báo giá, Tài liệu nội bộ.
+  - Tính năng ghim tài liệu quan trọng lên đầu danh sách, gắn cờ yêu thích và tìm kiếm toàn văn (Full-text Search).
+  - Tích hợp liên kết thực thể (Entity Binding): Gắn tài liệu trực tiếp vào một Khách hàng, Hợp đồng, Nhân viên hoặc Cơ hội bán hàng cụ thể.
+
+##### FR-CRM-27: Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp Multi-tenant RBAC (`CompanyPermissionsTab`)
+- **Mô tả:** Cơ chế kiểm soát quyền truy cập độc lập theo từng tenant doanh nghiệp (`company_id`), cho phép Quản trị viên Doanh nghiệp thiết lập quyền hạn chi tiết cho từng vai trò và nhân sự mà không ảnh hưởng tới các doanh nghiệp khác trong hệ thống.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Ma trận phân quyền đa tầng: Phân cấp quyền Xem (Read), Thêm (Create), Sửa (Update), Xóa (Delete), Phê duyệt (Approve) và Xuất báo cáo (Export).
+  - Phân quyền theo vai trò (Role-based) và phân quyền cá nhân hóa (User-specific Overrides).
+  - Cách ly dữ liệu hoàn toàn (Data Isolation): Mọi truy vấn CSDL đều được ràng buộc điều kiện `company_id` tại tầng Repository & Prisma Middleware, đảm bảo dữ liệu bí mật kinh doanh không bị rò rỉ chéo.
+
+##### FR-CRM-28: Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% CSDL PostgreSQL (`/settings`)
+- **Mô tả:** Trung tâm cấu hình thông số vận hành của doanh nghiệp và nền tảng, lưu trữ bền vững 100% vào các bảng CSDL PostgreSQL (`system_settings`, `company_configs`), xóa bỏ hoàn toàn dữ liệu ảo.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Cấu hình thông tin pháp lý doanh nghiệp: Tên công ty, Mã số thuế, Địa chỉ trụ sở, Đại diện pháp luật, Logo thương hiệu mạ vàng.
+  - Cấu hình tài khoản ngân hàng nhận tiền VietQR: Số tài khoản, Tên chủ tài khoản, Ngân hàng thụ hưởng, Khóa bảo mật đối soát tự động.
+  - Cấu hình giờ làm việc & Bán kính chấm công GPS (mặc định 50 mét quanh tọa độ văn phòng).
+  - Cấu hình thông báo Email & Webhook tích hợp với các hệ thống bên ngoài.
+
+##### FR-CRM-29: Điều Hướng Phân Tách Doanh Nghiệp & Tooltip Đa Điểm Sidebar (`Sidebar.tsx`)
+- **Mô tả:** Cải tiến kiến trúc thanh điều hướng Sidebar Web CRM: Phân tách rõ ràng giữa nhóm menu nghiệp vụ của Doanh nghiệp đang chọn và nhóm Quản trị nền tảng (Platform Hub); Tích hợp Tooltip viền vàng chống tràn chữ khi thu gọn.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Loại bỏ hoàn toàn component cồng kềnh `EnterpriseTreeMenu.tsx`, chuyển sang cấu trúc phân nhóm phẳng có tiêu đề phân cách rõ ràng.
+  - Chế độ thu gọn (Collapsed Sidebar): Khi người dùng thu gọn thanh điều hướng để mở rộng không gian làm việc, việc rê chuột vào từng icon sẽ kích hoạt Tooltip nổi bật màu đen viền vàng Champagne Gold hiển thị tên menu đầy đủ, khắc phục triệt để lỗi tràn chữ và che khuất nội dung.
 
 ##### FR-APP-01: Header Thương Hiệu Dính (`StickyBrandHeader`)
 - **Mô tả:** Cố định trên đỉnh tất cả các màn hình, hiển thị nhận diện thương hiệu mạ vàng đẳng cấp.
@@ -276,12 +311,38 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
   - Bộ chuyển đổi 8 ngôn ngữ quốc tế (VI, EN, KM, MY, LO, JA, KO, ZH).
   - Trung tâm bảo mật tài khoản 2FA, Quản lý thẻ thông minh NFC, Ví thẻ lưu vCard, Cài đặt quyền riêng tư.
 
-##### FR-APP-14: Siêu Trợ Lý Điều Khiển Giọng Nói AI Copilot 6.0
+##### FR-APP-14: Siêu Trợ Lý Điều Khiển Giọng Nói ViOne AI 6.0 (OpenRouter AI Gateway - DeepSeek-V3 & Meta Llama 3.3)
 - **Mô tả:** Trợ lý điều khiển bằng giọng nói tự nhiên 100%.
 - **Thành phần:**
   - Dải sóng âm 16-Bar Holographic kết hợp vòng hào quang thở Breathing Aura Champagne Gold.
   - Bóc tách lệnh thoại tiếng Việt tự động: Chấm công, Duyệt chi, Giao việc, Xem tiến độ, Xem lịch trình, Mở mã QR cá nhân, Quét mã QR, Chuyển tab.
   - Tự động tạo và xuất báo cáo tài chính, tiến độ ra các tệp Excel (`.xlsx`), Word (`.docx`), PDF (`.pdf`).
+
+
+
+##### FR-APP-18: Không Gian Cộng Đồng Nội Bộ Doanh Nghiệp Biệt Lập (`CommunityScreen`, `CompanyWorkspaceModal`)
+- **Mô tả:** Không gian tương tác và truyền thông nội bộ độc quyền dành riêng cho cán bộ nhân viên của từng doanh nghiệp, tách biệt hoàn toàn với mạng lưới B2B Public.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Bảng tin nội bộ doanh nghiệp: Đăng thông báo của Ban Giám Đốc, chính sách nhân sự, tin tức vinh danh và văn hóa doanh nghiệp.
+  - Phòng ban trực thuộc: Danh sách các phòng ban với danh bạ thành viên, sơ đồ tổ chức và trưởng bộ phận phụ trách.
+  - Bảo mật nội bộ: Nhân sự thuộc công ty nào chỉ truy cập và nhìn thấy dữ liệu nội bộ của công ty đó, kiểm soát nghiêm ngặt qua token JWT và `company_id`.
+
+##### FR-APP-19: Đăng Ký & Kích Hoạt Gói Doanh Nghiệp In-App Qua VietQR Napas 24/7 (`PackageRegistrationModal`)
+- **Mô tả:** Quy trình nâng cấp gói bản quyền doanh nghiệp trực tiếp trên ứng dụng di động Native và PWA, thanh toán tức thì qua mã VietQR Napas 24/7 tự động gạch nợ.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Modal đăng ký gói sang trọng phong cách Obsidian Gold: Lựa chọn các gói Starter, Growth, Enterprise.
+  - Tùy chọn chu kỳ thanh toán: 1 tháng hoặc 1 năm (tặng thêm 2 tháng ưu đãi).
+  - Tự động sinh mã VietQR chuẩn Napas 24/7 với số tiền chính xác và cú pháp chuyển khoản định danh duy nhất.
+  - Webhook nhận tín hiệu biến động số dư ngân hàng: Tự động kích hoạt gói trong 1 giây, gửi email thông báo và mở khóa toàn bộ quyền hạn tương ứng trên Web CRM.
+
+##### FR-APP-20: Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) & GDPR (`SecuritySettingsScreen`, `AccountDeletionModal`)
+- **Mô tả:** Bộ tính năng bảo mật tối cao dành cho người dùng di động, bao gồm xác thực sinh trắc học FaceID/TouchID và tính năng xóa tài khoản vĩnh viễn bắt buộc của Apple.
+- **Thành phần & Nghiệp vụ cốt lõi:**
+  - Đăng nhập sinh trắc học FaceID / Vân tay lưu trữ an toàn trong iOS Keychain và Android KeyStore.
+  - Luồng xóa tài khoản vĩnh viễn (Permanent Account Deletion) đáp ứng 100% tiêu chuẩn Apple App Store Guideline 5.1.1(v):
+    * Cảnh báo rõ ràng và chi tiết về hậu quả việc xóa tài khoản (mất toàn bộ dữ liệu, danh thiếp số, hợp đồng, lịch sử giao dịch).
+    * Xác nhận bảo mật 2 bước: Yêu cầu người dùng nhập lại mật khẩu hiện tại hoặc mã OTP xác thực.
+    * Thực thi xóa an toàn: Backend thực hiện vô hiệu hóa tài khoản, thu hồi mọi token truy cập, xóa hoặc ẩn danh hóa dữ liệu cá nhân theo tiêu chuẩn GDPR trong CSDL PostgreSQL.
 
 ---
 
@@ -334,7 +395,7 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 1. **Cổng Thanh Toán VietQR / PayOS:** Tích hợp Webhook nhận thông báo biến động số dư tức thời, tự động gạch nợ hóa đơn trong 1 giây.
 2. **Hệ Thống Lưu Trữ MinIO S3:** Cung cấp Pre-signed URL cho các tác vụ tải lên ảnh bìa, avatar, tài liệu Word/Excel, video họp ban.
 3. **Hạ Tầng Giao Tiếp WebRTC & Socket.IO:** Máy chủ phân tán truyền tín hiệu thoại, video cuộc gọi P2P và thông báo đẩy (Push Notifications).
-4. **Hệ Thống Trí Tuệ Nhân Tạo AI Copilot:** Kết nối API phân tích ngôn ngữ tự nhiên, OCR bóc tách danh thiếp và thuật toán ghép cặp đối tác B2B Matcher.
+4. **Hệ Thống Trí Tuệ Nhân Tạo ViOne AI (OpenRouter Gateway):** Kết nối API phân tích ngôn ngữ tự nhiên, OCR bóc tách danh thiếp và thuật toán ghép cặp đối tác B2B Matcher.
 5. **Hệ Thống Email Chào Mừng Kích Hoạt (SMTP Google):** Gửi email thông báo tạo tài khoản thành công tự động từ `vumikasa6@gmail.com` qua Google SMTP SSL (`smtp.gmail.com:465`) khi người dùng đăng ký có email.
 
 ---
@@ -356,10 +417,35 @@ Cả hai ứng dụng chia sẻ chung 100% hợp đồng API Backend NestJS (`ap
 | FR-APP-11 | Cơ Chế Bàn Giao Tự Động | `WorkflowModal.tsx` | `POST /tasks/:id/handover` | Đạt 100% |
 | FR-APP-12 | Họp Ban 1-Chạm & Excel/Word | `WorkflowModal.tsx` | `POST /meetings/instant-room` | Đạt 100% |
 | FR-APP-13 | Trang Cá Nhân "Tôi" | `ProfileScreen.tsx` | `GET /connect-app/me` | Đạt 100% |
-| FR-APP-14 | Trợ Lý Giọng Nói AI Copilot| `ViOneVoiceAssistantModal.tsx` | `POST /api/ai/chat` | Đạt 100% |
+| FR-APP-14 | Trợ Lý Giọng Nói ViOne AI (OpenRouter Gateway)| `ViOneVoiceAssistantModal.tsx` | `POST /api/ai/chat` | Đạt 100% |
 | FR-APP-15 | Kéo Thả Di Chuyển & Cắt Ảnh | `ImagePanCropModal.tsx` | N/A (Client Pan/Zoom/Crop) | Đạt 100% |
 | FR-APP-16 | Trang Profile Công Khai Khi Quét QR | `p.$identifier.tsx` | `GET /connect-app/public/profile/:id` | Đạt 100% |
 | FR-APP-17 | Phân Lập Cổng 5445 (App Mobile) & 5446 (CRM) | `nginx.conf` & `__root.tsx` | N/A (Subdomain https://vione.viconnect.vn) | Đạt 100% |
+| FR-CRM-26 | Kho Lưu Trữ Tài Liệu Google Drive | `DocumentsScreen.tsx` / `documents.service.ts` | `GET /documents`, `POST /documents/upload` | Đạt 100% |
+| FR-CRM-27 | Phân Quyền Biệt Lập Doanh Nghiệp | `CompanyPermissionsTab.tsx` | `GET /companies/:id/permissions` | Đạt 100% |
+| FR-CRM-28 | Cấu Hình Hệ Thống Thực Tế 100% CSDL | `SettingsScreen.tsx` / `settings.service.ts` | `GET /settings`, `PUT /settings` | Đạt 100% |
+| FR-CRM-29 | Sidebar Tooltip Viền Vàng Chống Tràn | `Sidebar.tsx` | N/A (Client UI/UX Component) | Đạt 100% |
+| FR-APP-18 | Không Gian Cộng Đồng Doanh Nghiệp | `CommunityScreen.tsx` / `community.service.ts` | `GET /community/company-workspace` | Đạt 100% |
+| FR-APP-19 | Đăng Ký Gói In-App VietQR 24/7 | `PackageRegistrationModal.tsx` | `POST /packages/register`, `POST /vietqr` | Đạt 100% |
+| FR-APP-20 | Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple | `AccountDeletionModal.tsx` / `users.service.ts` | `DELETE /connect-app/account` | Đạt 100% |
+| FR-PLAT-01 | ViOne Heritage (Số hóa Di sản & VR360) | `HeritageDetailScreen.tsx` / `heritage.service.ts` | `GET /platform/heritage`, `GET /platform/heritage/:id/vr` | Đạt 100% (ViConnect Chủ Quản) |
+| FR-PLAT-02 | ViOne Museum (Bảo tàng số & NFC 1-Chạm) | `MuseumExplorerScreen.tsx` / `museum.service.ts` | `GET /platform/museums`, `GET /platform/artifacts/:nfc` | Đạt 100% (ViConnect Chủ Quản) |
+| FR-PLAT-03 | ViOne Sport (Giải đấu đa môn & Bracket) | `SportHubScreen.tsx` / `sport.service.ts` | `GET /platform/sport/tournaments`, `GET /sport/brackets`| Đạt 100% (ViConnect Chủ Quản) |
+| FR-PLAT-04 | ViOne Run (Giải chạy, Timing RFID & BIB) | `RunHubScreen.tsx` / `run.service.ts` | `GET /platform/run/races`, `POST /run/timing-rfid` | Đạt 100% (ViConnect Chủ Quản) |
+| FR-PLAT-05 | ViOne Heritage Run (Giải chạy Di sản) | `HeritageRunPortal.tsx` / `heritage-run.service.ts` | `GET /platform/heritage-run/checkpoints` | Đạt 100% (ViConnect Chủ Quản) |
 
 ---
-*Tài liệu SRS Master 7.1 được chuẩn hóa và phê duyệt bởi Ban Kiến Trúc Công Nghệ VioConnect.*
+
+### PHẦN 8: QUY CHUẨN PHÂN ĐỊNH RANH GIỚI QUẢN TRỊ NỀN TẢNG VICONNECT
+1. **Tính độc lập với Doanh nghiệp:** Toàn bộ 4 phân hệ ViOne Heritage, ViOne Museum, ViOne Sport và ViOne Run thuộc quyền sở hữu trí tuệ, cơ sở dữ liệu và hạ tầng điều hành của **ViConnect Central Platform** (Hệ sinh thái Nền tảng Quốc gia).
+2. **Vai trò Doanh nghiệp:** Doanh nghiệp trong CRM Tenant tuyệt đối KHÔNG có quyền sở hữu dữ liệu hoặc can thiệp cấu trúc di sản, bảo tàng hay điều lệ giải thể thao. Doanh nghiệp chỉ tham gia theo các cơ chế:
+   - Nhà tài trợ (Sponsorship) đặt biển hiệu, logo truyền thông.
+   - Đoàn thể thao doanh nghiệp (Corporate Delegation) cử đội thi đấu hoặc nhân viên tham gia chạy bộ.
+   - Đơn vị đồng hành trách nhiệm xã hội (CSR Partner).
+3. **Mô hình Dịch vụ Tương thích Liên hoàn (Cross-Compatibility):**
+   - 1 tài khoản công dân số ViOne ID sử dụng xuyên suốt cho cả Thể thao (BIB, thành tích Run, rank Sport) và Văn hóa (vé Bảo tàng, con dấu Di sản).
+   - Tích hợp cổng soát vé đa năng ViOne Ticket (QR/NFC).
+   - Thanh toán lệ phí và vé tự động qua VietQR Napas 24/7 gạch nợ tức thời.
+
+---
+*Tài liệu SRS Master 8.5 được chuẩn hóa và phê duyệt chính thức bởi Ban Kiến Trúc Công Nghệ ViConnect.*

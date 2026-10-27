@@ -170,6 +170,22 @@
   * **Trung tâm Thống kê Báo cáo Nền tảng Toàn Diện (`/statistics`)**: Lấy dữ liệu thực từ `GET /api/companies/platform-reports`, hiển thị KPI Cards, Biểu đồ cột (Bar Chart) tăng trưởng 6 tháng, Biểu đồ tròn (Pie Chart) cơ cấu gói cước, Cây đơn vị (Organization Hierarchy Tree) từ Tập đoàn ViConnect đến các Khối Nghiệp vụ và Cộng đồng Doanh nghiệp thành viên; chia thành các tab chuyên sâu: Báo cáo Tài khoản, Báo cáo Tài liệu Pháp lý, Báo cáo Dòng tiền (MRR, ARR).
   * **Sidebar ViConnect Chuyên Biệt**: Trang bị Trợ lý AI Nền tảng, Nhắn tin trao đổi (tạo nhóm), Quản lý cuộc họp (CRUD), và Quản lý công việc nội bộ (CRUD).
 
+## -0.10. Quy Chuẩn Agent Phân Tách Triển Khai Subdomain & Môi Trường Server (STRICT SUBDOMAIN & ENVIRONMENT DEPLOYMENT ISOLATION)
+- **PHÂN ĐỊNH TUYỆT ĐỐI GIỮA HAI MÔI TRƯỜNG DEV VÀ SUBDOMAIN PRODUCTION**:
+  - **Môi Trường Subdomain Production (Cổng Chuẩn 80 & 443 SSL)**:
+    * **ViOne PWA App**: Subdomain chính thức `https://vione.viconnect.vn/`. Điều phối qua kịch bản `.\deploy-subdomain-vione.ps1` hoặc `.\deploy.ps1 -Target subdomain-vione`. Tự động kích hoạt khi push Git qua GitHub Actions `.github/workflows/deploy-vione.yml`.
+    * **ViOne CRM Enterprise**: Subdomain chính thức `https://crm_vione.viconnect.vn/` (cùng alias `crm.viconnect.vn`). Điều phối qua kịch bản `.\deploy-subdomain-crm.ps1` hoặc `.\deploy.ps1 -Target subdomain-crm`. Tự động kích hoạt khi push Git qua GitHub Actions `.github/workflows/deploy-crm.yml`.
+  - **Phân Tách Proxy Độc Lập Giữa CEO 1983 và ViOne (STRICT PROXY SEPARATION)**:
+    * `ceo1983-ssl-proxy`: Container proxy của riêng hiệp hội CEO 1983 (quản lý các cổng 5443, 5444).
+    * `vione-ssl-proxy`: Container proxy độc lập của riêng hệ sinh thái ViOne (quản lý các cổng 5445 ViOne App và 5446 ViOne CRM).
+    * **CẤM DÙNG CHUNG PROXY**: ViOne phải tách riêng hoàn toàn thư mục deploy (`deploy/ssl/` -> `~/vione-ssl-proxy`), compose, ports và upstream.
+  - **Môi Trường Server Dev (Cổng Chuyên Biệt Kèm Port Trong URL)**:
+    * **ViOne App Dev (Cổng 5445 HTTPS / 5010 HTTP)**: Triển khai qua `.\deploy-vione.ps1` trỏ URL `https://dev-vione.14-225-217-232.sslip.io:5445`.
+    * **ViOne CRM Dev (Cổng 5446 HTTPS / 5006 HTTP)**: Triển khai qua `.\deploy-crm.ps1` trỏ URL `https://dev-vione-crm.14-225-217-232.sslip.io:5446`.
+  - **Trách Nhiệm Của Agent Triển Khai (.ps1 & GitHub Actions)**:
+    * Trước khi build, BẮT BUỘC xác định đúng `TargetEnv` (`prod` cho subdomain, `dev` cho dev server) để nạp biến môi trường `VITE_PUBLIC_APP_URL` và `VITE_APP_SCOPE` chính xác.
+    * Khi cần triển khai toàn diện, dùng Master Hub `.\deploy.ps1` với các cờ tham số rõ ràng. Tuyệt đối không nhầm lẫn giữa URL Dev và URL Subdomain Production.
+
 ## 0. Quy Tắc Bắt Buộc: Đồng Bộ Hai Bản App Native ViOne & PWA ViOne (STRICT DUAL-APP PARITY)
 - **BẮT BUỘC SỬA ĐỒNG BỘ CẢ 2 BẢN KHI CHỈNH SỬA APP (Giống như quy tắc cấm tự động push git)**:
   - Khi có bất kỳ yêu cầu sửa lỗi, nâng cấp tính năng, chỉnh sửa giao diện hay luồng nghiệp vụ trên ứng dụng ViOne, BẮT BUỘC phải thực hiện đồng thời trên **CẢ 2 BẢN**: Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).
@@ -1753,6 +1769,27 @@ The project is deployed to a remote server (`14.225.217.232`) with 2 primary pro
        * Toàn bộ tài liệu cũ/phân mảnh đã được dọn dẹp sạch sẽ, chỉ bảo lưu nguyên vẹn 100% các file Trình chiếu (Slide) và Hướng dẫn sử dụng (HDSD).
      - **3) Nâng Cấp Bảng Tiến Độ Công Việc WBS ViOne**:
        * Toàn bộ 3 file Excel tiến độ (`docs/TIEN_DO_CONG_VIEC_HE_THONG_VA_APP_VIONE.xlsx`, `apps/vione_app_fe/public/docs/TIEN_DO_CONG_VIEC_HE_THONG_VA_APP_VIONE.xlsx`, `apps/vione_app_fe/public/docs/TIEN_DO_CONG_VIEC_VIONE.xlsx`) được mở rộng thêm phân hệ WBS 5.0 đến 5.6 bao quát toàn bộ các chức năng mới (Phân quyền phòng ban RBAC, Bàn giao việc tự động, Báo cáo & Giao việc bằng Word/Excel, Họp ban WebRTC 1-chạm, Cân đối UI/UX Native và Master BRD/SRS 7.0).
-
-
-
+226. **Quy Chuẩn Kho Lưu Trữ Google Drive, Multi-tenant RBAC Doanh Nghiệp, Cấu Hình PostgreSQL Thực Tế 100%, Đăng Ký Gói In-App VietQR 24/7, Xóa Tài Khoản Apple Guideline 5.1.1(v) & Bộ Tài Liệu Master v8.0 (STRICT ENTERPRISE DRIVE, ISOLATED RBAC, PERSISTENT SETTINGS, APPLE COMPLIANCE & MASTER 8.0 DOCUMENTATION)**:
+     - **1) Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (`/documents` / `DocumentsScreen.tsx`)**:
+       * Cấu trúc thư mục đa tầng (Nested Folders) hiển thị qua thanh Breadcrumbs định vị trực quan (`Gốc / Phòng Ban / 2026 / Hợp Đồng`), hỗ trợ chuyển thư mục 1-click.
+       * Tải lên đa tệp (Multi-file Upload) với thanh tiến độ thời gian thực, lưu trữ trên MinIO S3 Object Storage mã hóa AES-256.
+       * Phân loại danh mục tài liệu (Hợp đồng, Báo giá, Hồ sơ pháp lý, Đề xuất dự án), gắn nhãn badge màu vàng Champagne Gold.
+       * Hỗ trợ Ghim tài liệu quan trọng lên đầu danh sách và liên kết thực thể (Entity Binding: gắn vào Deal, Khách hàng, Hợp đồng, Nhân sự).
+     - **2) Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp Multi-tenant RBAC (`CompanyPermissionsTab.tsx`)**:
+       * Cơ chế phân quyền độc lập theo từng tenant doanh nghiệp (`company_id`), Quản trị viên doanh nghiệp tự cấu hình ma trận phân quyền 6 cờ quyền (Xem, Thêm, Sửa, Xóa, Duyệt, Xuất file) cho từng vai trò nội bộ mà không ảnh hưởng tới doanh nghiệp khác.
+       * Đảm bảo cách ly dữ liệu kinh doanh an toàn tuyệt đối (Data Isolation) ở tầng Repository và Prisma Middleware, 100% câu truy vấn đều ràng buộc `company_id`.
+     - **3) Cài Đặt Hệ Thống Thực Tế 100% CSDL PostgreSQL (`/settings` / `SettingsScreen.tsx`)**:
+       * Xóa bỏ hoàn toàn mock data hoặc cấu hình tạm thời trong bộ nhớ; 100% cấu hình thông tin doanh nghiệp, tài khoản ngân hàng thụ hưởng VietQR (STK, Chủ TK, Ngân hàng, Secret gạch nợ) và bán kính chấm công GPS văn phòng (mặc định 50m) lưu bền vững vào CSDL PostgreSQL (`system_settings`, `company_configs`).
+     - **4) Tinh Gọn Sidebar & Tooltip Đa Điểm Viền Vàng (`Sidebar.tsx`)**:
+       * Phân tách thanh điều hướng Sidebar Web CRM thành 2 khu vực rõ ràng: Nhóm Doanh Nghiệp (các phân hệ của công ty đang chọn) và Nhóm Quản Trị Nền Tảng (Platform Hub). Loại bỏ hoàn toàn component cồng kềnh `EnterpriseTreeMenu.tsx`.
+       * Khi thu gọn Sidebar, rê chuột vào icon kích hoạt Tooltip màu đen thạch anh Obsidian với viền vàng Champagne Gold hiển thị tên phân hệ đầy đủ, chống tràn chữ và che khuất nội dung.
+     - **5) Đăng Ký Gói Cước In-App VietQR Napas 24/7 (`PackageRegistrationModal.tsx`)**:
+       * Hỗ trợ đăng ký và nâng cấp gói cước doanh nghiệp trực tiếp trên ứng dụng di động Native và PWA qua `PackageRegistrationModal` phong cách Obsidian Gold.
+       * Tự động sinh mã VietQR Napas 24/7 động chứa số tiền chính xác; Webhook ngân hàng tự động gạch nợ trong 1 giây và kích hoạt toàn bộ quyền hạn tức thời.
+     - **6) Trung Tâm Bảo Mật & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) & GDPR**:
+       * Tích hợp xác thực sinh trắc học FaceID / TouchID an toàn qua iOS Keychain và Android KeyStore.
+       * Cung cấp luồng Xóa tài khoản vĩnh viễn trực tiếp trong ứng dụng di động: Cảnh báo chi tiết rủi ro mất dữ liệu, yêu cầu xác nhận 2 bước bằng mật khẩu hiện tại hoặc OTP; Backend thực thi transaction vô hiệu hóa tài khoản, thu hồi token và ẩn danh hóa dữ liệu cá nhân theo GDPR trong PostgreSQL.
+     - **7) Trí Tuệ Nhân Tạo ViOne AI 6.0 Qua OpenRouter AI Gateway**:
+       * Thay thế hoàn toàn từ khóa Copilot bằng OpenRouter AI Gateway (DeepSeek-V3 LLM & Meta Llama 3.3) hỗ trợ giao việc giọng nói, bóc tách danh thiếp OCR và khuyến nghị đối tác B2B.
+     - **8) Bộ Tài Liệu Master v8.0 Đồng Bộ Toàn Diện**:
+       * Đồng bộ nhất quán 100% giữa mã nguồn thực tế và toàn bộ các tài liệu kỹ thuật: `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (15MB - 36 ảnh live server), `SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN` (.md & .docx), `BRD_VIONE_YEU_CAU_NGHIEP_VU_TOAN_DIEN` (.md & .docx), và `HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN` (.md, .html, .docx, .pdf chuẩn in ấn 6.1MB).

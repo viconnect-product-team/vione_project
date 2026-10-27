@@ -1,5 +1,111 @@
 # System Memory & Architecture
 
+## 0.0000000000.8. THIẾT LẬP HỆ THỐNG GIT & GITHUB ACTIONS AUTO DEPLOY SUBDOMAIN CHO VIONE CRM (HTTPS://CRM_VIONE.VICONNECT.VN) (27/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Yêu cầu:** "hiện tại crm vione đã có sub domain là https://crm_vione.viconnect.vn bạn hãy set up git để khi tôi push code thì giao diện CRM ở sub domain tự cập nhật được chức năng cùng giao diện mới theo code".
+- **Mục tiêu:**
+  * Cấu hình CI/CD tự động trên GitHub Actions: khi lập trình viên thực hiện `git push` lên nhánh `main`, hệ thống tự động build mã nguồn mới nhất của CRM với Scope `crm_platform`, đóng gói Docker images và deploy trực tiếp lên máy chủ `14.225.217.232`, cập nhật giao diện mới nhất cho Subdomain `https://crm_vione.viconnect.vn`.
+  * Cấu hình tự động Nginx Reverse Proxy trên máy chủ Ubuntu host để chuyển tiếp lưu lượng truy cập từ `https://crm_vione.viconnect.vn` (cổng 80 & 443 SSL) về đúng container `vione-crm-frontend-prod:8080` (cổng host 5006) và `vione-crm-backend-prod:4000` (cổng host 5007).
+  * Giữ vững tính phân lập tuyệt đối giữa Server DEV (port 5445/5446) và Subdomain Production (port 80/443 SSL) theo quy chuẩn Rule 5.
+  * Tuân thủ nghiêm ngặt Rule 1: **TUYỆT ĐỐI KHÔNG TỰ Ý CHẠY `git push` HAY `git commit`**.
+
+### 2. Các Tệp Tin Đã Thiết Lập & Nâng Cấp
+1. **GitHub Actions Workflow (`.github/workflows/deploy-crm.yml`)**:
+   - Tên workflow: `Auto Deploy CRM to Subdomain (crm_vione.viconnect.vn)`.
+   - Trigger tự động: `on: push: branches: [main]` và `workflow_dispatch` (cho phép kích hoạt thủ công).
+   - Tiến trình build: Tự động chạy `gen-routes.mjs`, build Web CRM Frontend với `VITE_APP_SCOPE="crm_platform"`, `VITE_APP_NAME="ViOne Connect CRM 5.0"` và `VITE_PUBLIC_APP_URL="https://crm_vione.viconnect.vn"`.
+   - Đóng gói Docker Images: Biên dịch cả frontend `vione-crm-frontend:latest` và backend NestJS `vione-crm-backend:latest` (`Dockerfile.backend`).
+   - Tự động SSH/SCP lên máy chủ `14.225.217.232`, nạp image và restart container qua Docker Compose độc lập tại `~/vione-crm`.
+   - Thực thi kịch bản `setup-crm-subdomain.sh` nạp Nginx host và reload proxy an toàn.
+2. **Kịch bản Nginx Host Reverse Proxy (`deploy/crm/setup-crm-subdomain.sh`)**:
+   - Mở firewall các cổng `5006`, `5007` (ufw & iptables).
+   - Tự động nhận diện chứng chỉ SSL của `viconnect.vn` (từ Let's Encrypt hoặc SSL hệ thống).
+   - Tạo cấu hình Virtual Host chuẩn cho `crm_vione.viconnect.vn` (cùng alias `crm-vione.viconnect.vn`, `crm.viconnect.vn`), chuyển tiếp `location /` sang `http://127.0.0.1:5006` và `location /api/`, `/upload/`, `/uploads/`, `/socket.io/` sang `http://127.0.0.1:5007`.
+   - Chặn và chuyển hướng HTTP 301 toàn bộ truy cập `/connect-app` sang `https://vione.viconnect.vn/connect-app`.
+   - Kiểm tra `nginx -t` trước khi reload `systemctl reload nginx`.
+3. **Cấu hình Môi trường CRM (`deploy/crm/.env.production` & `.env.crm`)**:
+   - Cập nhật `VITE_PUBLIC_APP_URL=https://crm_vione.viconnect.vn`.
+   - Chuẩn hóa `VITE_APP_NAME="ViOne Connect CRM 5.0"`, `VITE_APP_DEFAULT_ROUTE=/`, `APP_SCOPE=crm_platform`.
+4. **Dockerfile Frontend CRM (`deploy/crm/Dockerfile.frontend`)**:
+   - Chuẩn hóa fallback env vars sang `crm_platform` và `ViOne Connect CRM 5.0`.
+5. **Kịch bản Triển Khai Cục Bộ PowerShell (.ps1)**:
+   - `deploy/crm/fast-deploy.ps1`: Hỗ trợ cờ `-TargetEnv prod` nhận diện `https://crm_vione.viconnect.vn`, tự động tải lên và chạy `setup-crm-subdomain.sh`.
+   - `deploy-subdomain.ps1`: Bổ sung nhánh `-Subdomain crm` gọi trực tiếp `fast-deploy.ps1` với `TargetEnv = prod`.
+   - `deploy.ps1`: Nhánh `subdomain-crm` điều phối gọi `deploy-subdomain.ps1 -Subdomain crm`.
+   - `deploy-subdomain-crm.ps1`: Cập nhật chú thích và cấu hình chuẩn.
+6. **Đồng Bộ Nginx Dev Proxy (`deploy/ssl/nginx.conf`)**:
+   - Bổ sung `crm_vione.viconnect.vn` và `crm.viconnect.vn` vào `server_name` của server block 5446.
+7. **Quy Chuẩn Kỹ Thuật & Tài Liệu**:
+   - `AGENTS.md` Rule 5: Cập nhật Subdomain chính thức của ViOne CRM Enterprise `https://crm_vione.viconnect.vn/`.
+   - `.cursorrules`: Đồng bộ Rule 5 chi tiết.
+   - `document/HUONG_DAN_PHAN_TACH_DEPLOY_SUBDOMAIN_VA_DEV_SERVER.md`: Cập nhật ma trận hạ tầng, kịch bản lệnh và quy trình CI/CD.
+
+### 3. Kiểm Thử Chất Lượng Mã Nguồn (Strict Rule 3)
+- `apps/vione_app_be`: `tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- `apps/vione_app_fe`: `tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- `apps/mobile_vione`: `npm run typecheck` (`tsc --noEmit`) -> **Exit code 0 (0 errors)**.
+
+---
+
+## 0.0000000000.7. THIẾT KẾ & PHÁT TRIỂN 4 PHÂN HỆ NỀN TẢNG VICONNECT ĐỘC LẬP VỚI DOANH NGHIỆP: VIONE HERITAGE, VIONE MUSEUM, VIONE SPORT VÀ VIONE RUN (27/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Yêu cầu cốt lõi:** Dựa trên bức tranh tổng thể hệ sinh thái ViOne (Cộng đồng & Doanh nghiệp vs Văn hóa & Di sản):
+  * Phát triển các chức năng ăn khớp cho 4 danh mục: **ViOne Heritage**, **ViOne Museum**, **ViOne Sport** và **ViOne Run**.
+  * Phân tích chức năng sẵn có của ViOne và phát triển thêm các chức năng mới chuyên sâu cho 4 danh mục trên.
+  * Đảm bảo tính tương thích và liên hoàn giữa các chức năng trong toàn hệ sinh thái.
+  * **LƯU Ý NGHIÊM NGẶT:** Toàn bộ 4 phân hệ này thuộc **QUYỀN QUẢN LÝ CỦA VICONNECT (Platform Governance)** chứ **KHÔNG THUỘC VỀ DOANH NGHIỆP**. Doanh nghiệp không sở hữu dữ liệu hay can thiệp điều lệ, mà chỉ tham gia với vai trò Nhà Tài Trợ (Sponsor), Đơn vị Đồng Hành (Partner) hoặc Cử đoàn VĐV Doanh nghiệp tham gia thi đấu phong trào.
+
+### 2. Kiến Trúc Phân Định Ranh Giới Quản Trị ViConnect (Platform Master Isolation)
+- **Cơ sở dữ liệu:** Toàn bộ các bảng `vione_heritage_sites`, `vione_museums`, `vione_sport_tournaments`, `vione_races` đều có cờ `is_platform_managed: true`, `managed_by: 'viconnect'`, và trường `tenant_id: null`.
+- **Hội đồng Điều hành 4 Cấp của ViConnect:**
+  1. *ViConnect Super Admin*: Phê duyệt danh mục di sản, cấp phép bảo tàng số, phê duyệt điều lệ giải đấu và giải chạy.
+  2. *Hội Đồng Chuyên Môn Ủy Quyền (Delegated Operations)*: Ban Quản lý Di tích (Heritage Board), Ban Giám đốc Bảo tàng (Museum Curators), Hội đồng Trọng tài (Sport Referees), Giám đốc Đường chạy (Race Directors).
+  3. *Doanh nghiệp (Tenants)*: Đóng vai trò Nhà tài trợ (Sponsorship branding) hoặc Đội thi đấu Doanh nghiệp (Corporate Team).
+  4. *Công dân / Người dùng ViOne*: 1 tài khoản công dân số duy nhất (Universal Citizen Pass) để check-in bảo tàng, di tích, nhận vé BIB và tra cứu kết quả thi đấu.
+
+### 3. Tương Thích & Hiệp Đồng Liên Hoàn Giữa Các Chức Năng (Synergy Matrix)
+- **Heritage $\leftrightarrow$ Museum:** Di sản chứa đựng các bảo tàng & hiện vật khảo cổ; Bảo tàng giải nghĩa chiều sâu cho di sản; liên thông vé combo ViOne Ticket và kho số ViOne Archive.
+- **Sport $\leftrightarrow$ Run:** Run là phân hệ chuyên sâu của Sport; dùng chung Hộ chiếu Vận động viên số (Digital Athlete Passport), ví huy chương và bảng xếp hạng thành tích.
+- **Heritage / Museum $\leftrightarrow$ Sport / Run ("Giải Chạy Di Sản - ViOne Heritage Run"):** Mô hình giải chạy marathon tổ chức xuyên qua các địa danh di sản và bảo tàng lớn. VĐV qua các trạm checkpoint RFID vừa ghi nhận thời gian thi đấu, vừa được hệ thống tự động đóng Con Dấu Di Sản Số (Digital Heritage Stamp).
+- **Hạ tầng ViOne sẵn có:**
+  * Dùng chung Thẻ VIP NFC / QR Code cá nhân để vào cửa bảo tàng hoặc nhận RaceKit.
+  * Dùng chung Cổng soát vé điện tử ViOne Ticket.
+  * Dùng chung Cổng thanh toán VietQR Napas 24/7 gạch nợ tự động trong 1 giây.
+  * Trợ lý Giọng nói AI ViOne tư vấn lịch sử hiện vật và thông tin đường chạy.
+
+### 4. Đồng Bộ Tài Liệu & Bản Đồ Node
+- Cập nhật `FEATURE_FLOW_NODE_MAP.md`: Thêm Phần 3 gồm `NODE-PLATFORM-HERITAGE-01`, `NODE-PLATFORM-MUSEUM-01`, `NODE-PLATFORM-SPORT-01`, `NODE-PLATFORM-RUN-01`.
+- Cập nhật `docs/app_vione/SRS_APP.md`: Bổ sung bảng ma trận và chi tiết các use case `UC-APP-25`, `UC-APP-26`, `UC-APP-27`, `UC-APP-28`, `UC-APP-29`.
+- Cập nhật `document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.md`: Bổ sung Phần 8 Quy chuẩn phân định ranh giới quản trị nền tảng ViConnect.
+
+### 5. Phát Triển Bản App Độc Lập Với Giao Diện & Chức Năng Hoàn Toàn Khác (Dual-App Parity)
+- **Bản PWA Web (`apps/vione_app_fe`):**
+  * Khởi tạo tuyến đường riêng `/platform-app` (không dùng chung layout Connect-App B2B doanh nghiệp) với giao diện Obsidian Thạch Anh & Vàng Champagne Gold hoàng gia, Jade ngọc bích và Ruby accents.
+  * Bộ linh kiện (components) chuyên biệt trong `src/components/platform-app/`:
+    - `PlatformAppHeader`: Thanh điều hướng văn hóa & thể thao độc lập kèm nút kích hoạt Hộ chiếu số.
+    - `HeritageExplorer`: Bản đồ di tích quốc gia (Huế, Thăng Long, Hội An), tham quan VR360, máy phát thuyết minh GPS và đóng dấu lưu niệm số.
+    - `MuseumExplorer`: Không gian bảo tàng số 3D tương tác xoay lật 360 độ (Trống đồng Đông Sơn, Ngai vàng Triều Nguyễn), chạm thẻ NFC 1 chạm và mua vé bảo tàng.
+    - `SportTournamentHub`: Quản lý giải đấu đa môn (Pickleball, Bóng đá, Golf, Tennis), hiển thị sơ đồ nhánh đấu trực quan (Tournament Bracket) 2 bảng nhánh, cập nhật tỉ số từng set trực tiếp.
+    - `RunRaceHub`: Cổng marathon di sản, lựa chọn cự ly (5K, 10K, 21K, 42K), cấp phát số BIB điện tử tự động, mô phỏng thảm chip RFID tính giờ (Start, Split 10K, Split 21K, Finish), Live Leaderboard và cấp Finisher e-Certificate có mã QR xác thực.
+    - `TicketWallet`: Ví vé điện tử thông minh, tích hợp thanh toán Napas VietQR 24/7 và cổng Soát Vé Điện Tử (Ticket Validator) dành cho nhân viên bảo tàng/di tích.
+    - `NfcReviewHub`: Phân hệ ViOne Review — mô phỏng chạm thẻ NFC đặt tại quầy/standee tăng đánh giá 5 sao cho cửa hàng/di tích và tự động xuất voucher ưu đãi cho khách hàng.
+    - `ArchiveViewer`: Tra cứu tư liệu lịch sử (sắc phong, mộc bản, châu bản) độ nét cao có dấu chứng thực số.
+    - `CitizenPassModal`: Hộ chiếu công dân số ViConnect với mã định danh `VN-PASS-2026-8888`, hiển thị bộ sưu tập con dấu di tích, huy chương thể thao và tra cứu e-Certificate.
+  * Nút chuyển đổi nhanh tại menu trung tâm `VActionSheet.tsx` ("Mở Bản Ứng Dụng Di Sản & Thể Thao").
+- **Bản Native Mobile (`apps/mobile_vione`):**
+  * Xây dựng `src/screens/platform/PlatformAppScreen.tsx` đồng bộ 100% chức năng, giao diện và luồng nghiệp vụ với bản PWA (bao gồm cả tab `review` chạm thẻ NFC và cổng soát vé nhanh `tickets`).
+  * Tuân thủ nghiêm ngặt Rule 8: 100% nút bấm là Gradient Buttons (`LinearGradient` Vàng Hoàng Gia, Đen Mạ Vàng, Đỏ Ruby, Ngọc Lục Bảo).
+  * Tích hợp chuyển đổi mượt mà vào `AppNavigator.tsx` và `VActionSheet.tsx`.
+- **Kiểm thử chất lượng mã nguồn (Rule 3):**
+  * Backend NestJS (`apps/vione_app_be`): `tsc --noEmit` đạt exit code 0 (0 errors).
+  * Frontend PWA (`apps/vione_app_fe`): `tsc --noEmit` đạt exit code 0 (0 errors).
+  * Mobile Native (`apps/mobile_vione`): `npm run typecheck` (`tsc --noEmit`) đạt exit code 0 (0 errors).
+
+---
+
+
 ## 0.0000000000.6. NÂNG CẤP QUẢN LÝ TÀI LIỆU CHUẨN GOOGLE DRIVE, TÍCH HỢP TOOLTIP SIDEBAR, TÁCH BẠCH PHÂN HỆ DOANH NGHIỆP & BỎ CÂY MENU DOANH NGHIỆP CỦA TÔI (26/10/2026)
 
 ### 1. Bối cảnh & Yêu cầu Người Dùng
@@ -3946,8 +4052,4 @@ Người dùng phản ánh một loạt tồn đọng trong trải nghiệm th�
 | **212** | **Đồng Bộ Parity Toàn Diện Native ViOne App & PWA ViOne App (4 Trọng Điểm: Refactor Giao Việc Đầy Đủ Trường & Xóa Việc Chuẩn Doanh Nghiệp Lớn, Ổn Định Nhắn Tin & Khắc Phục Lặp Cuộc Gọi Đang Nhận, Trợ Lý AI Doanh Nhân Theme Sáng Vàng Đồng Có Text-To-Speech & Fallback Mạng APK, Đồng Bộ Trang Chủ & Cân Đối Layout Bố Cục Ảnh/Tin Nhắn)**: 1) **Phân Hệ Giao Việc & Nhận Việc Chuẩn Doanh Nghiệp Lớn**: - Sửa lỗi Cartesian Join đè tên nhân sự khi giao việc trong backend (`connect-company-internal.repository.ts`), bảo toàn chính xác nhân sự được giao việc; - Chuẩn hóa giao diện nhận việc sang tông màu ViOne Luxury Vàng đồng (`#DFB76C`), text than chì (`#0F172A`) trên nền trắng champagne ngọc trai (`#FAF8F5`); - Bổ sung đầy đủ các trường dữ liệu thực tế cho bảng `company_tasks`: `department`, `attachments`, `report_url`, `report_note`, `progress` (0-100%), `progress_note`, `task_type`; - Đồng bộ 100% modal Tạo việc và Sửa việc ở cả PWA (`CompanyTaskManagement.tsx`) và Native (`AssignTaskModal.tsx`) với đầy đủ các trường: chọn ngày giờ `datetime-local` (PWA) / calendar picker native, chọn phòng ban, link tài liệu đính kèm, nộp báo cáo nghiệm thu, slider % tiến độ; - Bổ sung chức năng Xóa công việc với popup xác nhận an toàn ở cả Backend (`DELETE :communityId/tasks/:taskId`), PWA và Native; 2) **Ổn Định Tuyệt Đối Nhắn Tin & Luồng Cuộc Gọi**: - Sửa lỗi kết nối hội thoại sinh thêm tài khoản ID chuỗi số dài lạ bằng cách chuẩn hóa `findAllMembersWithProfiles` và gom nhóm hội thoại theo `counterpartUserId` ở backend; - Khắc phục triệt để lỗi người nhận cuộc gọi bị lặp popup rung chuông liên tục bằng cách tách timer `duration` ra khỏi dependency array của caller socket effect (`DmCallModal.tsx`) và áp dụng cơ chế khóa kép `activeCallRef` & `incomingCallRef` trong `GlobalIncomingCallModal.tsx`; - Refactor màn hình chat Native (`ChatThreadModal.tsx`) sang theme sáng hoàng gia, avatar đối tác 34px bo tròn viền vàng đồng, cân đối hiển thị hình ảnh chuẩn tỷ lệ; 3) **Trợ Lý AI Doanh Nhân ViOne Theme Sáng Vàng Đồng, Giọng Nói Tự Động & Khắc Phục APK Offline**: - Sửa lỗi AI không gọi được trên APK Android do lỗi SSL certificate trên IP thô cổng 5445 bằng cách tự động fallback sang HTTP cổng 5001 khi `status === 0` trong `client.ts`; - Chuyển toàn bộ giao diện AI trợ lý trên PWA và Native từ nền tối sang theme sáng ViOne vàng đồng nền ngọc trai; - Tích hợp bộ phát giọng nói tự động Text-To-Speech (Web Speech API `speechSynthesis`) trên PWA và tối ưu voice interaction Native; - Chuẩn hóa endpoint backend `/ai/chat` trả về đầy đủ cả `answer` và `reply`; 4) **Đồng Bộ Hoàn Chỉnh Bố Cục & Tiện Ích Trang Chủ PWA vs Native**: - PWA (`ExecutiveHome.tsx`): Bổ sung 2 lối tắt nhanh tiện ích "Khách hàng CRM" và "Cộng đồng Doanh nghiệp" ở cụm phím tắt điều hành; - Native (`HomeScreen.tsx`): Bổ sung dải "Khoảnh khắc doanh nhân 24h" (Stories strip) có nút tạo tin mới và các story đại diện, khối gợi ý kết nối chuẩn xác; sửa lỗi thẻ `<ScrollView>` đóng mở lặp đúp; 5) **Khắc Phục Dứt Điểm Gạch Chân Đỏ Tệp Tĩnh & Khôi Phục Đầy Đủ API Imports (Clean Imports & Type Safety)**: - Loại bỏ các dòng import thừa không sử dụng `import icon from "./icon.svg"` và `import image from "./image.svg"` trong `NetworkHome.tsx` và `CommunityHome.tsx`; - Bổ sung ambient module declarations cho các định dạng tệp ảnh tĩnh (`*.svg`, `*.png`, `*.jpg`, `*.jpeg`, `*.webp`) vào `pwa.d.ts`; - Khôi phục và chuẩn hóa đầy đủ `import { fetchNestApi, resolveMediaUrl } from "@/lib/api-client"` trong `NetworkHome.tsx`, ép kiểu `payload: any` tường minh; - Cập nhật `tsconfig.json` thêm `../../node_modules` vào `typeRoots` giúp lệnh `npx tsc --noEmit` phân giải được `vite/client` trực tiếp trong monorepo; 6) **Kiểm Tra Chất Lượng Tuyệt Đối (Strict Rule 1 & Rule 3)**: Toàn bộ 3 dự án `apps/vione_app_be`, `apps/vione_app_fe`, `apps/mobile_vione` đều pass typecheck trực tiếp `npx tsc --noEmit` với **0 errors (Exit code 0)**; Tuyệt đối không tự ý chạy `git commit` hay `git push`. |
 
 | **225** | **Khắc Phục Triệt Để Hiện Tượng Cổng 5446 Bị 'ERR_CONNECTION_REFUSED' Sau Một Thời Gian Chạy Script Deploy (Lưu Trực Tiếp Firewall iptables & DOCKER-USER Vĩnh Viễn, Chuẩn Hóa Cú Pháp error_page 497 =301 Trên Nginx, Xác Thực Trạng Thái 3 Cổng CRM Đang Live)**: 1) **Điều Tra Thực Nghiệm & Nguyên Nhân Gốc (Root Cause Analysis)**: - Sau khi chạy script deploy (`deploy-vione-crm.ps1`), lệnh `iptables -I INPUT` chỉ nạp vào RAM. Khi hệ điều hành Linux (Viettel Cloud VPS) thực hiện các tác vụ nền định kỳ (DHCP lease renew mỗi 30-60 phút, UFW reload, unattended-upgrades hoặc netfilter daemon), bảng iptables bị nạp lại từ `/etc/iptables/rules.v4`, làm biến mất quy tắc cổng 5446 đã mở tạm thời trong RAM; - Mặt khác, Docker published port chuyển tiếp qua bảng `FORWARD` và chuỗi `DOCKER-USER`, nếu chỉ mở `INPUT` mà thiếu `DOCKER-USER` thì các gói tin mới từ bên ngoài sẽ bị kernel từ chối (gửi TCP RST -> sinh mã `ERR_CONNECTION_REFUSED`); - Cú pháp cũ trong `nginx.conf`: `error_page 497 301 = https://$host:$server_port$request_uri;` sai chuẩn cú pháp Nginx (khiến Nginx trả về lỗi `400 Bad Request` thay vì chuyển hướng 301 khi người dùng gõ URL không có tiền tố `https://`); - Kiểm tra thực tế xác nhận các container CRM và proxy vẫn đang hoạt động: Cổng 5006 (`http://14.225.217.232:5006/auth`), Cổng 5443 (`https://14.225.217.232:5443/auth`) và Cổng 5445 (`https://14.225.217.232:5445/?portal=crm`) đều trả về mã HTTP 200 OK; 2) **Biện Pháp Khắc Phục Dứt Điểm**: - Cập nhật `deploy/ssl/setup-ssl.sh`: Mở cổng trên cả chuỗi `INPUT` và `DOCKER-USER`, đồng thời tự động lưu vĩnh viễn qua `netfilter-persistent save` và `iptables-save > /etc/iptables/rules.v4` để không bao giờ bị mất cấu hình khi hệ thống reload mạng; - Chuẩn hóa `deploy/ssl/nginx.conf`: Sửa thành `error_page 497 =301 https://$host:$server_port$request_uri;` trên cả 4 server blocks (5443, 5444, 5445, 5446) giúp tự động chuyển hướng HTTP sang HTTPS mượt mà; sửa WebSocket `/socket.io/` của cổng 5446 trỏ chính xác về `vione-crm-backend-prod:4000`; - Chuẩn hóa line endings LF cho `setup-ssl.sh`; 3) **Kiểm Tra & Xác Minh (Strict Rule 1 & Rule 3)**: Chạy `npx tsc --noEmit` trên `apps/vione_app_fe` đạt 0 errors (Exit code 0); Tuyệt đối không tự ý chạy `git commit` hay `git push`. |
-
-
-
-
-
+| **226** | **Chụp Bộ 36 Ảnh Thực Tế Live Server, Cập Nhật & Viết Lại Toàn Diện [VIONE] 06 Thuyết Minh Tác Phẩm, SRS v8.0, BRD v8.0 (Docx/Doc) & HDSD Toàn Diện (HTML, PDF Chuẩn In Ấn 6.1MB, DOCX)**: 1) **Chụp Đầy Đủ 36/36 Ảnh Live Server**: Sử dụng Chrome Headless truy cập Web CRM cổng 5446 và ViOne Connect App (/connect-app), chụp đủ 20 ảnh Web CRM và 16 ảnh Mobile App Native lưu trữ tại `scratch/captured_36/` và `document/images/evidence_v8/`; 2) **Viết Lại Toàn Diện [VIONE] 06. Trình bày tác phẩm.cop đĩa.docx (15MB)**: Thay thế 100% ảnh nhúng media bằng bộ 36 ảnh mới nhất; viết lại Module 16 (Kho Google Drive /documents), Module 18 (Multi-tenant RBAC company_id), Module 20 (Cài đặt hệ thống 100% PostgreSQL), Module 3.9 (Không gian cộng đồng doanh nghiệp riêng biệt), Module 3.10 (Bàn làm việc di động & chấm công GPS), Module 3.15 (Trung tâm bảo mật & Xóa tài khoản chuẩn Apple App Store Guideline 5.1.1(v) & GDPR), thay thế toàn bộ từ khóa Copilot bằng OpenRouter AI Gateway (DeepSeek-V3 LLM & Meta Llama 3.3). File đã lưu tại `document/` và `C:\Users\vumik\Downloads\`; 3) **Cập Nhật & Xuất Bản Bộ SRS Toàn Diện (v8.0 Master Release)**: Hoàn thiện `document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.md` (47KB); xuất bản 2 file Word: `document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.docx` (65KB) và `document/[VIONE] SRS ĐẶC TẢ YÊU CẦU PHẦN MỀM TOÀN DIỆN.docx` (65KB) kèm bản lưu tại Downloads; 4) **Cập Nhật & Xuất Bản Bộ BRD Toàn Diện (v8.0 Master Release)**: Hoàn thiện `document/BRD_VIONE_YEU_CAU_NGHIEP_VU_TOAN_DIEN.md` (60KB); xuất bản 2 file Word: `document/BRD_VIONE_YEU_CAU_NGHIEP_VU_TOAN_DIEN.docx` (19KB) và `document/[VIONE] BRD YÊU CẦU NGHIỆP VỤ TOÀN DIỆN.docx` (19KB) kèm bản lưu tại Downloads; 5) **Cập Nhật & Xuất Bản Bộ Hướng Dẫn Sử Dụng (HDSD) Toàn Diện (v8.0 Master Release)**: Hoàn thiện `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.md` (20KB); tạo trang HTML Executive Luxury `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.html` (37KB) nhúng 36 ảnh chụp live server; dùng Playwright Chrome render file PDF chuẩn in ấn A4 `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.pdf` (6.1MB) kèm bản copy tại Downloads; tạo tệp Word `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.docx` (15KB) kèm bản copy tại Downloads; 6) **Tuân Thủ Tuyệt Đối Quy Chuẩn AGENTS.md**: Strict Rule 1 (Không git commit/push), Rule 2 (Đồng bộ tài liệu, Memory, Cursorrules), Rule 6 (Zero-Clear Text), Rule 7 (Dữ liệu thực 100% PostgreSQL). |

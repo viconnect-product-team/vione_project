@@ -35,6 +35,13 @@
 | **UC-APP-20** | Xoá Tài Khoản Vĩnh Viễn Chuẩn Apple App Store Guideline 5.1.1(v) | Người dùng App ViOne | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-21** | Đồng Bộ Dữ Liệu Thực Mạng Lưới B2B & Giao Diện EmptyState Luxury | Doanh nhân, Hội viên | P0 - Bắt buộc | Hoạt động |
 | **UC-APP-22** | Nhận Việc, Cập Nhật Tiến Độ Checklist & Báo Cáo Nhiệm Vụ Mobile | Nhân sự doanh nghiệp | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-23** | Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace) | Lãnh đạo & Nhân sự DN | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-24** | Đăng Ký & Kích Hoạt Gói Doanh Nghiệp In-App Qua VietQR Napas 24/7 | Chủ Doanh nghiệp | P0 - Bắt buộc | Hoạt động |
+| **UC-APP-25** | Khám Phá & Số Hóa Di Sản Văn Hóa Quốc Gia, VR360 & Geo Audio Guide (ViOne Heritage) | Công dân, Du khách, ViConnect Admin | P0 - Bắt buộc | Mới phát triển |
+| **UC-APP-26** | Trải Nghiệm Bảo Tàng Số, Hiện Vật 3D AR & Thuyết Minh 1-Chạm NFC (ViOne Museum) | Khách tham quan, ViConnect Curator | P0 - Bắt buộc | Mới phát triển |
+| **UC-APP-27** | Quản Trị Giải Đấu Thể Thao Đa Môn, Sơ Đồ Bracket & Hộ Chiếu VĐV (ViOne Sport) | Vận động viên, Trọng tài, ViConnect Admin | P0 - Bắt buộc | Mới phát triển |
+| **UC-APP-28** | Giải Chạy Marathon/Trail, Cấp BIB Tự Động, Timing RFID & Live Leaderboard (ViOne Run) | Runner, Race Director, ViConnect Admin | P0 - Bắt buộc | Mới phát triển |
+| **UC-APP-29** | Giải Chạy Di Sản (Heritage Run) & Cổng Dịch Vụ Văn Hóa - Thể Thao ViConnect | Runner, Khách du lịch, ViConnect Master | P0 - Bắt buộc | Mới phát triển |
 
 ---
 
@@ -267,3 +274,163 @@
 #### 2. Vị trí hiển thị bản ghi & Cơ chế đẩy dữ liệu từ hệ thống về
 * **Vị trí hiển thị trên App:** Khi nhân sự bấm "Đánh dấu đang làm" hoặc tích checklist, thẻ công việc cập nhật màu sắc và thanh tiến trình tức thì trên màn hình di động.
 * **Cơ chế đẩy dữ liệu về CRM:** Trạng thái được gửi qua API `PATCH /companies/:companyId/tasks/:taskId/status`. Trên Web CRM của Giám đốc (`/workflow` và `/companies/:id?tab=tasks`), cột thẻ Kanban tự động dịch chuyển tương ứng trong thời gian thực, đảm bảo Giám đốc luôn nắm bắt tiến độ chính xác của nhân viên.
+
+---
+
+### UC-APP-23: Không Gian Cộng Đồng Doanh Nghiệp Biệt Lập (Dedicated Corporate Workspace)
+* **Tác nhân:** Ban Lãnh đạo, Cán bộ nhân viên Doanh nghiệp (Minh họa: VIASIA TECH JSC), Super Admin Nền tảng (ViConnect).
+* **Màn hình thực hiện trên App Native:** `CommunityScreen.tsx`, `CommunityHomeScreen.tsx`, `CommunityDetailView.tsx`.
+* **Tiền điều kiện:** Đã đăng nhập vào App ViOne Native và doanh nghiệp đã kích hoạt Gói ViOne Platform.
+* **Mục tiêu:** Cung cấp không gian làm việc số và mạng xã hội nội bộ chuyên biệt cho từng doanh nghiệp, phân định rõ giữa góc nhìn Chủ quản nền tảng (Host Master ViConnect) và Doanh nghiệp khách hàng mua gói (Tenant Client - VIASIA TECH JSC).
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Bài Đăng & Tương Tác Nội Bộ
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `content` | Nội dung thông cáo / bài viết | `TextInput` (multiline) | `Chia sẻ thông báo hoặc thảo luận với đồng nghiệp...` | Bắt buộc. Từ 2 đến 3000 ký tự. | `Nội dung bài viết không được để trống!` |
+| `media_files` | Hình ảnh / Tài liệu đính kèm | `ImagePicker` / `DocumentPicker` | N/A | Tối đa 5 ảnh hoặc 2 tệp PDF đính kèm. Kích thước < 10MB/tệp. | `Tệp đính kèm vượt quá dung lượng cho phép!` |
+| `scope` | Phạm vi thông báo | `SelectPicker` | `Toàn công ty / Phòng ban cụ thể` | Bắt buộc. Lựa chọn phạm vi hiển thị cho nhân viên. | N/A |
+
+#### 2. Vị Trí Hiển Thị & Phân Định Hai Góc Nhìn
+* **Góc nhìn Chủ quản Nền tảng (Platform Host - ViConnect):** Hiển thị huy hiệu Lãnh Đạo VIP Host Master, bảng tin điều hành vĩ mô, danh mục các liên minh và trung tâm quản trị phê duyệt đăng ký gói.
+* **Góc nhìn Doanh nghiệp Mua gói (Tenant Client - VIASIA TECH JSC):** Không gian cộng đồng hiển thị logo công ty VIASIA, bảng tin thông cáo nội bộ, danh sách nhân viên công ty, tab việc làm nội bộ và tính năng chấm công GPS văn phòng.
+
+---
+
+### UC-APP-24: Đăng Ký & Kích Hoạt Gói Doanh Nghiệp In-App Qua VietQR Napas 24/7
+* **Tác nhân:** Chủ doanh nghiệp, Giám đốc, Người đại diện pháp luật.
+* **Màn hình thực hiện trên App Native:** `PackageRegistrationModal.tsx`.
+* **Tiền điều kiện:** Người dùng có tài khoản trên App ViOne Native và có nhu cầu mua gói cước quản trị doanh nghiệp.
+* **Mục tiêu:** Cho phép người dùng trực tiếp lựa chọn gói dịch vụ (30 slots, 50 slots, 100 slots), nhập thông tin pháp lý doanh nghiệp và thanh toán tức thời qua mã VietQR Napas 24/7 mà không cần qua website CRM.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Form Đăng Ký Gói Cước In-App
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `package_code` | Gói cước đăng ký | `PackageSelectCard` | `30 slots / 50 slots / 100 slots` | Bắt buộc. Nạp từ danh mục gói `VIONE_STARTUP_30`, `VIONE_STANDARD_50`, `VIONE_ENTERPRISE_100`. | `Vui lòng chọn gói cước phù hợp!` |
+| `company_name` | Tên doanh nghiệp đầy đủ | `TextInput` | `VD: CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ TRUYỀN THÔNG TOÀN CẦU VIASIA` | Bắt buộc. Từ 5 đến 150 ký tự. | `Tên công ty không được để trống (5-150 ký tự)!` |
+| `tax_code` | Mã số thuế doanh nghiệp | `TextInput` (number-pad) | `0110826492` | Bắt buộc. Chuỗi 10 hoặc 13 chữ số MST Việt Nam: `^[0-9]{10}(-[0-9]{3})?$`. | `Mã số thuế không đúng định dạng!` |
+| `billing_cycle` | Chu kỳ thanh toán | `SelectPills` | `Hàng tháng / Hàng năm (Giảm 20%)` | Bắt buộc. Mặc định `yearly`. | N/A |
+
+#### 2. Luồng Sinh Mã VietQR Napas 24/7 & Kích Hoạt Tức Thời
+1. Người dùng chọn gói `VIONE_ENTERPRISE_100` (100 tài khoản) và điền thông tin doanh nghiệp.
+2. Bấm nút Gradient Vàng Hoàng Gia **"TIẾP TỤC THANH TOÁN"**.
+3. Hệ thống sinh mã VietQR động tiêu chuẩn EMVCo hiển thị ngay trên popup với đúng số tiền và nội dung chuyển khoản mã hóa `VIONE-[OrderCode]`.
+4. Sau khi người dùng chuyển khoản thành công, hệ thống Webhook Napas tự động xác nhận đơn hàng, gửi email kích hoạt và mở khóa toàn bộ quyền năng quản trị doanh nghiệp trên Web CRM và Mobile App.
+
+---
+
+### UC-APP-25: Khám Phá & Số Hóa Di Sản Văn Hóa Quốc Gia, VR360 & Geo Audio Guide (ViOne Heritage)
+* **Tác nhân:** Công dân, Khách du lịch trong nước & quốc tế, Ban Quản Lý Di Tích, ViConnect Super Admin.
+* **Màn hình thực hiện trên App Native & PWA:** `HeritageListScreen.tsx`, `HeritageDetailScreen.tsx`, `platform.heritage.tsx`.
+* **Cơ quan chủ quản & Bản quyền:** **ViConnect Central Platform** trực tiếp quản lý & vận hành; hoàn toàn KHÔNG thuộc về bất kỳ doanh nghiệp riêng lẻ nào. Doanh nghiệp chỉ tham gia với tư cách nhà tài trợ hoặc bảo trợ bảo tồn (CSR).
+* **Tiền điều kiện:** Người dùng đã cài App ViOne hoặc truy cập Cổng ViOne Web Portal.
+* **Mục tiêu:** Cung cấp giải pháp số hóa toàn diện di sản văn hóa vật thể, phi vật thể, danh thắng quốc gia và UNESCO; tích hợp tour 3D VR360 độ phân giải cao và hướng dẫn viên âm thanh (Audio Guide) tự động theo tọa độ GPS.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Hồ Sơ Di Sản Số
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `name` | Tên di sản văn hóa | `TextInput` | `VD: Quần thể Di tích Cố đô Huế` | Bắt buộc. Từ 5 đến 200 ký tự. | `Tên di sản không được để trống!` |
+| `category` | Phân loại di sản | `SelectPicker` | `Di tích lịch sử / Kiến trúc nghệ thuật / Danh lam thắng cảnh / Di sản phi vật thể` | Bắt buộc. Chuẩn hóa theo Luật Di sản văn hóa Việt Nam. | `Vui lòng chọn phân loại di sản!` |
+| `unesco_status` | Danh hiệu UNESCO | `SelectPills` | `Di sản Thế giới / Quốc gia đặc biệt / Cấp Quốc gia / Cấp Tỉnh` | Bắt buộc. Mặc định `Cấp Quốc gia`. | N/A |
+| `geo_coordinates` | Tọa độ GPS & Ranh giới | `MapPinInput` | `16.4698, 107.5796` | Bắt buộc. Vĩ độ [-90, 90], Kinh độ [-180, 180]. | `Tọa độ GPS không hợp lệ!` |
+| `audio_guide_url` | Tệp âm thanh thuyết minh | `AudioUpload` / URL | `https://cdn.viconnect.vn/audio/hue-imperial.mp3` | Bắt buộc định dạng MP3, AAC chất lượng cao 320kbps. Hỗ trợ đa ngôn ngữ (VN, EN, FR, JA, KO, ZH). | `Tệp âm thanh không hợp lệ!` |
+| `vr360_scene_url` | Liên kết Tour Ảo 3D/VR | `UrlInput` | `https://vr.viconnect.vn/scene/hue-citadel` | URL hợp lệ, định dạng WebGL/WebXR hoặc ảnh Panorama 8K. | `Đường dẫn VR360 không hợp lệ!` |
+| `is_platform_managed` | Cờ quản trị nền tảng | `Boolean` (True) | N/A | Luôn cố định là `true`. Hệ thống tự động khóa không cho doanh nghiệp sửa đổi. | N/A |
+
+#### 2. Vị Trí Hiển Thị & Luồng Trải Nghiệm Công Dân
+* **Vị trí hiển thị trên App:** Xuất hiện tại mục **"VĂN HÓA & DI SẢN"** trên Cổng Nền Tảng ViConnect.
+* **Luồng Geo-Audio Guide:** Khi du khách bật định vị GPS và bước vào bán kính 100m của di sản, App ViOne gửi Push Notification: *"Chào mừng bạn đến với Cố Đô Huế. Chạm để nghe thuyết minh tự động"*. Bấm nút Gradient Vàng Hoàng Gia **"NGHE THUYẾT MINH"** để phát giọng đọc truyền cảm.
+* **Hộ chiếu Di sản Số (Digital Heritage Passport):** Du khách bấm "Lưu Dấu Ấn Di Sản", hệ thống đóng 1 con dấu số có mã định danh gắn với tài khoản ViOne ID cá nhân.
+
+---
+
+### UC-APP-26: Trải Nghiệm Bảo Tàng Số, Hiện Vật 3D AR & Thuyết Minh 1-Chạm NFC (ViOne Museum)
+* **Tác nhân:** Khách tham quan, Chuyên gia giám định, Ban Giám Đốc Bảo Tàng, ViConnect Curator.
+* **Màn hình thực hiện trên App Native & PWA:** `MuseumExplorerScreen.tsx`, `ArtifactDetailScreen.tsx`, `platform.museum.tsx`.
+* **Cơ quan chủ quản:** ViConnect Central Platform bảo trợ công nghệ & số hóa; thuộc quyền quản trị của ViConnect.
+* **Mục tiêu:** Trưng bày không gian bảo tàng số chuyên đề, tương tác hiện vật cổ vật 3D Photogrammetry/AR xoay 360 độ, chạm NFC nghe thuyết minh hiện vật tại kệ trưng bày thực tế, liên thông đặt vé tham quan qua ViOne Ticket.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Hiện Vật Bảo Tàng Số
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `artifact_code` | Mã định danh cổ vật | `TextInput` | `VD: BVQG-NGOC-LU-01` | Bắt buộc. Chuỗi mã hóa độc nhất của bảo tàng. | `Mã cổ vật không được để trống!` |
+| `name` | Tên hiện vật / Bảo vật | `TextInput` | `VD: Trống đồng Ngọc Lũ (Bảo vật Quốc gia)` | Bắt buộc. Từ 3 đến 150 ký tự. | `Tên hiện vật không được để trống!` |
+| `historical_period` | Niên đại / Thời kỳ | `TextInput` | `VD: Văn hóa Đông Sơn (Thế kỷ II-III TCN)` | Bắt buộc. Xác định rõ thời kỳ lịch sử. | `Niên đại không được để trống!` |
+| `model_3d_glb` | Tệp mô hình 3D Scan | `FileUpload` (.glb / .gltf) | `artifact_ngoclu_3d.glb` | Định dạng 3D chuẩn web, tối ưu dung lượng < 25MB, chứa đầy đủ Texture hoa văn chi tiết. | `Tệp 3D không đúng định dạng GLB!` |
+| `nfc_uid` | Mã chip NFC gắn kệ hiện vật | `TextInput` | `04:A2:3B:5C:8D:1E:80` | Chuỗi Hex định danh chip NFC NTAG213/215 gắn tại tủ kính bảo tàng. | `Mã NFC không hợp lệ!` |
+| `ticket_price` | Giá vé tham quan (nếu có) | `NumberInput` | `50,000 VNĐ` | Số nguyên không âm. Tích hợp thanh toán qua VietQR Napas 24/7. | `Giá vé không hợp lệ!` |
+
+#### 2. Luồng Tương Tác 1-Chạm NFC & Thực Tế Tăng Cường (AR)
+1. Du khách tham quan bảo tàng vật lý, cầm điện thoại cài App ViOne chạm nhẹ vào thẻ NFC gắn trên bệ trưng bày.
+2. App ViOne lập tức mở trang chi tiết hiện vật với mô hình 3D tự xoay, phát đoạn thuyết minh âm thanh 2 phút và video phục dựng bối cảnh lịch sử.
+3. Bấm nút **"Xem trong không gian thực (AR)"**: Camera mở ra, chiếu tia laser quét mặt sàn và đặt trống đồng ảo 1:1 ngay trước mắt du khách để chụp ảnh kỷ niệm.
+4. Tích hợp phân hệ **ViOne Archive**: Du khách có thể bấm "Tra cứu tài liệu gốc" để xem các văn bản khảo cổ học, hình ảnh khai quật lưu trữ trên kho số.
+
+---
+
+### UC-APP-27: Quản Trị Giải Đấu Thể Thao Đa Môn, Sơ Đồ Bracket & Hộ Chiếu VĐV (ViOne Sport)
+* **Tác nhân:** Vận động viên, Ban Trọng tài, Đội trưởng, Ban Tổ Chức ViConnect, Khán giả.
+* **Màn hình thực hiện trên App Native & PWA:** `SportHubScreen.tsx`, `TournamentDetailScreen.tsx`, `TournamentBracketView.tsx`.
+* **Cơ quan chủ quản:** ViConnect Central Sports Federation; ViConnect chủ quản nền tảng, các công ty doanh nghiệp chỉ cử đội thi đấu hoặc tài trợ.
+* **Mục tiêu:** Cung cấp nền tảng quản trị giải đấu thể thao đa môn (Bóng đá, Pickleball, Tennis, Golf, Cầu lông), tự động tạo sơ đồ nhánh thi đấu (Bracket), cập nhật tỷ số trực tiếp (Live Score) và cấp Hộ chiếu Vận động viên số.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Giải Đấu Thể Thao
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `tournament_name` | Tên giải đấu | `TextInput` | `VD: Giải Pickleball Doanh Nhân ViConnect Toàn Quốc 2026` | Bắt buộc. Từ 5 đến 200 ký tự. | `Tên giải đấu không được để trống!` |
+| `sport_type` | Bộ môn thi đấu | `SelectPicker` | `Pickleball / Bóng đá / Tennis / Golf / Cầu lông` | Bắt buộc. | `Vui lòng chọn bộ môn thi đấu!` |
+| `format` | Thể thức thi đấu | `SelectPills` | `Loại trực tiếp (Knockout) / Vòng tròn (Round-Robin) / Vòng bảng + Bán kết/Chung kết` | Bắt buộc. Hệ thống căn cứ để tự sinh sơ đồ Bracket. | `Vui lòng chọn thể thức thi đấu!` |
+| `max_teams` | Số lượng đội/VĐV tối đa | `NumberInput` | `32` | Lũy thừa của 2 cho thể thức Knockout (8, 16, 32, 64). | `Số đội phải là bội số hợp lệ!` |
+| `referee_ids` | Danh sách tổ trọng tài | `MultiSelect` | `Chọn trọng tài có chứng chỉ từ CSDL` | Tối thiểu 1 trọng tài chính cho mỗi trận đấu. | `Chưa chỉ định tổ trọng tài!` |
+
+#### 2. Luồng Sinh Sơ Đồ Bảng Đấu & Cập Nhật Tỷ Số Trực Tiếp
+1. Ban tổ chức ViConnect bấm nút **"BỐC THĂM & SINH BẢNG ĐẤU"** (Gradient Vàng Hoàng Gia), hệ thống tự động sinh cây Bracket tương tác trực quan 2 nhánh Trái - Phải dẫn về trận Chung Kết.
+2. Trọng tài trận đấu sử dụng App ViOne, mở biên bản điện tử, bấm nút cộng điểm theo từng set. Tỷ số được phát trực tiếp qua WebSocket đến toàn bộ khán giả đang theo dõi trên App với độ trễ < 500ms.
+3. Khi trận đấu kết thúc, trọng tài và 2 đội trưởng ký số xác nhận trên màn hình cảm ứng, hệ thống tự động đẩy đội thắng vào nhánh tiếp theo của Bracket.
+4. **Hộ Chiếu Vận Động Viên Số (Digital Athlete Passport):** Toàn bộ số trận thắng, điểm số, cúp vô địch và huy chương được lưu vĩnh viễn vào hồ sơ thi đấu của VĐV trên ViOne.
+
+---
+
+### UC-APP-28: Giải Chạy Marathon/Trail, Cấp BIB Tự Động, Timing RFID & Live Leaderboard (ViOne Run)
+* **Tác nhân:** Vận động viên chạy bộ (Runners), Giám đốc đường chạy (Race Director - RD), Đội ngũ kỹ thuật Timing RFID, Ban Tổ Chức ViConnect.
+* **Màn hình thực hiện trên App Native & PWA:** `RunHubScreen.tsx`, `RaceDetailScreen.tsx`, `MyBibPassScreen.tsx`, `platform.run.tsx`.
+* **Cơ quan chủ quản:** ViConnect Central Platform phối hợp Liên đoàn Điền kinh; hoàn toàn do ViConnect chủ trì.
+* **Mục tiêu:** Quản trị các giải chạy quy mô từ 1.000 đến 30.000 vận động viên; tự động hóa đăng ký, phân bổ số BIB thông minh, đồng bộ thảm chíp Timing RFID dọc đường chạy, bảng xếp hạng trực tiếp và xuất Chứng nhận Finish điện tử (e-Certificate) chuẩn quốc tế.
+
+#### 1. Bảng Đặc Tả Trường Dữ Liệu Giải Chạy & Cấp BIB
+| Tên trường (Key) | Nhãn (Label) | Kiểu dữ liệu & Control | Placeholder | Quy tắc Kiểm thực (Validation Rules) | Thông báo lỗi (Error Messages) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `race_name` | Tên giải chạy | `TextInput` | `VD: ViOne Heritage Marathon Cố Đô 2026` | Bắt buộc. Từ 5 đến 200 ký tự. | `Tên giải chạy không được để trống!` |
+| `distance` | Cự ly thi đấu | `SelectPills` | `5KM / 10KM / 21KM (Half Marathon) / 42KM (Full Marathon) / Ultra 70KM` | Bắt buộc. | `Vui lòng chọn cự ly!` |
+| `bib_number` | Số BIB VĐV | `TextInput` (readonly khi sinh tự động) | `42195` | Tự động sinh theo cự ly (Đầu 4 cho 42K, Đầu 2 cho 21K, Đầu 1 cho 10K, Đầu 5 cho 5K). | `Số BIB đã tồn tại trong hệ thống!` |
+| `cutoff_time` | Giới hạn thời gian (COT) | `TimeInput` | `06:30:00 (6 tiếng 30 phút cho 42KM)` | Bắt buộc. Định dạng HH:MM:SS. | `Thời gian COT không hợp lệ!` |
+| `gpx_file` | Tệp cung đường & Cao độ GPX | `FileUpload` (.gpx) | `route_marathon_42k.gpx` | Tệp GPX chuẩn chứa tọa độ kinh/vĩ độ và độ cao từng mét (Elevation Gain). | `Tệp GPX không hợp lệ!` |
+| `rfid_chip_code` | Mã chíp RFID dán sau BIB | `TextInput` | `E28011606000020478` | Chuỗi Hex UHF RFID EPC Gen2 96-bit dán mặt sau số BIB của VĐV. | `Mã chip RFID không hợp lệ!` |
+
+#### 2. Luồng Tích Hợp Thảm Timing RFID & Xuất Finisher e-Certificate
+1. VĐV đăng ký cự ly, thanh toán qua VietQR Napas 24/7, hệ thống cấp ngay Thẻ BIB điện tử có mã QR nhận RaceKit tại ngày Expo.
+2. Vào ngày thi đấu, VĐV đeo BIB gắn chip RFID chạy qua thảm sensor:
+   - **Thảm Xuất Phát (Start Line Mat):** Ghi nhận thời điểm Net Time (Chip Time) bắt đầu đếm.
+   - **Thảm Split Checkpoints (5K, 10K, 21K, 32K):** Cập nhật Pace trung bình, split time từng chặng, kiểm tra gian lận đường chạy.
+   - **Thảm Về Đích (Finish Line Mat):** Ghi nhận thành tích chung cuộc, thứ hạng Overall, thứ hạng Giới tính và thứ hạng Lứa tuổi.
+3. Người thân theo dõi trên App ViOne xem chấm vị trí di chuyển mô phỏng của VĐV trên bản đồ GPX theo thời gian thực.
+4. Vừa qua vạch đích trong 1 giây, App ViOne gửi thông báo đẩy kèm **Finisher e-Certificate** mạ vàng sắc nét, có mã QR tra cứu minh bạch và nút chia sẻ lên mạng xã hội hoặc Khoảnh khắc ViOne chỉ với 1 chạm.
+
+---
+
+### UC-APP-29: Giải Chạy Di Sản (Heritage Run) & Cổng Dịch Vụ Văn Hóa - Thể Thao ViConnect
+* **Tác nhân:** Toàn bộ công dân, Doanh nhân, Khách du lịch quốc tế, Runner, ViConnect Master Hub.
+* **Màn hình thực hiện trên App Native & PWA:** `EcosystemHubScreen.tsx`, `HeritageRunPortal.tsx`.
+* **Cơ quan chủ quản:** **ViConnect Central Platform**.
+* **Mục tiêu:** Tạo nên sự tương thích và giao thoa hoàn mỹ giữa **Văn Hóa & Di Sản** (Heritage + Museum) và **Cộng Đồng & Thể Thao** (Sport + Run).
+
+#### 1. Ma Trận Tương Thích & Tính Năng Hiệp Đồng (Cross-Synergy Features)
+1. **Mô hình "Giải Chạy Di Sản" (Heritage Run Experience):**
+   - Cung đường chạy marathon được thiết kế chạy qua quần thể các di tích lịch sử và các bảo tàng lớn.
+   - Tại mỗi trạm Checkpoint đặt tại di tích, VĐV chạy qua vừa kích hoạt thảm RFID ghi nhận thành tích, vừa được hệ thống ViOne tự động đóng **Con Dấu Di Sản Số** (Digital Heritage Stamp) vào Hộ chiếu số của VĐV.
+2. **Hệ Thống Vé & Soát Vé Điện Tử Đồng Nhất (Unified ViOne Ticket & Gate):**
+   - Khách mua vé tham quan bảo tàng, vé xem chung kết thể thao hoặc vé đăng ký BIB giải chạy đều sử dụng chung một chuẩn QR vé động chống chụp màn hình.
+   - Cổng soát vé tại bảo tàng và cổng vào vạch xuất phát giải chạy dùng chung thiết bị quét QR / chạm thẻ NFC của ViOne.
+3. **Thanh Toán Gạch Nợ Tự Động VietQR Napas 24/7:**
+   - Dùng chung hạ tầng VietQR Napas đã chuẩn hóa: Mua vé bảo tàng, mua BIB, mua đồ lưu niệm di sản đều gạch nợ tự động trong 1 giây, xuất biên lai điện tử lưu trong mục Ví của tôi.
+4. **Trợ Lý Giọng Nói AI ViOne Thuyết Minh & Tư Vấn Toàn Năng:**
+   - Người dùng có thể hỏi Trợ lý AI ViOne: *"Hãy kể cho tôi nghe lịch sử Hoàng Thành Thăng Long"* hoặc *"Hãy xem lịch xuất phát cự ly 21K ngày mai và tốc độ Pace mục tiêu của tôi"*. AI tự động phân luồng dữ liệu chính xác từ cơ sở dữ liệu ViConnect.

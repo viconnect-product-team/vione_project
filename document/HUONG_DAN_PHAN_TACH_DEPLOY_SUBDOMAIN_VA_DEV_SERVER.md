@@ -11,7 +11,7 @@ Hệ thống ViOne được phân tách nghiêm ngặt thành 2 môi trường: 
 | Môi trường / Phân hệ | Domain / URL truy cập | Cổng Nginx SSL | Container Frontend | Container Backend | Scope Build |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Subdomain PWA ViOne (Prod)** | `https://vione.viconnect.vn/` | 80 & 443 | `vione-frontend-prod` (8080) | `vione-backend-prod` (4000) | `vione_app` |
-| **Subdomain CRM ViOne (Prod)** | `https://crm.viconnect.vn/` | 80 & 443 | `vione-crm-frontend-prod` (8080) | `vione-crm-backend-prod` (4000) | `crm_platform` |
+| **Subdomain CRM ViOne (Prod)** | `https://crm_vione.viconnect.vn/` | 80 & 443 | `vione-crm-frontend-prod` (8080) | `vione-crm-backend-prod` (4000) | `crm_platform` |
 | **Server DEV ViOne App** | `https://dev-vione.14-225-217-232.sslip.io:5445` | 5445 | `vione-frontend-prod` (5010) | `vione-backend-prod` (5011) | `vione_app` |
 | **Server DEV ViOne CRM** | `https://dev-vione-crm.14-225-217-232.sslip.io:5446` | 5446 | `vione-crm-frontend-prod` (5006) | `vione-crm-backend-prod` (5007) | `crm_platform` |
 | **Landing & CRM CEO 1983** | `https://dev-crm.14-225-217-232.sslip.io:5443` | 5443 | `crm-frontend-prod` (8080) | `crm-backend-prod` (4000) | `crm_platform` |
@@ -27,7 +27,7 @@ Hệ thống cung cấp bộ kịch bản PowerShell chuẩn hóa đặt tại t
 | Kịch bản | Lệnh thực thi | Mục đích |
 | :--- | :--- | :--- |
 | **Deploy Subdomain ViOne PWA** | `.\deploy-subdomain-vione.ps1` | Build giao diện PWA với `https://vione.viconnect.vn`, đóng gói Docker và cập nhật container `vione-frontend-prod`, reload Nginx 443. |
-| **Deploy Subdomain ViOne CRM** | `.\deploy-subdomain-crm.ps1` | Build giao diện CRM với `https://crm.viconnect.vn`, đóng gói Docker và cập nhật container `vione-crm-frontend-prod`, reload Nginx 443. |
+| **Deploy Subdomain ViOne CRM** | `.\deploy-subdomain-crm.ps1` | Build giao diện CRM với `https://crm_vione.viconnect.vn`, đóng gói Docker và cập nhật container `vione-crm-frontend-prod`, reload Nginx 443. |
 | **Deploy Toàn Bộ Subdomain** | `.\deploy-subdomain.ps1 -Subdomain all` | Triển khai đồng thời cả 2 Subdomain PWA và CRM lên cổng 80 & 443. |
 
 ### B. Triển Khai Server DEV (Cổng 5445 / 5446)
@@ -71,10 +71,11 @@ Hệ sinh thái ViOne tích hợp GitHub Actions tự động hóa:
    - Tự động kích hoạt khi lập trình viên `git push` lên nhánh `main`.
    - Biên dịch TanStack React Start Frontend với biến môi trường `VITE_PUBLIC_APP_URL="https://vione.viconnect.vn"`.
    - Đóng gói Docker, chuyển tệp qua SCP và nạp container `vione-frontend-prod`, reload Nginx SSL Proxy.
-2. **Deploy CRM to Subdomain (`.github/workflows/deploy-crm.yml`)**:
-   - Kích hoạt qua giao diện GitHub Actions (`workflow_dispatch`) hoặc khi cập nhật `deploy/crm/**`.
-   - Biên dịch Frontend với biến môi trường `VITE_PUBLIC_APP_URL="https://crm.viconnect.vn"`.
-   - Nạp container `vione-crm-frontend-prod` và cập nhật Subdomain CRM.
+2. **Auto Deploy CRM to Subdomain (`.github/workflows/deploy-crm.yml`)**:
+   - Tự động kích hoạt khi lập trình viên `git push` lên nhánh `main` (hoặc chạy thủ công qua `workflow_dispatch`).
+   - Biên dịch Frontend với biến môi trường `VITE_PUBLIC_APP_URL="https://crm_vione.viconnect.vn"` và `VITE_APP_SCOPE="crm_platform"`.
+   - Đóng gói Frontend và Backend NestJS (`vione-crm-backend:latest`), cập nhật container qua Docker Compose.
+   - Tự động thiết lập cấu hình Host Nginx Reverse Proxy qua `setup-crm-subdomain.sh`, bảo mật SSL 443.
 3. **PR Integration Guardrails (`.github/workflows/pr-integration.yml`)**:
    - Chạy kiểm tra typecheck và bảo mật trên các Pull Request. Không can thiệp vào tiến trình push trực tiếp lên `main`.
 
@@ -82,7 +83,7 @@ Hệ sinh thái ViOne tích hợp GitHub Actions tự động hóa:
 
 ## 4. QUY TẮC PHÂN LẬP TUYỆT ĐỐI NGINX REVERSE PROXY
 
-Tại [deploy/ssl/nginx.conf](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/deploy/ssl/nginx.conf):
-- Subdomain `vione.viconnect.vn` lắng nghe cổng 80 & 443, proxy về `vione-frontend-prod:8080` và `vione-backend-prod:4000`.
-- Subdomain `crm.viconnect.vn` lắng nghe cổng 80 & 443, proxy về `vione-crm-frontend-prod:8080` và `vione-crm-backend-prod:4000`.
-- **Cấm lấn tuyến CRM sang PWA**: Mọi truy cập vào `/connect-app` tại `crm.viconnect.vn` hoặc cổng `5446` đều tự động nhận HTTP 301 Redirect chuyển thẳng sang `https://vione.viconnect.vn/connect-app`.
+Tại [deploy/ssl/nginx.conf](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/deploy/ssl/nginx.conf) và [deploy/crm/setup-crm-subdomain.sh](file:///d:/download/VICONNECT/CEO_VIONE_PROJECT/vione_project/deploy/crm/setup-crm-subdomain.sh):
+- Subdomain `vione.viconnect.vn` lắng nghe cổng 80 & 443, proxy về `vione-frontend-prod:8080` (port host 5010) và `vione-backend-prod:4000`.
+- Subdomain `crm_vione.viconnect.vn` (cùng alias `crm.viconnect.vn`) lắng nghe cổng 80 & 443, proxy về `vione-crm-frontend-prod:8080` (port host 5006) và `vione-crm-backend-prod:4000` (port host 5007).
+- **Cấm lấn tuyến CRM sang PWA**: Mọi truy cập vào `/connect-app` tại `crm_vione.viconnect.vn` hoặc cổng `5446` đều tự động nhận HTTP 301 Redirect chuyển thẳng sang `https://vione.viconnect.vn/connect-app`.
