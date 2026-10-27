@@ -55,6 +55,13 @@ import {
   ChevronUp,
   ChevronDown,
   LayoutTemplate,
+  Trophy,
+  Flame,
+  Landmark,
+  Ticket,
+  Archive,
+  Radio,
+  Layers,
 } from "lucide-react";
 import type { TKey } from "@/lib/i18n";
 import type { LucideIcon } from "lucide-react";
@@ -135,18 +142,50 @@ const superAdminPackagesSuite: Item[] = [
   },
 ];
 
-const superAdminNetworkSuite: Item[] = [
+const superAdminOperationsSuite: Item[] = [
   {
-    key: "nav.vioneMarketplace" as TKey,
-    icon: Store,
-    to: "/marketplace",
-    label: "Sàn Giao Thương Toàn Hệ Thống",
+    key: "nav.vioneDocuments" as TKey,
+    icon: FolderOpen,
+    to: "/documents",
+    label: "Kho Tài Liệu ViConnect Drive",
+    badge: "Drive",
   },
+  {
+    key: "nav.vioneMeetings" as TKey,
+    icon: Calendar,
+    to: "/meetings",
+    label: "Lịch Trình & Cuộc Họp ViConnect",
+  },
+  {
+    key: "nav.vioneWorkflow" as TKey,
+    icon: Kanban,
+    to: "/workflow",
+    label: "Quy Trình & Giao Việc ViConnect",
+    badge: "Kanban",
+  },
+];
+
+const superAdminCommunitySportSuite: Item[] = [
   {
     key: "nav.vioneEvents" as TKey,
     icon: Calendar,
     to: "/events",
-    label: "Sự Kiện & Hội Thảo Kết Nối",
+    label: "ViOne Event — Sự Kiện & Hội Thảo",
+    badge: "Event",
+  },
+  {
+    key: "nav.vioneSport" as TKey,
+    icon: Trophy,
+    to: "/platform/sport",
+    label: "ViOne Sport — Thể Thao Đa Môn",
+    badge: "Sport",
+  },
+  {
+    key: "nav.vioneRun" as TKey,
+    icon: Flame,
+    to: "/platform/run",
+    label: "ViOne Run — Giải Chạy & RFID",
+    badge: "Run",
   },
   {
     key: "nav.vioneCheckin" as TKey,
@@ -155,11 +194,55 @@ const superAdminNetworkSuite: Item[] = [
     label: "Điểm Danh & Check-in QR",
   },
   {
+    key: "nav.vioneMarketplace" as TKey,
+    icon: Store,
+    to: "/marketplace",
+    label: "Sàn Giao Thương Toàn Hệ Thống",
+  },
+  {
     key: "nav.vioneMessages" as TKey,
     icon: MessageSquare,
     to: "/messages",
     label: "Kết Nối Nhắn Tin Toàn Hệ Thống",
     badge: "Chat",
+  },
+];
+
+const superAdminCultureHeritageSuite: Item[] = [
+  {
+    key: "nav.vioneHeritage" as TKey,
+    icon: Landmark,
+    to: "/platform/heritage",
+    label: "ViOne Heritage — Di Sản Văn Hóa",
+    badge: "Di sản",
+  },
+  {
+    key: "nav.vioneMuseum" as TKey,
+    icon: Layers,
+    to: "/platform/museum",
+    label: "ViOne Museum — Bảo Tàng Số 3D",
+    badge: "Bảo tàng",
+  },
+  {
+    key: "nav.vioneArchive" as TKey,
+    icon: Archive,
+    to: "/platform/archive",
+    label: "ViOne Archive — Lưu Trữ Tư Liệu",
+    badge: "Tư liệu",
+  },
+  {
+    key: "nav.vioneTicket" as TKey,
+    icon: Ticket,
+    to: "/platform/tickets",
+    label: "ViOne Ticket — Vé Điện Tử & Soát Vé",
+    badge: "Ticket",
+  },
+  {
+    key: "nav.vioneReview" as TKey,
+    icon: Radio,
+    to: "/platform/review",
+    label: "ViOne Review — Chạm Thẻ NFC",
+    badge: "NFC",
   },
 ];
 
@@ -227,20 +310,14 @@ const companyHrSuite: Item[] = [
   },
 ];
 
-// NHÓM 2: VẬN HÀNH & CÔNG VIỆC
+// NHÓM 2: VẬN HÀNH & GIAO VIỆC (ĐƠN GIẢN HÓA, KHÔNG LIÊN QUAN ĐẾN TIỀN)
 const companyOperationsSuite: Item[] = [
   {
     key: "nav.vioneWorkflow" as TKey,
     icon: Kanban,
     to: "/workflow",
-    label: "Quy Trình & Công Việc (Kanban)",
-    badge: "Kanban",
-  },
-  {
-    key: "nav.vioneDocuments" as TKey,
-    icon: FolderOpen,
-    to: "/documents",
-    label: "Quản Lý Tài Liệu Số Hóa",
+    label: "Giao Việc & Quản Lý Công Việc",
+    badge: "Giao việc",
   },
   {
     key: "nav.vioneMeetings" as TKey,
@@ -689,6 +766,9 @@ export function Sidebar({
                 onClick={() => {
                   setWorkspaceView("platform");
                   localStorage.setItem("vione_crm_workspace_view", "platform");
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new Event("vione_workspace_view_changed"));
+                  }
                 }}
                 className={`flex-1 py-1.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                   effectiveView === "platform"
@@ -704,6 +784,9 @@ export function Sidebar({
                 onClick={() => {
                   setWorkspaceView("company");
                   localStorage.setItem("vione_crm_workspace_view", "company");
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new Event("vione_workspace_view_changed"));
+                  }
                 }}
                 className={`flex-1 py-1.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                   effectiveView === "company"
@@ -726,6 +809,9 @@ export function Sidebar({
                 const next = effectiveView === "platform" ? "company" : "platform";
                 setWorkspaceView(next);
                 localStorage.setItem("vione_crm_workspace_view", next);
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new Event("vione_workspace_view_changed"));
+                }
               }}
               title={`Chuyển chế độ: ${effectiveView === "platform" ? "Quản trị Nền tảng" : "Doanh nghiệp"}`}
               className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400 hover:text-white transition-all shadow-sm"
@@ -796,15 +882,59 @@ export function Sidebar({
                   />
                 )}
 
-                {/* ── MẠNG LƯỚI & SỰ KIỆN GIAO THƯƠNG ── */}
+                {/* ── ĐIỀU HÀNH & TÀI LIỆU VICONNECT ── */}
                 <Group
-                  label="MẠNG LƯỚI & GIAO THƯƠNG"
-                  items={superAdminNetworkSuite}
+                  label="ĐIỀU HÀNH & TÀI LIỆU"
+                  items={superAdminOperationsSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
                   onNavigate={onNavigate}
                   badges={badges}
                 />
+
+                {/* ── CỘNG ĐỒNG, THỂ THAO & SỰ KIỆN ── */}
+                <Group
+                  label="CỘNG ĐỒNG & THỂ THAO"
+                  items={superAdminCommunitySportSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
+
+                {/* ── VĂN HÓA & DI SẢN QUỐC GIA ── */}
+                <Group
+                  label="VĂN HÓA & DI SẢN"
+                  items={superAdminCultureHeritageSuite}
+                  pathname={pathname}
+                  collapsed={isCollapsed}
+                  onNavigate={onNavigate}
+                  badges={badges}
+                />
+
+                {/* ── QUẢN LÝ DOANH NGHIỆP & HỘI VIÊN ── */}
+                {(isSuperAdmin || isOperationsStaff || isExecutiveStaff) && (
+                  <Group
+                    label="QUẢN LÝ DOANH NGHIỆP & HỘI VIÊN"
+                    items={superAdminTenantsSuite}
+                    pathname={pathname}
+                    collapsed={isCollapsed}
+                    onNavigate={onNavigate}
+                    badges={badges}
+                  />
+                )}
+
+                {/* ── GÓI CƯỚC & DOANH THU NỀN TẢNG ── */}
+                {(isSuperAdmin || isFinanceStaff || isExecutiveStaff) && (
+                  <Group
+                    label="GÓI CƯỚC & DOANH THU"
+                    items={superAdminPackagesSuite}
+                    pathname={pathname}
+                    collapsed={isCollapsed}
+                    onNavigate={onNavigate}
+                    badges={badges}
+                  />
+                )}
 
                 {/* ── NHÓM THỐNG KÊ & BÁO CÁO TOÀN DIỆN ── */}
                 <div className={isCollapsed ? "px-2" : "px-3"}>
@@ -812,6 +942,7 @@ export function Sidebar({
                     collapsed={isCollapsed}
                     pathname={pathname}
                     onNavigate={onNavigate}
+                    view="platform"
                   />
                 </div>
 
@@ -854,9 +985,9 @@ export function Sidebar({
                   badges={badges}
                 />
 
-                {/* NHÓM 2: VẬN HÀNH & CÔNG VIỆC */}
+                {/* NHÓM 2: VẬN HÀNH & GIAO VIỆC (ĐƠN GIẢN HÓA, KHÔNG DÍNH TIỀN) */}
                 <Group
-                  label="VẬN HÀNH & CÔNG VIỆC"
+                  label="VẬN HÀNH & GIAO VIỆC"
                   items={companyOperationsSuite}
                   pathname={pathname}
                   collapsed={isCollapsed}
@@ -864,17 +995,7 @@ export function Sidebar({
                   badges={badges}
                 />
 
-                {/* NHÓM 3: TÀI CHÍNH & DÒNG TIỀN */}
-                <Group
-                  label="TÀI CHÍNH & DÒNG TIỀN"
-                  items={companyFinanceSuite}
-                  pathname={pathname}
-                  collapsed={isCollapsed}
-                  onNavigate={onNavigate}
-                  badges={badges}
-                />
-
-                {/* NHÓM 4: KINH DOANH & KHÁCH HÀNG (CRM) */}
+                {/* NHÓM 3: KINH DOANH & KHÁCH HÀNG (CRM) */}
                 <Group
                   label="KINH DOANH & CRM"
                   items={companyCrmSuite}
@@ -894,12 +1015,13 @@ export function Sidebar({
                   badges={badges}
                 />
 
-                {/* ── BÁO CÁO & THỐNG KÊ DOANH NGHIỆP ── */}
+                {/* ── BÁO CÁO & THỐNG KÊ DOANH NGHIỆP (KHÔNG CÓ TÀI CHÍNH) ── */}
                 <div className={isCollapsed ? "px-2" : "px-3"}>
                   <ReportsTreeMenu
                     collapsed={isCollapsed}
                     pathname={pathname}
                     onNavigate={onNavigate}
+                    view="company"
                   />
                 </div>
 

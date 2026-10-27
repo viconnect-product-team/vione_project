@@ -61,6 +61,11 @@ export class DocumentsController {
     return this.documentsService.createCategory(userId, data);
   }
 
+  @Put('categories/:id')
+  async updateCategory(@Param('id') id: string, @Body() data: any) {
+    return this.documentsService.updateCategory(id, data);
+  }
+
   @Delete('categories/:id')
   async deleteCategory(@Param('id') id: string) {
     return this.documentsService.deleteCategory(id);
@@ -76,6 +81,11 @@ export class DocumentsController {
   ) {
     const userId = req.user.id || req.user.sub;
     return this.documentsService.list(userId, { folderId, category, search });
+  }
+
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return this.documentsService.getById(id);
   }
 
   @Post()

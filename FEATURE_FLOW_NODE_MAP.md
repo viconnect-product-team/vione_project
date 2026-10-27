@@ -366,4 +366,60 @@
 * **Bảng CSDL PostgreSQL:** `public.vione_platform_tickets`.
 * **Quy chuẩn UI/UX:** Cổng soát vé có thông báo phân biệt rõ rệt: Xanh Ngọc Lục Bảo (Vé hợp lệ) vs Đỏ Ruby (Cảnh báo vé đã dùng).
 
+---
+
+### 💼 [NODE-CRM-COMPANY-WORKFLOW-01]: CRM Doanh Nghiệp Tinh Gọn — Trọng Tâm Giao Việc & Bỏ Thu Chi
+* **Tên luồng:** Phân hệ Doanh nghiệp không còn chức năng tiền, hóa đơn hay báo cáo thu chi; chuyển đổi 100% trọng tâm sang giao việc và điều phối vận hành.
+* **Mã SRS:** `UC-CRM-30`.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/workflow.index.tsx`, `src/components/dashboard/ExecutiveDashboard.tsx`
+  - Điều hướng: `src/components/dashboard/Sidebar.tsx` (loại bỏ `companyFinanceSuite`, hiển thị Giao việc & Lịch trình), `src/components/dashboard/ReportsTreeMenu.tsx` (ẩn báo cáo thu chi khi `view === 'company'`).
+* **Bảng CSDL PostgreSQL:** `public.vione_tasks`, `public.task_assignments`, `public.workflow_stages`.
+* **Quy chuẩn UI/UX:** Nút "Giao việc mới" dùng Gradient Vàng Hoàng Gia Champagne Gold; bảng Kanban hiển thị tiến độ % và chỉ số WIP Limit.
+
+---
+
+### 📂 [NODE-CRM-PLATFORM-DOCS-01]: Kho Tài Liệu ViConnect Drive & Lịch Họp Nền Tảng
+* **Tên luồng:** Cung cấp chức năng quản lý tài liệu độc lập như Google Drive cho ViConnect Platform cùng lịch họp và giao việc nội bộ.
+* **Mã SRS:** `UC-CRM-28`, `UC-CRM-31`.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình: `src/routes/documents.index.tsx`, `src/routes/meetings.index.tsx`, `src/routes/workflow.index.tsx`
+  - Sidebar: `superAdminOperationsSuite` (Kho tài liệu, Lịch họp, Giao việc).
+* **Backend Module (`apps/vione_app_be`):**
+  - Controller: `src/documents/documents.controller.ts`, `src/modules/meetings/meetings.controller.ts`
+  - Service: `src/documents/documents.service.ts`
+* **Bảng CSDL PostgreSQL:** `public.documents`, `public.document_folders`, `public.document_categories`.
+
+---
+
+### 🏛️ [NODE-CRM-PLATFORM-ECOSYSTEM-01]: Cụm Phân Hệ Quản Trị Hệ Sinh Thái ViOne Trên CRM (Chuẩn RESTful CRUD)
+* **Tên luồng:** Bổ sung nhóm phân hệ quản trị chuyên biệt vào ViOne CRM: Sport, Run, Heritage, Museum, Archive, Ticket, Review với đầy đủ chức năng Quản trị Admin (Bảng dữ liệu, Thêm mới POST, Sửa PUT, Xóa DELETE) và chuyển đổi giao diện xem trước App/PWA.
+* **Mã SRS:** `UC-CRM-31`, `UC-CRM-32`.
+* **Giao diện PWA CRM Admin (`apps/vione_app_fe`):**
+  - Routes: `src/routes/platform.sport.tsx`, `src/routes/platform.run.tsx`, `src/routes/platform.heritage.tsx`, `src/routes/platform.museum.tsx`, `src/routes/platform.archive.tsx`, `src/routes/platform.tickets.tsx`, `src/routes/platform.review.tsx`
+  - Admin Managers: `src/components/platform-app/admin/SportAdminManager.tsx`, `RunAdminManager.tsx`, `HeritageAdminManager.tsx`, `MuseumAdminManager.tsx`, `ArchiveAdminManager.tsx`, `TicketAdminManager.tsx`, `ReviewAdminManager.tsx`
+  - Preview Components: `SportTournamentHub.tsx`, `RunRaceHub.tsx`, `HeritageExplorer.tsx`, `MuseumExplorer.tsx`, `ArchiveViewer.tsx`, `TicketWallet.tsx`, `NfcReviewHub.tsx`
+  - Sidebar Suites: `superAdminCommunitySportSuite`, `superAdminCultureHeritageSuite`
+* **Backend Module Chuẩn RESTful (`apps/vione_app_be`):**
+  - Controller: `src/platform-hub/platform-hub.controller.ts` (Full HTTP Verbs: `@Get`, `@Post`, `@Put`, `@Delete`)
+  - Service: `src/platform-hub/platform-hub.service.ts`
+  - Documents Module: `src/documents/documents.controller.ts`, `src/documents/documents.service.ts` (Hỗ trợ RESTful CRUD cho Documents, Folders, Categories)
+* **Bảng CSDL PostgreSQL:** `public.vione_heritage_sites`, `public.vione_museums`, `public.vione_artifacts`, `public.vione_sports_tournaments`, `public.vione_sports_clubs`, `public.vione_races`, `public.vione_archives`, `public.vione_platform_tickets`, `public.vione_review_stores`, `public.documents`, `public.document_folders`, `public.document_categories`.
+
+---
+
+### 🌐 [NODE-APP-ECOSYSTEM-GRID-01]: Lưới Hệ Sinh Thái 2 Trụ Cột: "Con Người, Cộng Đồng & Trải Nghiệm"
+* **Tên luồng:** Hiển thị lưới hệ sinh thái 2 cột tương xứng trên App PWA và Mobile Native kết nối 10 phân hệ dịch vụ số ViOne.
+* **Mã SRS:** `UC-APP-30`.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Component: `src/components/business-connect/mobile/ViOneEcosystemGrid.tsx`
+  - Tích hợp: `src/components/business-connect/mobile/ExecutiveHome.tsx`
+  - Tuyến đích: `src/routes/platform-app.tsx` (`?tab=...`)
+* **Giao diện Native Mobile (`apps/mobile_vione`):**
+  - Component: `src/screens/home/components/ViOneEcosystemGrid.tsx`
+  - Tích hợp: `src/screens/home/HomeScreen.tsx`
+  - Tuyến đích: `src/screens/platform/PlatformAppScreen.tsx` (nhận `initialTab`)
+* **Quy chuẩn UI/UX:** Header xanh hoàng gia "ViOne - Con người, cộng đồng & trải nghiệm", 100% nút và thẻ tương tác theo chuẩn Gradient Champagne Gold / Obsidian viền mạ vàng.
+
+
 

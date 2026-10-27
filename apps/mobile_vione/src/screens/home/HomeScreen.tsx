@@ -61,6 +61,7 @@ import { EntrepreneurCard } from "./components/EntrepreneurCard";
 import { TodayEditorialSection } from "./components/TodayEditorialSection";
 import { ExecutiveCenterSection } from "./components/ExecutiveCenterSection";
 import { AiPartnersSection } from "./components/AiPartnersSection";
+import { ViOneEcosystemGrid } from "./components/ViOneEcosystemGrid";
 
 export {
   AiPartnerItem,
@@ -69,7 +70,11 @@ export {
   HomeScreenProps,
 };
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({
+  navigation,
+  onOpenV,
+  onOpenPlatformTab,
+}) => {
   const { user, updateUser } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
@@ -831,6 +836,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) =
           filteredAiPartners={filteredAiPartners}
           setSelectedPartnerForMeeting={setSelectedPartnerForMeeting}
           setScheduleMeetingVisible={setScheduleMeetingVisible}
+        />
+
+        {/* 7. Hệ Sinh Thái ViOne: Con người, cộng đồng & trải nghiệm */}
+        <ViOneEcosystemGrid
+          isDark={isDark}
+          navigation={navigation}
+          onOpenPlatformTab={onOpenPlatformTab}
+          onOpenCommunity={() => navigation?.navigate("Community")}
+          onOpenMyCard={() => navigation?.navigate("Me")}
+          onOpenEventList={() => setEventDetailModalVisible(true)}
         />
 
         <View style={{ height: 100 }} />

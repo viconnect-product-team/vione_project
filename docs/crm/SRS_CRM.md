@@ -367,5 +367,131 @@
 * Tích hợp Radix UI Tooltip trên 100% các mục điều hướng (NavItems).
 * Hiển thị Tooltip sang trọng phong cách Đen Thạch Anh Mạ Vàng (`bg-[#0B0F17] text-[#F6E1C3] border border-[#D8B282]/40 shadow-2xl`) với độ trễ mở 150ms.
 * Khắc phục triệt để lỗi thẩm mỹ khi tên tính năng dài bị cắt thành dấu ba chấm (...) trên Sidebar, đảm bảo người dùng luôn đọc được trọn vẹn tên tính năng và badge trạng thái.
+### UC-CRM-30: Tinh Gọn Phân Hệ Doanh Nghiệp - Tách Rời Hoàn Toàn Thu Chi Tài Chính, Trọng Tâm Giao Việc & Tiến Độ
+* **Tác nhân:** Ban Lãnh đạo Doanh nghiệp, Trưởng phòng ban, Nhân sự thành viên.
+* **Màn hình thực hiện:** `components/dashboard/Sidebar.tsx`, `components/dashboard/ExecutiveDashboard.tsx`, `components/dashboard/ReportsTreeMenu.tsx`, `routes/workflow.index.tsx`.
+* **Tiền điều kiện:** Người dùng đăng nhập tài khoản Doanh nghiệp hoặc kích hoạt chế độ làm việc `workspaceView === 'company'`.
+* **Mục tiêu:** Tinh giản hóa giao diện doanh nghiệp, loại bỏ hoàn toàn các màn hình/chỉ số liên quan đến dòng tiền, kế toán, hóa đơn và thu chi; chuyển đổi 100% trọng tâm sang quản lý giao việc (Task Delegation & Workflow), theo dõi tiến độ công việc và phối hợp điều hành nội bộ.
 
+#### 1. Quy Chuẩn Triệt Tiêu Chức Năng Tiền & Doanh Thu ở Phân Hệ Doanh Nghiệp
+* **Sidebar Điều Hướng:** Loại bỏ hoàn toàn khối `companyFinanceSuite` (Hóa đơn `/invoices`, Thu phí hội viên `/fees`, Báo cáo doanh thu & dòng tiền).
+* **Cây Báo Cáo (ReportsTreeMenu):** Khi `view === 'company'`, tự động ẩn hoàn toàn nhánh "Tài chính & Thu chi", chỉ giữ lại báo cáo công việc, nhân sự và vận hành.
+* **Dashboard Điều Hành Doanh Nghiệp (ExecutiveDashboard):**
+  - Triệt tiêu các thẻ KPI tài chính (`Doanh thu tháng`, `Công nợ quá hạn`, `Dòng tiền thu chi`).
+  - Thay thế bằng Thẻ KPI vận hành thực chiến: `Công việc cần xử lý` (chuyển hướng `/workflow`) và `Nhiệm vụ hoàn thành` (chuyển hướng `/workflow`).
+  - Khối biểu đồ thu chi và nợ phí được thay thế bằng:
+    1. **Bảng Điều Hành Giao Việc & Nhiệm Vụ Doanh Nghiệp:** Hiển thị trực quan trạng thái công việc (Cần làm, Đang làm, Hoàn thành), giới hạn WIP (Work In Progress), tiến độ hoàn thành % tổng thể kèm nút CTA "Tới Bảng Việc Kanban".
+    2. **Phân Bổ Giao Việc & Nhân Sự Doanh Nghiệp:** Hiển thị thống kê số lượng công việc đã giao cho từng phòng ban (Ban Điều hành, Kinh doanh & Marketing, Kỹ thuật & Sản phẩm, Vận hành & Hành chính), tỉ lệ hoàn thành nhiệm vụ theo thời gian thực.
+  - Nút Tác vụ nhanh (Quick Action): Thay thế nút "Tạo phiếu thu phí" bằng nút "Giao việc mới" trỏ trực tiếp đến `/workflow`.
+  - Thanh tìm kiếm Spotlight: Tự động lọc bỏ các gợi ý tìm kiếm liên quan đến "Hóa đơn & Doanh thu" khi ở chế độ doanh nghiệp.
 
+---
+
+### UC-CRM-31: Phân Hệ Quản Trị ViConnect Platform - Quản Lý Tài Liệu ViConnect Drive, Lịch Họp, Giao Việc & Hệ Sinh Thái Thể Thao / Di Sản Số
+* **Tác nhân:** Ban Lãnh đạo ViConnect, Super Admin hệ thống.
+* **Màn hình thực hiện:**
+  - Cụm Điều Hành: Kho tài liệu (`/documents`), Lịch họp (`/meetings`), Quản lý giao việc (`/workflow`).
+  - Cụm Thể Thao & Cộng Đồng: ViOne Event (`/events`), ViOne Sport (`/platform/sport`), ViOne Run (`/platform/run`).
+  - Cụm Văn Hóa & Di Sản: ViOne Heritage (`/platform/heritage`), ViOne Museum (`/platform/museum`), ViOne Archive (`/platform/archive`), ViOne Ticket (`/platform/tickets`), ViOne Review (`/platform/review`).
+* **Tiền điều kiện:** Người dùng có quyền Quản trị Nền tảng (`workspaceView === 'platform'` hoặc Super Admin).
+* **Mục tiêu:** Cung cấp trọn vẹn bộ công cụ điều hành nền tảng ViConnect (Drive, Lịch họp, Giao việc) và các phân hệ chức năng chuyên sâu tương ứng với 2 trụ cột hệ sinh thái ViOne: Cộng Đồng & Doanh Nghiệp và Văn Hóa & Di Sản.
+
+#### 1. Cụm Vận Hành & Điều Hành ViConnect
+* **Kho Tài Liệu ViConnect Drive (`/documents`):** Hệ thống lưu trữ tệp tin phân cấp chuẩn mực (Nested Folders), breadcrumbs, phân loại 6 danh mục, ghim sao, tìm kiếm và phân quyền xem/tải tài liệu doanh nghiệp & hiệp hội.
+* **Lịch Họp & Phòng Họp Số (`/meetings`):** Lên lịch các phiên họp thường niên, họp ban chấp hành, liên kết Google Meet/Zoom, điểm danh tự động bằng mã QR và lưu biên bản cuộc họp số.
+* **Quản Lý Giao Việc Nền Tảng (`/workflow`):** Bảng Kanban điều phối công việc giữa các phòng ban ViConnect, phân công người phụ trách, gắn nhãn độ ưu tiên, đính kèm tài liệu và thiết lập hạn chót (Deadline).
+
+#### 2. Cụm Chức Năng Hệ Sinh Thái Mới (2 Trụ Cột ViOne)
+* **Trụ Cột 1: Cộng Đồng & Doanh Nghiệp**
+  - `ViOne Sport` (`/platform/sport`): Quản lý giải đấu thể thao doanh nghiệp, câu lạc bộ bóng đá/tennis/golf/pickleball, bảng xếp hạng, lịch thi đấu vòng bảng và nhánh đấu (Bracket).
+  - `ViOne Run` (`/platform/run`): Quản lý giải chạy marathon/trail run, đồng bộ chip timing RFID, quản lý số BIB vận động viên, kiểm soát các cổng Checkpoint (CP/Split) và cập nhật bảng xếp hạng Pace/Gun Time/Chip Time thời gian thực.
+  - `ViOne Event` (`/events`): Tổ chức hội nghị, triển lãm giao thương B2B, check-in QR Code siêu tốc dưới 1 giây.
+  - `ViOne Review` (`/platform/review`): Quản lý giải pháp thẻ chạm NFC thông minh NTAG213 đặt tại bàn thu ngân/quầy dịch vụ, thúc đẩy khách hàng đánh giá 5 sao Google Maps/Facebook cho doanh nghiệp thành viên.
+* **Trụ Cột 2: Văn Hóa & Di Sản**
+  - `ViOne Heritage` (`/platform/heritage`): Quản lý và số hóa di sản văn hóa vật thể & phi vật thể, tọa độ GIS bản đồ di sản, tích hợp tour tham quan thực tế ảo VR360.
+  - `ViOne Museum` (`/platform/museum`): Bảo tàng số 3D, mô hình hiện vật đa chiều (GLTF/USDZ), công nghệ AR và trợ lý thuyết minh âm thanh đa ngôn ngữ (Audio Guide) kích hoạt qua mã QR/NFC.
+  - `ViOne Archive` (`/platform/archive`): Lưu trữ số hóa tư liệu lịch sử, mộc bản, văn bia, sắc phong hoàng triều với siêu dữ liệu Dublin Core, phân loại niên đại và lưu trữ bảo quản an toàn.
+  - `ViOne Ticket` (`/platform/tickets`): Hệ thống phát hành vé điện tử sự kiện, di tích, bảo tàng; soát vé qua cổng kiểm soát quang học/camera QR, thanh toán tự động VietQR NAPAS 247.
+
+#### 3. Bảng Đặc Tả Chi Tiết Chuẩn RESTful API (Full CRUD HTTP Verbs)
+* **Quy chuẩn thiết kế:**
+  - Resource URLs sử dụng danh từ số nhiều (`/documents`, `/tournaments`, `/clubs`, `/races`, `/heritage`, `/museums`, `/artifacts`, `/archives`, `/tickets`, `/reviews/stores`).
+  - Sử dụng chuẩn mực các HTTP Verbs:
+    * `GET`: Truy vấn danh sách có phân trang, bộ lọc (query params) hoặc lấy chi tiết tài nguyên theo ID (`GET /:id`).
+    * `POST`: Tạo mới tài nguyên, trả về mã trạng thái 201 Created cùng dữ liệu đối tượng vừa khởi tạo.
+    * `PUT`: Cập nhật toàn diện thông tin tài nguyên theo ID (`PUT /:id`), trả về bản ghi sau cập nhật.
+    * `DELETE`: Xóa tài nguyên theo ID (`DELETE /:id`), trả về đối tượng đã xóa hoặc thông báo xác nhận thành công.
+  - Phân quyền (Auth & Tenant): Kiểm tra token JWT, tự động gán và cô lập dữ liệu theo `company_id` / `user_id`.
+
+| STT | Phân Hệ | HTTP Method | Endpoint URI | Mô Tả Nghiệp Vụ | Dữ Liệu Payload (Body / Params) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Documents | `GET` | `/api/documents` | Lấy danh sách tài liệu Drive (lọc folder, category, search, starred) | `folder_id`, `category`, `search`, `starred` |
+| 2 | Documents | `GET` | `/api/documents/:id` | Lấy thông tin chi tiết một tài liệu | Path param `id` |
+| 3 | Documents | `POST` | `/api/documents/folders` | Tạo thư mục mới trong Drive | `{ name, parent_id, category, color }` |
+| 4 | Documents | `POST` | `/api/documents/categories` | Tạo danh mục phân loại tài liệu mới | `{ name, code, description, color }` |
+| 5 | Documents | `PUT` | `/api/documents/categories/:id` | Cập nhật thông tin danh mục tài liệu | `{ name, description, color }` |
+| 6 | Documents | `DELETE` | `/api/documents/categories/:id`| Xóa danh mục phân loại tài liệu | Path param `id` |
+| 7 | Sport | `GET` | `/api/platform-hub/sport/tournaments` | Lấy danh sách giải đấu thể thao | `sport_type`, `status` |
+| 8 | Sport | `POST` | `/api/platform-hub/sport/tournaments` | Tạo mới giải đấu thể thao | `{ name, sport_type, format, start_date, end_date, venue, province }` |
+| 9 | Sport | `PUT` | `/api/platform-hub/sport/tournaments/:id` | Cập nhật thông tin giải đấu thể thao | `{ name, format, status, venue, banner_url, ... }` |
+| 10 | Sport | `DELETE` | `/api/platform-hub/sport/tournaments/:id` | Xóa giải đấu thể thao | Path param `id` |
+| 11 | Sport | `POST` | `/api/platform-hub/sport/clubs` | Thành lập CLB thể thao doanh nghiệp | `{ name, sport_type, leader_name, venue, schedule_info }` |
+| 12 | Sport | `PUT` | `/api/platform-hub/sport/clubs/:id` | Hiệu chỉnh thông tin CLB thể thao | `{ name, leader_name, venue, schedule_info, members_count }` |
+| 13 | Sport | `DELETE` | `/api/platform-hub/sport/clubs/:id` | Giải tán / Xóa CLB thể thao | Path param `id` |
+| 14 | Run | `GET` | `/api/platform-hub/run/races` | Lấy danh sách giải chạy marathon/trail | `status` |
+| 15 | Run | `POST` | `/api/platform-hub/run/races` | Khởi tạo giải chạy marathon mới | `{ name, location, race_date, distances, banner_url }` |
+| 16 | Run | `PUT` | `/api/platform-hub/run/races/:id` | Cập nhật cấu hình & cự ly giải chạy | `{ name, race_date, distances, status, ... }` |
+| 17 | Run | `DELETE` | `/api/platform-hub/run/races/:id` | Xóa giải chạy marathon | Path param `id` |
+| 18 | Run | `POST` | `/api/platform-hub/run/timing` | Bắn tín hiệu chíp RFID thảm đo thời gian | `{ race_id, bib, split_name, timestamp }` |
+| 19 | Heritage | `GET` | `/api/platform-hub/heritage` | Danh sách hồ sơ di sản văn hóa GIS | `type`, `status`, `search` |
+| 20 | Heritage | `POST` | `/api/platform-hub/heritage` | Đăng ký hồ sơ số hóa di sản mới | `{ name, type, province, coordinates, period, vr360_url, ... }` |
+| 21 | Heritage | `PUT` | `/api/platform-hub/heritage/:id` | Hiệu chỉnh thông tin hồ sơ di sản | `{ name, type, coordinates, description, vr360_url, status }` |
+| 22 | Heritage | `DELETE` | `/api/platform-hub/heritage/:id` | Thu hồi / Xóa hồ sơ di sản | Path param `id` |
+| 23 | Museum | `GET` | `/api/platform-hub/museums` | Danh sách bảo tàng số & phòng trưng bày | `province`, `search` |
+| 24 | Museum | `POST` | `/api/platform-hub/museums` | Tạo mới bảo tàng số trên nền tảng | `{ name, code, address, province, ticket_price, vr_tour_url }` |
+| 25 | Museum | `PUT` | `/api/platform-hub/museums/:id` | Cập nhật thông tin bảo tàng số | `{ name, address, ticket_price, opening_hours, vr_tour_url }` |
+| 26 | Museum | `DELETE` | `/api/platform-hub/museums/:id` | Đóng / Xóa phòng trưng bày bảo tàng | Path param `id` |
+| 27 | Museum | `GET` | `/api/platform-hub/artifacts` | Danh mục hiện vật 3D Photogrammetry | `museum_id`, `category` |
+| 28 | Museum | `POST` | `/api/platform-hub/artifacts` | Thêm hiện vật 3D & gán thẻ NFC quầy | `{ museum_id, code, name, category, dynasty, model_3d_url, nfc_uid }` |
+| 29 | Museum | `PUT` | `/api/platform-hub/artifacts/:id` | Cập nhật hiện vật 3D & audio guide | `{ name, category, model_3d_url, audio_guide_vn, nfc_uid }` |
+| 30 | Museum | `DELETE` | `/api/platform-hub/artifacts/:id` | Gỡ bỏ hiện vật 3D khỏi bảo tàng | Path param `id` |
+| 31 | Archive | `GET` | `/api/platform-hub/archives` | Kho tư liệu lưu trữ số hóa lịch sử | `collection`, `format`, `search` |
+| 32 | Archive | `POST` | `/api/platform-hub/archives` | Lưu trữ tư liệu lịch sử số hóa mới | `{ title, code, collection, era, author, digital_url, tags }` |
+| 33 | Archive | `PUT` | `/api/platform-hub/archives/:id` | Hiệu chỉnh siêu dữ liệu tư liệu số | `{ title, collection, era, author, digital_url, security_level }` |
+| 34 | Archive | `DELETE` | `/api/platform-hub/archives/:id` | Xóa tư liệu lưu trữ khỏi kho | Path param `id` |
+| 35 | Tickets | `GET` | `/api/platform-hub/tickets` | Danh sách vé điện tử đã phát hành | `target_type`, `status`, `search` |
+| 36 | Tickets | `POST` | `/api/platform-hub/tickets` | Phát hành vé điện tử (di tích/giải/vé) | `{ code, title, target_type, target_name, price, user_name }` |
+| 37 | Tickets | `PUT` | `/api/platform-hub/tickets/:id` | Cập nhật trạng thái vé điện tử | `{ status, seat_number, checked_in_at }` |
+| 38 | Tickets | `DELETE` | `/api/platform-hub/tickets/:id` | Hủy bỏ / Thu hồi vé điện tử | Path param `id` |
+| 39 | Tickets | `POST` | `/api/platform-hub/tickets/validate` | Cổng soát vé quét QR / NFC Check-in | `{ code, device_id }` |
+| 40 | Review | `GET` | `/api/platform-hub/reviews/stores` | Danh sách điểm chạm NFC Google Maps | `province`, `search` |
+| 41 | Review | `POST` | `/api/platform-hub/reviews/stores` | Đăng ký điểm chạm thẻ NFC NTAG213 | `{ store_name, address, google_place_id, map_url, nfc_tag_uid }` |
+| 42 | Review | `PUT` | `/api/platform-hub/reviews/stores/:id` | Cập nhật liên kết điểm chạm & voucher | `{ store_name, address, map_url, voucher_title, discount_percent }` |
+| 43 | Review | `DELETE` | `/api/platform-hub/reviews/stores/:id` | Hủy điểm chạm thẻ NFC cửa hàng | Path param `id` |
+
+---
+
+### UC-CRM-32: Giao Diện Quản Trị CRM Admin Cho 7 Phân Hệ Mới & Cơ Chế Đồng Bộ RESTful
+* **Tác nhân:** Quản trị viên ViConnect, Điều hành viên sự kiện & di sản.
+* **Màn hình thực hiện:**
+  - `components/platform-app/admin/SportAdminManager.tsx`
+  - `components/platform-app/admin/RunAdminManager.tsx`
+  - `components/platform-app/admin/HeritageAdminManager.tsx`
+  - `components/platform-app/admin/MuseumAdminManager.tsx`
+  - `components/platform-app/admin/ArchiveAdminManager.tsx`
+  - `components/platform-app/admin/TicketAdminManager.tsx`
+  - `components/platform-app/admin/ReviewAdminManager.tsx`
+  - Định tuyến CRM: `routes/platform.sport.tsx`, `platform.run.tsx`, `platform.heritage.tsx`, `platform.museum.tsx`, `platform.archive.tsx`, `platform.tickets.tsx`, `platform.review.tsx`.
+* **Mục tiêu:** Trang bị giao diện Quản trị viên (CRM Admin Management) chuyên nghiệp với đầy đủ bảng dữ liệu (Data Table), bộ lọc tìm kiếm tức thì, hộp thoại thêm mới (POST Modal), hộp thoại chỉnh sửa (PUT Modal), thao tác xóa dữ liệu an toàn (DELETE Action) và cơ chế chuyển đổi mượt mà giữa chế độ Quản trị CRM và chế độ Xem trước Ứng dụng PWA/App.
+
+#### 1. Quy Chuẩn Thiết Kế Giao Diện Quản Trị CRM
+* **Bảng Dữ Liệu (Data Table):** Sử dụng nền Đen Thạch Anh Obsidian (`bg-[#0A0E14]`), viền mạ vàng Champagne Gold mờ (`border-[#D8B282]/20`), hiển thị đầy đủ các cột nghiệp vụ, trạng thái gắn badge màu sắc chuẩn UI/UX.
+* **Bộ Lọc & Tìm Kiếm:** Hộp tìm kiếm theo từ khóa kết hợp dropdown lọc theo danh mục / trạng thái với debounce thời gian thực.
+* **Nút Tác Vụ Gradient Chuẩn ViOne (Strict Rule 8):**
+  - Nút thêm mới / Lưu dữ liệu: Gradient Vàng Hoàng Gia (`bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] font-bold`).
+  - Nút chỉnh sửa / Xem trước: Gradient Đen Thạch Anh Mạ Vàng (`bg-[#121820] text-[#F6E1C3] border border-[#D8B282]/30`).
+  - Nút xóa / Hủy: Gradient Đỏ Ruby (`bg-gradient-to-r from-red-600 to-red-800 text-white font-bold`).
+* **Hộp Thoại Modal Nhập Liệu:** Form thiết kế khoa học, có nhãn rõ ràng, kiểm tra tính hợp lệ dữ liệu (validation), tự động nạp dữ liệu cũ khi chỉnh sửa và thông báo Toast phản hồi thành công/thất bại tức thì qua `sonner`.
+* **Cơ Chế Tab Switcher Chế Độ Xem:** Header của mỗi phân hệ trang bị cụm nút chuyển đổi 2 chế độ:
+  1. `Quản Trị CRM (RESTful)`: Bảng quản lý dữ liệu, kiểm soát nghiệp vụ, thêm/sửa/xóa trực tiếp vào hệ thống.
+  2. `Xem Trước App/PWA`: Hiển thị giao diện người dùng thực tế trên ứng dụng PWA ViOne để quản trị viên kiểm tra trải nghiệm người dùng cuối.

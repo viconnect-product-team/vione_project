@@ -50,14 +50,25 @@ const { width } = Dimensions.get("window");
 
 export type PlatformTab = "overview" | "heritage" | "museum" | "sport" | "run" | "tickets" | "review" | "archive";
 
-export const PlatformAppScreen: React.FC<{ navigation?: any; onBack?: () => void }> = ({
+export const PlatformAppScreen: React.FC<{
+  navigation?: any;
+  onBack?: () => void;
+  initialTab?: PlatformTab;
+}> = ({
   navigation,
   onBack,
+  initialTab = "overview",
 }) => {
-  const [activeTab, setActiveTab] = useState<PlatformTab>("overview");
+  const [activeTab, setActiveTab] = useState<PlatformTab>(initialTab);
   const [isCitizenPassOpen, setCitizenPassOpen] = useState(false);
   const [stampsCount, setStampsCount] = useState(3);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   // Data states
   const [overview, setOverview] = useState<any>(null);

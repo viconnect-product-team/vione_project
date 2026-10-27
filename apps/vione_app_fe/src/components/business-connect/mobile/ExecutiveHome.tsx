@@ -84,6 +84,7 @@ import { ApprovalsMobileSheet } from "./ApprovalsMobileSheet";
 import { CreateCommunityModal } from "./community/CreateCommunityModal";
 import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
 import { HomeInstallBannerCard } from "@/components/pwa/HomeOneTapInstall";
+import { ViOneEcosystemGrid } from "./ViOneEcosystemGrid";
 
 export type CrmEvent = {
   id: string;
@@ -1606,6 +1607,11 @@ export function ExecutiveHome() {
             {/* BC-Mobile-6A — calm intelligence: own query, never blocks Home. */}
             <div id="tour-vione-ai-suggestions">
               <RelationshipSuggestions />
+            </div>
+
+            {/* Hệ sinh thái ViOne: Con người, cộng đồng & trải nghiệm */}
+            <div id="vione-ecosystem-section">
+              <ViOneEcosystemGrid />
             </div>
 
             <TodayCustomizeSheet

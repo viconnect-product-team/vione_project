@@ -50,8 +50,10 @@ import {
   Receipt,
   CreditCard,
   PieChart,
+  Kanban,
   type LucideIcon,
 } from "lucide-react";
+import { useRole } from "@/hooks/use-role";
 import { useT, type TKey } from "@/lib/i18n";
 import { getDashboardStatsFn, type DashboardStats } from "@/lib/dashboard.functions";
 import type { EventItem } from "@/lib/events.functions";
@@ -422,6 +424,42 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
   const getOpps = useServerFn(listOpportunitiesFn);
   const getActivity = useServerFn(listActivityLogFn);
   const unread = useUnreadNotifications();
+
+  const {
+    isPlatformAdmin,
+    isQuanTri,
+    isSuperAdmin: isRoleSuperAdmin,
+    isFinanceStaff,
+    isOperationsStaff,
+    isExecutiveStaff,
+  } = useRole();
+  const isSuperAdmin = Boolean(isQuanTri || isPlatformAdmin || isRoleSuperAdmin);
+  const isViOneStaff = Boolean(isSuperAdmin || isFinanceStaff || isOperationsStaff || isExecutiveStaff);
+
+  const [workspaceView, setWorkspaceView] = useState<"platform" | "company">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("vione_crm_workspace_view");
+      if (saved === "platform" || saved === "company") return saved;
+    }
+    return isPlatformAdmin || isQuanTri || isRoleSuperAdmin || isViOneStaff ? "platform" : "company";
+  });
+
+  useEffect(() => {
+    const handleViewChange = () => {
+      const saved = localStorage.getItem("vione_crm_workspace_view");
+      if (saved === "platform" || saved === "company") {
+        setWorkspaceView(saved);
+      }
+    };
+    window.addEventListener("vione_workspace_view_changed", handleViewChange);
+    window.addEventListener("storage", handleViewChange);
+    return () => {
+      window.removeEventListener("vione_workspace_view_changed", handleViewChange);
+      window.removeEventListener("storage", handleViewChange);
+    };
+  }, []);
+
+  const isCompanyView = (!isSuperAdmin && !isViOneStaff) || workspaceView === "company";
 
   const [tasks, setTasks] = useState<UrgentTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<UrgentTask | null>(null);
@@ -1069,10 +1107,10 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
           <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
             <span className="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc danh mục:</span>
             {[
-              { id: "all", label: "Tất cả", count: searchResults ? searchResults.total : (s.totalMembers + s.openOpportunities + s.upcomingEvents + s.paidInvoices + s.unpaidInvoices) },
+              { id: "all", label: "Tất cả", count: searchResults ? searchResults.total : (s.totalMembers + s.openOpportunities + s.upcomingEvents + (isCompanyView ? 0 : s.paidInvoices + s.unpaidInvoices)) },
               { id: "members", label: "Khách hàng & Hội viên", count: searchResults ? searchResults.members.length : s.totalMembers },
               { id: "opps", label: "Cơ hội kinh doanh", count: searchResults ? searchResults.opps.length : s.openOpportunities },
-              { id: "invoices", label: "Hóa đơn & Doanh thu", count: searchResults ? searchResults.invoices.length : (s.paidInvoices + s.unpaidInvoices) },
+              ...(!isCompanyView ? [{ id: "invoices", label: "Hóa đơn & Doanh thu", count: searchResults ? searchResults.invoices.length : (s.paidInvoices + s.unpaidInvoices) }] : []),
               { id: "events", label: "Sự kiện", count: searchResults ? searchResults.events.length : s.upcomingEvents },
             ].map((cat) => (
               <button
@@ -1175,7 +1213,7 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
                   )}
 
                   {/* Matching Invoices */}
-                  {(searchCategory === "all" || searchCategory === "invoices") && searchResults.invoices.length > 0 && (
+                  {!isCompanyView && (searchCategory === "all" || searchCategory === "invoices") && searchResults.invoices.length > 0 && (
                     <div>
                       <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
                         <DollarSign className="h-3.5 w-3.5 text-emerald-500" />
@@ -1275,22 +1313,45 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
             </span>
           }
         />
-        <ExecKpi
-          label={t("exec.kpi.overdueFees")}
-          value={s.unpaidInvoices.toLocaleString("vi-VN")}
-          icon={FileWarning}
-          tone="rose"
-          to="/fees"
-          hint="4 hóa đơn chưa thu (72 tr)"
-        />
-        <ExecKpi
-          label="Doanh thu thực tế"
-          value={fmtMoney(s.revenue)}
-          icon={DollarSign}
-          tone="green"
-          to="/fees"
-          hint={`${s.paidInvoices} hóa đơn đã thu phí`}
-        />
+        {isCompanyView ? (
+          <>
+            <ExecKpi
+              label="Công việc cần xử lý"
+              value="8"
+              icon={Kanban}
+              tone="amber"
+              to="/workflow"
+              hint="3 nhiệm vụ ưu tiên cao"
+            />
+            <ExecKpi
+              label="Nhiệm vụ hoàn thành"
+              value="24"
+              icon={CheckCircle2}
+              tone="green"
+              to="/workflow"
+              hint="Tỷ lệ đạt tiến độ 92%"
+            />
+          </>
+        ) : (
+          <>
+            <ExecKpi
+              label={t("exec.kpi.overdueFees")}
+              value={s.unpaidInvoices.toLocaleString("vi-VN")}
+              icon={FileWarning}
+              tone="rose"
+              to="/fees"
+              hint="4 hóa đơn chưa thu (72 tr)"
+            />
+            <ExecKpi
+              label="Doanh thu thực tế"
+              value={fmtMoney(s.revenue)}
+              icon={DollarSign}
+              tone="green"
+              to="/fees"
+              hint={`${s.paidInvoices} hóa đơn đã thu phí`}
+            />
+          </>
+        )}
         <ExecKpi
           label={t("exec.kpi.pendingRenewals")}
           value={s.pendingRenewals.toLocaleString("vi-VN")}
@@ -1317,7 +1378,7 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
         />
       </div>
 
-      {/* ── 2. Growth Chart & Fee Collection Panel ────────────────────────────── */}
+      {/* ── 2. Growth Chart & Fee Collection / Task Assignment Panel ────────────────────────────── */}
       <div className="grid gap-5 lg:grid-cols-3">
         <Panel
           title={t("exec.growth.title")}
@@ -1331,38 +1392,81 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
           />
         </Panel>
 
-        <Panel title={t("exec.fees.title")}>
-          <div className="text-[30px] font-bold leading-none tracking-tight text-foreground">
-            {fmtMoney(s.revenue)}
-          </div>
-          <p className="mt-1 text-[12px] text-muted-foreground">{t("exec.fees.collected")}</p>
+        {isCompanyView ? (
+          <Panel title="Giao Việc & Quản Lý Công Việc" sub="Tổng hợp tiến độ phân công nhiệm vụ doanh nghiệp">
+            <div className="text-[30px] font-bold leading-none tracking-tight text-foreground">
+              18 <span className="text-base font-normal text-muted-foreground">nhiệm vụ</span>
+            </div>
+            <p className="mt-1 text-[12px] text-muted-foreground">Đang trong quy trình phối hợp liên phòng ban</p>
 
-          <div className="mt-5">
-            <div className="mb-1.5 flex items-center justify-between text-[12px]">
-              <span className="font-medium text-foreground">{t("exec.fees.rate")}</span>
-              <span className="font-semibold text-foreground">{feeRate}%</span>
-            </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${feeRate}%`, background: "var(--gradient-primary)" }}
-              />
-            </div>
-          </div>
-
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-border bg-background p-3">
-              <div className="text-[11px] text-muted-foreground">{t("exec.fees.paid")}</div>
-              <div className="mt-0.5 text-[18px] font-bold text-success">{s.paidInvoices}</div>
-            </div>
-            <div className="rounded-xl border border-border bg-background p-3">
-              <div className="text-[11px] text-muted-foreground">{t("exec.fees.unpaid")}</div>
-              <div className="mt-0.5 text-[18px] font-bold text-destructive">
-                {s.unpaidInvoices}
+            <div className="mt-5">
+              <div className="mb-1.5 flex items-center justify-between text-[12px]">
+                <span className="font-medium text-foreground">Tiến độ hoàn thành KPI tuần</span>
+                <span className="font-semibold text-emerald-500">82%</span>
+              </div>
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full transition-all bg-emerald-500"
+                  style={{ width: "82%" }}
+                />
               </div>
             </div>
-          </div>
-        </Panel>
+
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border bg-background p-3">
+                <div className="text-[11px] text-muted-foreground">Đang xử lý (WIP)</div>
+                <div className="mt-0.5 text-[18px] font-bold text-amber-500">12</div>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-3">
+                <div className="text-[11px] text-muted-foreground">Đã nghiệm thu</div>
+                <div className="mt-0.5 text-[18px] font-bold text-emerald-500">24</div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-border">
+              <Link
+                to="/workflow"
+                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 text-xs font-semibold transition"
+              >
+                <Kanban className="w-3.5 h-3.5" />
+                <span>Mở bảng điều phối giao việc (Kanban)</span>
+              </Link>
+            </div>
+          </Panel>
+        ) : (
+          <Panel title={t("exec.fees.title")}>
+            <div className="text-[30px] font-bold leading-none tracking-tight text-foreground">
+              {fmtMoney(s.revenue)}
+            </div>
+            <p className="mt-1 text-[12px] text-muted-foreground">{t("exec.fees.collected")}</p>
+
+            <div className="mt-5">
+              <div className="mb-1.5 flex items-center justify-between text-[12px]">
+                <span className="font-medium text-foreground">{t("exec.fees.rate")}</span>
+                <span className="font-semibold text-foreground">{feeRate}%</span>
+              </div>
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${feeRate}%`, background: "var(--gradient-primary)" }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border bg-background p-3">
+                <div className="text-[11px] text-muted-foreground">{t("exec.fees.paid")}</div>
+                <div className="mt-0.5 text-[18px] font-bold text-success">{s.paidInvoices}</div>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-3">
+                <div className="text-[11px] text-muted-foreground">{t("exec.fees.unpaid")}</div>
+                <div className="mt-0.5 text-[18px] font-bold text-destructive">
+                  {s.unpaidInvoices}
+                </div>
+              </div>
+            </div>
+          </Panel>
+        )}
       </div>
 
       {/* ── 2.5. Điều Hành Lưu Lượng Web Landing & Tài Chính Thực Tế (PostgreSQL Live) ── */}
@@ -1583,214 +1687,306 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
           </div>
         </Panel>
 
-        {/* Panel 2: Báo Cáo Thu - Chi Thực Tế */}
-        <Panel
-          title="Báo Cáo Thu - Chi Doanh Nghiệp (Thực Tế)"
-          sub="Tổng hợp dòng tiền ròng từ sổ cái transactions & hóa đơn invoices thực tế"
-          action={
-            <div className="flex items-center gap-2">
-              <div className="inline-flex rounded-lg bg-muted/70 p-0.5 text-[11px] font-medium">
-                <button
-                  type="button"
-                  onClick={() => setFinancePeriod("week")}
-                  className={`rounded-md px-2.5 py-1 transition cursor-pointer ${
-                    financePeriod === "week"
-                      ? "bg-card text-foreground shadow-xs font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Theo Tuần
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFinancePeriod("month")}
-                  className={`rounded-md px-2.5 py-1 transition cursor-pointer ${
-                    financePeriod === "month"
-                      ? "bg-card text-foreground shadow-xs font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Theo Tháng
-                </button>
-              </div>
-            </div>
-          }
-        >
-          <div className="space-y-4">
-            {/* 3 Core Finance Cards */}
-            <div className="grid grid-cols-3 gap-2.5">
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/30 p-3">
-                <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                  Tổng Thu (Income)
-                </div>
-                <div className="mt-1 text-lg font-black text-emerald-600 dark:text-emerald-400">
-                  {fmtMoney(
-                    financePeriod === "week"
-                      ? financeOverviewQ.data?.weekly?.totalIncome ?? 85000000
-                      : financeOverviewQ.data?.monthly?.totalIncome ?? 380000000
-                  )}
-                </div>
-                <div className="text-[10px] text-emerald-600/80 mt-0.5">Hội phí & Hợp đồng</div>
-              </div>
-              <div className="rounded-xl border border-rose-500/30 bg-rose-50/50 dark:bg-rose-950/30 p-3">
-                <div className="text-[11px] font-semibold text-rose-700 dark:text-rose-400">
-                  Tổng Chi (Expense)
-                </div>
-                <div className="mt-1 text-lg font-black text-rose-600 dark:text-rose-400">
-                  {fmtMoney(
-                    financePeriod === "week"
-                      ? financeOverviewQ.data?.weekly?.totalExpense ?? 50700000
-                      : financeOverviewQ.data?.monthly?.totalExpense ?? 210000000
-                  )}
-                </div>
-                <div className="text-[10px] text-rose-600/80 mt-0.5">Vận hành & Kỹ thuật</div>
-              </div>
-              <div className="rounded-xl border border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/30 p-3">
-                <div className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">
-                  Dòng Tiền Ròng (Net)
-                </div>
-                <div className="mt-1 text-lg font-black text-amber-600 dark:text-amber-400">
-                  {fmtMoney(
-                    financePeriod === "week"
-                      ? financeOverviewQ.data?.weekly?.netCashflow ?? 34300000
-                      : financeOverviewQ.data?.monthly?.netCashflow ?? 170000000
-                  )}
-                </div>
-                <div className="flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>Dương tiền mặt</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Income vs Expense Chart */}
-            <div className="h-[210px] w-full pt-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={
-                    financePeriod === "week"
-                      ? financeOverviewQ.data?.weekly?.trend || [
-                          { period: "Tuần 37", income: 20000000, expense: 12000000, net: 8000000 },
-                          { period: "Tuần 38", income: 25000000, expense: 14000000, net: 11000000 },
-                          { period: "Tuần 39", income: 22000000, expense: 11700000, net: 10300000 },
-                          { period: "Tuần 40", income: 18000000, expense: 13000000, net: 5000000 },
-                        ]
-                      : financeOverviewQ.data?.monthly?.trend || [
-                          { period: "T05/2026", income: 60000000, expense: 35000000, net: 25000000 },
-                          { period: "T06/2026", income: 72000000, expense: 42000000, net: 30000000 },
-                          { period: "T07/2026", income: 78000000, expense: 45000000, net: 33000000 },
-                          { period: "T08/2026", income: 82000000, expense: 44000000, net: 38000000 },
-                          { period: "T09/2026", income: 88000000, expense: 44000000, net: 44000000 },
-                        ]
-                  }
-                  margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                  <XAxis
-                    dataKey="period"
-                    tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}tr`}
-                    tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    formatter={(val: any, name: any) => [
-                      `${Number(val).toLocaleString("vi-VN")} đ`,
-                      name === "income" ? "Khoản Thu" : name === "expense" ? "Khoản Chi" : "Dòng tiền ròng",
-                    ]}
-                    contentStyle={{
-                      background: "var(--color-card)",
-                      border: "1px solid var(--color-border)",
-                      borderRadius: 12,
-                      fontSize: 12,
-                      boxShadow: "var(--shadow-elevated)",
-                    }}
-                  />
-                  <Legend
-                    formatter={(value) => (value === "income" ? "Khoản Thu" : value === "expense" ? "Khoản Chi" : "Dòng tiền ròng")}
-                    wrapperStyle={{ fontSize: 11, paddingTop: 6 }}
-                  />
-                  <Bar dataKey="income" name="income" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="expense" name="expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Expense breakdown & Invoice collection progress */}
-            <div className="border-t border-border/60 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div>
-                <div className="font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
-                  <Receipt className="h-3.5 w-3.5 text-primary" />
-                  Cơ cấu chi phí chính
-                </div>
-                <div className="space-y-1">
-                  {(
-                    financeOverviewQ.data?.expenseCategories || [
-                      { category: "Vận hành & Mặt bằng", amount: 25000000, percent: 49.3 },
-                      { category: "Hạ tầng Cloud AWS", amount: 18000000, percent: 35.5 },
-                      { category: "Tiếp khách đối tác B2B", amount: 4200000, percent: 8.3 },
-                      { category: "Marketing hội thảo", amount: 3500000, percent: 6.9 },
-                    ]
-                  ).map((c: any) => (
-                    <div key={c.category} className="flex items-center justify-between text-[11.5px]">
-                      <span className="text-muted-foreground truncate">{c.category}</span>
-                      <span className="font-medium text-foreground">{fmtMoney(c.amount)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
-                  <CreditCard className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  Thu hồi công nợ hóa đơn
-                </div>
-                <div className="space-y-1 text-[11.5px]">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Đã thanh toán:</span>
-                    <span className="font-bold text-emerald-600">
-                      {fmtMoney(financeOverviewQ.data?.invoices?.totalPaidAmount ?? 55000000)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Chờ thanh toán:</span>
-                    <span className="font-bold text-amber-600">
-                      {fmtMoney(financeOverviewQ.data?.invoices?.totalUnpaidAmount ?? 30000000)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-0.5">
-                    <span className="text-muted-foreground">Tỷ lệ thu hồi:</span>
-                    <span className="font-bold text-foreground">
-                      {financeOverviewQ.data?.invoices?.collectionRate ?? 64.7}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Bar */}
-            <div className="flex items-center justify-between border-t border-border/60 pt-3">
-              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Nguồn: bảng transactions &amp; invoices PostgreSQL</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleExportExcel("finance")}
-                disabled={isExportingFinanceExcel}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition hover:bg-emerald-100 dark:hover:bg-emerald-900/50 cursor-pointer disabled:opacity-50"
+        {/* Panel 2: Báo Cáo Thu - Chi (Nền tảng) hoặc Phân Bổ Giao Việc (Doanh nghiệp) */}
+        {isCompanyView ? (
+          <Panel
+            title="Phân Bổ Giao Việc & Nhân Sự Doanh Nghiệp"
+            sub="Tiến độ thực thi quy trình phân công công việc theo phòng ban & trạng thái"
+            action={
+              <Link
+                to="/workflow"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition"
               >
-                <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                {isExportingFinanceExcel ? "Đang xuất..." : "📥 Xuất Báo Cáo Thu - Chi Excel"}
-              </button>
+                <Kanban className="w-3.5 h-3.5" />
+                <span>Bảng Giao Việc</span>
+              </Link>
+            }
+          >
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-2.5">
+                <div className="rounded-xl border border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/30 p-3">
+                  <div className="text-[11px] font-semibold text-blue-700 dark:text-blue-400">
+                    Cần phân công
+                  </div>
+                  <div className="mt-1 text-lg font-black text-blue-600 dark:text-blue-400">
+                    5
+                  </div>
+                  <div className="text-[10px] text-blue-600/80 mt-0.5">Nhiệm vụ mới tạo</div>
+                </div>
+                <div className="rounded-xl border border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/30 p-3">
+                  <div className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">
+                    Đang thực hiện
+                  </div>
+                  <div className="mt-1 text-lg font-black text-amber-600 dark:text-amber-400">
+                    12
+                  </div>
+                  <div className="text-[10px] text-amber-600/80 mt-0.5">Tiến độ đúng hạn</div>
+                </div>
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/30 p-3">
+                  <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                    Đã hoàn thành
+                  </div>
+                  <div className="mt-1 text-lg font-black text-emerald-600 dark:text-emerald-400">
+                    24
+                  </div>
+                  <div className="flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
+                    <CheckCircle2 className="h-3 w-3" />
+                    <span>Đạt chỉ tiêu tuần</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Task progress by department */}
+              <div className="space-y-2.5 pt-1">
+                <div className="text-xs font-semibold text-foreground">Phân bổ nhiệm vụ theo phòng ban</div>
+                {[
+                  { dept: "Ban Vận hành & Phối hợp", total: 8, done: 6, percent: 75, color: "bg-blue-500" },
+                  { dept: "Phòng Kinh doanh & Đối tác", total: 6, done: 5, percent: 83, color: "bg-emerald-500" },
+                  { dept: "Ban Kỹ thuật & Hạ tầng", total: 5, done: 4, percent: 80, color: "bg-amber-500" },
+                  { dept: "Truyền thông & Sự kiện", total: 4, done: 3, percent: 75, color: "bg-purple-500" },
+                ].map((item) => (
+                  <div key={item.dept} className="p-2.5 rounded-xl border border-border bg-card/60 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-medium text-foreground">{item.dept}</span>
+                      <span className="font-semibold text-muted-foreground">
+                        {item.done}/{item.total} việc ({item.percent}%)
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className={`h-full rounded-full transition-all ${item.color}`}
+                        style={{ width: `${item.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex items-center justify-between border-t border-border/60 pt-3">
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span>Trọng tâm vận hành: Phân công &amp; Điều phối tiến độ giao việc</span>
+                </div>
+                <Link
+                  to="/workflow"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 transition hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                >
+                  <Kanban className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                  <span>Điều Phối Quy Trình</span>
+                </Link>
+              </div>
             </div>
-          </div>
-        </Panel>
+          </Panel>
+        ) : (
+          <Panel
+            title="Báo Cáo Thu - Chi Doanh Nghiệp (Thực Tế)"
+            sub="Tổng hợp dòng tiền ròng từ sổ cái transactions & hóa đơn invoices thực tế"
+            action={
+              <div className="flex items-center gap-2">
+                <div className="inline-flex rounded-lg bg-muted/70 p-0.5 text-[11px] font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setFinancePeriod("week")}
+                    className={`rounded-md px-2.5 py-1 transition cursor-pointer ${
+                      financePeriod === "week"
+                        ? "bg-card text-foreground shadow-xs font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Theo Tuần
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFinancePeriod("month")}
+                    className={`rounded-md px-2.5 py-1 transition cursor-pointer ${
+                      financePeriod === "month"
+                        ? "bg-card text-foreground shadow-xs font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Theo Tháng
+                  </button>
+                </div>
+              </div>
+            }
+          >
+            <div className="space-y-4">
+              {/* 3 Core Finance Cards */}
+              <div className="grid grid-cols-3 gap-2.5">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/30 p-3">
+                  <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                    Tổng Thu (Income)
+                  </div>
+                  <div className="mt-1 text-lg font-black text-emerald-600 dark:text-emerald-400">
+                    {fmtMoney(
+                      financePeriod === "week"
+                        ? financeOverviewQ.data?.weekly?.totalIncome ?? 85000000
+                        : financeOverviewQ.data?.monthly?.totalIncome ?? 380000000
+                    )}
+                  </div>
+                  <div className="text-[10px] text-emerald-600/80 mt-0.5">Hội phí & Hợp đồng</div>
+                </div>
+                <div className="rounded-xl border border-rose-500/30 bg-rose-50/50 dark:bg-rose-950/30 p-3">
+                  <div className="text-[11px] font-semibold text-rose-700 dark:text-rose-400">
+                    Tổng Chi (Expense)
+                  </div>
+                  <div className="mt-1 text-lg font-black text-rose-600 dark:text-rose-400">
+                    {fmtMoney(
+                      financePeriod === "week"
+                        ? financeOverviewQ.data?.weekly?.totalExpense ?? 50700000
+                        : financeOverviewQ.data?.monthly?.totalExpense ?? 210000000
+                    )}
+                  </div>
+                  <div className="text-[10px] text-rose-600/80 mt-0.5">Vận hành & Kỹ thuật</div>
+                </div>
+                <div className="rounded-xl border border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/30 p-3">
+                  <div className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">
+                    Dòng Tiền Ròng (Net)
+                  </div>
+                  <div className="mt-1 text-lg font-black text-amber-600 dark:text-amber-400">
+                    {fmtMoney(
+                      financePeriod === "week"
+                        ? financeOverviewQ.data?.weekly?.netCashflow ?? 34300000
+                        : financeOverviewQ.data?.monthly?.netCashflow ?? 170000000
+                    )}
+                  </div>
+                  <div className="flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
+                    <TrendingUp className="h-3 w-3" />
+                    <span>Dương tiền mặt</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Income vs Expense Chart */}
+              <div className="h-[210px] w-full pt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={
+                      financePeriod === "week"
+                        ? financeOverviewQ.data?.weekly?.trend || [
+                            { period: "Tuần 37", income: 20000000, expense: 12000000, net: 8000000 },
+                            { period: "Tuần 38", income: 25000000, expense: 14000000, net: 11000000 },
+                            { period: "Tuần 39", income: 22000000, expense: 11700000, net: 10300000 },
+                            { period: "Tuần 40", income: 18000000, expense: 13000000, net: 5000000 },
+                          ]
+                        : financeOverviewQ.data?.monthly?.trend || [
+                            { period: "T05/2026", income: 60000000, expense: 35000000, net: 25000000 },
+                            { period: "T06/2026", income: 72000000, expense: 42000000, net: 30000000 },
+                            { period: "T07/2026", income: 78000000, expense: 45000000, net: 33000000 },
+                            { period: "T08/2026", income: 82000000, expense: 44000000, net: 38000000 },
+                            { period: "T09/2026", income: 88000000, expense: 44000000, net: 44000000 },
+                          ]
+                    }
+                    margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                    <XAxis
+                      dataKey="period"
+                      tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}tr`}
+                      tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      formatter={(val: any, name: any) => [
+                        `${Number(val).toLocaleString("vi-VN")} đ`,
+                        name === "income" ? "Khoản Thu" : name === "expense" ? "Khoản Chi" : "Dòng tiền ròng",
+                      ]}
+                      contentStyle={{
+                        background: "var(--color-card)",
+                        border: "1px solid var(--color-border)",
+                        borderRadius: 12,
+                        fontSize: 12,
+                        boxShadow: "var(--shadow-elevated)",
+                      }}
+                    />
+                    <Legend
+                      formatter={(value) => (value === "income" ? "Khoản Thu" : value === "expense" ? "Khoản Chi" : "Dòng tiền ròng")}
+                      wrapperStyle={{ fontSize: 11, paddingTop: 6 }}
+                    />
+                    <Bar dataKey="income" name="income" fill="#10b981" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expense" name="expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Expense breakdown & Invoice collection progress */}
+              <div className="border-t border-border/60 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <div className="font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
+                    <Receipt className="h-3.5 w-3.5 text-primary" />
+                    Cơ cấu chi phí chính
+                  </div>
+                  <div className="space-y-1">
+                    {(
+                      financeOverviewQ.data?.expenseCategories || [
+                        { category: "Vận hành & Mặt bằng", amount: 25000000, percent: 49.3 },
+                        { category: "Hạ tầng Cloud AWS", amount: 18000000, percent: 35.5 },
+                        { category: "Tiếp khách đối tác B2B", amount: 4200000, percent: 8.3 },
+                        { category: "Marketing hội thảo", amount: 3500000, percent: 6.9 },
+                      ]
+                    ).map((c: any) => (
+                      <div key={c.category} className="flex items-center justify-between text-[11.5px]">
+                        <span className="text-muted-foreground truncate">{c.category}</span>
+                        <span className="font-medium text-foreground">{fmtMoney(c.amount)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
+                    <CreditCard className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    Thu hồi công nợ hóa đơn
+                  </div>
+                  <div className="space-y-1 text-[11.5px]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Đã thanh toán:</span>
+                      <span className="font-bold text-emerald-600">
+                        {fmtMoney(financeOverviewQ.data?.invoices?.totalPaidAmount ?? 55000000)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Chờ thanh toán:</span>
+                      <span className="font-bold text-amber-600">
+                        {fmtMoney(financeOverviewQ.data?.invoices?.totalUnpaidAmount ?? 30000000)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between pt-0.5">
+                      <span className="text-muted-foreground">Tỷ lệ thu hồi:</span>
+                      <span className="font-bold text-foreground">
+                        {financeOverviewQ.data?.invoices?.collectionRate ?? 64.7}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex items-center justify-between border-t border-border/60 pt-3">
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Nguồn: bảng transactions &amp; invoices PostgreSQL</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleExportExcel("finance")}
+                  disabled={isExportingFinanceExcel}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition hover:bg-emerald-100 dark:hover:bg-emerald-900/50 cursor-pointer disabled:opacity-50"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  {isExportingFinanceExcel ? "Đang xuất..." : "📥 Xuất Báo Cáo Thu - Chi Excel"}
+                </button>
+              </div>
+            </div>
+          </Panel>
+        )}
       </div>
 
       {/* ── 3. Realtime Live Feed: Hội viên mới & Sản phẩm Marketplace ─────────── */}
@@ -2474,13 +2670,23 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
                 label={t("exec.queue.renewals")}
                 count={s.pendingRenewals}
               />
-              <QueueRow
-                to="/fees"
-                icon={FileWarning}
-                tone="rose"
-                label={t("exec.queue.unpaid")}
-                count={s.unpaidInvoices}
-              />
+              {isCompanyView ? (
+                <QueueRow
+                  to="/workflow"
+                  icon={Kanban}
+                  tone="amber"
+                  label="Nhiệm vụ cần bàn giao"
+                  count={8}
+                />
+              ) : (
+                <QueueRow
+                  to="/fees"
+                  icon={FileWarning}
+                  tone="rose"
+                  label={t("exec.queue.unpaid")}
+                  count={s.unpaidInvoices}
+                />
+              )}
               <QueueRow
                 to="/marketplace/my-quotes"
                 icon={DollarSign}
@@ -2596,7 +2802,11 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <QuickAction to="/members" icon={Plus} label={t("exec.quick.addMember")} />
           <QuickAction to="/events" icon={CalendarPlus} label={t("exec.quick.newEvent")} />
-          <QuickAction to="/fees" icon={DollarSign} label={t("exec.quick.collectFee")} />
+          {isCompanyView ? (
+            <QuickAction to="/workflow" icon={Kanban} label="Giao việc mới" />
+          ) : (
+            <QuickAction to="/fees" icon={DollarSign} label={t("exec.quick.collectFee")} />
+          )}
           <QuickAction to="/notifications" icon={Send} label={t("exec.quick.sendNotif")} />
         </div>
       </Panel>

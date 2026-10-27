@@ -550,4 +550,490 @@ export class PlatformHubService {
       message: `Cảm ơn bạn đã đánh giá ${rating} sao! Bạn nhận được mã ưu đãi: ${voucher}`,
     };
   }
+
+  // ── SPORT TOURNAMENTS CRUD (RESTFUL) ──
+  async createSportTournament(data: any) {
+    const code = data.code || 'SPORT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const name = (data.name || 'Giải đấu mới').replace(/'/g, "''");
+    const sportType = (data.sport_type || data.sportType || 'pickleball').replace(/'/g, "''");
+    const format = (data.format || 'knockout').replace(/'/g, "''");
+    const startDate = data.start_date || data.startDate || new Date().toISOString().split('T')[0];
+    const endDate = data.end_date || data.endDate || new Date().toISOString().split('T')[0];
+    const venue = (data.venue || 'Sân vận động ViConnect').replace(/'/g, "''");
+    const province = (data.province || 'Hà Nội').replace(/'/g, "''");
+    const status = (data.status || 'upcoming').replace(/'/g, "''");
+    const teamsCount = Number(data.teams_count || data.teamsCount) || 16;
+    const bannerUrl = (data.banner_url || data.bannerUrl || '').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_sport_tournaments 
+      (code, name, sport_type, format, start_date, end_date, venue, province, status, teams_count, banner_url, is_platform_managed, created_at, updated_at)
+      VALUES 
+      ('${code}', '${name}', '${sportType}', '${format}', '${startDate}'::date, '${endDate}'::date, '${venue}', '${province}', '${status}', ${teamsCount}, '${bannerUrl}', true, NOW(), NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateSportTournament(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = ['updated_at = NOW()'];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.sport_type || data.sportType) sets.push(`sport_type = '${(data.sport_type || data.sportType).replace(/'/g, "''")}'`);
+    if (data.format) sets.push(`format = '${data.format.replace(/'/g, "''")}'`);
+    if (data.start_date || data.startDate) sets.push(`start_date = '${data.start_date || data.startDate}'::date`);
+    if (data.end_date || data.endDate) sets.push(`end_date = '${data.end_date || data.endDate}'::date`);
+    if (data.venue) sets.push(`venue = '${data.venue.replace(/'/g, "''")}'`);
+    if (data.province) sets.push(`province = '${data.province.replace(/'/g, "''")}'`);
+    if (data.status) sets.push(`status = '${data.status.replace(/'/g, "''")}'`);
+    if (data.teams_count !== undefined || data.teamsCount !== undefined) sets.push(`teams_count = ${Number(data.teams_count ?? data.teamsCount) || 0}`);
+    if (data.banner_url !== undefined || data.bannerUrl !== undefined) sets.push(`banner_url = '${(data.banner_url || data.bannerUrl || '').replace(/'/g, "''")}'`);
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      UPDATE public.vione_sport_tournaments
+      SET ${sets.join(', ')}
+      WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      RETURNING *
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy giải đấu');
+    return rows[0];
+  }
+
+  async deleteSportTournament(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`
+      DELETE FROM public.vione_sport_tournaments WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+    `);
+    return { ok: true, message: 'Đã xóa giải đấu thành công' };
+  }
+
+  // ── SPORT CLUBS CRUD (RESTFUL) ──
+  async createSportClub(data: any) {
+    const code = data.code || 'CLUB-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const name = (data.name || 'CLB mới').replace(/'/g, "''");
+    const sportType = (data.sport_type || data.sportType || 'pickleball').replace(/'/g, "''");
+    const leaderName = (data.leader_name || data.leaderName || 'Chủ nhiệm CLB').replace(/'/g, "''");
+    const membersCount = Number(data.members_count || data.membersCount) || 1;
+    const venue = (data.venue || '').replace(/'/g, "''");
+    const scheduleInfo = (data.schedule_info || data.scheduleInfo || '').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_sport_clubs (code, name, sport_type, leader_name, members_count, venue, schedule_info, created_at)
+      VALUES ('${code}', '${name}', '${sportType}', '${leaderName}', ${membersCount}, '${venue}', '${scheduleInfo}', NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateSportClub(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = [];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.sport_type || data.sportType) sets.push(`sport_type = '${(data.sport_type || data.sportType).replace(/'/g, "''")}'`);
+    if (data.leader_name || data.leaderName) sets.push(`leader_name = '${(data.leader_name || data.leaderName).replace(/'/g, "''")}'`);
+    if (data.members_count !== undefined || data.membersCount !== undefined) sets.push(`members_count = ${Number(data.members_count ?? data.membersCount) || 0}`);
+    if (data.venue !== undefined) sets.push(`venue = '${data.venue.replace(/'/g, "''")}'`);
+    if (data.schedule_info !== undefined || data.scheduleInfo !== undefined) sets.push(`schedule_info = '${(data.schedule_info || data.scheduleInfo || '').replace(/'/g, "''")}'`);
+
+    if (sets.length) {
+      await this.prisma.$executeRawUnsafe(`
+        UPDATE public.vione_sport_clubs SET ${sets.join(', ')} WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      `);
+    }
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`SELECT * FROM public.vione_sport_clubs WHERE id = '${cleanId}'::uuid OR code = '${cleanId}' LIMIT 1`);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy CLB');
+    return rows[0];
+  }
+
+  async deleteSportClub(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_sport_clubs WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa CLB thành công' };
+  }
+
+  // ── RACES (RUN) CRUD (RESTFUL) ──
+  async createRace(data: any) {
+    const code = data.code || 'RACE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const name = (data.name || 'Giải chạy mới').replace(/'/g, "''");
+    const raceDate = data.race_date || data.raceDate || new Date().toISOString().split('T')[0];
+    const location = (data.location || 'Hà Nội').replace(/'/g, "''");
+    const province = (data.province || 'Hà Nội').replace(/'/g, "''");
+    const elevation = Number(data.elevation_gain_m || data.elevationGainM) || 120;
+    const isHeritageRun = Boolean(data.is_heritage_run ?? data.isHeritageRun);
+    const status = (data.status || 'upcoming').replace(/'/g, "''");
+    const bannerUrl = (data.banner_url || data.bannerUrl || '').replace(/'/g, "''");
+    const description = (data.description || '').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_races 
+      (code, name, race_date, location, province, elevation_gain_m, is_heritage_run, status, banner_url, description, is_platform_managed, created_at, updated_at)
+      VALUES 
+      ('${code}', '${name}', '${raceDate}'::date, '${location}', '${province}', ${elevation}, ${isHeritageRun}, '${status}', '${bannerUrl}', '${description}', true, NOW(), NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateRace(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = ['updated_at = NOW()'];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.race_date || data.raceDate) sets.push(`race_date = '${data.race_date || data.raceDate}'::date`);
+    if (data.location) sets.push(`location = '${data.location.replace(/'/g, "''")}'`);
+    if (data.province) sets.push(`province = '${data.province.replace(/'/g, "''")}'`);
+    if (data.elevation_gain_m !== undefined || data.elevationGainM !== undefined) sets.push(`elevation_gain_m = ${Number(data.elevation_gain_m ?? data.elevationGainM) || 0}`);
+    if (data.is_heritage_run !== undefined || data.isHeritageRun !== undefined) sets.push(`is_heritage_run = ${Boolean(data.is_heritage_run ?? data.isHeritageRun)}`);
+    if (data.status) sets.push(`status = '${data.status.replace(/'/g, "''")}'`);
+    if (data.banner_url !== undefined || data.bannerUrl !== undefined) sets.push(`banner_url = '${(data.banner_url || data.bannerUrl || '').replace(/'/g, "''")}'`);
+    if (data.description !== undefined) sets.push(`description = '${(data.description || '').replace(/'/g, "''")}'`);
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      UPDATE public.vione_races
+      SET ${sets.join(', ')}
+      WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      RETURNING *
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy giải chạy');
+    return rows[0];
+  }
+
+  async deleteRace(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_races WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa giải chạy thành công' };
+  }
+
+  // ── HERITAGE SITES CRUD (RESTFUL) ──
+  async createHeritageSite(data: any) {
+    const code = data.code || 'HERITAGE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const name = (data.name || 'Di sản mới').replace(/'/g, "''");
+    const category = (data.category || 'tangible').replace(/'/g, "''");
+    const unescoStatus = (data.unesco_status || data.unescoStatus || 'National Relic').replace(/'/g, "''");
+    const lat = Number(data.latitude) || 21.0285;
+    const lng = Number(data.longitude) || 105.8542;
+    const address = (data.address || '').replace(/'/g, "''");
+    const province = (data.province || 'Hà Nội').replace(/'/g, "''");
+    const description = (data.description || '').replace(/'/g, "''");
+    const vr360Url = (data.vr360_url || data.vr360Url || '').replace(/'/g, "''");
+    const thumbnailUrl = (data.thumbnail_url || data.thumbnailUrl || '').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_heritage_sites
+      (code, name, category, unesco_status, latitude, longitude, address, province, description, vr360_url, thumbnail_url, stamps_count, is_platform_managed, created_at, updated_at)
+      VALUES
+      ('${code}', '${name}', '${category}', '${unescoStatus}', ${lat}, ${lng}, '${address}', '${province}', '${description}', '${vr360Url}', '${thumbnailUrl}', 0, true, NOW(), NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateHeritageSite(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = ['updated_at = NOW()'];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.category) sets.push(`category = '${data.category.replace(/'/g, "''")}'`);
+    if (data.unesco_status || data.unescoStatus) sets.push(`unesco_status = '${(data.unesco_status || data.unescoStatus).replace(/'/g, "''")}'`);
+    if (data.latitude !== undefined) sets.push(`latitude = ${Number(data.latitude) || 0}`);
+    if (data.longitude !== undefined) sets.push(`longitude = ${Number(data.longitude) || 0}`);
+    if (data.address !== undefined) sets.push(`address = '${data.address.replace(/'/g, "''")}'`);
+    if (data.province) sets.push(`province = '${data.province.replace(/'/g, "''")}'`);
+    if (data.description !== undefined) sets.push(`description = '${(data.description || '').replace(/'/g, "''")}'`);
+    if (data.vr360_url !== undefined || data.vr360Url !== undefined) sets.push(`vr360_url = '${(data.vr360_url || data.vr360Url || '').replace(/'/g, "''")}'`);
+    if (data.thumbnail_url !== undefined || data.thumbnailUrl !== undefined) sets.push(`thumbnail_url = '${(data.thumbnail_url || data.thumbnailUrl || '').replace(/'/g, "''")}'`);
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      UPDATE public.vione_heritage_sites
+      SET ${sets.join(', ')}
+      WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      RETURNING *
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy di sản');
+    return rows[0];
+  }
+
+  async deleteHeritageSite(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_heritage_sites WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa di sản thành công' };
+  }
+
+  // ── MUSEUMS CRUD (RESTFUL) ──
+  async createMuseum(data: any) {
+    const code = data.code || 'MUSEUM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const name = (data.name || 'Bảo tàng mới').replace(/'/g, "''");
+    const address = (data.address || '').replace(/'/g, "''");
+    const province = (data.province || 'Hà Nội').replace(/'/g, "''");
+    const ticketPrice = Number(data.ticket_price || data.ticketPrice) || 0;
+    const openingHours = (data.opening_hours || data.openingHours || '08:00 - 17:00').replace(/'/g, "''");
+    const virtualTourUrl = (data.virtual_tour_url || data.virtualTourUrl || '').replace(/'/g, "''");
+    const description = (data.description || '').replace(/'/g, "''");
+    const thumbnailUrl = (data.thumbnail_url || data.thumbnailUrl || '').replace(/'/g, "''");
+    const heritageSiteId = data.heritage_site_id || data.heritageSiteId ? `'${data.heritage_site_id || data.heritageSiteId}'::uuid` : 'NULL';
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_museums
+      (code, name, address, province, ticket_price, opening_hours, virtual_tour_url, description, thumbnail_url, heritage_site_id, is_platform_managed, created_at, updated_at)
+      VALUES
+      ('${code}', '${name}', '${address}', '${province}', ${ticketPrice}, '${openingHours}', '${virtualTourUrl}', '${description}', '${thumbnailUrl}', ${heritageSiteId}, true, NOW(), NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateMuseum(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = ['updated_at = NOW()'];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.address !== undefined) sets.push(`address = '${data.address.replace(/'/g, "''")}'`);
+    if (data.province) sets.push(`province = '${data.province.replace(/'/g, "''")}'`);
+    if (data.ticket_price !== undefined || data.ticketPrice !== undefined) sets.push(`ticket_price = ${Number(data.ticket_price ?? data.ticketPrice) || 0}`);
+    if (data.opening_hours !== undefined || data.openingHours !== undefined) sets.push(`opening_hours = '${(data.opening_hours || data.openingHours || '').replace(/'/g, "''")}'`);
+    if (data.virtual_tour_url !== undefined || data.virtualTourUrl !== undefined) sets.push(`virtual_tour_url = '${(data.virtual_tour_url || data.virtualTourUrl || '').replace(/'/g, "''")}'`);
+    if (data.description !== undefined) sets.push(`description = '${(data.description || '').replace(/'/g, "''")}'`);
+    if (data.thumbnail_url !== undefined || data.thumbnailUrl !== undefined) sets.push(`thumbnail_url = '${(data.thumbnail_url || data.thumbnailUrl || '').replace(/'/g, "''")}'`);
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      UPDATE public.vione_museums
+      SET ${sets.join(', ')}
+      WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      RETURNING *
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy bảo tàng');
+    return rows[0];
+  }
+
+  async deleteMuseum(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_museums WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa bảo tàng thành công' };
+  }
+
+  // ── ARTIFACTS CRUD (RESTFUL) ──
+  async getArtifacts(query?: { museumId?: string; search?: string }) {
+    const conditions: string[] = [];
+    if (query?.museumId) conditions.push(`museum_id = '${query.museumId.replace(/'/g, "''")}'::uuid`);
+    if (query?.search) {
+      const s = query.search.replace(/'/g, "''");
+      conditions.push(`(name ILIKE '%${s}%' OR dynasty ILIKE '%${s}%' OR code ILIKE '%${s}%')`);
+    }
+    const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+    return this.prisma.$queryRawUnsafe<any[]>(`SELECT * FROM public.vione_artifacts ${where} ORDER BY created_at DESC`);
+  }
+
+  async createArtifact(data: any) {
+    const code = data.code || 'ART-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const museumId = data.museum_id || data.museumId ? `'${data.museum_id || data.museumId}'::uuid` : 'NULL';
+    const name = (data.name || 'Hiện vật mới').replace(/'/g, "''");
+    const category = (data.category || 'ceramic').replace(/'/g, "''");
+    const dynasty = (data.dynasty || 'Triều Nguyễn').replace(/'/g, "''");
+    const dating = (data.dating || 'Thế kỷ 19').replace(/'/g, "''");
+    const nationalTreasure = Boolean(data.national_treasure ?? data.nationalTreasure);
+    const description = (data.description || '').replace(/'/g, "''");
+    const model3dUrl = (data.model_3d_url || data.model3dUrl || '').replace(/'/g, "''");
+    const imageUrl = (data.image_url || data.imageUrl || '').replace(/'/g, "''");
+    const nfcUid = (data.nfc_uid || data.nfcUid || '').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_artifacts
+      (code, museum_id, name, category, dynasty, dating, national_treasure, description, model_3d_url, image_url, nfc_uid, status, created_at, updated_at)
+      VALUES
+      ('${code}', ${museumId}, '${name}', '${category}', '${dynasty}', '${dating}', ${nationalTreasure}, '${description}', '${model3dUrl}', '${imageUrl}', '${nfcUid}', 'exhibiting', NOW(), NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateArtifact(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = ['updated_at = NOW()'];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.category) sets.push(`category = '${data.category.replace(/'/g, "''")}'`);
+    if (data.dynasty) sets.push(`dynasty = '${data.dynasty.replace(/'/g, "''")}'`);
+    if (data.dating) sets.push(`dating = '${data.dating.replace(/'/g, "''")}'`);
+    if (data.national_treasure !== undefined || data.nationalTreasure !== undefined) sets.push(`national_treasure = ${Boolean(data.national_treasure ?? data.nationalTreasure)}`);
+    if (data.description !== undefined) sets.push(`description = '${(data.description || '').replace(/'/g, "''")}'`);
+    if (data.model_3d_url !== undefined || data.model3dUrl !== undefined) sets.push(`model_3d_url = '${(data.model_3d_url || data.model3dUrl || '').replace(/'/g, "''")}'`);
+    if (data.image_url !== undefined || data.imageUrl !== undefined) sets.push(`image_url = '${(data.image_url || data.imageUrl || '').replace(/'/g, "''")}'`);
+    if (data.nfc_uid !== undefined || data.nfcUid !== undefined) sets.push(`nfc_uid = '${(data.nfc_uid || data.nfcUid || '').replace(/'/g, "''")}'`);
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      UPDATE public.vione_artifacts
+      SET ${sets.join(', ')}
+      WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      RETURNING *
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy hiện vật');
+    return rows[0];
+  }
+
+  async deleteArtifact(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_artifacts WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa hiện vật thành công' };
+  }
+
+  // ── ARCHIVES CRUD (RESTFUL) ──
+  async getArchiveDetail(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT * FROM public.vione_archives WHERE id = '${cleanId}'::uuid OR code = '${cleanId}' LIMIT 1
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy tư liệu số');
+    return rows[0];
+  }
+
+  async createArchive(data: any) {
+    const code = data.code || 'ARCHIVE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const title = (data.title || 'Tư liệu mới').replace(/'/g, "''");
+    const category = (data.category || 'moc_ban').replace(/'/g, "''");
+    const dynasty = (data.dynasty || 'Triều Nguyễn').replace(/'/g, "''");
+    const year = (data.year || '1802').replace(/'/g, "''");
+    const summary = (data.summary || '').replace(/'/g, "''");
+    const digitalFileUrl = (data.digital_file_url || data.digitalFileUrl || '').replace(/'/g, "''");
+    const storageLocation = (data.storage_location || data.storageLocation || 'Kho lưu trữ Trung ương').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_archives
+      (code, title, category, dynasty, year, summary, digital_file_url, storage_location, created_at)
+      VALUES
+      ('${code}', '${title}', '${category}', '${dynasty}', '${year}', '${summary}', '${digitalFileUrl}', '${storageLocation}', NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateArchive(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = [];
+    if (data.title) sets.push(`title = '${data.title.replace(/'/g, "''")}'`);
+    if (data.category) sets.push(`category = '${data.category.replace(/'/g, "''")}'`);
+    if (data.dynasty) sets.push(`dynasty = '${data.dynasty.replace(/'/g, "''")}'`);
+    if (data.year) sets.push(`year = '${data.year.replace(/'/g, "''")}'`);
+    if (data.summary !== undefined) sets.push(`summary = '${(data.summary || '').replace(/'/g, "''")}'`);
+    if (data.digital_file_url !== undefined || data.digitalFileUrl !== undefined) sets.push(`digital_file_url = '${(data.digital_file_url || data.digitalFileUrl || '').replace(/'/g, "''")}'`);
+    if (data.storage_location !== undefined || data.storageLocation !== undefined) sets.push(`storage_location = '${(data.storage_location || data.storageLocation || '').replace(/'/g, "''")}'`);
+
+    if (sets.length) {
+      await this.prisma.$executeRawUnsafe(`
+        UPDATE public.vione_archives SET ${sets.join(', ')} WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'
+      `);
+    }
+    return this.getArchiveDetail(id);
+  }
+
+  async deleteArchive(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_archives WHERE id = '${cleanId}'::uuid OR code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa tư liệu thành công' };
+  }
+
+  // ── TICKETS CRUD (RESTFUL) ──
+  async getAllTickets(query?: { search?: string; status?: string }) {
+    const conditions: string[] = [];
+    if (query?.status) conditions.push(`checkin_status = '${query.status.replace(/'/g, "''")}'`);
+    if (query?.search) {
+      const s = query.search.replace(/'/g, "''");
+      conditions.push(`(ticket_code ILIKE '%${s}%' OR user_name ILIKE '%${s}%' OR item_name ILIKE '%${s}%')`);
+    }
+    const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+    return this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT * FROM public.vione_platform_tickets ${where} ORDER BY created_at DESC LIMIT 100
+    `);
+  }
+
+  async createTicket(data: any) {
+    const ticketCode = data.ticket_code || data.ticketCode || 'TICK-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const userName = (data.user_name || data.userName || 'Khách hàng ViConnect').replace(/'/g, "''");
+    const userPhone = (data.user_phone || data.userPhone || '0900000000').replace(/'/g, "''");
+    const ticketType = (data.ticket_type || data.ticketType || 'museum').replace(/'/g, "''");
+    const itemName = (data.item_name || data.itemName || 'Vé tham quan').replace(/'/g, "''");
+    const quantity = Number(data.quantity) || 1;
+    const totalAmount = Number(data.total_amount || data.totalAmount) || 50000;
+    const paymentStatus = (data.payment_status || data.paymentStatus || 'paid').replace(/'/g, "''");
+    const validDate = data.valid_date || data.validDate || new Date().toISOString().split('T')[0];
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_platform_tickets
+      (ticket_code, user_name, user_phone, ticket_type, item_name, quantity, total_amount, payment_status, checkin_status, valid_date, created_at)
+      VALUES
+      ('${ticketCode}', '${userName}', '${userPhone}', '${ticketType}', '${itemName}', ${quantity}, ${totalAmount}, '${paymentStatus}', 'valid', '${validDate}'::date, NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateTicket(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = [];
+    if (data.checkin_status || data.checkinStatus) sets.push(`checkin_status = '${(data.checkin_status || data.checkinStatus).replace(/'/g, "''")}'`);
+    if (data.payment_status || data.paymentStatus) sets.push(`payment_status = '${(data.payment_status || data.paymentStatus).replace(/'/g, "''")}'`);
+    if (data.redeemed_by || data.redeemedBy) sets.push(`redeemed_by = '${(data.redeemed_by || data.redeemedBy).replace(/'/g, "''")}'`);
+
+    if (sets.length) {
+      await this.prisma.$executeRawUnsafe(`
+        UPDATE public.vione_platform_tickets SET ${sets.join(', ')} WHERE id = '${cleanId}'::uuid OR ticket_code = '${cleanId}'
+      `);
+    }
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`SELECT * FROM public.vione_platform_tickets WHERE id = '${cleanId}'::uuid OR ticket_code = '${cleanId}' LIMIT 1`);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy vé');
+    return rows[0];
+  }
+
+  async deleteTicket(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_platform_tickets WHERE id = '${cleanId}'::uuid OR ticket_code = '${cleanId}'`);
+    return { ok: true, message: 'Đã xóa vé thành công' };
+  }
+
+  // ── NFC REVIEW STORES CRUD (RESTFUL) ──
+  async getReviewStoreDetail(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT * FROM public.vione_nfc_reviews WHERE id = '${cleanId}'::uuid LIMIT 1
+    `);
+    if (!rows.length) throw new NotFoundException('Không tìm thấy cửa hàng NFC');
+    return rows[0];
+  }
+
+  async createReviewStore(data: any) {
+    const storeName = (data.store_name || data.storeName || 'Cửa hàng mới').replace(/'/g, "''");
+    const storeCategory = (data.store_category || data.storeCategory || 'restaurant').replace(/'/g, "''");
+    const storeAddress = (data.store_address || data.storeAddress || '').replace(/'/g, "''");
+    const nfcUid = (data.nfc_uid || data.nfcUid || '04:' + Math.random().toString(16).substring(2, 8).toUpperCase()).replace(/'/g, "''");
+    const googleMapsUrl = (data.google_maps_url || data.googleMapsUrl || 'https://maps.google.com').replace(/'/g, "''");
+    const rewardVoucher = (data.reward_voucher || data.rewardVoucher || 'VIONE-10K').replace(/'/g, "''");
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      INSERT INTO public.vione_nfc_reviews
+      (store_name, store_category, store_address, nfc_uid, google_maps_url, rating, total_reviews, reward_voucher, created_at)
+      VALUES
+      ('${storeName}', '${storeCategory}', '${storeAddress}', '${nfcUid}', '${googleMapsUrl}', 5.0, 0, '${rewardVoucher}', NOW())
+      RETURNING *
+    `);
+    return rows[0];
+  }
+
+  async updateReviewStore(id: string, data: any) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = [];
+    if (data.store_name || data.storeName) sets.push(`store_name = '${(data.store_name || data.storeName).replace(/'/g, "''")}'`);
+    if (data.store_category || data.storeCategory) sets.push(`store_category = '${(data.store_category || data.storeCategory).replace(/'/g, "''")}'`);
+    if (data.store_address || data.storeAddress) sets.push(`store_address = '${(data.store_address || data.storeAddress).replace(/'/g, "''")}'`);
+    if (data.nfc_uid || data.nfcUid) sets.push(`nfc_uid = '${(data.nfc_uid || data.nfcUid).replace(/'/g, "''")}'`);
+    if (data.google_maps_url || data.googleMapsUrl) sets.push(`google_maps_url = '${(data.google_maps_url || data.googleMapsUrl).replace(/'/g, "''")}'`);
+    if (data.reward_voucher || data.rewardVoucher) sets.push(`reward_voucher = '${(data.reward_voucher || data.rewardVoucher).replace(/'/g, "''")}'`);
+
+    if (sets.length) {
+      await this.prisma.$executeRawUnsafe(`
+        UPDATE public.vione_nfc_reviews SET ${sets.join(', ')} WHERE id = '${cleanId}'::uuid
+      `);
+    }
+    return this.getReviewStoreDetail(id);
+  }
+
+  async deleteReviewStore(id: string) {
+    const cleanId = id.replace(/'/g, "''");
+    await this.prisma.$executeRawUnsafe(`DELETE FROM public.vione_nfc_reviews WHERE id = '${cleanId}'::uuid`);
+    return { ok: true, message: 'Đã xóa trạm NFC thành công' };
+  }
 }

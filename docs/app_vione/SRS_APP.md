@@ -434,3 +434,34 @@
    - Dùng chung hạ tầng VietQR Napas đã chuẩn hóa: Mua vé bảo tàng, mua BIB, mua đồ lưu niệm di sản đều gạch nợ tự động trong 1 giây, xuất biên lai điện tử lưu trong mục Ví của tôi.
 4. **Trợ Lý Giọng Nói AI ViOne Thuyết Minh & Tư Vấn Toàn Năng:**
    - Người dùng có thể hỏi Trợ lý AI ViOne: *"Hãy kể cho tôi nghe lịch sử Hoàng Thành Thăng Long"* hoặc *"Hãy xem lịch xuất phát cự ly 21K ngày mai và tốc độ Pace mục tiêu của tôi"*. AI tự động phân luồng dữ liệu chính xác từ cơ sở dữ liệu ViConnect.
+
+---
+
+### UC-APP-30: Lưới Hệ Sinh Thái ViOne 2 Trụ Cột: "Con Người, Cộng Đồng & Trải Nghiệm" (Dual-App PWA & Native Mobile)
+* **Tác nhân:** Toàn bộ Hội viên, Doanh nhân, Khách tham quan di sản, Vận động viên và Khách hàng sử dụng dịch vụ ViOne.
+* **Màn hình thực hiện trên App Native & PWA:**
+  - PWA: `components/business-connect/mobile/ViOneEcosystemGrid.tsx`, `components/business-connect/mobile/ExecutiveHome.tsx`, `routes/platform-app.tsx`.
+  - Native Mobile: `screens/home/components/ViOneEcosystemGrid.tsx`, `screens/home/HomeScreen.tsx`, `screens/platform/PlatformAppScreen.tsx`.
+* **Cơ quan chủ quản:** **ViConnect Central Platform**.
+* **Mục tiêu:** Cung cấp giao diện trực quan chuẩn mực theo sơ đồ hệ sinh thái ViOne 2 cột với thông điệp *"ViOne — Con người, cộng đồng & trải nghiệm"*, tích hợp liền mạch điều hướng đến 10 dịch vụ số hóa chuyên biệt.
+
+#### 1. Cấu Trúc Lưới 2 Trụ Cột Hệ Sinh Thái (2-Column Ecosystem Layout)
+* **Header Banner Hoàng Gia:** Nền Gradient Xanh Đêm Hoàng Gia (`from-[#0047BA] via-[#0A2540] to-[#050C15]`), viền mạ vàng `border-[#D8B282]/30`, logo ViOne và thông điệp nhận diện cốt lõi: *"Con người, cộng đồng & trải nghiệm"*.
+* **Cột 1: CỘNG ĐỒNG & DOANH NGHIỆP**
+  1. `ViOne Business Connect`: Danh thiếp số thông minh & quản trị mối quan hệ giao thương.
+  2. `ViOne Association`: Quản trị hiệp hội, câu lạc bộ doanh nhân, hội đồng thành viên.
+  3. `ViOne Event`: Sự kiện, hội nghị, triển lãm B2B, check-in QR Code siêu tốc dưới 1 giây.
+  4. `ViOne Sport`: Giải đấu thể thao, câu lạc bộ, bảng xếp hạng và nhánh đấu.
+  5. `ViOne Run`: Giải chạy marathon, timing chip RFID, số BIB và cập nhật kết quả trực tiếp.
+  6. `ViOne Review`: Chạm thẻ thông minh NFC NTAG213 tăng đánh giá 5 sao cho cửa hàng/doanh nghiệp.
+* **Cột 2: VĂN HÓA & DI SẢN**
+  1. `ViOne Heritage`: Quản lý, số hóa di sản văn hóa vật thể & phi vật thể, GIS và thực tế ảo VR360.
+  2. `ViOne Museum`: Bảo tàng số 3D, trưng bày hiện vật tương tác AR và thuyết minh âm thanh đa ngôn ngữ.
+  3. `ViOne Archive`: Lưu trữ số tư liệu lịch sử, mộc bản triều Nguyễn, sắc phong hoàng triều.
+  4. `ViOne Ticket`: Bán vé, soát vé điện tử QR động chống chụp ảnh màn hình và cổng xoay tự động.
+
+#### 2. Quy Chuẩn Thẩm Mỹ & Nút Gradient (Rule 8)
+* 100% các Card dịch vụ đều được bo góc `rounded-2xl`, viền mạ vàng tinh xảo `border-[#D8B282]/20` và hiệu ứng tương tác Hover/Active bóng sáng Champagne Gold.
+* Tất cả nút hành động (CTA) sử dụng Gradient Vàng Hoàng Gia (`bc-cta-gold` / `["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]`), chữ Đen Obsidian tương phản cao.
+* Hỗ trợ đồng bộ tham số `?tab=` trên Web PWA và `onOpenPlatformTab(tab)` trên Native Mobile, mở tức thời đúng tab phân hệ người dùng đã chọn.
+

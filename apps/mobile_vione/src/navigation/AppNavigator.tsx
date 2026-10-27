@@ -58,7 +58,10 @@ const DarkTheme = {
 };
 
 
-const MainTabs: React.FC<{ onVPress: () => void }> = ({ onVPress }) => {
+const MainTabs: React.FC<{
+  onVPress: () => void;
+  onOpenPlatformTab: (tab: any) => void;
+}> = ({ onVPress, onOpenPlatformTab }) => {
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomBottomTabBar {...props} onVPress={onVPress} />}
@@ -67,7 +70,13 @@ const MainTabs: React.FC<{ onVPress: () => void }> = ({ onVPress }) => {
       }}
     >
       <Tab.Screen name="Home">
-        {(props) => <HomeScreen {...props} onOpenV={onVPress} />}
+        {(props) => (
+          <HomeScreen
+            {...props}
+            onOpenV={onVPress}
+            onOpenPlatformTab={onOpenPlatformTab}
+          />
+        )}
       </Tab.Screen>
       <Tab.Screen name="Network" component={NetworkScreen} />
       <Tab.Screen name="Community" component={CommunityScreen} />
@@ -90,7 +99,13 @@ export const AppNavigator: React.FC = () => {
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
   const [postMomentVisible, setPostMomentVisible] = useState(false);
   const [platformAppVisible, setPlatformAppVisible] = useState(false);
+  const [platformTab, setPlatformTab] = useState<any>("overview");
   const [incomingRequester, setIncomingRequester] = useState<QrRequesterProfile | null>(null);
+
+  const handleOpenPlatformTab = (tab: any = "overview") => {
+    setPlatformTab(tab);
+    setPlatformAppVisible(true);
+  };
 
   if (isLoading) {
     return (
@@ -107,7 +122,12 @@ export const AppNavigator: React.FC = () => {
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : (
           <Stack.Screen name="Main">
-            {() => <MainTabs onVPress={() => setVSheetVisible(true)} />}
+            {() => (
+              <MainTabs
+                onVPress={() => setVSheetVisible(true)}
+                onOpenPlatformTab={handleOpenPlatformTab}
+              />
+            )}
           </Stack.Screen>
         )}
       </Stack.Navigator>
@@ -126,11 +146,14 @@ export const AppNavigator: React.FC = () => {
         onOpenAssignTask={() => setAssignTaskVisible(true)}
         onOpenStaffActivity={() => setStaffActivityVisible(true)}
         onOpenAiAssistant={() => setAiAssistantVisible(true)}
-        onOpenPlatformApp={() => setPlatformAppVisible(true)}
+        onOpenPlatformApp={() => handleOpenPlatformTab("overview")}
       />
 
       <Modal visible={platformAppVisible} animationType="slide">
-        <PlatformAppScreen onBack={() => setPlatformAppVisible(false)} />
+        <PlatformAppScreen
+          onBack={() => setPlatformAppVisible(false)}
+          initialTab={platformTab}
+        />
       </Modal>
 
       <MyQrModal visible={myQrVisible} onClose={() => setMyQrVisible(false)} />

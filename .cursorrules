@@ -99,6 +99,26 @@
     4. **Bộ Phận Kế Toán & Tài Chính Nền Tảng (`platform_finance`)**: Quản lý gói cước, phê duyệt đơn hàng đăng ký/gia hạn, đối soát thanh toán và báo cáo doanh thu tài chính platform.
   * Ma trận phân quyền 27+ quyền hạt nhân tại `/platform/permissions` kết nối 100% qua `public.platform_roles`, `public.platform_permissions`, `public.platform_role_permissions`.
 
+## -0.7. Quy Chuẩn Tinh Gọn Phân Hệ Doanh Nghiệp (Loại Bỏ Thu Chi) & Nâng Cấp Nền Tảng ViConnect (STRICT COMPANY LEAN WORKFLOW & PLATFORM ECOSYSTEM)
+- **PHÂN HỆ DOANH NGHIỆP: TUYỆT ĐỐI KHÔNG CÓ CHỨC NĂNG TIỀN, HÓA ĐƠN & BÁO CÁO THU CHI**:
+  * Khi người dùng ở chế độ Doanh nghiệp (`workspaceView === 'company'`):
+    - **CẤM HIỂN THỊ** các chức năng kế toán, hóa đơn (`/invoices`), thu phí hội viên (`/fees`), phê duyệt chi tiền (`/payment-approvals`), thu chi ngân sách.
+    - Cây báo cáo `ReportsTreeMenu` tự động ẩn toàn bộ nhánh báo cáo tài chính/dòng tiền.
+    - Dashboard điều hành `ExecutiveDashboard` ẩn các KPI tài chính (doanh thu, công nợ quá hạn), thay thế bằng KPI "Công việc cần xử lý" và "Nhiệm vụ hoàn thành".
+    - Các khối biểu đồ doanh thu/dòng tiền được chuyển đổi thành:
+      1. Bảng Kanban tiến độ giao việc doanh nghiệp (WIP limits, % hoàn thành).
+      2. Biểu đồ phân bổ công việc & nhân sự theo phòng ban.
+    - Nút tác vụ nhanh trỏ thẳng vào `/workflow` ("Giao việc mới").
+- **PHÂN HỆ VICONNECT PLATFORM: KHO TÀI LIỆU DRIVER, LỊCH HỌP, GIAO VIỆC & HỆ SINH THÁI 2 TRỤ CỘT**:
+  * Kho lưu trữ tài liệu riêng biệt như Google Drive (`/documents`) với Nested Folders, phân quyền tải/xem.
+  * Lịch họp & phòng họp số (`/meetings`), Quản lý giao việc nền tảng (`/workflow`).
+  * Tích hợp 2 trụ cột hệ sinh thái ViOne:
+    1. **Cộng đồng & Doanh nghiệp**: ViOne Event (`/events`), ViOne Sport (`/platform/sport`), ViOne Run (`/platform/run`).
+    2. **Văn hóa & Di sản**: ViOne Heritage (`/platform/heritage`), ViOne Museum (`/platform/museum`), ViOne Archive (`/platform/archive`), ViOne Ticket (`/platform/tickets`), ViOne Review (`/platform/review`).
+- **ĐỒNG BỘ APP VIONE (DUAL-APP PARITY: PWA & NATIVE)**:
+  * Lưới hệ sinh thái 2 cột "ViOne — Con người, cộng đồng & trải nghiệm" tích hợp đồng bộ trên PWA (`ViOneEcosystemGrid.tsx`) và Native Mobile (`ViOneEcosystemGrid.tsx`).
+  * 100% các nút và thẻ tương tác tuân thủ Rule 8: Gradient Champagne Gold / Obsidian viền mạ vàng.
+
 ## -0.8. Quy Chuẩn Quản Lý Gói ViOne Platform, Đăng Ký Gói QR Napas 24/7, Duyệt Đơn Bắn Mail & Kiểm Soát Hạn Mức Slot (STRICT PACKAGE & ORDER PROTOCOL)
 - **THIẾT LẬP BẢNG GIÁ GÓI THEO SỐ LƯỢNG NGƯỜI (SLOTS)**:
   * Trên Web CRM ViConnect (`/segments`): Quản trị viên cấu hình danh mục gói cước (`public.vione_subscription_packages`).

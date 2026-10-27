@@ -86,6 +86,46 @@ export class DocumentsService {
     }));
   }
 
+  async getById(id: string) {
+    const clean = id.replace(/'/g, "''");
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT 
+        d.id, 
+        d.code, 
+        d.name, 
+        d.category, 
+        d.size, 
+        d.uploaded_at, 
+        d.uploaded_by, 
+        d.type, 
+        d.file_path, 
+        d.folder_id, 
+        d.company_id, 
+        d.is_starred,
+        f.name as folder_name
+      FROM public.documents d
+      LEFT JOIN public.document_folders f ON d.folder_id = f.id
+      WHERE d.code = '${clean}' OR d.id::text = '${clean}'
+      LIMIT 1
+    `);
+    const r = rows[0];
+    if (!r) throw new Error('Không tìm thấy tài liệu');
+    return {
+      id: r.code || r.id,
+      docId: r.id,
+      name: r.name,
+      category: r.category,
+      size: r.size || '',
+      uploadedAt: r.uploaded_at ? new Date(r.uploaded_at).toISOString() : new Date().toISOString(),
+      uploadedBy: r.uploaded_by || '',
+      type: r.type,
+      filePath: r.file_path || '',
+      folderId: r.folder_id || null,
+      folderName: r.folder_name || null,
+      isStarred: Boolean(r.is_starred),
+    };
+  }
+
   async create(userId: string, data: any) {
     const activeId = await this.getActiveAssociationId(userId);
     const code = 'DOC-' + Math.random().toString(36).slice(2, 10).toUpperCase();
@@ -93,10 +133,12 @@ export class DocumentsService {
     const size = data.size || '1.0 MB';
     const filePath = data.filePath || null;
     const folderId = data.folderId ? `'${data.folderId}'::uuid` : 'NULL';
-    const assocId = activeId ? `'${activeId}'::uuid` : `'c1983000-0000-4000-8000-000000001983'::uuid`;
+    const assocId = activeId ? `'${activeId}'::uuid` : 'NULL';
+    const companyId = data.companyId ? `'${data.companyId}'::uuid` : 'NULL';
+    const uid = userId ? `'${userId}'::uuid` : 'NULL';
 
     await this.prisma.$executeRawUnsafe(`
-      INSERT INTO public.documents (code, name, category, size, uploaded_by, type, file_path, folder_id, association_id, is_starred, uploaded_at)
+      INSERT INTO public.documents (code, name, category, size, uploaded_by, type, file_path, folder_id, association_id, company_id, user_id, is_starred, uploaded_at)
       VALUES (
         '${code}', 
         '${data.name.replace(/'/g, "''")}', 
@@ -107,6 +149,8 @@ export class DocumentsService {
         ${filePath ? `'${filePath.replace(/'/g, "''")}'` : 'NULL'}, 
         ${folderId}, 
         ${assocId}, 
+        ${companyId},
+        ${uid},
         ${data.isStarred ? 'true' : 'false'},
         NOW()
       )
@@ -358,6 +402,24 @@ export class DocumentsService {
       docCount: 0,
       createdAt: new Date(r.created_at).toISOString(),
     };
+  }
+
+  async updateCategory(id: string, data: { name?: string; code?: string; description?: string; color?: string }) {
+    const cleanId = id.replace(/'/g, "''");
+    const sets: string[] = [];
+    if (data.name) sets.push(`name = '${data.name.replace(/'/g, "''")}'`);
+    if (data.code) sets.push(`code = '${data.code.replace(/'/g, "''")}'`);
+    if (data.description !== undefined) sets.push(`description = '${(data.description || '').replace(/'/g, "''")}'`);
+    if (data.color) sets.push(`color = '${data.color}'`);
+
+    if (sets.length > 0) {
+      await this.prisma.$executeRawUnsafe(`
+        UPDATE public.document_categories
+        SET ${sets.join(', ')}
+        WHERE id = '${cleanId}'::uuid
+      `);
+    }
+    return { ok: true };
   }
 
   async deleteCategory(id: string) {

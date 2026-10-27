@@ -55,4 +55,5 @@ export const HOME_STORIES: HomeStoryItem[] = [];
 export interface HomeScreenProps {
   navigation?: any;
   onOpenV?: () => void;
+  onOpenPlatformTab?: (tab: any) => void;
 }

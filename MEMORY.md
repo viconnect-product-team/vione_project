@@ -1,5 +1,148 @@
 # System Memory & Architecture
 
+## 0.0000000000.10. CHUẨN HÓA RESTFUL API TOÀN DIỆN (FULL CRUD: GET, POST, PUT, DELETE) & HỆ THỐNG GIAO DIỆN QUẢN TRỊ CRM ADMIN CHO 8 PHÂN HỆ MỚI (27/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Phản hồi từ người dùng:** "bạn không làm chuẩn restful api à".
+- **Vấn đề tồn đọng trước đó:**
+  * Các phân hệ mới (Sport, Run, Heritage, Museum, Archive, Ticket, Review) và Quản lý tài liệu (Documents) ban đầu chỉ có các endpoint `GET` (đọc dữ liệu) và giao diện hiển thị phía Client/App, chưa có các HTTP verbs chuẩn mực (`POST` tạo mới, `PUT` cập nhật, `DELETE` xóa dữ liệu).
+  * Chưa có giao diện Quản Trị CRM Admin nghiệp vụ thực thụ (bảng dữ liệu quản trị, biểu mẫu modal thêm mới, chỉnh sửa, xóa bản ghi) để người vận hành CRM thao tác trực tiếp với RESTful API.
+  * CSDL PostgreSQL thiếu một số bảng quan hệ (`document_folders`, `document_categories`, `vione_artifacts`).
+
+### 2. Các Hạng Mục Chuẩn Hóa Kiến Trúc & Triển Khai Thực Tế
+
+#### A. CSDL PostgreSQL (`113.20.107.184:6432/vione_project`)
+1. **Bảng `public.document_folders`:** Lưu trữ cây thư mục lồng nhau của Drive (`id`, `name`, `parent_id`, `category`, `color`, `created_by`, `company_id`, `user_id`, `created_at`, `updated_at`).
+2. **Bảng `public.document_categories`:** Danh mục phân loại tài liệu nghiệp vụ (`id`, `name`, `code`, `description`, `color`, `company_id`, `user_id`, `created_at`).
+3. **Cập nhật Bảng `public.documents`:** Bổ sung các trường `folder_id` (UUID), `company_id` (UUID), `is_starred` (BOOLEAN), `user_id` (UUID).
+4. **Bảng `public.vione_artifacts`:** Lưu trữ hiện vật 3D Photogrammetry, mô hình GLTF, audio guide đa ngôn ngữ và mã chip NFC UID gắn tại quầy hiện vật thực tế.
+
+#### B. Backend NestJS Chuẩn RESTful API (`apps/vione_app_be`)
+1. **Module Tài Liệu (`src/documents/`):**
+   - `documents.controller.ts` & `documents.service.ts`:
+     * `GET /api/documents`: Lọc theo `folder_id`, `category`, `search`, `starred`, cô lập theo `company_id`/`user_id`.
+     * `GET /api/documents/:id`: Lấy chi tiết một tài liệu.
+     * `POST /api/documents/folders`: Tạo thư mục mới.
+     * `POST /api/documents/categories`: Tạo danh mục mới.
+     * `PUT /api/documents/categories/:id`: Cập nhật danh mục tài liệu.
+     * `DELETE /api/documents/categories/:id`: Xóa danh mục tài liệu.
+     * Loại bỏ hoàn toàn hardcoded UUID `c1983...` cũ.
+2. **Module Nền Tảng Hệ Sinh Thái (`src/platform-hub/`):**
+   - `platform-hub.controller.ts` & `platform-hub.service.ts` được tái cấu trúc thành RESTful Controller chuẩn mực với đầy đủ 4 HTTP Verbs:
+     * **Sport (`/api/platform-hub/sport/`):**
+       - Tournaments: `GET /tournaments`, `POST /tournaments`, `PUT /tournaments/:id`, `DELETE /tournaments/:id`.
+       - Clubs: `POST /clubs`, `PUT /clubs/:id`, `DELETE /clubs/:id`.
+     * **Run (`/api/platform-hub/run/`):**
+       - Races: `GET /races`, `POST /races`, `PUT /races/:id`, `DELETE /races/:id`.
+       - Timing RFID: `POST /timing` (bắn tín hiệu chíp thảm).
+     * **Heritage (`/api/platform-hub/heritage`):**
+       - `GET /`, `POST /`, `PUT /:id`, `DELETE /:id`.
+     * **Museum & 3D Artifacts (`/api/platform-hub/`):**
+       - Museums: `GET /museums`, `POST /museums`, `PUT /museums/:id`, `DELETE /museums/:id`.
+       - Artifacts: `GET /artifacts`, `POST /artifacts`, `PUT /artifacts/:id`, `DELETE /artifacts/:id`.
+     * **Archive (`/api/platform-hub/archives`):**
+       - `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id`.
+     * **Ticket (`/api/platform-hub/tickets`):**
+       - `GET /`, `POST /`, `PUT /:id`, `DELETE /:id`.
+       - `POST /validate`: Cổng soát vé quét QR / NFC Check-in.
+     * **Review (`/api/platform-hub/reviews/`):**
+       - `GET /stores`, `GET /stores/:id`, `POST /stores`, `PUT /stores/:id`, `DELETE /stores/:id`.
+
+#### C. Frontend CRM Quản Trị Nghiệp Vụ Admin (`apps/vione_app_fe`)
+1. **Xây dựng 7 Component Admin Quản Trị Chuyên Sâu (`src/components/platform-app/admin/`):**
+   - `SportAdminManager.tsx`: Bảng quản lý giải đấu & CLB thể thao, modal Create (POST), modal Edit (PUT), Delete (DELETE), filter/search.
+   - `RunAdminManager.tsx`: Bảng quản lý giải chạy marathon/trail, modal Create (POST), modal Edit (PUT), Delete (DELETE), trigger bắn chip RFID.
+   - `HeritageAdminManager.tsx`: Bảng quản lý di sản, modal Create (POST), modal Edit (PUT), Delete (DELETE).
+   - `MuseumAdminManager.tsx`: Bảng quản lý bảo tàng & hiện vật 3D, modal Create (POST), modal Edit (PUT), Delete (DELETE).
+   - `ArchiveAdminManager.tsx`: Bảng quản lý kho tư liệu số (mộc bản, sắc phong), modal Create (POST), modal Edit (PUT), Delete (DELETE).
+   - `TicketAdminManager.tsx`: Bảng quản lý vé điện tử, modal Phát hành vé (POST), Cổng soát vé (POST validate), Hủy vé (DELETE).
+   - `ReviewAdminManager.tsx`: Bảng quản lý điểm chạm NFC Google Maps, modal Đăng ký điểm chạm (POST), Sửa (PUT), Xóa (DELETE).
+   - 100% nút bấm tuân thủ nghiêm ngặt **Rule 8 (Gradient-only)**: Gradient Champagne Gold `#F6E1C3` -> `#C29B69`, Obsidian viền mạ vàng và Ruby Red cho tác vụ xóa.
+2. **Cập nhật 7 Route CRM (`src/routes/platform.*.tsx`):**
+   - Tích hợp cụm nút chuyển đổi trạng thái (Tab Switcher):
+     * Tab 1: `Quản Trị CRM (RESTful)`: Giao diện Admin với đầy đủ tính năng CRUD.
+     * Tab 2: `Xem Trước App/PWA`: Giao diện ứng dụng người dùng cuối.
+
+### 3. Kiểm Thử Chất Lượng Mã Nguồn (Strict Rule 3)
+- `apps/vione_app_be`: `tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- `apps/vione_app_fe`: `tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- `apps/mobile_vione`: `tsc --noEmit` -> **Exit code 0 (0 errors)**.
+
+### 4. Đồng Bộ Tài Liệu (Rules 2 & 6)
+- Đã bổ sung Bảng đặc tả chi tiết 43 endpoint RESTful API và `UC-CRM-32` vào `docs/crm/SRS_CRM.md`.
+- Đã đồng bộ mã `[NODE-CRM-PLATFORM-ECOSYSTEM-01]` trong `FEATURE_FLOW_NODE_MAP.md`.
+
+---
+
+## 0.0000000000.9. NÂNG CẤP KIẾN TRÚC VIONE CRM & ĐỒNG BỘ DUAL-APP VIONE: TINH GỌN DOANH NGHIỆP (BỎ THU CHI - TRỌNG TÂM GIAO VIỆC), VICONNECT DRIVE + LỊCH HỌP + GIAO VIỆC & BỘ 7 PHÂN HỆ HỆ SINH THÁI MỚI (27/10/2026)
+
+### 1. Bối cảnh & Yêu cầu Người Dùng
+- **Yêu cầu 1 (Phân hệ Doanh nghiệp):** Loại bỏ hoàn toàn các chức năng liên quan đến tiền như báo cáo doanh thu, thu chi, hóa đơn; chỉ giữ lại và tập trung vào đơn giản chức năng giao việc (`/workflow`) và quản lý tiến độ nhân sự.
+- **Yêu cầu 2 (Phân hệ ViConnect Platform):**
+  * Phải có chức năng quản lý tài liệu riêng biệt như Google Drive (`/documents`).
+  * Có chức năng lên lịch họp (`/meetings`), quản lý quy trình & giao việc (`/workflow`).
+  * Bổ sung đầy đủ nhóm phân hệ mới vào CRM theo sơ đồ hệ sinh thái:
+    - **Cộng đồng & Doanh nghiệp:** ViOne Event (`/events`), ViOne Sport (`/platform/sport`), ViOne Run (`/platform/run`).
+    - **Văn hóa & Di sản:** ViOne Heritage (`/platform/heritage`), ViOne Museum (`/platform/museum`), ViOne Archive (`/platform/archive`), ViOne Ticket (`/platform/tickets`), ViOne Review (`/platform/review`).
+- **Yêu cầu 3 (Đồng bộ App ViOne PWA & Mobile Native theo Rule 4):**
+  * Thiết kế lưới 2 cột hệ sinh thái "ViOne — Con người, cộng đồng & trải nghiệm" đúng theo sơ đồ thiết kế người dùng cung cấp.
+  * Tích hợp đồng bộ trên cả 2 nền tảng: PWA (`apps/vione_app_fe`) và React Native Mobile (`apps/mobile_vione`), 100% nút bấm tuân thủ Rule 8 (Gradient Champagne Gold & Obsidian viền mạ vàng).
+
+### 2. Chi Tiết Triển Khai Trên Toàn Bộ Hệ Thống
+
+#### A. Phân Hệ Doanh Nghiệp Trên ViOne CRM (`apps/vione_app_fe`)
+1. **Sidebar Điều Hướng (`src/components/dashboard/Sidebar.tsx`):**
+   - Loại bỏ hoàn toàn khối `companyFinanceSuite` (Hóa đơn `/invoices`, Thu phí hội viên `/fees`, Báo cáo doanh thu tài chính).
+   - Đưa `VẬN HÀNH & GIAO VIỆC` lên vị trí trọng tâm với: `/workflow` (Quy trình & Giao việc Kanban), `/documents` (Tài liệu doanh nghiệp), `/meetings` (Lịch họp & cuộc hẹn).
+   - Phát sự kiện `window.dispatchEvent(new Event("vione_workspace_view_changed"))` khi người dùng chuyển đổi giữa chế độ Doanh nghiệp và Nền tảng.
+2. **Cây Báo Cáo (`src/components/dashboard/ReportsTreeMenu.tsx`):**
+   - Bổ sung prop `view?: "platform" | "company"`. Khi ở chế độ Doanh nghiệp, ẩn hoàn toàn nhánh báo cáo tài chính/thu chi.
+3. **Bảng Điều Khiển Điều Hành (`src/components/dashboard/ExecutiveDashboard.tsx`):**
+   - Lắng nghe sự kiện chuyển đổi view và tự động cập nhật trạng thái `isCompanyView`.
+   - Triệt tiêu hoàn toàn các thẻ KPI tài chính (`Doanh thu tháng`, `Công nợ quá hạn`).
+   - Thay thế bằng KPI thực chiến: `Công việc cần xử lý` (chuyển hướng `/workflow`) và `Nhiệm vụ hoàn thành` (chuyển hướng `/workflow`).
+   - Khối biểu đồ thu chi và phí hội viên được chuyển đổi thành:
+     * **Bảng Kanban Giao Việc Doanh Nghiệp:** Hiển thị số việc Cần làm, Đang làm, Hoàn thành, WIP limit và thanh tiến độ hoàn thành % tổng thể kèm nút CTA "Tới Bảng Việc Kanban".
+     * **Phân Bổ Giao Việc & Nhân Sự:** Thống kê số lượng công việc đã giao cho từng phòng ban (Ban Điều hành, Kinh doanh, Kỹ thuật, Vận hành) theo thời gian thực.
+   - Nút QuickAction trỏ thẳng vào `/workflow` ("Giao việc mới").
+   - Lọc bỏ các mục gợi ý liên quan đến "Hóa đơn & Doanh thu" trong thanh tra cứu nhanh Spotlight.
+
+#### B. Phân Hệ ViConnect Platform Trên CRM (`apps/vione_app_fe`)
+1. **Bộ Công Cụ Điều Hành Nền Tảng (`superAdminOperationsSuite`):**
+   - **Kho Tài Liệu ViConnect Drive (`/documents`):** Kiến trúc Google Drive với cấu trúc thư mục lồng nhau đa cấp (Nested Folders), breadcrumbs điều hướng phân cấp, phân loại 6 danh mục nghiệp vụ, ghim sao, tìm kiếm và chuyển đổi linh hoạt giao diện Lưới/Bảng.
+   - **Lịch Họp & Phòng Họp Số (`/meetings`):** Lên lịch các phiên họp thường niên, họp ban chấp hành, họp chuyên môn.
+   - **Quản Lý Giao Việc Nền Tảng (`/workflow`):** Bảng Kanban điều phối và giao nhiệm vụ đa phòng ban.
+2. **Khởi Tạo Bộ Tuyến Tuyến CRM Chuyên Sâu Cho 2 Trụ Cột Hệ Sinh Thái:**
+   - `src/routes/platform.sport.tsx`: Quản lý giải đấu thể thao, câu lạc bộ, bảng xếp hạng và nhánh đấu (Bracket).
+   - `src/routes/platform.run.tsx`: Quản lý giải chạy marathon, timing chip RFID, số BIB, checkpoint split và bảng xếp hạng Pace thời gian thực.
+   - `src/routes/platform.heritage.tsx`: Số hóa di sản văn hóa, tọa độ GIS, tour thực tế ảo VR360.
+   - `src/routes/platform.museum.tsx`: Quản lý bảo tàng số 3D, hiện vật AR và thuyết minh âm thanh đa ngôn ngữ Audio Guide.
+   - `src/routes/platform.archive.tsx`: Lưu trữ số tư liệu lịch sử, mộc bản triều Nguyễn, sắc phong hoàng triều với Dublin Core.
+   - `src/routes/platform.tickets.tsx`: Hệ thống phát hành vé điện tử, soát vé qua cổng QR/NFC, đối soát doanh thu vé VietQR.
+   - `src/routes/platform.review.tsx`: Quản lý trạm chạm thẻ thông minh NFC NTAG213 tăng đánh giá 5 sao Google Maps cho cửa hàng/điểm di tích.
+3. **Cập Nhật Sidebar CRM:**
+   - Bổ sung nhóm `CỘNG ĐỒNG & THỂ THAO`: ViOne Event (`/events`), ViOne Sport (`/platform/sport`), ViOne Run (`/platform/run`).
+   - Bổ sung nhóm `VĂN HÓA & DI SẢN`: ViOne Heritage (`/platform/heritage`), ViOne Museum (`/platform/museum`), ViOne Archive (`/platform/archive`), ViOne Ticket (`/platform/tickets`), ViOne Review (`/platform/review`).
+
+#### C. Đồng Bộ Lưới Hệ Sinh Thái Dual-App: PWA & Mobile Native
+1. **Linh Kiện Lưới PWA (`apps/vione_app_fe`):**
+   - `src/components/business-connect/mobile/ViOneEcosystemGrid.tsx`: Thiết kế chuẩn mực theo hình ảnh sơ đồ người dùng cung cấp.
+   - Header banner sang trọng: Gradient Xanh Đêm Hoàng Gia viền mạ vàng `border-[#D8B282]/30` kèm khẩu hiệu: *"ViOne — Con người, cộng đồng & trải nghiệm"*.
+   - 2 cột chức năng độc lập: `CỘNG ĐỒNG & DOANH NGHIỆP` và `VĂN HÓA & DI SẢN`.
+   - Tích hợp trực tiếp vào trang chủ điều hành PWA `ExecutiveHome.tsx`.
+   - Hỗ trợ query parameter `?tab=` trong `routes/platform-app.tsx` để mở thẳng phân hệ tương ứng.
+2. **Linh Kiện Lưới Native Mobile (`apps/mobile_vione`):**
+   - `src/screens/home/components/ViOneEcosystemGrid.tsx`: Đồng bộ 100% giao diện, icon, màu sắc và cấu trúc với bản PWA.
+   - Nhận prop `onOpenTab(tab: PlatformTab)` để điều hướng trực tiếp sang `PlatformAppScreen`.
+   - Cập nhật `HomeScreen.tsx`, `home.types.ts` và `AppNavigator.tsx` để truyền hàm điều hướng và nạp đúng tab được chọn.
+   - Tuân thủ nghiêm ngặt Rule 8: 100% nút và thẻ tương tác dùng Gradient Buttons Vàng Hoàng Gia & Đen Thạch Anh Mạ Vàng.
+
+### 3. Kiểm Thử Chất Lượng Mã Nguồn (Strict Rule 3)
+- `apps/vione_app_fe`: `tsc --noEmit` -> **Exit code 0 (0 errors)**.
+- `apps/mobile_vione`: `npm run typecheck` (`tsc --noEmit`) -> **Exit code 0 (0 errors)**.
+
+---
+
 ## 0.0000000000.8. THIẾT LẬP HỆ THỐNG GIT & GITHUB ACTIONS AUTO DEPLOY SUBDOMAIN CHO VIONE CRM (HTTPS://CRM_VIONE.VICONNECT.VN) (27/10/2026)
 
 ### 1. Bối cảnh & Yêu cầu Người Dùng

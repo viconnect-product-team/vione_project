@@ -51,6 +51,14 @@ function PlatformAppPage() {
 
   useEffect(() => {
     fetchOverview();
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab") as PlatformTab | null;
+      const validTabs: PlatformTab[] = ["overview", "heritage", "museum", "sport", "run", "tickets", "review", "archive"];
+      if (tabParam && validTabs.includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
   }, []);
 
   const fetchOverview = async () => {

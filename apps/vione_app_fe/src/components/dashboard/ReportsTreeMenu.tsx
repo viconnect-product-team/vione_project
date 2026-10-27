@@ -43,17 +43,19 @@ interface ReportsTreeMenuProps {
   collapsed?: boolean;
   pathname?: string;
   onNavigate?: () => void;
+  view?: "platform" | "company";
 }
 
 export function ReportsTreeMenu({
   collapsed = false,
   pathname = "",
   onNavigate,
+  view = "platform",
 }: ReportsTreeMenuProps) {
   const { isPlatformAdmin, isAdmin, isSuperAdmin: checkSuperAdmin } = useRole();
   const isSuperAdmin = Boolean(isPlatformAdmin || isAdmin || checkSuperAdmin);
 
-  const reportCategories: ReportCategory[] = [
+  const rawReportCategories: ReportCategory[] = [
     {
       id: "finance_reports",
       label: "Báo Cáo Tài Chính & Doanh Thu",
@@ -160,16 +162,17 @@ export function ReportsTreeMenu({
     },
   ];
 
-  // Lọc category theo role
-  const availableCategories = reportCategories.filter((cat) => {
+  // Lọc category theo role và phân hệ (doanh nghiệp không có tài chính/doanh thu)
+  const availableCategories = rawReportCategories.filter((cat) => {
+    if (view === "company" && cat.id === "finance_reports") return false;
     if (cat.requireAdmin && !isSuperAdmin) return false;
     return true;
   });
 
   // State mở rộng các node cha (Tree node expansion)
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({
-    finance_reports: true,
-    operations_reports: false,
+    finance_reports: view !== "company",
+    operations_reports: view === "company",
     crm_reports: false,
     platform_reports: false,
   });
