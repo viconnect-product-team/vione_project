@@ -495,3 +495,25 @@
 * **Cơ Chế Tab Switcher Chế Độ Xem:** Header của mỗi phân hệ trang bị cụm nút chuyển đổi 2 chế độ:
   1. `Quản Trị CRM (RESTful)`: Bảng quản lý dữ liệu, kiểm soát nghiệp vụ, thêm/sửa/xóa trực tiếp vào hệ thống.
   2. `Xem Trước App/PWA`: Hiển thị giao diện người dùng thực tế trên ứng dụng PWA ViOne để quản trị viên kiểm tra trải nghiệm người dùng cuối.
+
+---
+
+### UC-CRM-33: Nâng Cấp Đa Chiều Chức Năng 5 Module Nền Tảng & Chuẩn Hóa Theme Sáng/Tối 100% CRM Tokens (Phiên Bản 7.1.0 - Tháng 10/2026)
+* **Tác nhân:** Quản trị viên Nền tảng ViConnect, Ban Điều Hành Giải Chạy & Di Sản, Khách Hàng Doanh Nghiệp.
+* **Màn hình thực hiện:**
+  - `components/platform-app/admin/RunAdminManager.tsx`
+  - `components/platform-app/admin/MuseumAdminManager.tsx`
+  - `components/platform-app/admin/HeritageAdminManager.tsx`
+  - `components/platform-app/admin/ReviewAdminManager.tsx`
+  - `routes/documents.index.tsx`
+  - `routes/platform.sport.tsx`, `platform.run.tsx`, `platform.heritage.tsx`, `platform.museum.tsx`, `platform.archive.tsx`, `platform.tickets.tsx`, `platform.review.tsx`.
+* **Tiền điều kiện:** Người dùng đăng nhập CRM và có thể chọn chế độ Light Mode (Theme Sáng) hoặc Dark Mode (Theme Tối).
+* **Mục tiêu:**
+  1. **Khắc phục triệt để lỗi Theme Sáng (Light Mode):** Chuyển đổi toàn bộ các phần tử giao diện đang bị hardcoded màu đen xì (`bg-[#0B0F17]`, `bg-[#0B132B]`, `bg-[#0A101D]`, `bg-[#050C15]`) sang bộ Tailwind tokens chuẩn CRM: `bg-white dark:bg-slate-900`, `border-slate-200 dark:border-slate-800`, `text-slate-900 dark:text-slate-100`, `text-slate-500 dark:text-slate-400`, `bg-slate-50 dark:bg-slate-950`. Đảm bảo trang Kho Tài Liệu (`/documents`) và 7 phân hệ nền tảng hiển thị trang nhã, sáng sủa, tinh tế khi bật Light Theme và giữ trọn đẳng cấp Luxury khi bật Dark Theme.
+  2. **Việt Hóa Toàn Diện Breadcrumbs & Kho Tài Liệu:** Xóa bỏ chữ "Documents" dính tiếng Anh, hiển thị chuẩn "Kho Tài Liệu Doanh Nghiệp" thông qua từ điển ánh xạ `ROUTE_LABELS` trong `TopbarBreadcrumb.tsx`.
+  3. **Nâng Cấp Chiều Sâu Nghiệp Vụ Chuyên Sâu Cho Các Module:**
+     * **ViOne Run (5 Tabs):** Giải chạy & cự ly marathon/trail (`races`), danh sách VĐV & phân bổ số BIB RFID (`runners`), trạng thái sóng thảm đo chíp checkpoints (`checkpoints`), Live Leaderboard & Console giả lập quét chíp (`leaderboard`), cấp chứng nhận điện tử Finisher Medal (`certificates`).
+     * **ViOne Museum (5 Tabs):** Quản trị bảo tàng & triển lãm (`museums`), kho hiện vật 3D Photogrammetry GLTF/GLB xoay 360 (`artifacts`), thuyết minh Audio Guide AI đa ngôn ngữ VI/EN/FR có player nghe thử (`audioguide`), trạm thẻ chip NFC NTAG213 tại bệ trưng bày thực tế (`nfc_tags`), sổ luân chuyển mượn/trả hiện vật triển lãm lưu động (`lending`).
+     * **ViOne Heritage (4 Tabs):** Hồ sơ di sản xếp hạng UNESCO & Di tích QG (`heritage_list`), bản đồ số tọa độ GIS khoanh vùng bảo vệ I & II (`gis_map`), kho tư liệu số hóa văn bia sắc phong 8K & VR360 (`archives_vr360`), hệ thống quan trắc độ ẩm & giám sát dự toán bảo tồn (`preservation`).
+     * **ViOne Review (4 Tabs):** Quản lý trạm thẻ NFC NTAG213/215 tại quầy (`stations`), kịch bản điều hướng thông minh Smart Review Routing 4-5 sao mở Google Maps / 1-3 sao gửi phản hồi kín SOS cho Quản lý (`routing`), chiến dịch voucher tri ân sau review (`incentives`), báo cáo tăng trưởng & chỉ số CSAT (`analytics`).
+

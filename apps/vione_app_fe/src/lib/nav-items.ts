@@ -29,6 +29,15 @@ import {
   Store,
   ShieldCheck,
   UserCog,
+  FileText,
+  CalendarDays,
+  Trophy,
+  Flame,
+  Radio,
+  Landmark,
+  Layers,
+  Archive,
+  Ticket,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { TKey } from "@/lib/i18n";
@@ -66,21 +75,39 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: "VẬN HÀNH & TÀI LIỆU",
+    items: [
+      { key: "nav.vioneDocuments" as TKey, icon: FolderOpen, to: "/documents", label: "Kho Tài Liệu" },
+      { key: "nav.vioneWorkflow" as TKey, icon: ClipboardList, to: "/workflow", label: "Quy Trình & Giao Việc" },
+      { key: "nav.vioneMeetings" as TKey, icon: CalendarDays, to: "/meetings", label: "Lịch Họp & Cuộc Hẹn" },
+    ],
+  },
+  {
+    label: "CỘNG ĐỒNG & THỂ THAO",
+    items: [
+      { key: "nav.vioneEventList" as TKey, icon: Calendar, to: "/events", label: "Sự Kiện ViOne Event" },
+      { key: "nav.vioneEventReg" as TKey, icon: ClipboardList, to: "/event-registrations", label: "Đăng Ký & Khách Mời" },
+      { key: "nav.vioneCheckin" as TKey, icon: QrCode, to: "/checkin-qr", label: "Soát Vé NFC & QR Pass" },
+      { key: "nav.vioneSport" as TKey, icon: Trophy, to: "/platform/sport", label: "ViOne Sport (Giải Đấu & CLB)" },
+      { key: "nav.vioneRun" as TKey, icon: Flame, to: "/platform/run", label: "ViOne Run (Giải Chạy & RFID)" },
+    ],
+  },
+  {
+    label: "VĂN HÓA & DI SẢN",
+    items: [
+      { key: "nav.vioneHeritage" as TKey, icon: Landmark, to: "/platform/heritage", label: "ViOne Heritage (Di Sản Văn Hóa)" },
+      { key: "nav.vioneMuseum" as TKey, icon: Layers, to: "/platform/museum", label: "ViOne Museum (Bảo Tàng Số 3D)" },
+      { key: "nav.vioneArchive" as TKey, icon: Archive, to: "/platform/archive", label: "ViOne Archive (Lưu Trữ Số Tư Liệu)" },
+      { key: "nav.vioneTicket" as TKey, icon: Ticket, to: "/platform/tickets", label: "ViOne Ticket (Vé Điện Tử & Soát Vé)" },
+      { key: "nav.vioneReview" as TKey, icon: Radio, to: "/platform/review", label: "ViOne Review (Trạm Chạm NFC)" },
+    ],
+  },
+  {
     label: "TIỆN ÍCH & GIAO THƯƠNG",
     items: [
       { key: "nav.vioneMarketplace" as TKey, icon: Store, to: "/marketplace", label: "Sàn Sản Phẩm & Dịch Vụ" },
       { key: "nav.vioneOpportunities" as TKey, icon: FileBarChart, to: "/opportunities", label: "Cơ Hội Giao Thương & Hợp Tác" },
       { key: "nav.vioneQuotes" as TKey, icon: ClipboardList, to: "/marketplace/my-quotes", label: "Yêu Cầu Báo Giá VIP" },
-    ],
-  },
-  {
-    label: "SỰ KIỆN & ĐIỂM DANH",
-    items: [
-      { key: "nav.vioneEventList" as TKey, icon: Calendar, to: "/events", label: "Lịch Sự Kiện" },
-      { key: "nav.vioneEventReg" as TKey, icon: ClipboardList, to: "/event-registrations", label: "Đăng Ký & Khách Mời" },
-      { key: "nav.vioneCheckin" as TKey, icon: QrCode, to: "/checkin-qr", label: "Soát Vé NFC & QR Pass" },
-      { key: "eventsOverview.title" as TKey, icon: Calendar, to: "/events-overview", label: "Tổng quan sự kiện" },
-      { key: "nav.checkin" as TKey, icon: ScanLine, to: "/checkin", label: "Máy quét soát vé" },
     ],
   },
   {

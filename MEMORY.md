@@ -1,5 +1,97 @@
 # System Memory & Architecture
 
+## 0.0000000000.12. GỠ BỎ HOÀN TOÀN HẠ TẦNG REDIS & KAFKA TRÊN GIAO DIỆN QUẢN TRỊ CRM (MEETINGS.TSX) (28/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+- **Yêu cầu:** "gỡ bỏ hoàn toàn hạ tầng redis trên giao diện CRM"
+- **Hiện trạng trước đó:** Trên trang "Quản Lý Cuộc Họp & Đặt Phòng Họp Thông Minh" (`/meetings`), có hiển thị tab thứ 4 mang tên "Hạ Tầng Redis & Message Queue", nút "Bắn Gói Tin Thử Nghiệm", cùng các thông số kỹ thuật hạ tầng (Redis hit rate, Kafka message throughput, latency, consumer workers, DLQ) và sơ đồ luồng dữ liệu kiến trúc hệ thống mang tính chất debug/demo kỹ thuật server, không phù hợp với giao diện nghiệp vụ thuần túy của doanh nhân và quản trị viên CRM.
+
+### 2. Các Thay Đổi Kỹ Thuật Đã Thực Hiện
+1. **`apps/vione_app_fe/src/routes/meetings.tsx`:**
+   - **Gỡ bỏ Tab 4 & Tab Switcher:** Chuyển đổi từ `4-Tab Switcher` sang `3-Tab Switcher` chuẩn mực nghiệp vụ: (1) `Đặt Phòng & Phê Duyệt Email`, (2) `Lịch Họp Ban & Sự Kiện`, (3) `Mẫu Email & Tin Nhắn Cố Định`. Loại bỏ hoàn toàn tab `data_pipeline` ("Hạ Tầng Redis & Message Queue").
+   - **Gỡ bỏ Header Actions & Subtitle:** Xóa nút "Bắn Gói Tin Thử Nghiệm"; tinh chỉnh subtitle trang thành *"Hệ thống đăng ký book phòng Online/Offline, quy trình duyệt email tự động và kho mẫu template thông báo chuẩn doanh nghiệp"*, loại bỏ cụm từ kỹ thuật *"và hạ tầng đồng bộ Redis-Kafka"*.
+   - **Xóa toàn bộ khối render Telemetry & Sơ đồ:** Gỡ bỏ thẻ metric Redis hit rate, Kafka throughput, bảng topics và event logs trực tuyến khỏi cây DOM giao diện CRM.
+   - **Dọn dẹp mã nguồn:** Xóa bỏ các state không dùng (`pipelineMetrics`, `pipelineTopics`, `redisSpec`, `pipelineLogs`), handler `handleTestPublish`, các import `DataPipelineService` và các icon Lucide không còn sử dụng (`Activity`, `Database`, `Layers`, `Radio`, `Server`, `ShieldCheck`, `Smartphone`, `Zap`).
+2. **Kiểm thử chất lượng:** Đảm bảo `npx tsc --noEmit` hoàn thành với Exit code 0 (0 errors).
+
+## 0.0000000000.11. NÂNG CẤP ĐA CHIỀU CÁC MODULE NỀN TẢNG (RUN, MUSEUM, HERITAGE, REVIEW), KHẮC PHỤC TRIỆT ĐỂ LỖI THEME SÁNG/TỐI CRM, VIỆT HÓA KHO TÀI LIỆU & PHÁT TRIỂN APP VIONE PWA NATIVE PREMIUM VỚI TÀI KHOẢN TRẢI NGHIỆM ĐỘC LẬP (28/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+- **Phản hồi từ người dùng:** "hôm qua tôi có làm 1 số chức năng mới cho even, run, museum, heritage, review nhưung giao diện đang bị lỗi khi theme sáng và các chức năng mới phát triển đang rất chung chung không có gì nổi bật. Cho nên bạn phân tính nâng cấp biến ra chiều chức năng thuộc các module mới cho tôi và phải đảm bảo giao diện chuẩn theo CRM hiện đang có. không bị lỗi theme sáng tối. Ngay cả chú thích đúng ra tên là tài liệu thì dịch chưa hết vẫn là document. rà soát sau đó nâng cấp vione crm lên. Sau khi xong làm thêm trực tiếp vào app vione pwa các chức năng cần có nhưng với giao diện khác tài khoản đăng nhập là tài khoản khác chứ không chung giao diện với vione pwa như hiện tại. Giao diện vione app prenium và phải có response như vione app pwa."
+- **Các lỗi và hạn chế được giải quyết triệt để:**
+  * **Lỗi Theme Sáng/Tối (Light/Dark Mode) trên CRM:** Nền trang màu trắng nhưng các card thư mục, bảng dữ liệu, ô tìm kiếm, filter pills bị hardcode màu đen xì (`bg-[#0B0F17]`, `bg-[#0B132B]`, `bg-[#0A101D]`, `bg-[#050C15]`) tạo cảm giác lem nhem, không đạt chuẩn thiết kế CRM doanh nghiệp.
+  * **Lỗi chú thích tiếng Anh "Documents":** Header breadcrumb fallback tự lấy path segment tiếng Anh `documents` viết hoa thành "Documents" thay vì tên tiếng Việt "Kho Tài Liệu Doanh Nghiệp".
+  * **Các module mới quá sơ sài:** Module Run, Museum, Heritage, Review trước đó chỉ có 1-2 bảng CRUD đơn điệu, thiếu chiều sâu nghiệp vụ chuyên biệt của từng lĩnh vực.
+  * **Yêu cầu phân tách App PWA:** Cần có giao diện Mobile App PWA Native cao cấp với tài khoản người dùng trải nghiệm độc lập (Runner / Visitor / Citizen Pass), không bị hòa lẫn vào tài khoản Hội viên Doanh nhân Business Connect.
+
+### 2. Chi Tiết Các Giải Pháp Kỹ Thuật Đã Thực Hiện
+
+#### A. Sửa Lỗi Theme Sáng/Tối & Việt Hóa Kho Tài Liệu CRM
+1. **`apps/vione_app_fe/src/lib/nav-items.ts`:**
+   - Đăng ký đầy đủ toàn bộ các tuyến đường còn thiếu vào `navGroups`: `/documents` ("Kho Tài Liệu"), `/workflow` ("Quy Trình & Giao Việc"), `/meetings` ("Lịch Họp & Cuộc Hẹn"), `/events`, `/platform/sport`, `/platform/run`, `/platform/heritage`, `/platform/museum`, `/platform/archive`, `/platform/tickets`, `/platform/review`.
+2. **`apps/vione_app_fe/src/components/dashboard/TopbarBreadcrumb.tsx`:**
+   - Bổ sung từ điển ánh xạ `ROUTE_LABELS` chuẩn tiếng Việt (ánh xạ `documents` -> `"Kho Tài Liệu"`, `platform` -> `"Nền Tảng ViOne"`, `run` -> `"ViOne Run"`, `museum` -> `"ViOne Museum"`, v.v.), xóa bỏ hoàn toàn chữ tiếng Anh "Documents" trên topbar.
+3. **`apps/vione_app_fe/src/routes/documents.index.tsx`:**
+   - Đồng bộ 100% tokens màu tương thích Light/Dark (`bg-white dark:bg-slate-900`, `border-slate-200 dark:border-slate-800`, `text-slate-900 dark:text-slate-100`, `bg-slate-50 dark:bg-slate-950`).
+   - Sửa toàn bộ: View Switcher, Category Chips, Search bar, Breadcrumb bar "Kho Lưu Trữ", Folder Cards Grid, File Cards Grid & List View Table, và cả 3 Modals nghiệp vụ.
+4. **Các file route `platform.*.tsx`:**
+   - Chuẩn hóa bộ chuyển đổi viewMode switchers từ hardcoded `bg-[#121820]` sang tokens thích ứng `bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-[#D8B282]/30`.
+
+#### B. Nâng Cấp Đa Chiều Chức Năng 4 Module Quản Trị CRM
+1. **`RunAdminManager.tsx` (ViOne Run):**
+   - Nâng cấp thành hệ thống quản lý giải chạy marathon đa chiều 5 tabs:
+     * `races`: Quản lý giải chạy & cự ly (5KM, 10KM, 21KM, 42KM, COT, elevation gain, cự ly di sản).
+     * `runners`: Danh sách VĐV & phân bổ số BIB RFID, gán chip UID, Wave xuất phát (Wave A/B/C), cỡ áo finisher.
+     * `checkpoints`: Trạng thái các trạm đo thảm RFID (Start, 5K, 10K, 21K, Finish), sóng RFID online, trạm tiếp nước, đội y tế, giới hạn COT.
+     * `leaderboard`: Live Leaderboard & Console kích hoạt quét chip thảm RFID thời gian thực, tự động tính toán Pace, Gun time, Chip time.
+     * `certificates`: Cấp chứng nhận hoàn thành điện tử (E-Certificate) và Finisher Medal.
+2. **`MuseumAdminManager.tsx` (ViOne Museum):**
+   - Nâng cấp thành hệ thống quản lý bảo tàng 5 tabs:
+     * `museums`: Quản trị danh sách bảo tàng & phòng triển lãm, giá vé, giờ mở cửa, URL VR tour 3D.
+     * `artifacts`: Kho hiện vật 3D Photogrammetry (mô hình GLTF/GLB xoay 360, niên đại, phân loại, bảo vật quốc gia).
+     * `audioguide`: Thuyết minh tự động đa ngôn ngữ (Tiếng Việt, Tiếng Anh, Tiếng Pháp) theo từng hiện vật, tích hợp audio player nghe thử giọng đọc AI Studio.
+     * `nfc_tags`: Trạm thẻ chip NFC NTAG213 tại bệ hiện vật trong bảo tàng, định vị phòng trưng bày, đo đếm số lượt chạm khách tham quan.
+     * `lending`: Sổ kiểm kê & luân chuyển / mượn trả hiện vật giữa các bảo tàng.
+3. **`HeritageAdminManager.tsx` (ViOne Heritage):**
+   - Nâng cấp thành hệ thống hồ sơ di sản 4 tabs:
+     * `heritage_list`: Hồ sơ di sản, danh mục xếp hạng (UNESCO, Di tích quốc gia đặc biệt, Di sản phi vật thể), niên đại, địa điểm, số tem check-in.
+     * `gis_map`: Bản đồ số tọa độ GIS, định vị kinh độ/vĩ độ, ranh giới khoanh vùng bảo vệ I & II, trạm check-in GPS du khách.
+     * `archives_vr360`: Tư liệu số hóa lịch sử (văn bia, thần tích, sắc phong) & Tour thực tế ảo VR360.
+     * `preservation`: Kế hoạch tu bổ, giám sát độ ẩm/xuống cấp định kỳ & ngân sách dự toán bảo tồn.
+4. **`ReviewAdminManager.tsx` (ViOne Review):**
+   - Nâng cấp thành hệ thống tăng trưởng đánh giá & lọc phễu thông minh 4 tabs:
+     * `stations`: Danh sách điểm chạm NFC Review (vị trí bàn, quầy thu ngân, chip UID NTAG213/215, rating Google Maps).
+     * `routing`: Kịch bản điều hướng thông minh (4-5 sao -> Google Maps Review trực tiếp; 1-3 sao -> Form góp ý kín bí mật gửi tức thì cho Quản lý xử lý khẩn cấp).
+     * `incentives`: Chiến dịch phát hành Voucher / quà tri ân sau khi hoàn tất đánh giá.
+     * `analytics`: Báo cáo tỷ lệ chạm NFC thực tế, biểu đồ tăng trưởng review 5 sao, cảnh báo đánh giá tiêu cực.
+
+#### C. Phát Triển ViOne App PWA Native Premium Với Tài Khoản Trải Nghiệm Độc Lập
+1. **`PlatformPwaApp.tsx` (`apps/vione_app_fe/src/components/platform-app/PlatformPwaApp.tsx`):**
+   - Xây dựng trải nghiệm Mobile App PWA độc lập với phong cách thiết kế ViOne Executive Obsidian & Champagne Gold.
+   - **Tài khoản đăng nhập độc lập (Citizen / Runner Account)**:
+     * Lưu trữ `vione_citizen_pass_user` riêng biệt, không dùng chung với tài khoản Hội viên Doanh nhân Business Connect.
+     * Hỗ trợ các vai trò: Vận Động Viên (Runner với mã BIB), Du Khách (Visitor), Công Dân Số Văn Hóa (Citizen).
+     * Modal đăng nhập/đổi tài khoản bằng SĐT, họ tên, mã BIB độc lập.
+   - **Bottom Navigation Bar 5 tabs chuẩn PWA Native**:
+     * `Khám Phá` (Explore): Hero banner, di sản nổi bật, bảo tàng 3D, giải chạy sắp tới, widget Hộ chiếu công dân số.
+     * `Giải Chạy` (Run & Events): Danh sách giải chạy, đăng ký cự ly, số BIB RFID, bảng xếp hạng Live, giải Pickleball.
+     * `Di Sản & 3D` (Culture): Khám phá di sản VR360, bảo tàng cổ vật 3D Photogrammetry, kho tư liệu sắc phong.
+     * `Ví Vé & NFC` (Wallet): Ví vé điện tử QR check-in, soát vé Napas 24/7, trạm chạm thẻ NFC review tặng voucher.
+     * `Cá Nhân` (Profile): Quản lý Hộ chiếu di sản công dân số, số tem tích lũy, huy chương Finisher, đăng xuất tài khoản trải nghiệm.
+   - **Responsive & Desktop Simulator**:
+     * Cung cấp nút chuyển đổi linh hoạt trên Desktop giữa "Mở Rộng Toàn Màn Hình" và "Mô Phỏng Giao Diện Mobile Frame".
+     * Tự động đọc URL query param `?tab=run|sport|heritage|museum|archive|tickets|review|profile` để điều hướng sâu chính xác từ `ViOneEcosystemGrid`.
+   - **Quy chuẩn nút bấm**: 100% nút bấm tuân thủ Rule 8 với gradient Champagne Gold `#F6E1C3` -> `#C29B69`.
+
+#### D. Kiểm Thử & Xác Nhận Chất Lượng Mã Nguồn
+- Chạy `npx tsc --noEmit` trên cả 3 package:
+  * `apps/vione_app_fe`: Exit code 0 (0 errors).
+  * `apps/vione_app_be`: Exit code 0 (0 errors).
+  * `apps/mobile_vione`: Exit code 0 (0 errors).
+- Tuyệt đối không tự ý chạy `git push` hoặc `git commit`.
+
+---
+
 ## 0.0000000000.10. CHUẨN HÓA RESTFUL API TOÀN DIỆN (FULL CRUD: GET, POST, PUT, DELETE) & HỆ THỐNG GIAO DIỆN QUẢN TRỊ CRM ADMIN CHO 8 PHÂN HỆ MỚI (27/10/2026)
 
 ### 1. Bối cảnh & Yêu cầu Người Dùng

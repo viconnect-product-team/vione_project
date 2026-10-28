@@ -10,6 +10,17 @@ import {
   ExternalLink,
   Smartphone,
   Gift,
+  GitBranch,
+  BarChart3,
+  MessageSquareWarning,
+  Sparkles,
+  TrendingUp,
+  Percent,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowUpRight,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
@@ -27,10 +38,93 @@ export interface ReviewStoreItem {
   created_at: string;
 }
 
+export interface SmartRoutingRule {
+  id: string;
+  ruleName: string;
+  starThreshold: string;
+  targetDestination: string;
+  actionSummary: string;
+  alertManager: boolean;
+  active: boolean;
+}
+
+export interface ReviewCampaignItem {
+  id: string;
+  campaignName: string;
+  voucherCode: string;
+  discountValue: string;
+  minOrderValue: number;
+  totalIssued: number;
+  totalRedeemed: number;
+  status: "active" | "expired";
+}
+
+export interface ReviewAnalyticsSummary {
+  totalTaps: number;
+  tapsToday: number;
+  positiveReviews: number;
+  interceptedComplaints: number;
+  avgRating: number;
+}
+
 export const ReviewAdminManager: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<"stations" | "routing" | "incentives" | "analytics">("stations");
   const [stores, setStores] = useState<ReviewStoreItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+
+  // Sub-modules state
+  const [routingRules, setRoutingRules] = useState<SmartRoutingRule[]>([
+    {
+      id: "rule-01",
+      ruleName: "Khách khen ngợi (4 - 5 Sao)",
+      starThreshold: "⭐⭐⭐⭐ - ⭐⭐⭐⭐⭐ (Hài lòng)",
+      targetDestination: "Google Maps Review URL",
+      actionSummary: "Tự động mở app Google Maps của khách và điền sẵn lời khen gợi ý",
+      alertManager: false,
+      active: true,
+    },
+    {
+      id: "rule-02",
+      ruleName: "Khách phản ánh (1 - 3 Sao)",
+      starThreshold: "⭐ - ⭐⭐⭐ (Chưa hài lòng)",
+      targetDestination: "Biểu Mẫu Góp Ý Kín Quản Lý (Private Feedback)",
+      actionSummary: "Chặn không đăng lên Google Maps; gửi tin nhắn cảnh báo SOS tức thì cho Quản lý",
+      alertManager: true,
+      active: true,
+    },
+  ]);
+
+  const [campaigns, setCampaignss] = useState<ReviewCampaignItem[]>([
+    {
+      id: "cam-01",
+      campaignName: "Tri Ân Khách Chạm NFC Review Mùa Lễ",
+      voucherCode: "VIONE-THANKYOU-20K",
+      discountValue: "20.000 VNĐ",
+      minOrderValue: 100000,
+      totalIssued: 450,
+      totalRedeemed: 320,
+      status: "active",
+    },
+    {
+      id: "cam-02",
+      campaignName: "Tặng Ly Trà Thảo Mộc Đánh Giá 5 Sao",
+      voucherCode: "FREE-HERBAL-TEA",
+      discountValue: "Tặng 1 đồ uống",
+      minOrderValue: 50000,
+      totalIssued: 890,
+      totalRedeemed: 670,
+      status: "active",
+    },
+  ]);
+
+  const [analytics] = useState<ReviewAnalyticsSummary>({
+    totalTaps: 4280,
+    tapsToday: 135,
+    positiveReviews: 1240,
+    interceptedComplaints: 28,
+    avgRating: 4.9,
+  });
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
@@ -94,14 +188,12 @@ export const ReviewAdminManager: React.FC = () => {
     }
     try {
       if (editingStore) {
-        // PUT /api/platform-hub/reviews/stores/:id
         await fetchNestApi(`/platform-hub/reviews/stores/${editingStore.id}`, {
           method: "PUT",
           body: JSON.stringify(form),
         });
         toast.success("Cập nhật trạm NFC thành công (RESTful PUT)");
       } else {
-        // POST /api/platform-hub/reviews/stores
         await fetchNestApi(`/platform-hub/reviews/stores`, {
           method: "POST",
           body: JSON.stringify(form),
@@ -118,7 +210,6 @@ export const ReviewAdminManager: React.FC = () => {
   const handleDeleteStore = async (id: string, name: string) => {
     if (!window.confirm(`Bạn có chắc chắn muốn xóa trạm NFC "${name}"?`)) return;
     try {
-      // DELETE /api/platform-hub/reviews/stores/:id
       await fetchNestApi(`/platform-hub/reviews/stores/${id}`, { method: "DELETE" });
       toast.success("Đã xóa trạm NFC (RESTful DELETE)");
       loadStores();
@@ -136,224 +227,423 @@ export const ReviewAdminManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#0A101D]/80 border border-[#D8B282]/20 rounded-2xl p-4 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-white flex items-center gap-2">
-            <Smartphone className="w-4 h-4 text-[#D8B282]" />
-            Danh Sách Trạm Chạm NFC ({stores.length} Điểm)
-          </span>
+      {/* 4 Dimensional Module Tabs */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setActiveTab("stations")}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "stations"
+                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            }`}
+          >
+            <Smartphone className="inline w-4 h-4 mr-1.5" />
+            Trạm Thẻ NFC ({stores.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("routing")}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "routing"
+                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            }`}
+          >
+            <GitBranch className="inline w-4 h-4 mr-1.5" />
+            Điều Hướng Thông Minh
+          </button>
+          <button
+            onClick={() => setActiveTab("incentives")}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "incentives"
+                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            }`}
+          >
+            <Gift className="inline w-4 h-4 mr-1.5" />
+            Chiến Dịch Voucher ({campaigns.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "analytics"
+                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            }`}
+          >
+            <BarChart3 className="inline w-4 h-4 mr-1.5" />
+            Báo Cáo Tăng Trưởng
+          </button>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-64">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+          <div className="relative flex-1 sm:w-56">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Tìm kiếm điểm chạm NFC..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-black/40 border border-[#D8B282]/20 rounded-xl text-xs text-[#F6E1C3] placeholder-gray-500 focus:outline-none focus:border-[#D8B282]"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-[#D8B282]"
             />
           </div>
 
-          <button
-            onClick={() => handleOpenModal()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md hover:brightness-110 active:scale-95 transition-all whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4" />
-            Đăng Ký Điểm Chạm NFC
-          </button>
+          {activeTab === "stations" && (
+            <button
+              onClick={() => handleOpenModal()}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-sm hover:brightness-105 active:scale-95 transition-all whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Đăng Ký Trạm Mới
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Table */}
+      {/* Tab 1: Danh Sách Trạm Thẻ NFC */}
       {loading ? (
-        <div className="p-12 text-center text-gray-400 flex items-center justify-center gap-3">
+        <div className="p-12 text-center text-slate-500 flex items-center justify-center gap-3">
           <RefreshCw className="w-5 h-5 animate-spin text-[#D8B282]" />
-          Đang nạp danh sách trạm NFC từ RESTful API...
+          Đang nạp dữ liệu trạm NFC từ RESTful API...
         </div>
-      ) : (
-        <div className="bg-[#0A101D]/70 border border-[#D8B282]/20 rounded-2xl overflow-hidden shadow-xl backdrop-blur-md">
-          <table className="w-full text-left text-sm text-gray-300">
-            <thead className="bg-[#050C15]/90 text-xs font-semibold text-[#D8B282] uppercase border-b border-[#D8B282]/20">
-              <tr>
-                <th className="px-5 py-4">Mã Chip NFC</th>
-                <th className="px-5 py-4">Tên Cửa Hàng / Điểm Chạm</th>
-                <th className="px-5 py-4">Ngành Nghề & Địa Chỉ</th>
-                <th className="px-5 py-4">Điểm Đánh Giá</th>
-                <th className="px-5 py-4">Voucher Tặng Khách</th>
-                <th className="px-5 py-4 text-right">Tác Vụ (REST)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {filteredStores.length === 0 ? (
+      ) : activeTab === "stations" ? (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950 text-xs font-semibold text-slate-800 dark:text-[#D8B282] uppercase border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-gray-500">
-                    Chưa có điểm chạm NFC nào. Bấm "+ Đăng Ký Điểm Chạm NFC" để tạo.
-                  </td>
+                  <th className="px-5 py-4">Tên Cửa Hàng / Điểm Chạm</th>
+                  <th className="px-5 py-4">Mã Chip NFC UID</th>
+                  <th className="px-5 py-4">Địa Chỉ</th>
+                  <th className="px-5 py-4">Đánh Giá Google</th>
+                  <th className="px-5 py-4">Voucher Tri Ân</th>
+                  <th className="px-5 py-4 text-right">Tác Vụ (REST)</th>
                 </tr>
-              ) : (
-                filteredStores.map((s) => (
-                  <tr key={s.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-5 py-4 font-mono text-xs text-[#D8B282] font-bold">{s.nfc_uid}</td>
-                    <td className="px-5 py-4 font-semibold text-white">
-                      <div className="flex items-center gap-2">
-                        {s.store_name}
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {filteredStores.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
+                      Chưa có trạm NFC nào. Bấm "+ Đăng Ký Trạm Mới" để kích hoạt thẻ.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStores.map((s) => (
+                    <tr key={s.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-5 py-4">
+                        <div className="font-semibold text-slate-900 dark:text-white">{s.store_name}</div>
+                        <div className="text-xs text-slate-500 capitalize">{s.store_category}</div>
+                      </td>
+                      <td className="px-5 py-4 font-mono text-xs font-bold text-amber-600 dark:text-[#D8B282]">
+                        {s.nfc_uid}
+                      </td>
+                      <td className="px-5 py-4 text-xs text-slate-500 max-w-xs truncate">{s.store_address}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                          <span>{s.rating || 5.0}</span>
+                          <span className="text-slate-400 font-normal">({s.total_reviews || 0} reviews)</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50">
+                          <Gift className="w-3 h-3" /> {s.reward_voucher || "VIONE-10K"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-right space-x-2">
                         {s.google_maps_url && (
                           <a
                             href={s.google_maps_url}
                             target="_blank"
-                            rel="noreferrer"
-                            className="text-gray-400 hover:text-amber-400 transition-colors"
-                            title="Mở Google Maps"
+                            rel="noopener noreferrer"
+                            className="inline-block p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sky-600 dark:text-sky-400 hover:underline"
+                            title="Mở link Google Maps"
                           >
-                            <ExternalLink className="w-3.5 h-3.5" />
+                            <ExternalLink className="w-4 h-4" />
                           </a>
                         )}
-                      </div>
-                    </td>
+                        <button
+                          onClick={() => handleOpenModal(s)}
+                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-300 transition-colors"
+                          title="Chỉnh sửa (PUT)"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteStore(s.id, s.store_name)}
+                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 transition-colors"
+                          title="Xóa (DELETE)"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : activeTab === "routing" ? (
+        /* Tab 2: Điều Hướng Thông Minh Smart Review Routing */
+        <div className="space-y-4">
+          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="text-xs text-slate-700 dark:text-slate-300">
+              <strong className="text-slate-900 dark:text-white font-bold block mb-0.5">
+                Cơ chế lọc phễu thông minh (Negative Feedback Interception):
+              </strong>
+              Khi khách hàng chạm điện thoại vào thẻ NFC ViOne, hệ thống hiển thị màn hình chọn số sao. Đánh giá 4-5 sao sẽ mở thẳng Google Maps để nhận review công khai. Đánh giá 1-3 sao sẽ chuyển sang màn hình gửi góp ý bí mật cho Quản lý cửa hàng kèm cảnh báo SOS khẩn cấp, giúp xử lý êm đẹp trước khi khách đăng bài tiêu cực lên mạng xã hội.
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <GitBranch className="w-4 h-4 text-amber-500" />
+                Cấu Hình Quy Tắc Điều Hướng Đánh Giá Khách Hàng
+              </h3>
+              <button
+                onClick={() => toast.success("Đã lưu quy tắc điều hướng thông minh")}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15]"
+              >
+                Lưu Cấu Hình
+              </button>
+            </div>
+            <table className="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950 text-xs font-semibold text-slate-800 dark:text-[#D8B282] uppercase border-b border-slate-200 dark:border-slate-800">
+                <tr>
+                  <th className="px-5 py-4">Tên Kịch Bản</th>
+                  <th className="px-5 py-4">Ngưỡng Số Sao</th>
+                  <th className="px-5 py-4">Đích Đến Tiếp Theo</th>
+                  <th className="px-5 py-4">Mô Tả Luồng Xử Lý</th>
+                  <th className="px-5 py-4">Báo Động Khẩn (SOS)</th>
+                  <th className="px-5 py-4 text-right">Kích Hoạt</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {routingRules.map((rule) => (
+                  <tr key={rule.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                    <td className="px-5 py-4 font-semibold text-slate-900 dark:text-white">{rule.ruleName}</td>
+                    <td className="px-5 py-4 text-xs font-bold text-amber-600">{rule.starThreshold}</td>
+                    <td className="px-5 py-4 text-xs font-medium text-sky-600 dark:text-sky-400">{rule.targetDestination}</td>
+                    <td className="px-5 py-4 text-xs text-slate-500 max-w-xs">{rule.actionSummary}</td>
                     <td className="px-5 py-4 text-xs">
-                      <span className="capitalize px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30 text-[10px] mr-1.5">
-                        {s.store_category}
+                      {rule.alertManager ? (
+                        <span className="inline-flex items-center gap-1 font-bold text-rose-600">
+                          <AlertTriangle className="w-3.5 h-3.5" /> Telegram SOS + SMS
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">Không cần</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                        Đang Bật
                       </span>
-                      <span className="text-gray-400">{s.store_address}</span>
-                    </td>
-                    <td className="px-5 py-4 text-xs">
-                      <div className="flex items-center gap-1 font-bold text-amber-400">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        {Number(s.rating || 5.0).toFixed(1)}
-                        <span className="font-normal text-gray-400">({s.total_reviews} lượt)</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-xs font-mono text-emerald-400 flex items-center gap-1">
-                      <Gift className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                      {s.reward_voucher || "Không có"}
-                    </td>
-                    <td className="px-5 py-4 text-right space-x-2">
-                      <button
-                        onClick={() => handleOpenModal(s)}
-                        className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-amber-300 transition-colors"
-                        title="Chỉnh sửa (PUT)"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteStore(s.id, s.store_name)}
-                        className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
-                        title="Xóa (DELETE)"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : activeTab === "incentives" ? (
+        /* Tab 3: Chiến Dịch Voucher Tri Ân */
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Gift className="w-4 h-4 text-purple-500" />
+                  Quản Lý Chiến Dịch Phát Hành Mã Voucher Thưởng Sau Review
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Tự động hiển thị voucher quà tặng có mã QR cho khách ngay sau khi khách ấn gửi đánh giá qua thẻ NFC.
+                </p>
+              </div>
+              <button
+                onClick={() => toast.success("Mở biểu mẫu tạo chiến dịch voucher mới")}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15]"
+              >
+                + Tạo Chiến Dịch Mới
+              </button>
+            </div>
+            <table className="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950 text-xs font-semibold text-slate-800 dark:text-[#D8B282] uppercase border-b border-slate-200 dark:border-slate-800">
+                <tr>
+                  <th className="px-5 py-4">Tên Chiến Dịch</th>
+                  <th className="px-5 py-4">Mã Voucher</th>
+                  <th className="px-5 py-4">Mức Giảm / Quà Tặng</th>
+                  <th className="px-5 py-4">Đã Phát Hành</th>
+                  <th className="px-5 py-4">Đã Dùng Tại Quầy</th>
+                  <th className="px-5 py-4 text-right">Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {campaigns.map((cam) => (
+                  <tr key={cam.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                    <td className="px-5 py-4 font-semibold text-slate-900 dark:text-white">{cam.campaignName}</td>
+                    <td className="px-5 py-4 font-mono text-xs font-bold text-amber-600 dark:text-[#D8B282]">{cam.voucherCode}</td>
+                    <td className="px-5 py-4 text-xs font-semibold text-emerald-600">{cam.discountValue}</td>
+                    <td className="px-5 py-4 font-mono text-xs">{cam.totalIssued.toLocaleString("vi-VN")} mã</td>
+                    <td className="px-5 py-4 font-mono text-xs text-sky-600 font-bold">{cam.totalRedeemed.toLocaleString("vi-VN")} mã</td>
+                    <td className="px-5 py-4 text-right">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                        Đang Chạy
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        /* Tab 4: Báo Cáo Tăng Trưởng & Chỉ Số CSAT */
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span>Tổng Lượt Chạm NFC</span>
+                <Smartphone className="w-4 h-4 text-sky-500" />
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                {analytics.totalTaps.toLocaleString("vi-VN")}
+              </div>
+              <div className="text-xs text-emerald-600 font-semibold mt-1">+{analytics.tapsToday} lượt hôm nay</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span>Đánh Giá 5 Sao Đã Tạo</span>
+                <Star className="w-4 h-4 text-amber-500" />
+              </div>
+              <div className="text-2xl font-bold text-amber-500">{analytics.positiveReviews.toLocaleString("vi-VN")}</div>
+              <div className="text-xs text-slate-500 mt-1">Tỷ lệ chuyển đổi đạt 88.5%</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span>Khiếu Nại Đã Chặn Thành Công</span>
+                <MessageSquareWarning className="w-4 h-4 text-rose-500" />
+              </div>
+              <div className="text-2xl font-bold text-rose-500">{analytics.interceptedComplaints} vụ việc</div>
+              <div className="text-xs text-emerald-600 font-semibold mt-1">100% xử lý êm đẹp tại quầy</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span>Điểm Đánh Giá Trung Bình</span>
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">{analytics.avgRating} / 5.0</div>
+              <div className="text-xs text-emerald-600 font-semibold mt-1">Top 1 ngành hàng khu vực</div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Modal */}
+      {/* Modal Store NFC */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#0B132B] border border-[#D8B282]/40 rounded-3xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-lg font-bold text-[#F6E1C3] flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-[#D8B282]" />
-                {editingStore ? "Cập Nhật Điểm Chạm (RESTful PUT)" : "Đăng Ký Điểm Chạm NFC (RESTful POST)"}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Smartphone className="w-5 h-5 text-amber-500" />
+                {editingStore ? "Cập Nhật Trạm NFC (RESTful PUT)" : "Kích Hoạt Trạm NFC Mới (RESTful POST)"}
               </h3>
-              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveStore} className="space-y-4 text-xs">
               <div>
-                <label className="block text-gray-300 font-semibold mb-1">Tên cửa hàng / Nhà hàng / Điểm di tích *</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Tên cửa hàng / quầy thu ngân *</label>
                 <input
                   type="text"
                   required
                   value={form.store_name}
                   onChange={(e) => setForm({ ...form, store_name: e.target.value })}
-                  placeholder="VD: Nhà Hàng Cung Đình Huế"
-                  className="w-full px-3 py-2 bg-black/40 border border-[#D8B282]/30 rounded-xl text-white focus:outline-none focus:border-[#D8B282]"
+                  placeholder="VD: Nhà Hàng Hoàng Gia - Bàn 12"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-[#D8B282]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-300 font-semibold mb-1">Ngành nghề / Danh mục</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Loại hình kinh doanh</label>
                   <select
                     value={form.store_category}
                     onChange={(e) => setForm({ ...form, store_category: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/40 border border-[#D8B282]/30 rounded-xl text-white focus:outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
                   >
-                    <option value="restaurant">Nhà hàng & Ẩm thực</option>
-                    <option value="cafe">Cafe & Đồ uống</option>
-                    <option value="hotel">Khách sạn & Lưu trú</option>
-                    <option value="heritage">Điểm tham quan di sản</option>
-                    <option value="retail">Cửa hàng lưu niệm</option>
+                    <option value="restaurant">Nhà hàng / Ẩm thực</option>
+                    <option value="cafe">Quán Cafe / Đồ uống</option>
+                    <option value="hotel">Khách sạn / Lưu trú</option>
+                    <option value="retail">Cửa hàng bán lẻ / Quà tặng</option>
+                    <option value="tourism">Điểm tham quan / Di tích</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-300 font-semibold mb-1">Mã UID Thẻ NFC (NTAG213)</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Mã UID Thẻ NFC NTAG213</label>
                   <input
                     type="text"
                     value={form.nfc_uid}
                     onChange={(e) => setForm({ ...form, nfc_uid: e.target.value })}
                     placeholder="04:A2:3B:..."
-                    className="w-full px-3 py-2 bg-black/40 border border-[#D8B282]/30 rounded-xl text-white font-mono focus:outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-mono focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 font-semibold mb-1">Địa chỉ</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Địa chỉ chi tiết</label>
                 <input
                   type="text"
                   value={form.store_address}
                   onChange={(e) => setForm({ ...form, store_address: e.target.value })}
-                  placeholder="Số nhà, đường, quận/huyện, tỉnh..."
-                  className="w-full px-3 py-2 bg-black/40 border border-[#D8B282]/30 rounded-xl text-white focus:outline-none"
+                  placeholder="Số 45 Tràng Tiền, Hoàn Kiếm, Hà Nội"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-300 font-semibold mb-1">Đường dẫn Google Maps Review</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Đường dẫn Google Maps Review</label>
                 <input
                   type="text"
                   value={form.google_maps_url}
                   onChange={(e) => setForm({ ...form, google_maps_url: e.target.value })}
                   placeholder="https://g.page/r/..."
-                  className="w-full px-3 py-2 bg-black/40 border border-[#D8B282]/30 rounded-xl text-white focus:outline-none"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-300 font-semibold mb-1">Mã Voucher Tặng Khách Hàng</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Mã Voucher Tri Ân Tặng Kèm</label>
                 <input
                   type="text"
                   value={form.reward_voucher}
                   onChange={(e) => setForm({ ...form, reward_voucher: e.target.value })}
-                  placeholder="VD: VIONE-GIAM-10K"
-                  className="w-full px-3 py-2 bg-black/40 border border-[#D8B282]/30 rounded-xl text-white font-mono focus:outline-none"
+                  placeholder="VD: VIONE-THANKYOU-20K"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] font-bold shadow-md hover:brightness-110 active:scale-95 transition-all"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] font-bold shadow-md hover:brightness-105 active:scale-95 transition-all"
                 >
-                  {editingStore ? "Cập Nhật (PUT)" : "Đăng Ký (POST)"}
+                  {editingStore ? "Cập Nhật (PUT)" : "Kích Hoạt (POST)"}
                 </button>
               </div>
             </form>

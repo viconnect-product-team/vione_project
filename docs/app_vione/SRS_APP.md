@@ -465,3 +465,30 @@
 * Tất cả nút hành động (CTA) sử dụng Gradient Vàng Hoàng Gia (`bc-cta-gold` / `["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]`), chữ Đen Obsidian tương phản cao.
 * Hỗ trợ đồng bộ tham số `?tab=` trên Web PWA và `onOpenPlatformTab(tab)` trên Native Mobile, mở tức thời đúng tab phân hệ người dùng đã chọn.
 
+---
+
+### UC-APP-31: Phân Hệ ViOne App PWA Native Premium Với Tài Khoản Trải Nghiệm Độc Lập (Citizen & Runner Pass)
+* **Tác nhân:** Toàn bộ Vận động viên (Runner), Du khách (Visitor), Công dân số văn hóa (Citizen), Quản trị viên ViConnect.
+* **Màn hình thực hiện trên App Native & PWA:**
+  - PWA: `components/platform-app/PlatformPwaApp.tsx`, `routes/platform-app.tsx`.
+  - Native Mobile: `screens/platform/PlatformAppScreen.tsx`.
+* **Cơ quan chủ quản:** **ViConnect Central Platform**.
+* **Mục tiêu:** Cung cấp trải nghiệm ứng dụng di động độc lập (Native PWA Mobile Shell) với giao diện ViOne Executive Obsidian & Champagne Gold sang trọng, sở hữu hệ thống tài khoản người dùng độc lập (không hòa lẫn với tài khoản Hội viên Doanh nhân Business Connect), thanh điều hướng đáy (Bottom Bar 5 Tabs) mượt mà và khả năng phản hồi tức thì.
+* **Các tính năng cốt lõi:**
+  1. **Tài Khoản Trải Nghiệm Độc Lập (Citizen / Runner Identity):**
+     - Lưu trữ trạng thái `vione_citizen_pass_user` tách biệt, hỗ trợ các vai trò VĐV (kèm mã số BIB), Du khách và Công dân số.
+     - Hộp thoại đăng nhập/chuyển đổi tài khoản (Switch Profile) linh hoạt bằng Họ tên, Số điện thoại và Mã BIB.
+  2. **Thanh Điều Hướng Đáy 5 Tab (Mobile Bottom Navigation):**
+     - `Khám Phá` (Explore): Hero banner, di sản nổi bật, bảo tàng 3D, giải chạy sắp diễn ra, widget Hộ chiếu công dân số.
+     - `Giải Chạy` (Run & Events): Cự ly giải chạy, cấp số BIB thời gian thực, quét chíp thảm RFID, bảng xếp hạng trực tiếp.
+     - `Di Sản & 3D` (Culture): Tham quan VR360, tương tác cổ vật 3D Photogrammetry xoay 360 độ, kho tư liệu sắc phong.
+     - `Ví Vé & NFC` (Wallet): Quản lý vé điện tử QR check-in, cổng soát vé Napas 24/7, trạm chạm thẻ NFC review nhận voucher.
+     - `Cá Nhân` (Profile): Sổ con dấu di tích (Digital Stamps), huy chương Finisher ảo và quản trị tài khoản trải nghiệm.
+  3. **Tương Thích Màn Hình Linh Hoạt (Desktop Simulator & Responsive Mobile):**
+     - Tự động co giãn 100% viewport trên thiết bị di động thực tế.
+     - Cung cấp nút chuyển đổi "Mô Phỏng Giao Diện Mobile Frame" (iPhone 16 Pro Frame) khi người dùng truy cập bằng máy tính Desktop.
+     - Đọc thông minh URL query param `?tab=` để điều hướng sâu chính xác.
+  4. **Quy Chuẩn Nút Gradient ViOne (Strict Rule 8):**
+     - 100% các nút bấm (CTAs) dùng Gradient Vàng Hoàng Gia Champagne Gold (`from-[#F6E1C3] via-[#D8B282] to-[#C29B69]`), chữ Đen Obsidian tương phản cao.
+
+

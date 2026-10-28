@@ -21,13 +21,13 @@ function PlatformHeritagePage() {
             title="ViOne Heritage — Quản Lý & Số Hóa Di Sản Văn Hóa"
             subtitle="Số hóa hồ sơ di sản quốc gia và UNESCO, định vị bản đồ GIS khoanh vùng bảo vệ, tham quan thực tế ảo VR360 và thuyết minh di sản tự động theo tọa độ định vị GPS."
           />
-          <div className="flex items-center gap-2 p-1 bg-[#121820] border border-[#D8B282]/30 rounded-xl self-start md:self-auto shrink-0 shadow-lg">
+          <div className="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-[#D8B282]/30 rounded-xl self-start md:self-auto shrink-0 shadow-sm">
             <button
               onClick={() => setViewMode("admin")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 viewMode === "admin"
                   ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
-                  : "text-[#9EABB8] hover:text-[#F6E1C3] hover:bg-[#1E2632]"
+                  : "text-slate-600 dark:text-[#9EABB8] hover:text-slate-900 dark:hover:text-[#F6E1C3] hover:bg-slate-200 dark:hover:bg-slate-800"
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -38,7 +38,7 @@ function PlatformHeritagePage() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 viewMode === "preview"
                   ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
-                  : "text-[#9EABB8] hover:text-[#F6E1C3] hover:bg-[#1E2632]"
+                  : "text-slate-600 dark:text-[#9EABB8] hover:text-slate-900 dark:hover:text-[#F6E1C3] hover:bg-slate-200 dark:hover:bg-slate-800"
               }`}
             >
               <LayoutGrid className="w-4 h-4" />

@@ -41,6 +41,29 @@ function useCrumbs(): Crumb[] {
 
   const crumbs: Crumb[] = [];
 
+  const ROUTE_LABELS: Record<string, string> = {
+    documents: "Kho Tài Liệu",
+    workflow: "Quy Trình & Giao Việc",
+    meetings: "Lịch Họp & Cuộc Hẹn",
+    events: "Sự Kiện",
+    platform: "Nền Tảng ViOne",
+    sport: "ViOne Sport",
+    run: "ViOne Run",
+    heritage: "ViOne Heritage",
+    museum: "ViOne Museum",
+    archive: "ViOne Archive",
+    tickets: "ViOne Ticket",
+    review: "ViOne Review",
+    members: "Khách Hàng & Hội Viên",
+    companies: "Hồ Sơ Doanh Nghiệp",
+    marketplace: "Sàn Sản Phẩm",
+    opportunities: "Cơ Hội Giao Thương",
+    fees: "Doanh Thu & Phí Dịch Vụ",
+    income: "Sổ Quỹ Thu - Chi",
+    settings: "Cài Đặt Hệ Thống",
+    activity: "Nhật Ký Kiểm Toán",
+  };
+
   if (match) {
     if (match.group.label) {
       crumbs.push({ label: match.group.label });
@@ -48,10 +71,12 @@ function useCrumbs(): Crumb[] {
     const itemLabel = match.item.label || t(match.item.key);
     crumbs.push({ label: itemLabel, to: match.item.to });
   } else {
-    // Fallback: Title-case the first segment for routes outside the registry.
+    // Fallback: Use ROUTE_LABELS dictionary or Title-case
     const base = "/" + (segments[0] || "");
+    const segKey = (segments[0] || "").toLowerCase();
+    const localized = ROUTE_LABELS[segKey] || segments[0].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     crumbs.push({
-      label: segments[0].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      label: localized,
       to: base,
     });
   }

@@ -421,5 +421,20 @@
   - Tuyến đích: `src/screens/platform/PlatformAppScreen.tsx` (nhận `initialTab`)
 * **Quy chuẩn UI/UX:** Header xanh hoàng gia "ViOne - Con người, cộng đồng & trải nghiệm", 100% nút và thẻ tương tác theo chuẩn Gradient Champagne Gold / Obsidian viền mạ vàng.
 
+---
+
+### 📱 [NODE-APP-PWA-PREMIUM-01]: Phân Hệ Ứng Dụng PWA ViOne Native Premium Độc Lập (Citizen & Runner Pass)
+* **Tên luồng:** Cung cấp trải nghiệm ứng dụng PWA độc lập (tách biệt tài khoản Hội viên Doanh nhân), sở hữu bottom navigation 5 tabs mượt mà và quản lý tài khoản trải nghiệm công dân số / runner.
+* **Mã SRS:** `UC-APP-31`, `UC-CRM-33`.
+* **Giao diện PWA (`apps/vione_app_fe`):**
+  - Màn hình Shell: `src/components/platform-app/PlatformPwaApp.tsx`
+  - Tuyến định tuyến: `src/routes/platform-app.tsx`
+  - Phân hệ con: `HeritageExplorer.tsx`, `MuseumExplorer.tsx`, `SportTournamentHub.tsx`, `RunRaceHub.tsx`, `TicketWallet.tsx`, `NfcReviewHub.tsx`, `ArchiveViewer.tsx`, `CitizenPassModal.tsx`
+* **Giao diện Native Mobile tương ứng (`apps/mobile_vione`):**
+  - Màn hình: `src/screens/platform/PlatformAppScreen.tsx`
+* **Trạng thái lưu trữ tài khoản độc lập:** `vione_citizen_pass_user` trong LocalStorage / AsyncStorage.
+* **Quy chuẩn UI/UX:** Màu Executive Obsidian & Champagne Gold, 100% nút bấm Gradient Hoàng Gia theo Rule 8.
+
+
 
 

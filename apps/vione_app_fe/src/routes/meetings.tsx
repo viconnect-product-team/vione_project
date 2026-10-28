@@ -1,7 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Activity,
   AlertCircle,
   ArrowRightLeft,
   Bell,
@@ -9,26 +8,21 @@ import {
   CheckCircle2,
   Clock,
   Copy,
-  Database,
   ExternalLink,
   Eye,
   FileCheck,
   FileCode,
   FileText,
   Filter,
-  Layers,
   Lock,
   Mail,
   MapPin,
   Pencil,
   Plus,
   QrCode,
-  Radio,
   RefreshCw,
   Send,
-  Server,
   Share2,
-  ShieldCheck,
   Smartphone,
   Square,
   Tag,
@@ -38,7 +32,6 @@ import {
   Video,
   X,
   XCircle,
-  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -65,10 +58,6 @@ import {
   type NotificationTemplate,
   type TemplateCategory,
 } from "@/lib/notification-templates";
-import {
-  DataPipelineService,
-  type PipelineEventLog,
-} from "@/lib/data-pipeline-architecture";
 
 export const Route = createFileRoute("/meetings")({
   ssr: false,
@@ -131,7 +120,7 @@ const DEPARTMENT_MEMBERS: Record<
   ],
 };
 
-type ActiveMeetingTab = "meetings" | "room_bookings" | "templates" | "data_pipeline";
+type ActiveMeetingTab = "meetings" | "room_bookings" | "templates";
 
 function MeetingsPage() {
   const t: any = useT();
@@ -230,26 +219,6 @@ function MeetingsPage() {
   const renderedCurrentTemplate = useMemo(() => {
     return renderNotificationTemplate(selectedTemplate, sampleVars);
   }, [selectedTemplate, sampleVars]);
-
-  // --- TAB 4: Data Pipeline State ---
-  const [pipelineMetrics] = useState(() => DataPipelineService.getMetrics());
-  const [pipelineTopics] = useState(() => DataPipelineService.getTopics());
-  const [redisSpec] = useState(() => DataPipelineService.getRedisConfig());
-  const [pipelineLogs, setPipelineLogs] = useState<PipelineEventLog[]>(() => DataPipelineService.getLogs());
-
-  const handleTestPublish = () => {
-    const log = DataPipelineService.publishEvent(
-      "crm_to_mobile",
-      "vione:crm:to:mobile",
-      JSON.stringify({
-        event: "ADMIN_BROADCAST_SYNC",
-        association: "CEO 1983",
-        timestamp: new Date().toISOString(),
-      })
-    );
-    setPipelineLogs([...DataPipelineService.getLogs()]);
-    toast.success("Đã đồng bộ thông tin cuộc họp thành công!");
-  };
 
   // --- Handlers for TAB 1 (Meetings) ---
   const handleOpenCreate = () => {
@@ -517,7 +486,7 @@ function MeetingsPage() {
       {/* Header */}
       <PageHeader
         title="Quản Lý Cuộc Họp & Đặt Phòng Họp Thông Minh"
-        subtitle="Hệ thống đăng ký book phòng Online/Offline, quy trình duyệt email tự động, kho mẫu template và hạ tầng đồng bộ Redis-Kafka"
+        subtitle="Hệ thống đăng ký book phòng Online/Offline, quy trình duyệt email tự động và kho mẫu template thông báo chuẩn doanh nghiệp"
         actions={
           <div className="flex flex-wrap items-center gap-2">
             {activeTab === "meetings" && (
@@ -540,20 +509,11 @@ function MeetingsPage() {
                 Đăng Ký Đặt Phòng Họp
               </button>
             )}
-            {activeTab === "data_pipeline" && (
-              <button
-                onClick={handleTestPublish}
-                className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition"
-              >
-                <Radio className="h-4 w-4 animate-pulse text-emerald-500" />
-                Bắn Gói Tin Thử Nghiệm
-              </button>
-            )}
           </div>
         }
       />
 
-      {/* Modern 4-Tab Switcher */}
+      {/* Modern 3-Tab Switcher */}
       <div className="mb-6 flex flex-wrap gap-2 border-b border-border pb-3">
         <button
           onClick={() => setActiveTab("room_bookings")}
@@ -592,19 +552,6 @@ function MeetingsPage() {
         >
           <Mail className="h-4 w-4" />
           <span>Mẫu Email & Tin Nhắn Cố Định ({NOTIFICATION_TEMPLATES.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("data_pipeline")}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
-            activeTab === "data_pipeline"
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground"
-          }`}
-        >
-          <Database className="h-4 w-4" />
-          <span>Hạ Tầng Redis & Message Queue</span>
-          <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
         </button>
       </div>
 
@@ -1125,132 +1072,6 @@ function MeetingsPage() {
                     dangerouslySetInnerHTML={{ __html: renderedCurrentTemplate.htmlBody }}
                   />
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ==================================================================== */}
-      {/* TAB 4: HẠ TẦNG REDIS & MESSAGE QUEUE PIPELINE                         */}
-      {/* ==================================================================== */}
-      {activeTab === "data_pipeline" && (
-        <div className="space-y-6">
-          {/* Telemetry Metric Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {pipelineMetrics.map((m, idx) => (
-              <Card key={idx} className="p-4 border border-border/80">
-                <div className="text-xs font-semibold text-muted-foreground">{m.name}</div>
-                <div className="text-2xl font-extrabold text-foreground mt-1">
-                  {m.value} <span className="text-xs font-normal text-muted-foreground">{m.unit}</span>
-                </div>
-                <div className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  {m.description}
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Architecture Overview */}
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-3">
-              <Server className="h-4 w-4 text-primary" /> Sơ Đồ Luồng Dữ Liệu 2 Chiều: CRM Admin &lt;-&gt; Mobile App
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2">
-                <div className="font-bold text-primary flex items-center gap-1.5">
-                  <Smartphone className="h-4 w-4" /> 1. VIONE Mobile Apps (2 App)
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Ứng dụng dành cho tài khoản đối tác & doanh nghiệp. Đăng ký phòng họp, gửi phiếu đăng ký sự kiện, thanh toán VietQR và nhận vé mời có mã QR.
-                </p>
-                <div className="font-mono text-[10px] bg-background p-2 rounded border border-border">
-                  Emitter: REST API / WebSocket client
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-2">
-                <div className="font-bold text-amber-600 flex items-center gap-1.5">
-                  <Zap className="h-4 w-4" /> 2. Redis & Kafka Event Bus
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Trục xử lý bất đồng bộ chống nghẽn database: Redis Pub/Sub đồng bộ tức thì, Distributed Lock chống trùng phòng họp, Kafka Topics xếp hàng xử lý email & push worker.
-                </p>
-                <div className="font-mono text-[10px] bg-background p-2 rounded border border-border">
-                  Throughput: 2,410 msg/s | Latency: 4.6ms
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2">
-                <div className="font-bold text-emerald-600 flex items-center gap-1.5">
-                  <ShieldCheck className="h-4 w-4" /> 3. Web CRM Admin Portal
-                </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  Hệ thống quản trị tập trung: Kiểm soát đặt phòng họp, phê duyệt hoặc từ chối, xuất hoá đơn, quản lý bàn tiệc Gala và gửi thông báo đa kênh 2 chiều.
-                </p>
-                <div className="font-mono text-[10px] bg-background p-2 rounded border border-border">
-                  Receiver: Auto WebSocket & Event Dispatcher
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Topics & Live Event Logs */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Kafka Topics Table */}
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                <Layers className="h-4 w-4 text-primary" /> Các Event Topics Trong Message Queue
-              </h3>
-              <div className="space-y-2.5">
-                {pipelineTopics.map((tp, idx) => (
-                  <div key={idx} className="rounded-xl border border-border/70 p-3 text-xs bg-background/50">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono font-bold text-primary">{tp.topic}</span>
-                      <span className="text-emerald-600 font-semibold">{tp.messagesPerSec} msg/s</span>
-                    </div>
-                    <div className="flex items-center justify-between text-muted-foreground text-[11px]">
-                      <span>Partitions: {tp.partitions} | Replicas: {tp.replicationFactor}</span>
-                      <span>Độ trễ: {tp.avgLatencyMs} ms</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Live Event Stream Logs */}
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-emerald-500 animate-pulse" /> Luồng Dữ Liệu 2 Chiều Trực Tuyến
-                </h3>
-                <span className="text-[10px] text-muted-foreground">Live Telemetry</span>
-              </div>
-              <div className="space-y-2 max-h-[380px] overflow-y-auto">
-                {pipelineLogs.map((log) => (
-                  <div key={log.id} className="rounded-xl border border-border/60 p-2.5 text-xs bg-secondary/30">
-                    <div className="flex items-center justify-between text-[11px] mb-1">
-                      <div className="flex items-center gap-1.5 font-bold">
-                        {log.direction === "crm_to_mobile" ? (
-                          <span className="text-blue-600 flex items-center gap-1">
-                            CRM &rarr; Mobile
-                          </span>
-                        ) : (
-                          <span className="text-emerald-600 flex items-center gap-1">
-                            Mobile &rarr; CRM
-                          </span>
-                        )}
-                        <span className="text-muted-foreground font-mono font-normal">[{log.channel}]</span>
-                      </div>
-                      <span className="text-muted-foreground">{log.timestamp}</span>
-                    </div>
-                    <div className="font-mono text-[11px] text-foreground/90 truncate">{log.topicOrKey}</div>
-                    <div className="text-[11px] text-muted-foreground font-mono truncate mt-0.5">
-                      {log.payloadSnippet}
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>

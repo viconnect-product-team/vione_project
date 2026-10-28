@@ -533,12 +533,12 @@ function DocsPage() {
     <AppShell>
       {/* ── Page Header with Google Drive Style Action Bar ── */}
       <PageHeader
-        title="Quản Lý Tài Liệu Số Hóa"
-        subtitle="Hệ thống lưu trữ đám mây chuẩn Google Drive — Tạo thư mục phân cấp, phân loại danh mục nghiệp vụ và bảo mật hồ sơ doanh nghiệp."
+        title="Kho Tài Liệu Doanh Nghiệp"
+        subtitle="Hệ thống lưu trữ đám mây chuẩn ViConnect Drive — Tạo thư mục phân cấp, phân loại danh mục nghiệp vụ và bảo mật hồ sơ doanh nghiệp."
         actions={
           <div className="flex items-center gap-3">
             {/* View Switcher: Grid vs List */}
-            <div className="flex items-center rounded-xl border border-[#D8B282]/30 bg-[#0B0F17] p-1 shadow-md">
+            <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 shadow-sm">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
@@ -546,8 +546,8 @@ function DocsPage() {
                 title="Chế độ Lưới"
                 className={`inline-flex h-9 w-9 items-center justify-center rounded-lg transition-all ${
                   viewMode === "grid"
-                    ? "bg-gradient-to-r from-[#D8B282] to-[#C29B69] text-zinc-950 font-bold shadow-md"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-zinc-950 font-bold shadow-md"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <LayoutGrid className="h-4 w-4" />
@@ -559,8 +559,8 @@ function DocsPage() {
                 title="Chế độ Danh Sách"
                 className={`inline-flex h-9 w-9 items-center justify-center rounded-lg transition-all ${
                   viewMode === "list"
-                    ? "bg-gradient-to-r from-[#D8B282] to-[#C29B69] text-zinc-950 font-bold shadow-md"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-zinc-950 font-bold shadow-md"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <ListIcon className="h-4 w-4" />
@@ -602,7 +602,7 @@ function DocsPage() {
                       className="fixed inset-0 z-30"
                       onClick={() => setIsMenuOpen(false)}
                     />
-                    <div className="absolute right-0 top-13 z-40 w-56 rounded-2xl border border-[#D8B282]/40 bg-[#0B0F17] p-2 shadow-2xl backdrop-blur-xl">
+                    <div className="absolute right-0 top-13 z-40 w-56 rounded-2xl border border-slate-200 dark:border-[#D8B282]/40 bg-white dark:bg-slate-900 p-2 shadow-2xl backdrop-blur-xl">
                       <button
                         type="button"
                         onClick={() => {
@@ -615,9 +615,9 @@ function DocsPage() {
                           );
                           setIsFolderModalOpen(true);
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-800/80 hover:text-[#F6E1C3]"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#8C653B] dark:hover:text-[#F6E1C3]"
                       >
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D8B282]/15 text-[#D8B282]">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D8B282]/15 text-[#B38048] dark:text-[#D8B282]">
                           <FolderPlus className="h-4 w-4" />
                         </div>
                         <span>Tạo Thư Mục Mới</span>
@@ -632,15 +632,15 @@ function DocsPage() {
                           setCategoryColorInput("#D8B282");
                           setIsCategoryModalOpen(true);
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-800/80 hover:text-[#F6E1C3]"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#8C653B] dark:hover:text-[#F6E1C3]"
                       >
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-400">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400">
                           <Tag className="h-4 w-4" />
                         </div>
                         <span>Tạo Danh Mục Mới</span>
                       </button>
 
-                      <div className="my-1 h-px bg-slate-800" />
+                      <div className="my-1 h-px bg-slate-200 dark:bg-slate-800" />
 
                       <button
                         type="button"
@@ -648,9 +648,9 @@ function DocsPage() {
                           setIsMenuOpen(false);
                           fileInputRef.current?.click();
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-800/80 hover:text-[#F6E1C3]"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#8C653B] dark:hover:text-[#F6E1C3]"
                       >
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                           <Upload className="h-4 w-4" />
                         </div>
                         <span>Tải Tệp Tin Lên</span>
@@ -672,9 +672,9 @@ function DocsPage() {
                           setDocUploaderInput("Ban Giám Đốc");
                           setIsDocModalOpen(true);
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-800/80 hover:text-[#F6E1C3]"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#8C653B] dark:hover:text-[#F6E1C3]"
                       >
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
                           <FileText className="h-4 w-4" />
                         </div>
                         <span>Thêm Tài Liệu Số Hóa</span>
@@ -723,8 +723,8 @@ function DocsPage() {
             onClick={() => setSelectedCategory("all")}
             className={`inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold transition-all ${
               selectedCategory === "all"
-                ? "bg-gradient-to-r from-[#D8B282] to-[#C29B69] text-zinc-950 shadow-md font-bold"
-                : "border border-slate-800 bg-[#0B0F17] text-slate-300 hover:border-[#D8B282]/50 hover:text-white"
+                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-zinc-950 shadow-md font-bold"
+                : "border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-[#D8B282]/50 hover:text-slate-900 dark:hover:text-white shadow-sm"
             }`}
           >
             <span>Tất cả</span>
@@ -744,8 +744,8 @@ function DocsPage() {
                   onClick={() => setSelectedCategory(isSelected ? "all" : c.name)}
                   className={`inline-flex h-9 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-all ${
                     isSelected
-                      ? "border border-[#D8B282] bg-[#D8B282]/20 text-[#F6E1C3] shadow-md font-bold"
-                      : "border border-slate-800 bg-[#0B0F17] text-slate-300 hover:border-slate-700 hover:text-white"
+                      ? "border border-[#D8B282] bg-amber-500/10 dark:bg-[#D8B282]/20 text-amber-800 dark:text-[#F6E1C3] shadow-sm font-bold"
+                      : "border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white shadow-sm"
                   }`}
                 >
                   <span
@@ -769,7 +769,7 @@ function DocsPage() {
               setCategoryColorInput("#D8B282");
               setIsCategoryModalOpen(true);
             }}
-            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-[#D8B282]/40 bg-[#0B0F17] px-3 text-xs font-medium text-[#D8B282] hover:bg-[#D8B282]/10"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-slate-300 dark:border-[#D8B282]/40 bg-white dark:bg-slate-900 px-3 text-xs font-medium text-slate-700 dark:text-[#D8B282] hover:bg-slate-50 dark:hover:bg-[#D8B282]/10"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Thêm Danh Mục</span>
@@ -778,7 +778,7 @@ function DocsPage() {
       </div>
 
       {/* ── Search & Filter Controls ── */}
-      <div className="mb-5 rounded-2xl border border-slate-800 bg-[#0B0F17]/90 p-3 shadow-xl backdrop-blur-md">
+      <div className="mb-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-3 shadow-sm backdrop-blur-md">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search Input */}
           <div className="relative min-w-0 flex-1">
@@ -788,13 +788,13 @@ function DocsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm kiếm tài liệu, hợp đồng, danh mục hoặc người tải..."
-              className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 pl-9 pr-8 text-sm text-slate-200 placeholder-slate-500 focus:border-[#D8B282] focus:outline-none focus:ring-2 focus:ring-[#D8B282]/20"
+              className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 pl-9 pr-8 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#D8B282] focus:outline-none focus:ring-2 focus:ring-[#D8B282]/20"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -807,7 +807,7 @@ function DocsPage() {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="h-11 rounded-xl border border-slate-800 bg-slate-950 px-3 text-xs font-semibold text-slate-200 focus:border-[#D8B282] focus:outline-none"
+              className="h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:border-[#D8B282] focus:outline-none"
             >
               <option value="all">Tất cả định dạng</option>
               <option value="pdf">Tệp PDF (.pdf)</option>
@@ -822,12 +822,12 @@ function DocsPage() {
               onClick={() => setStarredOnly(!starredOnly)}
               className={`inline-flex h-11 items-center gap-1.5 rounded-xl border px-3 text-xs font-semibold transition-all ${
                 starredOnly
-                  ? "border-amber-500/50 bg-amber-500/15 text-amber-300"
-                  : "border-slate-800 bg-slate-950 text-slate-400 hover:text-white"
+                  ? "border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                  : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <Star
-                className={`h-4 w-4 ${starredOnly ? "fill-amber-400 text-amber-400" : ""}`}
+                className={`h-4 w-4 ${starredOnly ? "fill-amber-400 text-amber-500" : ""}`}
               />
               <span>Gắn sao</span>
             </button>
@@ -836,7 +836,7 @@ function DocsPage() {
             <select
               value={sortMode}
               onChange={(e) => setSortMode(e.target.value as SortMode)}
-              className="h-11 rounded-xl border border-slate-800 bg-slate-950 px-3 text-xs font-semibold text-slate-200 focus:border-[#D8B282] focus:outline-none"
+              className="h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:border-[#D8B282] focus:outline-none"
             >
               <option value="newest">Mới nhất tải lên</option>
               <option value="oldest">Cũ nhất tải lên</option>
@@ -848,14 +848,14 @@ function DocsPage() {
       </div>
 
       {/* ── Google Drive Breadcrumbs Bar ── */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#D8B282]/20 bg-[#0B0F17]/60 px-4 py-3">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-[#D8B282]/20 bg-slate-50/80 dark:bg-slate-900/60 px-4 py-3">
         <div className="flex items-center gap-2 text-sm font-semibold">
           {/* Back button if inside folder */}
           {currentFolder && (
             <button
               type="button"
               onClick={stepBackFolder}
-              className="mr-2 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
+              className="mr-2 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white shadow-sm"
               title="Quay lại thư mục trước"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -868,11 +868,11 @@ function DocsPage() {
             onClick={navigateToRoot}
             className={`flex items-center gap-1.5 transition-colors ${
               !currentFolder
-                ? "text-[#F6E1C3] font-bold"
-                : "text-slate-400 hover:text-[#F6E1C3]"
+                ? "text-amber-700 dark:text-[#F6E1C3] font-bold"
+                : "text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-[#F6E1C3]"
             }`}
           >
-            <Home className="h-4 w-4 text-[#D8B282]" />
+            <Home className="h-4 w-4 text-[#B38048] dark:text-[#D8B282]" />
             <span>Kho Lưu Trữ</span>
           </button>
 
@@ -881,14 +881,14 @@ function DocsPage() {
             const isLast = idx === folderHistory.length - 1;
             return (
               <div key={f.id} className="flex items-center gap-2">
-                <ChevronRight className="h-4 w-4 text-slate-600" />
+                <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-600" />
                 <button
                   type="button"
                   onClick={() => navigateToBreadcrumb(idx)}
                   className={`transition-colors ${
                     isLast
-                      ? "text-[#F6E1C3] font-bold"
-                      : "text-slate-400 hover:text-[#F6E1C3]"
+                      ? "text-amber-700 dark:text-[#F6E1C3] font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-[#F6E1C3]"
                   }`}
                 >
                   {f.name}
@@ -898,9 +898,9 @@ function DocsPage() {
           })}
         </div>
 
-        <div className="text-xs text-slate-400">
-          <span className="font-semibold text-slate-200">{currentFolders.length}</span> thư mục ·{" "}
-          <span className="font-semibold text-slate-200">{currentDocuments.length}</span> tệp tin
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="font-semibold text-slate-800 dark:text-slate-200">{currentFolders.length}</span> thư mục ·{" "}
+          <span className="font-semibold text-slate-800 dark:text-slate-200">{currentDocuments.length}</span> tệp tin
         </div>
       </div>
 
@@ -908,8 +908,8 @@ function DocsPage() {
       {currentFolders.length > 0 && (
         <section className="mb-8">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-300">
-              <Folder className="h-4 w-4 text-[#D8B282]" />
+            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300">
+              <Folder className="h-4 w-4 text-[#B38048] dark:text-[#D8B282]" />
               <span>Thư Mục</span>
               <span className="text-xs font-normal text-slate-500">
                 ({currentFolders.length})
@@ -922,7 +922,7 @@ function DocsPage() {
               <div
                 key={folder.id}
                 onClick={() => openFolder(folder)}
-                className="group relative flex cursor-pointer items-center justify-between rounded-2xl border border-slate-800 bg-[#0B0F17] p-3.5 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-[#D8B282]/60 hover:bg-slate-900/90 hover:shadow-[0_8px_20px_rgba(216,178,130,0.15)]"
+                className="group relative flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#D8B282]/60 hover:bg-amber-50/20 dark:hover:bg-slate-800/90 hover:shadow-md"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div
@@ -935,7 +935,7 @@ function DocsPage() {
                     <Folder className="h-5 w-5 fill-current" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-slate-200 group-hover:text-[#F6E1C3]">
+                    <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-[#F6E1C3]">
                       {folder.name}
                     </p>
                     <p className="truncate text-[11px] text-slate-500">
@@ -956,7 +956,7 @@ function DocsPage() {
                         setFolderCategoryInput(folder.category || "");
                         setIsFolderModalOpen(true);
                       }}
-                      className="p-1.5 text-slate-400 hover:text-white"
+                      className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white"
                       title="Đổi tên thư mục"
                     >
                       <Pencil className="h-3.5 w-3.5" />
@@ -964,7 +964,7 @@ function DocsPage() {
                     <button
                       type="button"
                       onClick={(e) => handleDeleteFolder(folder, e)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400"
+                      className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
                       title="Xóa thư mục"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -980,8 +980,8 @@ function DocsPage() {
       {/* ── FILES SECTION ── */}
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-300">
-            <FileText className="h-4 w-4 text-[#D8B282]" />
+          <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300">
+            <FileText className="h-4 w-4 text-[#B38048] dark:text-[#D8B282]" />
             <span>Tệp Tin & Hồ Sơ</span>
             <span className="text-xs font-normal text-slate-500">
               ({currentDocuments.length})
@@ -991,12 +991,12 @@ function DocsPage() {
 
         {/* Empty state when folder has neither folders nor files */}
         {currentFolders.length === 0 && currentDocuments.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-800 bg-[#0B0F17]/40 p-12 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#D8B282]/10 text-[#D8B282]">
+          <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-12 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-700 dark:text-[#D8B282]">
               <FolderOpen className="h-7 w-7" />
             </div>
-            <h4 className="text-base font-bold text-slate-200">Thư mục này hiện đang trống</h4>
-            <p className="mt-1 text-xs text-slate-400">
+            <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">Thư mục này hiện đang trống</h4>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               Hãy tải tệp tin lên hoặc tạo thư mục con mới để tổ chức hồ sơ doanh nghiệp.
             </p>
             {canWrite && (
@@ -1004,7 +1004,7 @@ function DocsPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#D8B282] to-[#C29B69] px-4 py-2 text-xs font-bold text-zinc-950 shadow-md hover:brightness-110"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] px-4 py-2 text-xs font-bold text-zinc-950 shadow-md hover:brightness-110"
                 >
                   <Upload className="h-3.5 w-3.5" />
                   <span>Tải tệp tin lên ngay</span>
@@ -1020,9 +1020,9 @@ function DocsPage() {
                     );
                     setIsFolderModalOpen(true);
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 >
-                  <FolderPlus className="h-3.5 w-3.5 text-[#D8B282]" />
+                  <FolderPlus className="h-3.5 w-3.5 text-[#B38048] dark:text-[#D8B282]" />
                   <span>Tạo thư mục con</span>
                 </button>
               </div>
@@ -1040,7 +1040,7 @@ function DocsPage() {
               return (
                 <div
                   key={doc.id}
-                  className="group flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#0B0F17] p-4 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-[#D8B282]/50 hover:bg-slate-900/80 hover:shadow-[0_10px_25px_rgba(216,178,130,0.12)]"
+                  className="group flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#D8B282]/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/80 hover:shadow-md"
                 >
                   <div>
                     {/* Top Row: Icon + Star */}
@@ -1058,13 +1058,13 @@ function DocsPage() {
                           onClick={(e) => handleToggleStar(doc, e)}
                           className={`rounded-lg p-1.5 transition-colors ${
                             doc.isStarred
-                              ? "text-amber-400 hover:bg-amber-400/10"
-                              : "text-slate-600 hover:bg-slate-800 hover:text-amber-400"
+                              ? "text-amber-500 hover:bg-amber-400/10"
+                              : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-amber-500"
                           }`}
                           title={doc.isStarred ? "Bỏ gắn sao" : "Gắn sao"}
                         >
                           <Star
-                            className={`h-4 w-4 ${doc.isStarred ? "fill-amber-400" : ""}`}
+                            className={`h-4 w-4 ${doc.isStarred ? "fill-amber-400 text-amber-500" : ""}`}
                           />
                         </button>
                       </div>
@@ -1073,13 +1073,13 @@ function DocsPage() {
                     {/* File Title */}
                     <div className="mt-3">
                       <p
-                        className="line-clamp-2 text-sm font-bold text-slate-200 group-hover:text-[#F6E1C3]"
+                        className="line-clamp-2 text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-[#F6E1C3]"
                         title={doc.name}
                       >
-                        {doc.name}
+                        {doc.name.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+\/[^/]+_/, "")}
                       </p>
-                      <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                        <span className="rounded bg-slate-800/80 px-1.5 py-0.5 font-medium text-slate-300">
+                      <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                        <span className="rounded bg-slate-100 dark:bg-slate-800/80 px-1.5 py-0.5 font-medium text-slate-700 dark:text-slate-300">
                           {doc.category || "Tài liệu"}
                         </span>
                         <span>·</span>
@@ -1089,7 +1089,7 @@ function DocsPage() {
                   </div>
 
                   {/* Bottom Meta & Actions */}
-                  <div className="mt-4 border-t border-slate-800/80 pt-3">
+                  <div className="mt-4 border-t border-slate-100 dark:border-slate-800/80 pt-3">
                     <div className="mb-2.5 flex items-center justify-between text-[11px] text-slate-500">
                       <span className="truncate">{doc.uploadedBy || "Ban Giám Đốc"}</span>
                       <span className="shrink-0">{fmt.date(doc.uploadedAt)}</span>
@@ -1099,7 +1099,7 @@ function DocsPage() {
                       <button
                         type="button"
                         onClick={(e) => handleDownload(doc, e)}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-[#D8B282]/30 bg-gradient-to-r from-[#D8B282]/10 to-[#C29B69]/10 py-1.5 text-xs font-semibold text-[#F6E1C3] transition-all hover:border-[#D8B282] hover:bg-[#D8B282]/20"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-amber-300 dark:border-[#D8B282]/30 bg-amber-500/10 py-1.5 text-xs font-semibold text-amber-800 dark:text-[#F6E1C3] transition-all hover:bg-amber-500/20"
                       >
                         <Download className="h-3.5 w-3.5" />
                         <span>Tải về</span>
@@ -1116,7 +1116,7 @@ function DocsPage() {
                               setDocTypeInput(doc.type);
                               setIsDocModalOpen(true);
                             }}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white"
+                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-white"
                             title="Chỉnh sửa"
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -1124,7 +1124,7 @@ function DocsPage() {
                           <button
                             type="button"
                             onClick={(e) => handleDeleteDoc(doc, e)}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400"
+                            className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
                             title="Xóa"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -1141,11 +1141,11 @@ function DocsPage() {
 
         {/* List View (Table) */}
         {viewMode === "list" && currentDocuments.length > 0 && (
-          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-[#0B0F17] shadow-xl">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                     <th className="w-10 px-3 py-3 text-center">Sao</th>
                     <th className="w-12 px-3 py-3 text-center">STT</th>
                     <th className="px-4 py-3">Tên Tài Liệu</th>
@@ -1157,7 +1157,7 @@ function DocsPage() {
                     <th className="px-4 py-3 text-right">Thao Tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                   {currentDocuments.map((doc, idx) => {
                     const typeCfg = TYPE_CONFIG[doc.type] || TYPE_CONFIG.pdf;
                     const TypeIcon = typeCfg.icon;
@@ -1165,7 +1165,7 @@ function DocsPage() {
                     return (
                       <tr
                         key={doc.id}
-                        className="group transition-colors hover:bg-slate-900/60"
+                        className="group transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60"
                       >
                         <td className="px-3 py-3 text-center">
                           <button
@@ -1173,8 +1173,8 @@ function DocsPage() {
                             onClick={(e) => handleToggleStar(doc, e)}
                             className={`p-1 ${
                               doc.isStarred
-                                ? "text-amber-400"
-                                : "text-slate-600 hover:text-amber-400"
+                                ? "text-amber-500"
+                                : "text-slate-400 hover:text-amber-500"
                             }`}
                           >
                             <Star
@@ -1193,24 +1193,24 @@ function DocsPage() {
                             >
                               <TypeIcon className="h-4 w-4" />
                             </div>
-                            <span className="font-semibold text-slate-200 group-hover:text-[#F6E1C3]">
-                              {doc.name}
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-[#F6E1C3]">
+                              {doc.name.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+\/[^/]+_/, "")}
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-slate-300">
-                          <span className="rounded-md bg-slate-800/80 px-2 py-0.5 text-xs text-slate-300">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                          <span className="rounded-md bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-xs text-slate-700 dark:text-slate-300">
                             {doc.category || "—"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-mono text-xs uppercase text-slate-400">
+                        <td className="px-4 py-3 font-mono text-xs uppercase text-slate-500 dark:text-slate-400">
                           {doc.type}
                         </td>
-                        <td className="px-4 py-3 text-xs text-slate-400">{doc.size}</td>
-                        <td className="px-4 py-3 text-xs text-slate-300">
+                        <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">{doc.size}</td>
+                        <td className="px-4 py-3 text-xs text-slate-700 dark:text-slate-300">
                           {doc.uploadedBy || "Ban Giám Đốc"}
                         </td>
-                        <td className="px-4 py-3 text-xs text-slate-400">
+                        <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
                           {fmt.date(doc.uploadedAt)}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -1218,7 +1218,7 @@ function DocsPage() {
                             <button
                               type="button"
                               onClick={(e) => handleDownload(doc, e)}
-                              className="inline-flex items-center gap-1 rounded-lg border border-[#D8B282]/30 bg-[#D8B282]/10 px-2.5 py-1 text-xs font-semibold text-[#F6E1C3] hover:bg-[#D8B282]/20"
+                              className="inline-flex items-center gap-1 rounded-lg border border-amber-300 dark:border-[#D8B282]/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:text-[#F6E1C3] hover:bg-amber-500/20"
                             >
                               <Download className="h-3 w-3" />
                               <span>Tải</span>
@@ -1234,7 +1234,7 @@ function DocsPage() {
                                     setDocTypeInput(doc.type);
                                     setIsDocModalOpen(true);
                                   }}
-                                  className="rounded-lg p-1.5 text-slate-400 hover:text-white"
+                                  className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white"
                                   title="Chỉnh sửa"
                                 >
                                   <Pencil className="h-3.5 w-3.5" />
@@ -1242,7 +1242,7 @@ function DocsPage() {
                                 <button
                                   type="button"
                                   onClick={(e) => handleDeleteDoc(doc, e)}
-                                  className="rounded-lg p-1.5 text-slate-400 hover:text-rose-400"
+                                  className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
                                   title="Xóa"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -1263,17 +1263,17 @@ function DocsPage() {
 
       {/* ── MODAL: TẠO / SỬA THƯ MỤC MỚI ── */}
       {isFolderModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-6 shadow-2xl">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="flex items-center gap-2 text-base font-bold text-[#F6E1C3]">
-                <FolderPlus className="h-5 w-5 text-[#D8B282]" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 dark:border-[#D8B282]/40 bg-white dark:bg-slate-900 p-6 shadow-2xl text-slate-900 dark:text-slate-100">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="flex items-center gap-2 text-base font-bold text-amber-700 dark:text-[#F6E1C3]">
+                <FolderPlus className="h-5 w-5 text-[#B38048] dark:text-[#D8B282]" />
                 <span>{editingFolder ? "Đổi Tên Thư Mục" : "Tạo Thư Mục Mới"}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsFolderModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1281,8 +1281,8 @@ function DocsPage() {
 
             <form onSubmit={handleFolderSubmit} className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
-                  Tên Thư Mục <span className="text-rose-400">*</span>
+                <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Tên Thư Mục <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1290,19 +1290,19 @@ function DocsPage() {
                   value={folderNameInput}
                   onChange={(e) => setFolderNameInput(e.target.value)}
                   placeholder="Ví dụ: Hợp Đồng Kinh Doanh Q4, Hồ Sơ Pháp Lý..."
-                  className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
+                  className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Thuộc Danh Mục
                 </label>
                 <select
                   value={folderCategoryInput}
                   onChange={(e) => setFolderCategoryInput(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 focus:border-[#D8B282] focus:outline-none"
+                  className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 focus:border-[#D8B282] focus:outline-none"
                 >
                   <option value="Tài Liệu Doanh Nghiệp">Tài Liệu Doanh Nghiệp (Mặc định)</option>
                   {categories.map((c) => (
@@ -1314,7 +1314,7 @@ function DocsPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-semibold text-slate-300">
+                <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Màu Sắc Thư Mục
                 </label>
                 <div className="flex items-center gap-2">
@@ -1326,7 +1326,7 @@ function DocsPage() {
                       title={col.label}
                       className={`h-8 w-8 rounded-full border-2 transition-all ${
                         folderColorInput === col.value
-                          ? "border-white scale-110 shadow-lg"
+                          ? "border-slate-900 dark:border-white scale-110 shadow-lg"
                           : "border-transparent opacity-70 hover:opacity-100"
                       }`}
                       style={{ background: col.value }}
@@ -1339,7 +1339,7 @@ function DocsPage() {
                 <button
                   type="button"
                   onClick={() => setIsFolderModalOpen(false)}
-                  className="rounded-xl border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-900"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   Hủy Bỏ
                 </button>
@@ -1360,17 +1360,17 @@ function DocsPage() {
 
       {/* ── MODAL: TẠO DANH MỤC MỚI ── */}
       {isCategoryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-6 shadow-2xl">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="flex items-center gap-2 text-base font-bold text-[#F6E1C3]">
-                <Tag className="h-5 w-5 text-[#D8B282]" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 dark:border-[#D8B282]/40 bg-white dark:bg-slate-900 p-6 shadow-2xl text-slate-900 dark:text-slate-100">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="flex items-center gap-2 text-base font-bold text-amber-700 dark:text-[#F6E1C3]">
+                <Tag className="h-5 w-5 text-[#B38048] dark:text-[#D8B282]" />
                 <span>Tạo Danh Mục Tài Liệu Mới</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsCategoryModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1378,8 +1378,8 @@ function DocsPage() {
 
             <form onSubmit={handleCategorySubmit} className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
-                  Tên Danh Mục <span className="text-rose-400">*</span>
+                <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Tên Danh Mục <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1387,13 +1387,13 @@ function DocsPage() {
                   value={categoryNameInput}
                   onChange={(e) => setCategoryNameInput(e.target.value)}
                   placeholder="Ví dụ: Pháp Lý, Hợp Đồng, Nhân Sự..."
-                  className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
+                  className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Mô Tả Danh Mục
                 </label>
                 <textarea
@@ -1401,12 +1401,12 @@ function DocsPage() {
                   value={categoryDescInput}
                   onChange={(e) => setCategoryDescInput(e.target.value)}
                   placeholder="Mô tả phạm vi tài liệu thuộc danh mục này..."
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 text-sm text-slate-200 placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-semibold text-slate-300">
+                <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Màu Nhãn Danh Mục
                 </label>
                 <div className="flex items-center gap-2">
@@ -1418,7 +1418,7 @@ function DocsPage() {
                       title={col.label}
                       className={`h-8 w-8 rounded-full border-2 transition-all ${
                         categoryColorInput === col.value
-                          ? "border-white scale-110 shadow-lg"
+                          ? "border-slate-900 dark:border-white scale-110 shadow-lg"
                           : "border-transparent opacity-70 hover:opacity-100"
                       }`}
                       style={{ background: col.value }}
@@ -1431,7 +1431,7 @@ function DocsPage() {
                 <button
                   type="button"
                   onClick={() => setIsCategoryModalOpen(false)}
-                  className="rounded-xl border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-900"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   Hủy Bỏ
                 </button>
@@ -1452,17 +1452,17 @@ function DocsPage() {
 
       {/* ── MODAL: TẠO / SỬA TÀI LIỆU ── */}
       {isDocModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-6 shadow-2xl">
-            <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="flex items-center gap-2 text-base font-bold text-[#F6E1C3]">
-                <FileText className="h-5 w-5 text-[#D8B282]" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 dark:border-[#D8B282]/40 bg-white dark:bg-slate-900 p-6 shadow-2xl text-slate-900 dark:text-slate-100">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="flex items-center gap-2 text-base font-bold text-amber-700 dark:text-[#F6E1C3]">
+                <FileText className="h-5 w-5 text-[#B38048] dark:text-[#D8B282]" />
                 <span>{editingDoc ? "Chỉnh Sửa Tài Liệu" : "Thêm Tài Liệu Số Hóa"}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsDocModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1470,8 +1470,8 @@ function DocsPage() {
 
             <form onSubmit={handleDocSubmit} className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
-                  Tên Tài Liệu <span className="text-rose-400">*</span>
+                <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Tên Tài Liệu <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1479,19 +1479,19 @@ function DocsPage() {
                   value={docNameInput}
                   onChange={(e) => setDocNameInput(e.target.value)}
                   placeholder="Nhập tên tài liệu hồ sơ..."
-                  className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
+                  className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-[#D8B282] focus:outline-none"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Danh Mục Tài Liệu
                 </label>
                 <select
                   value={docCategoryInput}
                   onChange={(e) => setDocCategoryInput(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 focus:border-[#D8B282] focus:outline-none"
+                  className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 focus:border-[#D8B282] focus:outline-none"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.name}>
@@ -1504,13 +1504,13 @@ function DocsPage() {
               {!editingDoc && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                       Định Dạng Tệp
                     </label>
                     <select
                       value={docTypeInput}
                       onChange={(e) => setDocTypeInput(e.target.value as any)}
-                      className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 focus:border-[#D8B282] focus:outline-none"
+                      className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 focus:border-[#D8B282] focus:outline-none"
                     >
                       <option value="pdf">PDF (.pdf)</option>
                       <option value="docx">Word (.docx)</option>
@@ -1519,7 +1519,7 @@ function DocsPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">
                       Kích Thước
                     </label>
                     <input
@@ -1527,7 +1527,7 @@ function DocsPage() {
                       value={docSizeInput}
                       onChange={(e) => setDocSizeInput(e.target.value)}
                       placeholder="Ví dụ: 2.5 MB"
-                      className="h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-sm text-slate-200 focus:border-[#D8B282] focus:outline-none"
+                      className="h-11 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 text-sm text-slate-900 dark:text-slate-200 focus:border-[#D8B282] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1537,7 +1537,7 @@ function DocsPage() {
                 <button
                   type="button"
                   onClick={() => setIsDocModalOpen(false)}
-                  className="rounded-xl border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-900"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   Hủy Bỏ
                 </button>
