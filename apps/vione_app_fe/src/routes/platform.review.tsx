@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { ReviewAdminManager } from "@/components/platform-app/admin/ReviewAdminManager";
-import { NfcReviewHub } from "@/components/platform-app/NfcReviewHub";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/review")({
@@ -47,7 +47,15 @@ function PlatformReviewPage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <ReviewAdminManager /> : <NfcReviewHub />}
+        {viewMode === "admin" ? (
+          <ReviewAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="wallet"
+            initialSubTab="review"
+            moduleName="ViOne Review (Thẻ NFC & Đánh Giá)"
+          />
+        )}
       </div>
     </AppShell>
   );

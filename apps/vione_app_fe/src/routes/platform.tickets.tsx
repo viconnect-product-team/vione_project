@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { TicketAdminManager } from "@/components/platform-app/admin/TicketAdminManager";
-import { TicketWallet } from "@/components/platform-app/TicketWallet";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/tickets")({
@@ -47,7 +47,15 @@ function PlatformTicketsPage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <TicketAdminManager /> : <TicketWallet />}
+        {viewMode === "admin" ? (
+          <TicketAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="wallet"
+            initialSubTab="tickets"
+            moduleName="ViOne Ticket (Ví Vé Điện Tử)"
+          />
+        )}
       </div>
     </AppShell>
   );

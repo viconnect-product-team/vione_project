@@ -1,5 +1,22 @@
 # Vibe App Monorepo - Cursor Rules
 
+## -0.01. Quy Chuẩn Khung Mô Phỏng Di Động (PwaDeviceSimulator) & Theme Sáng CRM (STRICT PWA SIMULATOR & CRM LIGHT THEME RULE)
+- **QUY CHUẨN XEM TRƯỚC APP/PWA (STRICT PWA DEVICE SIMULATOR)**:
+  * Khi người dùng chọn "Xem Trước App/PWA" trên các trang quản trị nền tảng ViOne (`platform.*.tsx`), **CẤM TUYỆT ĐỐI** render trực tiếp các component web desktop dàn trang toàn màn hình.
+  * BẮT BUỘC sử dụng component `PwaDeviceSimulator.tsx` để nhúng ứng dụng PWA ViOne (`PlatformPwaApp.tsx` với cờ `isEmbedded={true}`) bên trong khung vỏ điện thoại thông minh tiêu chuẩn (iPhone 15 Pro `393 × 852 px`, Galaxy S24 `412 × 890 px`, iPhone SE `375 × 720 px`).
+  * Khung mô phỏng phải có thanh trạng thái (Status Bar) động (đồng hồ thời gian thực, sóng, 5G, Wi-Fi, pin), điều chỉnh zoom scale, nút mở trực tiếp Web PWA, và modal quét mã QR code mở trên điện thoại thật.
+  * Tự động truyền đúng `initialTab` và `initialSubTab` để khi click từ CRM phân hệ nào thì mở đúng màn hình di động của phân hệ đó.
+- **QUY CHUẨN THEME SÁNG CRM CHO CÁC MODULE QUẢN TRỊ (STRICT CRM LIGHT THEME)**:
+  * Toàn bộ các component quản trị Admin Manager trên CRM BẮT BUỘC tuân thủ chuẩn Light Theme:
+    - Container & Bảng: `bg-white dark:bg-[#0A101D]/70 border border-slate-200 dark:border-[#D8B282]/20 shadow-sm`.
+    - Đầu bảng (Thead): `bg-slate-50 dark:bg-[#050C15]/90 text-xs font-bold text-slate-600 dark:text-[#D8B282] uppercase border-b border-slate-200 dark:border-[#D8B282]/20`.
+    - Dòng bảng (Tr): `divide-slate-100 hover:bg-slate-50/70 dark:hover:bg-white/[0.02]`.
+    - Tiêu đề & Văn bản: `text-slate-900 dark:text-white`, `text-slate-700 dark:text-gray-300`, `text-slate-500 dark:text-gray-400`.
+    - Ô tìm kiếm / Input: `bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-[#D8B282]/20 text-slate-900 dark:text-[#F6E1C3] placeholder-slate-400`.
+    - Modals: `bg-white dark:bg-[#0B132B] border border-slate-200 dark:border-[#D8B282]/40 text-slate-900 dark:text-white`.
+  * TUYỆT ĐỐI KHÔNG hardcode các mảng khối đen xì đơn sắc (`bg-[#0A101D]`, `bg-[#050C15]`, `bg-[#0B132B]`) khi chưa bọc lớp `dark:` trên giao diện CRM.
+  * Giữ nguyên nút bấm Primary Gradient Vàng Champagne Gold (`#F6E1C3` -> `#C29B69`) theo Rule -0.2.
+
 ## -1. Quy Tắc Bắt Buộc: Pre-Code Check, Tra Cứu Node & SRS Không Clear Text Cũ (STRICT PRE-CODE PROTOCOL)
 - **ĐỌC KỸ TÀI LIỆU TRƯỚC KHI CODE KHI CÓ YÊU CẦU MỚI**:
   - Trước khi triển khai code, Agent BẮT BUỘC phải tra cứu `FEATURE_FLOW_NODE_MAP.md` để lấy mã Node ID và các file liên quan trên cả PWA, Native, Backend, DB.

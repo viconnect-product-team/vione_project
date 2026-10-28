@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { HeritageAdminManager } from "@/components/platform-app/admin/HeritageAdminManager";
-import { HeritageExplorer } from "@/components/platform-app/HeritageExplorer";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/heritage")({
@@ -47,7 +47,15 @@ function PlatformHeritagePage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <HeritageAdminManager /> : <HeritageExplorer />}
+        {viewMode === "admin" ? (
+          <HeritageAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="culture"
+            initialSubTab="heritage"
+            moduleName="ViOne Heritage (Di Sản Văn Hóa)"
+          />
+        )}
       </div>
     </AppShell>
   );

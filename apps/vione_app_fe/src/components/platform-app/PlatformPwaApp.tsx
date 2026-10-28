@@ -53,18 +53,52 @@ export interface CitizenUser {
   avatarUrl?: string;
 }
 
-export const PlatformPwaApp: React.FC = () => {
+export interface PlatformPwaAppProps {
+  initialTab?: "explore" | "run_events" | "culture" | "wallet" | "profile";
+  initialSubTab?: string;
+  isEmbedded?: boolean;
+}
+
+export const PlatformPwaApp: React.FC<PlatformPwaAppProps> = ({
+  initialTab,
+  initialSubTab,
+  isEmbedded = false,
+}) => {
   // Mobile Bottom Navigation Tabs: "explore" | "run_events" | "culture" | "wallet" | "profile"
-  const [mobileTab, setMobileTab] = useState<"explore" | "run_events" | "culture" | "wallet" | "profile">("explore");
-  const [cultureSubTab, setCultureSubTab] = useState<"heritage" | "museum" | "archive">("heritage");
-  const [runSubTab, setRunSubTab] = useState<"run" | "sport">("run");
-  const [walletSubTab, setWalletSubTab] = useState<"tickets" | "review">("tickets");
+  const [mobileTab, setMobileTab] = useState<"explore" | "run_events" | "culture" | "wallet" | "profile">(
+    initialTab || "explore"
+  );
+  const [cultureSubTab, setCultureSubTab] = useState<"heritage" | "museum" | "archive">(
+    (initialSubTab as "heritage" | "museum" | "archive") || "heritage"
+  );
+  const [runSubTab, setRunSubTab] = useState<"run" | "sport">(
+    (initialSubTab as "run" | "sport") || "run"
+  );
+  const [walletSubTab, setWalletSubTab] = useState<"tickets" | "review">(
+    (initialSubTab as "tickets" | "review") || "tickets"
+  );
 
   const [isCitizenPassOpen, setCitizenPassOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [isDeviceView, setIsDeviceView] = useState(false);
 
   useEffect(() => {
+    if (initialTab) {
+      setMobileTab(initialTab);
+    }
+    if (initialSubTab) {
+      if (initialTab === "culture" || ["heritage", "museum", "archive"].includes(initialSubTab)) {
+        setCultureSubTab(initialSubTab as any);
+      } else if (initialTab === "run_events" || ["run", "sport"].includes(initialSubTab)) {
+        setRunSubTab(initialSubTab as any);
+      } else if (initialTab === "wallet" || ["tickets", "review"].includes(initialSubTab)) {
+        setWalletSubTab(initialSubTab as any);
+      }
+    }
+  }, [initialTab, initialSubTab]);
+
+  useEffect(() => {
+    if (initialTab) return; // Prioritize prop if provided
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get("tab");
@@ -93,7 +127,7 @@ export const PlatformPwaApp: React.FC = () => {
         setMobileTab("profile");
       }
     }
-  }, []);
+  }, [initialTab]);
 
   // Independent Citizen / Runner Account State
   const [currentUser, setCurrentUser] = useState<CitizenUser>(() => {
@@ -166,29 +200,41 @@ export const PlatformPwaApp: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-[#050C15] text-[#E2E8F0] font-sans flex flex-col ${isDeviceView ? "py-6 items-center bg-[#02050A]" : ""}`}>
+    <div
+      className={
+        isEmbedded
+          ? "w-full min-h-full bg-[#050C15] text-[#E2E8F0] font-sans flex flex-col relative"
+          : `min-h-screen bg-[#050C15] text-[#E2E8F0] font-sans flex flex-col ${isDeviceView ? "py-6 items-center bg-[#02050A]" : ""}`
+      }
+    >
       {/* Container wrapper: full on mobile, simulated device on desktop if toggled */}
       <div
-        className={`w-full flex-1 flex flex-col relative ${
-          isDeviceView
-            ? "max-w-[420px] h-[880px] rounded-[48px] border-[8px] border-slate-800 shadow-[0_25px_60px_-15px_rgba(216,178,130,0.25)] overflow-hidden bg-[#050C15]"
-            : "max-w-7xl mx-auto"
-        }`}
+        className={
+          isEmbedded
+            ? "w-full flex-1 flex flex-col relative"
+            : `w-full flex-1 flex flex-col relative ${
+                isDeviceView
+                  ? "max-w-[420px] h-[880px] rounded-[48px] border-[8px] border-slate-800 shadow-[0_25px_60px_-15px_rgba(216,178,130,0.25)] overflow-hidden bg-[#050C15]"
+                  : "max-w-7xl mx-auto"
+              }`
+        }
       >
         {/* Device Viewport Toggle (Desktop Only) */}
-        <div className="hidden lg:flex items-center justify-between px-4 py-2 bg-[#0A101D] border-b border-[#D8B282]/20 text-xs">
-          <div className="flex items-center gap-2 text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="font-semibold text-slate-300">ViOne App PWA Native — Phân Hệ Trải Nghiệm Công Dân & Runner</span>
+        {!isEmbedded && (
+          <div className="hidden lg:flex items-center justify-between px-4 py-2 bg-[#0A101D] border-b border-[#D8B282]/20 text-xs">
+            <div className="flex items-center gap-2 text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="font-semibold text-slate-300">ViOne App PWA Native — Phân Hệ Trải Nghiệm Công Dân & Runner</span>
+            </div>
+            <button
+              onClick={() => setIsDeviceView(!isDeviceView)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-amber-300 text-xs font-semibold transition-all"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              {isDeviceView ? "Mở Rộng Toàn Màn Hình" : "Mô Phỏng Giao Diện Mobile"}
+            </button>
           </div>
-          <button
-            onClick={() => setIsDeviceView(!isDeviceView)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-amber-300 text-xs font-semibold transition-all"
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            {isDeviceView ? "Mở Rộng Toàn Màn Hình" : "Mô Phỏng Giao Diện Mobile"}
-          </button>
-        </div>
+        )}
 
         {/* Premium App Top Header Bar */}
         <header className="sticky top-0 z-30 w-full bg-[#050C15]/95 backdrop-blur-md border-b border-[#D8B282]/20 px-4 py-3">
@@ -539,7 +585,11 @@ export const PlatformPwaApp: React.FC = () => {
         </main>
 
         {/* Mobile PWA Bottom Navigation Bar */}
-        <nav className="fixed lg:absolute bottom-0 left-0 right-0 z-40 bg-[#070B14]/95 backdrop-blur-xl border-t border-[#D8B282]/25 py-2 px-3 shadow-[0_-10px_25px_rgba(0,0,0,0.5)]">
+        <nav
+          className={`${
+            isEmbedded ? "sticky" : "fixed lg:absolute"
+          } bottom-0 left-0 right-0 z-40 bg-[#070B14]/98 backdrop-blur-xl border-t border-[#D8B282]/25 py-2 px-3 shadow-[0_-10px_25px_rgba(0,0,0,0.5)] shrink-0`}
+        >
           <div className="flex items-center justify-around max-w-lg mx-auto">
             <button
               onClick={() => setMobileTab("explore")}

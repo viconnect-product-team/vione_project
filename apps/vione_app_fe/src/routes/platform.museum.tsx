@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { MuseumAdminManager } from "@/components/platform-app/admin/MuseumAdminManager";
-import { MuseumExplorer } from "@/components/platform-app/MuseumExplorer";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/museum")({
@@ -47,7 +47,15 @@ function PlatformMuseumPage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <MuseumAdminManager /> : <MuseumExplorer />}
+        {viewMode === "admin" ? (
+          <MuseumAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="culture"
+            initialSubTab="museum"
+            moduleName="ViOne Museum (Bảo Tàng & Hiện Vật 3D)"
+          />
+        )}
       </div>
     </AppShell>
   );

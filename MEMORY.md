@@ -1,5 +1,65 @@
 # System Memory & Architecture
 
+## 0.0000000000.13. ĐỒNG BỘ DỮ LIỆU THỰC TOÀN HỆ THỐNG POSTGRESQL (ZERO-MOCK DATA), CHUẨN HÓA THEME SÁNG CRM VÀ PHÁT TRIỂN PWA DEVICE SIMULATOR CHUẨN KÍCH THƯỚC ĐIỆN THOẠI (28/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+- **Yêu cầu 1:** "hiện tại vione có những chức năng mới chưa có được dữ liệu cụ thể. bạn hãy thêm dữ liệu vào database. sau đó sửa lại mau ftheo chuẩn theme sáng đi."
+- **Yêu cầu 2:** "chức năng xem trước app chả khác gì bản web cả. hãy sửa lại dùng pwa vione và response phải chuẩn theo kích thước điện thoại"
+- **Hiện trạng trước khi xử lý:**
+  1. **Thiếu dữ liệu DDL & Seed:** CSDL `vione_standalone_app` trên server `113.20.107.184:6432` thiếu các bảng nền tảng, khiến endpoint `https://vione.viconnect.vn/api/platform-hub/archives` báo lỗi 500 "Không thể tải kho tư liệu số", các module thể thao báo lỗi "Không thể tải danh sách giải đấu".
+  2. **Giao diện CRM bị tối đen:** Các component quản trị CRM của phân hệ Archive, Sport, Ticket bị hardcode các mảng khối đen xì obsidian (`bg-[#0A101D]`, `thead bg-[#050C15]`, modal `bg-[#0B132B]`) lệch chuẩn theme sáng (Light Theme) của hệ thống CRM.
+  3. **Xem trước App/PWA chỉ là bản web phóng to:** Nút "Xem Trước App/PWA" trên CRM trước đây render trực tiếp các component desktop toàn màn hình (`ArchiveViewer`, `SportTournamentHub`), không có khung điện thoại và không mô phỏng đúng bản PWA ViOne di động.
+
+### 2. Các Thay Đổi & Giải Pháp Kỹ Thuật Đã Hoàn Thành
+
+#### A. Đồng Bộ DDL & Nạp Dữ Liệu Thực PostgreSQL (100% Zero-Mock Data)
+1. **Khởi tạo DDL bảng và nạp dữ liệu phong phú**:
+   - `vione_heritage_sites`: 5 đại di sản quốc gia & thế giới (Hoàng Thành Thăng Long, Cố Đô Huế, Quần thể Tràng An, Phố Cổ Hội An, Thánh Địa Mỹ Sơn).
+   - `vione_museums` & `vione_artifacts`: Bảo tàng Lịch sử Quốc gia, Bảo tàng Mỹ thuật Việt Nam, Bảo tàng Cổ vật Cung đình Huế kèm các cổ vật 3D Photogrammetry (Trống Đồng Đông Sơn Ngọc Lũ, Tượng Phật Bà Quan Âm Nghìn Mắt Nghìn Tay Chùa Bút Tháp, Ngai Vàng Triều Nguyễn).
+   - `vione_sport_tournaments` & `vione_sport_clubs`: Giải Pickleball Doanh Nhân ViOne Open 2026, Cúp Bóng Đá V-League Doanh Nghiệp, Giải Quần Vợt CEO Summer Cup kèm các CLB thể thao.
+   - `vione_races` & `vione_race_bibs`: Giải Marathon Quốc Tế Di Sản Hà Nội 2026, Tràng An Heritage Trail 2026 với các cự ly 42KM, 21KM, 10KM, 5KM và danh sách VĐV, số BIB RFID.
+   - `vione_archives`: Kho mộc bản triều Nguyễn, sắc phong hoàng gia Quang Trung, châu bản triều Nguyễn.
+   - `vione_platform_tickets` & `vione_nfc_reviews`: Vé điện tử tham quan, vé giải chạy QR code và trạm NFC review quầy dịch vụ.
+2. **Kiểm thử kết nối API**: Cả 2 miền `vione.viconnect.vn/api/platform-hub/...` và `crm_vione.viconnect.vn/api/platform-hub/...` đều phản hồi HTTP 200 OK với dữ liệu thực tế đầy đủ.
+
+#### B. Chuẩn Hóa Toàn Diện Theme Sáng (Light Theme) Cho Giao Diện Quản Trị CRM
+- Cập nhật các component:
+  * `ArchiveAdminManager.tsx`: Chuyển đổi toàn bộ thanh công cụ, category chips, bảng tư liệu, trạng thái rỗng và modal sang `bg-white dark:bg-[#0A101D]`, `border-slate-200`, `text-slate-900`, `text-slate-600`, `thead bg-slate-50`.
+  * `SportAdminManager.tsx`: Chuyển đổi thanh chuyển tab Giải Đấu/CLB, thanh tìm kiếm, bảng danh sách giải, bảng CLB và 2 modal "Tạo Giải Đấu", "Thêm CLB Mới" sang theme sáng chuẩn CRM.
+  * `TicketAdminManager.tsx`: Chuyển đổi bộ lọc trạng thái vé, bảng vé điện tử, modal "Phát Hành Vé Điện Tử Mới" và modal "Cổng Soát Vé Quang Học" sang theme sáng chuẩn mực.
+  * Giữ nguyên điểm nhấn thương hiệu Champagne Gold (`#F6E1C3` -> `#C29B69`) cho các nút bấm hành động chính (Primary CTAs) và tab đang chọn.
+
+#### C. Phát Triển Khung Mô Phỏng Thiết Bị Điện Thoại Chuẩn Kích Thước (PWA Device Simulator)
+1. **Thành phần mới: `PwaDeviceSimulator.tsx` (`src/components/platform-app/PwaDeviceSimulator.tsx`)**:
+   - Mô phỏng vỏ điện thoại thông minh chân thực (smartphone chassis) với khung viền kim loại sang trọng, Dynamic Island / Punch-hole camera, loa thoại đỉnh máy, các phím bấm vật lý sườn máy.
+   - Thanh trạng thái điện thoại (Status Bar) mô phỏng động: đồng hồ kỹ thuật số theo thời gian thực, cột sóng di động, biểu tượng mạng 5G Viettel, Wi-Fi 6, dung lượng pin 100%.
+   - **Tùy chọn kích cỡ điện thoại thực tế**:
+     * iPhone 15 Pro: `393 × 852 px` (tỷ lệ 19.5:9, Dynamic Island)
+     * Samsung Galaxy S24: `412 × 890 px` (tỷ lệ 19.5:9, Punch-hole)
+     * iPhone SE / Compact: `375 × 720 px` (tỷ lệ 16:9, Notch)
+   - Thanh công cụ điều khiển simulator:
+     * Điều chỉnh độ phóng to/thu nhỏ (Zoom 70% - 110%) để xem trên mọi độ phân giải màn hình máy tính.
+     * Nút làm mới (Live Reload Key) kiểm tra phản hồi.
+     * Nút mở trực tiếp phiên bản Web PWA trên tab mới (`target="_blank"`).
+     * Modal quét mã QR Code để mở ngay trên điện thoại thật qua Camera quét mã.
+2. **Tích hợp PWA Container `PlatformPwaApp.tsx`**:
+   - Hỗ trợ chế độ nhúng `isEmbedded={true}`: ẩn wrapper desktop, gắn cố định thanh Bottom Navigation (`sticky bottom-0 z-40`), thanh cuộn nội bộ mượt mà bên trong màn hình điện thoại.
+   - Tiếp nhận tham số `initialTab` và `initialSubTab` để mở đúng module mong muốn khi click từ CRM.
+3. **Cập nhật cả 7 tuyến đường nền tảng trên CRM**:
+   - `/platform/archive`: xem trước tab Văn hóa -> Lưu trữ số (`initialTab="culture" initialSubTab="archive"`)
+   - `/platform/sport`: xem trước tab Thể thao -> Giải đấu đa môn (`initialTab="run_events" initialSubTab="sport"`)
+   - `/platform/heritage`: xem trước tab Văn hóa -> Di sản (`initialTab="culture" initialSubTab="heritage"`)
+   - `/platform/museum`: xem trước tab Văn hóa -> Bảo tàng 3D (`initialTab="culture" initialSubTab="museum"`)
+   - `/platform/run`: xem trước tab Thể thao -> Giải chạy & BIB (`initialTab="run_events" initialSubTab="run"`)
+   - `/platform/tickets`: xem trước tab Ví số -> Vé điện tử (`initialTab="wallet" initialSubTab="tickets"`)
+   - `/platform/review`: xem trước tab Ví số -> NFC Review (`initialTab="wallet" initialSubTab="review"`)
+
+#### D. Kiểm Thử Chất Lượng Code
+- `tsc --noEmit` hoàn thành với 0 lỗi (Exit Code 0).
+- Không thực thi bất kỳ lệnh `git commit` hay `git push` nào theo đúng Strict Rule 1.
+
+---
+
 ## 0.0000000000.12. GỠ BỎ HOÀN TOÀN HẠ TẦNG REDIS & KAFKA TRÊN GIAO DIỆN QUẢN TRỊ CRM (MEETINGS.TSX) (28/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Người Dùng

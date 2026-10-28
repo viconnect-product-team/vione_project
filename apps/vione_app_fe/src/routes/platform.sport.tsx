@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { SportAdminManager } from "@/components/platform-app/admin/SportAdminManager";
-import { SportTournamentHub } from "@/components/platform-app/SportTournamentHub";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/sport")({
@@ -47,7 +47,15 @@ function PlatformSportPage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <SportAdminManager /> : <SportTournamentHub />}
+        {viewMode === "admin" ? (
+          <SportAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="run_events"
+            initialSubTab="sport"
+            moduleName="ViOne Sport (Giải Đấu & CLB)"
+          />
+        )}
       </div>
     </AppShell>
   );

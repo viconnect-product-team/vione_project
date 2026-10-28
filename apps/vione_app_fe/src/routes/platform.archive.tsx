@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { ArchiveAdminManager } from "@/components/platform-app/admin/ArchiveAdminManager";
-import { ArchiveViewer } from "@/components/platform-app/ArchiveViewer";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/archive")({
@@ -47,7 +47,15 @@ function PlatformArchivePage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <ArchiveAdminManager /> : <ArchiveViewer />}
+        {viewMode === "admin" ? (
+          <ArchiveAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="culture"
+            initialSubTab="archive"
+            moduleName="ViOne Archive (Tư Liệu Số)"
+          />
+        )}
       </div>
     </AppShell>
   );

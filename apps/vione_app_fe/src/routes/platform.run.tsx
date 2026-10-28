@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/dashboard/AppShell";
 import { PageHeader } from "@/components/dashboard/PageKit";
 import { RunAdminManager } from "@/components/platform-app/admin/RunAdminManager";
-import { RunRaceHub } from "@/components/platform-app/RunRaceHub";
+import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/platform/run")({
@@ -47,7 +47,15 @@ function PlatformRunPage() {
           </div>
         </div>
 
-        {viewMode === "admin" ? <RunAdminManager /> : <RunRaceHub />}
+        {viewMode === "admin" ? (
+          <RunAdminManager />
+        ) : (
+          <PwaDeviceSimulator
+            initialTab="run_events"
+            initialSubTab="run"
+            moduleName="ViOne Run (Giải Chạy & Marathon)"
+          />
+        )}
       </div>
     </AppShell>
   );
