@@ -29,7 +29,26 @@ export const ArchiveAdminManager: React.FC = () => {
   const [archives, setArchives] = useState<ArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState(() => {
+    if (typeof window !== "undefined") {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t) return t;
+    }
+    return "all";
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t) {
+        setCategoryFilter(t);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);

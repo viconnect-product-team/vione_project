@@ -28,7 +28,6 @@ export interface ExecutiveCenterSectionProps {
   setMyQrVisible: (v: boolean) => void;
   setAttendanceVisible: (v: boolean) => void;
   setWorkflowVisible: (v: boolean) => void;
-  setApprovalsVisible: (v: boolean) => void;
   setAiAssistantVisible: (v: boolean) => void;
   setSelectedPartnerForMeeting: (p: { name: string; company: string } | null) => void;
   setCardScanReviewVisible: (v: boolean) => void;
@@ -44,7 +43,6 @@ export const ExecutiveCenterSection: React.FC<ExecutiveCenterSectionProps> = ({
   setMyQrVisible,
   setAttendanceVisible,
   setWorkflowVisible,
-  setApprovalsVisible,
   setAiAssistantVisible,
   setSelectedPartnerForMeeting,
   setCardScanReviewVisible,
@@ -233,31 +231,6 @@ export const ExecutiveCenterSection: React.FC<ExecutiveCenterSectionProps> = ({
                   Tiến độ nhân sự
                 </Text>
               </TouchableOpacity>
-
-              {/* KPI 3: Duyệt chi */}
-              <TouchableOpacity
-                style={[
-                  styles.opsMetricTile,
-                  {
-                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "#F8FAFC",
-                    borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
-                  },
-                ]}
-                onPress={() => setApprovalsVisible(true)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.metricTileHeader}>
-                  <View style={styles.metricIconWrap}>
-                    <ShieldCheck size={14} color="#D8B282" />
-                  </View>
-                  <ChevronRight size={13} color="#94A3B8" />
-                </View>
-                <Text style={[styles.metricValue, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>3</Text>
-                <Text style={styles.metricBadgeGold}>41.5 Tr chờ</Text>
-                <Text style={[styles.metricLabel, { color: isDark ? "#94A3B8" : "#64748B" }]}>
-                  Ký duyệt chi
-                </Text>
-              </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity
@@ -301,7 +274,7 @@ export const ExecutiveCenterSection: React.FC<ExecutiveCenterSectionProps> = ({
                 numberOfLines={1}
               >
                 {hasCompanyWithStaff
-                  ? "Hôm nay: 3 việc ưu tiên & 1 tờ trình cần ký"
+                  ? "Hôm nay: 3 việc ưu tiên & tiến độ vận hành"
                   : "Hôm nay: 3 nhiệm vụ ưu tiên cần thực hiện"}
               </Text>
             </View>

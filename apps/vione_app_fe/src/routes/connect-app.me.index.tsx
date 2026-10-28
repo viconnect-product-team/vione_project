@@ -60,6 +60,7 @@ import {
 } from "@/components/business-connect/mobile/me/IdentityQrSheet";
 import { NfcSheet } from "@/components/business-connect/mobile/me/NfcSheet";
 import { NfcActionSheet } from "@/components/business-connect/mobile/me/NfcActionSheet";
+import { MeInstallBannerCard } from "@/components/pwa/HomeOneTapInstall";
 
 import { TapToConnectSheet } from "@/components/business-connect/mobile/TapToConnectSheet";
 import { DigitalBusinessCard } from "@/components/business-connect/mobile/me/DigitalBusinessCard";
@@ -1052,6 +1053,11 @@ function ConnectAppMePage() {
                 />
               </button>
             </SectionCard>
+
+            {/* Cài đặt Ứng dụng PWA 1-Chạm đặt dưới cùng của màn Tôi */}
+            <div className="mt-2 mb-6">
+              <MeInstallBannerCard />
+            </div>
           </>
         )}
       </div>

@@ -52,7 +52,6 @@ export interface ViOneVoiceAssistantModalProps {
   onOpenCalendar?: () => void;
   onOpenNotifications?: () => void;
   onOpenWorkflow?: () => void;
-  onOpenApprovals?: () => void;
   initialOpportunity?: {
     id: string;
     title: string;
@@ -105,7 +104,6 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
   onOpenCalendar,
   onOpenNotifications,
   onOpenWorkflow,
-  onOpenApprovals,
   initialOpportunity,
 }) => {
   const { isDark } = useTheme();
@@ -375,18 +373,7 @@ export const ViOneVoiceAssistantModal: React.FC<ViOneVoiceAssistantModalProps> =
       return true;
     }
 
-    // 2. Ký duyệt chi & tờ trình
-    if (
-      (isNavigationVerb && (q.includes("ký duyệt") || q.includes("duyệt chi") || q.includes("phê duyệt") || q.includes("trình ký") || q.includes("duyệt đơn"))) ||
-      q === "ký duyệt" ||
-      q === "ký duyệt chi" ||
-      q === "duyệt chi"
-    ) {
-      triggerAppAction("✍️ Đang mở danh sách Ký duyệt chi & Tờ trình...", onOpenApprovals);
-      return true;
-    }
-
-    // 3. Giao việc cho nhân viên
+    // 2. Giao việc cho nhân viên
     if (
       (isNavigationVerb && (q.includes("giao việc") || q.includes("tạo việc") || q.includes("thêm việc") || q.includes("phân công"))) ||
       q === "giao việc" ||

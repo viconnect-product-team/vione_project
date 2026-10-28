@@ -46,7 +46,6 @@ interface VActionSheetProps {
   onPostMoment?: () => void;
   onOpenAttendance?: () => void;
   onOpenWorkflow?: () => void;
-  onOpenApprovals?: () => void;
   onOpenAssignTask?: () => void;
   onOpenStaffActivity?: () => void;
   onOpenAiAssistant?: () => void;
@@ -63,7 +62,6 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
   onPostMoment,
   onOpenAttendance,
   onOpenWorkflow,
-  onOpenApprovals,
   onOpenAssignTask,
   onOpenStaffActivity,
   onOpenAiAssistant,

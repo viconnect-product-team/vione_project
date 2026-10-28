@@ -140,12 +140,12 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
           >
             {/* Title & Button Tạo cộng đồng */}
             <View style={styles.titleSection}>
-              <View style={{ flex: 1 }}>
+              <View style={{ marginBottom: 8 }}>
                 <Text style={[styles.pageTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>
                   Cộng đồng
                 </Text>
                 <Text style={[styles.pageSubtitle, { color: isDark ? "#94A3B8" : "#64748B" }]}>
-                  Thành viên · Sự kiện · Cơ hội
+                  Điều hành · Giao việc · CRM · Cơ hội B2B
                 </Text>
               </View>
 
@@ -154,34 +154,36 @@ export const CommunityHomeScreen: React.FC<CommunityHomeScreenProps> = ({
                   <TouchableOpacity
                     onPress={onOpenPackageRegistration}
                     style={{
+                      flex: 1,
                       paddingHorizontal: 10,
-                      paddingVertical: 7,
-                      borderRadius: 12,
+                      paddingVertical: 8,
+                      borderRadius: 14,
                       backgroundColor: "#0F172A",
                       borderWidth: 1,
                       borderColor: "rgba(216, 178, 130, 0.5)",
                       flexDirection: "row",
                       alignItems: "center",
-                      gap: 4,
+                      justifyContent: "center",
+                      gap: 5,
                     }}
                     activeOpacity={0.8}
                   >
                     <Package size={14} color="#D8B282" />
-                    <Text style={{ color: "#F6E1C3", fontSize: 11, fontWeight: "700" }}>
+                    <Text style={{ color: "#F6E1C3", fontSize: 11.5, fontWeight: "700" }}>
                       Đăng Ký Gói
                     </Text>
                   </TouchableOpacity>
                 )}
 
                 <TouchableOpacity
-                  style={styles.createCommunityBtn}
+                  style={[styles.createCommunityBtn, { flex: onOpenPackageRegistration ? 1.4 : 1 }]}
                   onPress={() => onOpenCreateCommunity()}
                 >
                   <LinearGradient
                     colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    style={styles.createCommunityGrad}
+                    style={[styles.createCommunityGrad, { justifyContent: "center" }]}
                   >
                     <Plus size={16} color="#050C15" strokeWidth={2.5} />
                     <Text style={styles.createCommunityText}>

@@ -82,11 +82,32 @@ export interface LeaderboardItem {
 type RunAdminTab = "races" | "runners" | "checkpoints" | "leaderboard" | "certificates";
 
 export const RunAdminManager: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<RunAdminTab>("races");
+  const [activeTab, setActiveTab] = useState<RunAdminTab>(() => {
+    if (typeof window !== "undefined") {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "races" || t === "runners" || t === "checkpoints" || t === "leaderboard" || t === "certificates") {
+        return t as any;
+      }
+    }
+    return "races";
+  });
   const [races, setRaces] = useState<RaceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterHeritage, setFilterHeritage] = useState<string>("all");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "races" || t === "runners" || t === "checkpoints" || t === "leaderboard" || t === "certificates") {
+        setActiveTab(t as any);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
 
   // Selected Race for sub-modules
   const [selectedRaceId, setSelectedRaceId] = useState<string>("");

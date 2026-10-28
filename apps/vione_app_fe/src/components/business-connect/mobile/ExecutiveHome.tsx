@@ -80,10 +80,8 @@ import { EventDetailMobileSheet } from "./EventDetailMobileSheet";
 import { PersonalProfileBottomSheet } from "@/components/common/PersonalProfileBottomSheet";
 import { AttendanceMobileSheet } from "./AttendanceMobileSheet";
 import { WorkflowMobileSheet } from "./WorkflowMobileSheet";
-import { ApprovalsMobileSheet } from "./ApprovalsMobileSheet";
 import { CreateCommunityModal } from "./community/CreateCommunityModal";
 import { ImagePanCropModal } from "@/components/common/ImagePanCropModal";
-import { HomeInstallBannerCard } from "@/components/pwa/HomeOneTapInstall";
 import { ViOneEcosystemGrid } from "./ViOneEcosystemGrid";
 
 export type CrmEvent = {
@@ -186,7 +184,6 @@ export function ExecutiveHome() {
   const [tourOpen, setTourOpen] = useState(false);
   const [attendanceSheetOpen, setAttendanceSheetOpen] = useState(false);
   const [workflowSheetOpen, setWorkflowSheetOpen] = useState(false);
-  const [approvalsSheetOpen, setApprovalsSheetOpen] = useState(false);
   const [createMeetingOpen, setCreateMeetingOpen] = useState(false);
 
   // Quyền chia sẻ vị trí phục vụ AI định vị người dùng ViOne quanh đây
@@ -1581,7 +1578,6 @@ export function ExecutiveHome() {
               <EnterpriseOperationsCard
                 onOpenAttendance={() => setAttendanceSheetOpen(true)}
                 onOpenWorkflow={() => setWorkflowSheetOpen(true)}
-                onOpenApprovals={() => setApprovalsSheetOpen(true)}
                 hasCompanyWithStaff={hasCompanyWithStaff}
                 trialDaysLeft={trialDaysLeft}
               />
@@ -1636,10 +1632,6 @@ export function ExecutiveHome() {
             <WorkflowMobileSheet
               open={workflowSheetOpen}
               onClose={() => setWorkflowSheetOpen(false)}
-            />
-            <ApprovalsMobileSheet
-              open={approvalsSheetOpen}
-              onClose={() => setApprovalsSheetOpen(false)}
             />
           </div>
         )}
@@ -1868,13 +1860,11 @@ function InsightCard() {
 function EnterpriseOperationsCard({
   onOpenAttendance,
   onOpenWorkflow,
-  onOpenApprovals,
   hasCompanyWithStaff = false,
   trialDaysLeft = 30,
 }: {
   onOpenAttendance: () => void;
   onOpenWorkflow: () => void;
-  onOpenApprovals: () => void;
   hasCompanyWithStaff?: boolean;
   trialDaysLeft?: number;
 }) {
@@ -1950,13 +1940,13 @@ function EnterpriseOperationsCard({
       </div>
 
       {hasCompanyWithStaff ? (
-        /* 3 Thẻ Metric Trực Quan (Interactive Executive Metrics) — Khi có nhân sự công ty */
-        <div className="mt-4 grid grid-cols-3 gap-2.5">
+        /* 2 Thẻ Metric Trực Quan (Interactive Executive Metrics) — Khi có nhân sự công ty */
+        <div className="mt-4 grid grid-cols-2 gap-3">
           {/* KPI 1: Chấm công */}
           <button
             type="button"
             onClick={onOpenAttendance}
-            className="group text-left rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50/80 dark:bg-[#151C2A] p-3 transition-all hover:border-amber-400 cursor-pointer hover:shadow-md active:scale-95"
+            className="group text-left rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50/80 dark:bg-[#151C2A] p-3.5 transition-all hover:border-amber-400 cursor-pointer hover:shadow-md active:scale-95"
           >
             <div className="flex items-center justify-between">
               <span className="grid h-7 w-7 place-items-center rounded-lg bg-amber-400/15 text-amber-600 dark:text-amber-400 border border-amber-400/20">
@@ -1981,7 +1971,7 @@ function EnterpriseOperationsCard({
           <button
             type="button"
             onClick={onOpenWorkflow}
-            className="group text-left rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50/80 dark:bg-[#151C2A] p-3 transition-all hover:border-amber-400 cursor-pointer hover:shadow-md active:scale-95"
+            className="group text-left rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50/80 dark:bg-[#151C2A] p-3.5 transition-all hover:border-amber-400 cursor-pointer hover:shadow-md active:scale-95"
           >
             <div className="flex items-center justify-between">
               <span className="grid h-7 w-7 place-items-center rounded-lg bg-amber-400/15 text-amber-600 dark:text-amber-400 border border-amber-400/20">
@@ -1998,31 +1988,6 @@ function EnterpriseOperationsCard({
               </p>
               <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
                 Tiến độ nhân sự
-              </p>
-            </div>
-          </button>
-
-          {/* KPI 3: Duyệt chi */}
-          <button
-            type="button"
-            onClick={onOpenApprovals}
-            className="group text-left rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50/80 dark:bg-[#151C2A] p-3 transition-all hover:border-amber-400 cursor-pointer hover:shadow-md active:scale-95"
-          >
-            <div className="flex items-center justify-between">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-amber-400/15 text-amber-600 dark:text-amber-400 border border-amber-400/20">
-                <ShieldCheck className="h-3.5 w-3.5" />
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 text-zinc-400 group-hover:text-amber-500 group-hover:translate-x-0.5 transition-all" />
-            </div>
-            <div className="mt-2.5">
-              <p className="text-[20px] font-black text-zinc-950 dark:text-white tracking-tight leading-none">
-                3
-              </p>
-              <p className="mt-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 leading-tight">
-                41.5 Tr chờ
-              </p>
-              <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
-                Ký duyệt chi
               </p>
             </div>
           </button>
@@ -2262,11 +2227,6 @@ function Greeting({ identity }: { identity: BcMobileHomeIdentity }) {
             />
           </button>
         </div>
-      </div>
-
-      {/* Thẻ Cài Đặt App ViOne (1-Chạm) đặt ở dưới cùng của trang chủ */}
-      <div className="mt-2 mb-4">
-        <HomeInstallBannerCard />
       </div>
 
       {/* Popup Hồ sơ cá nhân từ dưới lên (Facebook, Zalo, Call, Bio...) */}

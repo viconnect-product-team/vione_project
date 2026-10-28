@@ -236,6 +236,70 @@ export function HomeInstallBannerCard() {
 }
 
 /**
+ * Thẻ Card cài đặt 1-chạm đặt ở dưới cùng của màn hình "Tôi"
+ */
+export function MeInstallBannerCard() {
+  const { isStandalone, isIos, isAndroid, triggerInstall, showModal, setShowModal } = useOneTapPwaInstall();
+
+  return (
+    <>
+      <div className="relative overflow-hidden rounded-2xl border border-[#D8B282]/40 bg-gradient-to-br from-[#14100C] via-[#1A140E] to-[#0A0704] p-4 text-white shadow-xl ring-1 ring-[#D8B282]/20">
+        <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-[#D4AF37]/15 blur-2xl" />
+
+        <div className="flex items-start gap-3.5">
+          <div className="relative h-12 w-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#FAF3DD] via-[#D8B282] to-[#8C653B] p-[1.5px] shadow-lg">
+            <div className="h-full w-full rounded-[14px] bg-[#05070E] flex items-center justify-center overflow-hidden">
+              <img
+                src="/apple-touch-icon.png?v=vione_balanced_20261022"
+                alt="ViOne App"
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLElement).setAttribute("src", "/vione-gold-192.png");
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="text-[13.5px] font-bold tracking-wide text-[#F3E5AB]">
+                Cài Đặt App ViOne Lên Màn Hình
+              </h4>
+              <span className="rounded-full bg-amber-400/20 border border-amber-400/35 px-2 py-0.5 text-[9.5px] font-black text-amber-300 uppercase tracking-wider">
+                PWA VIP
+              </span>
+            </div>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-slate-300">
+              Thêm lên điện thoại để mở tức thì, chạy mượt toàn màn hình và nhận thông báo kết nối 24/7.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center gap-2.5">
+          {isStandalone ? (
+            <div className="flex-1 min-h-[40px] px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-[12px] flex items-center justify-center gap-2">
+              <Check className="h-4 w-4" />
+              <span>Ứng dụng đã cài đặt trên thiết bị</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={triggerInstall}
+              className="flex-1 min-h-[40px] px-4 rounded-xl bg-[linear-gradient(135deg,#FAF3DD_0%,#D8B282_45%,#C29B69_70%,#8C653B_100%)] text-slate-950 font-black text-[12px] tracking-tight hover:brightness-105 active:scale-[0.98] transition shadow-md flex items-center justify-center gap-2 border border-[#D8B282]/60 cursor-pointer"
+            >
+              <Download className="h-4 w-4 text-slate-950 stroke-[2.5]" />
+              <span>Thêm Lên Màn Hình Ngay (1-Chạm)</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showModal && <OneTapInstallGuideModal onClose={() => setShowModal(false)} isIos={isIos} isAndroid={isAndroid} />}
+    </>
+  );
+}
+
+/**
  * Modal Hướng Dẫn Cài Đặt 1-Chạm Sang Trọng (Dành cho iOS Safari và Fallback)
  */
 export function OneTapInstallGuideModal({

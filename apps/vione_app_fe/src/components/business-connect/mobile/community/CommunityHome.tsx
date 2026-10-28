@@ -160,30 +160,30 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
 
       <main id="bc-mobile-community" className="contents">
         {/* A — Header */}
-        <div className="mt-1 flex items-center justify-between w-full gap-3">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-[30px] font-semibold leading-tight tracking-tight text-[var(--bc-mobile-text)]">
+        <div className="mt-1 flex flex-col gap-3 w-full sm:flex-row sm:items-center sm:justify-between">
+          <div className="w-full min-w-0">
+            <h1 className="text-[28px] sm:text-[30px] font-semibold leading-tight tracking-tight text-[var(--bc-mobile-text)]">
               {t("bc.mobile.nav.community")}
             </h1>
             <p className="mt-0.5 text-[13px] leading-relaxed text-[var(--bc-mobile-muted)]">
               Điều hành · Giao việc · CRM · Cơ hội B2B
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
             <button
               type="button"
               onClick={() => setPackageModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-slate-900 border border-[#D8B282]/50 text-[#F6E1C3] font-bold text-xs shadow-md hover:bg-slate-800 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-slate-900 border border-[#D8B282]/50 text-[#F6E1C3] font-bold text-xs shadow-md hover:bg-slate-800 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
             >
-              <Package className="h-4 w-4 text-[#D8B282]" />
+              <Package className="h-4 w-4 text-[#D8B282] shrink-0" />
               <span>Đăng Ký Gói ViOne</span>
             </button>
             <button
               type="button"
               onClick={() => setCreateModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md border border-[#E5C07B]/60 hover:brightness-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#F6E1C3] via-[#DFB76C] to-[#C99C47] text-slate-950 font-extrabold text-xs shadow-md border border-[#E5C07B]/60 hover:brightness-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
             >
-              <Plus className="h-4 w-4 stroke-[2.5]" />
+              <Plus className="h-4 w-4 stroke-[2.5] shrink-0" />
               <span>Tạo cộng đồng (30 ngày free)</span>
             </button>
           </div>

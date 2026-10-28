@@ -75,9 +75,6 @@ export const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   titleSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     marginTop: 4,
     marginBottom: 8,
   },

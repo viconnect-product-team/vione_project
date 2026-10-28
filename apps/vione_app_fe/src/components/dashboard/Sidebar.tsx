@@ -62,6 +62,11 @@ import {
   Archive,
   Radio,
   Layers,
+  MapPin,
+  Compass,
+  Box,
+  FileText,
+  BarChart3,
 } from "lucide-react";
 import type { TKey } from "@/lib/i18n";
 import type { LucideIcon } from "lucide-react";
@@ -78,7 +83,22 @@ import { ProfileMenu } from "@/components/dashboard/ProfileMenu";
 import { ReportsTreeMenu } from "@/components/dashboard/ReportsTreeMenu";
 import { SubscribePackageModal } from "@/components/dashboard/SubscribePackageModal";
 
-type Item = { key: TKey; icon: LucideIcon; to?: string; label?: string; badge?: string | number };
+export type SubItem = {
+  key: string;
+  label: string;
+  to: string;
+  icon?: LucideIcon;
+  badge?: string | number;
+};
+
+type Item = {
+  key: TKey;
+  icon: LucideIcon;
+  to?: string;
+  label?: string;
+  badge?: string | number;
+  children?: SubItem[];
+};
 
 // ── PHÂN HỆ QUẢN TRỊ NỀN TẢNG (SUPER ADMIN / PLATFORM ADMIN) ─────────────
 // Dành cho ban quản trị nền tảng ViOne điều hành và giám sát toàn hệ thống
@@ -129,12 +149,6 @@ const superAdminPackagesSuite: Item[] = [
     label: "Cấu Hình Gói ViOne CRM",
   },
   {
-    key: "nav.vioneApprovals" as TKey,
-    icon: CheckCircle2,
-    to: "/payment-approvals",
-    label: "Phê Duyệt Đơn Hàng & Kích Hoạt",
-  },
-  {
     key: "nav.vioneRevenueReport" as TKey,
     icon: ArrowDownCircle,
     to: "/income",
@@ -172,6 +186,11 @@ const superAdminCommunitySportSuite: Item[] = [
     to: "/events",
     label: "ViOne Event — Sự Kiện & Hội Thảo",
     badge: "Event",
+    children: [
+      { key: "event-list", label: "Danh Sách Sự Kiện & Diễn Đàn", to: "/events", icon: Calendar },
+      { key: "event-checkin", label: "Điểm Danh & Quét Mã QR", to: "/checkin", icon: ScanLine },
+      { key: "event-tickets", label: "Quản Lý Vé Mời Sự Kiện", to: "/platform/tickets?tab=tickets", icon: Ticket },
+    ],
   },
   {
     key: "nav.vioneSport" as TKey,
@@ -179,6 +198,11 @@ const superAdminCommunitySportSuite: Item[] = [
     to: "/platform/sport",
     label: "ViOne Sport — Thể Thao Đa Môn",
     badge: "Sport",
+    children: [
+      { key: "sport-tournaments", label: "Giải Đấu & Tranh Cúp", to: "/platform/sport?tab=tournaments", icon: Trophy },
+      { key: "sport-clubs", label: "Câu Lạc Bộ Thể Thao", to: "/platform/sport?tab=clubs", icon: Users },
+      { key: "sport-bracket", label: "Sơ Đồ Thi Đấu & BXH", to: "/platform/sport?tab=bracket", icon: Activity },
+    ],
   },
   {
     key: "nav.vioneRun" as TKey,
@@ -186,6 +210,11 @@ const superAdminCommunitySportSuite: Item[] = [
     to: "/platform/run",
     label: "ViOne Run — Giải Chạy & RFID",
     badge: "Run",
+    children: [
+      { key: "run-races", label: "Giải Chạy & Cự Ly (BIB)", to: "/platform/run?tab=races", icon: Flame },
+      { key: "run-checkpoints", label: "Trạm Cảm Biến RFID", to: "/platform/run?tab=checkpoints", icon: ScanLine },
+      { key: "run-leaderboard", label: "Bảng Xếp Hạng & e-Cert", to: "/platform/run?tab=leaderboard", icon: Award },
+    ],
   },
   {
     key: "nav.vioneCheckin" as TKey,
@@ -215,6 +244,11 @@ const superAdminCultureHeritageSuite: Item[] = [
     to: "/platform/heritage",
     label: "ViOne Heritage — Di Sản Văn Hóa",
     badge: "Di sản",
+    children: [
+      { key: "heritage-list", label: "Danh Mục Di Sản & Hồ Sơ", to: "/platform/heritage?tab=heritage_list", icon: Landmark },
+      { key: "heritage-gis", label: "Bản Đồ GIS Khoanh Vùng", to: "/platform/heritage?tab=gis_map", icon: MapPin },
+      { key: "heritage-vr360", label: "Tư Liệu VR360 & GPS Audio", to: "/platform/heritage?tab=archives_vr360", icon: Compass },
+    ],
   },
   {
     key: "nav.vioneMuseum" as TKey,
@@ -222,6 +256,11 @@ const superAdminCultureHeritageSuite: Item[] = [
     to: "/platform/museum",
     label: "ViOne Museum — Bảo Tàng Số 3D",
     badge: "Bảo tàng",
+    children: [
+      { key: "museum-exhibitions", label: "Gian Trưng Bày Chuyên Đề", to: "/platform/museum?tab=museums", icon: Layers },
+      { key: "museum-artifacts", label: "Hiện Vật 3D Photogrammetry", to: "/platform/museum?tab=artifacts", icon: Box },
+      { key: "museum-nfc", label: "Trạm Thẻ Chip NFC Hiện Vật", to: "/platform/museum?tab=nfc_tags", icon: Radio },
+    ],
   },
   {
     key: "nav.vioneArchive" as TKey,
@@ -229,6 +268,11 @@ const superAdminCultureHeritageSuite: Item[] = [
     to: "/platform/archive",
     label: "ViOne Archive — Lưu Trữ Tư Liệu",
     badge: "Tư liệu",
+    children: [
+      { key: "archive-moc-ban", label: "Mộc Bản & Sắc Phong", to: "/platform/archive?tab=moc_ban", icon: Archive },
+      { key: "archive-chau-ban", label: "Châu Bản & Địa Bạ Cổ", to: "/platform/archive?tab=chau_ban", icon: FileText },
+      { key: "archive-cert", label: "Chứng Thực Số Tư Liệu", to: "/platform/archive?tab=digital_cert", icon: ShieldCheck },
+    ],
   },
   {
     key: "nav.vioneTicket" as TKey,
@@ -236,6 +280,11 @@ const superAdminCultureHeritageSuite: Item[] = [
     to: "/platform/tickets",
     label: "ViOne Ticket — Vé Điện Tử & Soát Vé",
     badge: "Ticket",
+    children: [
+      { key: "ticket-list", label: "Quản Lý Vé & Phát Hành Vé", to: "/platform/tickets?tab=tickets", icon: Ticket },
+      { key: "ticket-scanner", label: "Cổng Soát Vé Mã QR Quang Học", to: "/platform/tickets?tab=scanner", icon: QrCodeIcon },
+      { key: "ticket-reports", label: "Báo Cáo Lưu Lượng Cửa Vé", to: "/platform/tickets?tab=reports", icon: BarChart3 },
+    ],
   },
   {
     key: "nav.vioneReview" as TKey,
@@ -243,6 +292,11 @@ const superAdminCultureHeritageSuite: Item[] = [
     to: "/platform/review",
     label: "ViOne Review — Chạm Thẻ NFC",
     badge: "NFC",
+    children: [
+      { key: "review-tags", label: "Cấu Hình Thẻ Chip NFC", to: "/platform/review?tab=tags", icon: Radio },
+      { key: "review-locations", label: "Điểm Đặt Trạm Thẻ Review", to: "/platform/review?tab=locations", icon: MapPin },
+      { key: "review-analytics", label: "Thống Kê Lượt Chạm & Đánh Giá", to: "/platform/review?tab=analytics", icon: Activity },
+    ],
   },
 ];
 
@@ -329,12 +383,6 @@ const companyOperationsSuite: Item[] = [
 
 // NHÓM 3: TÀI CHÍNH & DÒNG TIỀN
 const companyFinanceSuite: Item[] = [
-  {
-    key: "nav.vioneApprovals" as TKey,
-    icon: CheckCircle2,
-    to: "/payment-approvals",
-    label: "Phê Duyệt Chi Tiền",
-  },
   {
     key: "nav.vioneIncome" as TKey,
     icon: ArrowDownCircle,
@@ -440,7 +488,28 @@ function NavItem({
 }) {
   const t = useT();
   const Icon = item.icon;
+  const hasChildren = Boolean(item.children && item.children.length > 0);
   const active = isActive(pathname, item.to);
+  const hasActiveChild = Boolean(
+    item.children?.some((c) => {
+      if (!pathname) return false;
+      const [cPath, cQuery] = c.to.split("?");
+      if (cQuery && typeof window !== "undefined") {
+        const currentSearch = window.location.search.replace(/^\?/, "");
+        return pathname === cPath && currentSearch.includes(cQuery);
+      }
+      return pathname === cPath;
+    })
+  );
+
+  const [expanded, setExpanded] = useState<boolean>(() => Boolean(active || hasActiveChild));
+
+  useEffect(() => {
+    if (active || hasActiveChild) {
+      setExpanded(true);
+    }
+  }, [active, hasActiveChild, pathname]);
+
   const label = item.label || t(item.key);
   const badgeVal = item.badge ?? badge;
   const showBadge = badgeVal !== undefined && badgeVal !== null && badgeVal !== "";
@@ -448,8 +517,10 @@ function NavItem({
   const cls = `group relative flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm transition-all duration-150 outline outline-1 outline-offset-[-1px] cursor-pointer ${
     collapsed ? "justify-center px-2 py-2.5" : ""
   } ${
-    active
+    active && !hasChildren
       ? "bg-blue-600 text-white font-bold outline-blue-500 shadow-md shadow-blue-600/30"
+      : (active || hasActiveChild)
+      ? "bg-slate-900/90 text-white font-semibold outline-slate-700/60"
       : "bg-transparent outline-transparent text-slate-300 hover:text-white hover:bg-slate-900 font-medium"
   }`;
 
@@ -478,30 +549,48 @@ function NavItem({
     );
   };
 
+  const handleRowClick = () => {
+    if (hasChildren && !collapsed) {
+      setExpanded((prev) => !prev);
+    }
+    if (onNavigate) onNavigate();
+  };
+
   const inner = (
     <div className="flex items-center gap-3 w-full">
       <div className="size-4 shrink-0 flex items-center justify-center">
         <Icon
           className={`size-4 transition-colors ${
-            active ? "text-white" : "text-slate-400 group-hover:text-white"
+            active || hasActiveChild ? "text-[#DFB76C]" : "text-slate-400 group-hover:text-white"
           }`}
-          strokeWidth={active ? 2.2 : 1.9}
+          strokeWidth={active || hasActiveChild ? 2.2 : 1.9}
         />
       </div>
       {!collapsed && (
         <span
           className={`flex-1 truncate text-left font-['Inter'] text-[13.5px] ${
-            active ? "text-white font-bold" : "text-slate-200 group-hover:text-white"
+            active || hasActiveChild ? "text-white font-bold" : "text-slate-200 group-hover:text-white"
           }`}
         >
           {label}
         </span>
       )}
-      {!collapsed && renderBadge()}
+      {!collapsed && (
+        <div className="flex items-center gap-1.5 shrink-0">
+          {renderBadge()}
+          {hasChildren && (
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                expanded ? "rotate-180 text-[#DFB76C]" : "rotate-0"
+              }`}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 
-  const interactive = item.to ? (
+  const interactive = (item.to && !hasChildren) ? (
     <Link
       to={item.to}
       data-active={active ? "true" : undefined}
@@ -513,9 +602,10 @@ function NavItem({
     </Link>
   ) : (
     <button
-      data-active={active ? "true" : undefined}
+      type="button"
+      data-active={(active || hasActiveChild) ? "true" : undefined}
       className={cls}
-      onClick={onNavigate}
+      onClick={handleRowClick}
       title={label}
     >
       {inner}
@@ -523,23 +613,69 @@ function NavItem({
   );
 
   return (
-    <Tooltip delayDuration={150}>
-      <TooltipTrigger asChild>{interactive}</TooltipTrigger>
-      <TooltipContent
-        side="right"
-        sideOffset={12}
-        className="z-50 max-w-xs rounded-lg border border-[#D8B282]/40 bg-[#0B0F17] px-3 py-1.5 text-xs font-semibold text-[#F6E1C3] shadow-2xl backdrop-blur-md"
-      >
-        <div className="flex items-center gap-2">
-          <span>{label}</span>
-          {showBadge && (
-            <span className="rounded bg-[#C29B69]/30 px-1.5 py-0.5 text-[10px] text-[#F6E1C3]">
-              {badgeVal}
-            </span>
+    <div className="space-y-0.5">
+      <Tooltip delayDuration={150}>
+        <TooltipTrigger asChild>{interactive}</TooltipTrigger>
+        <TooltipContent
+          side="right"
+          sideOffset={12}
+          className="z-50 max-w-xs rounded-xl border border-[#D8B282]/40 bg-[#0B0F17] px-3 py-2 text-xs font-semibold text-[#F6E1C3] shadow-2xl backdrop-blur-md"
+        >
+          <div className="flex items-center gap-2">
+            <span>{label}</span>
+            {showBadge && (
+              <span className="rounded bg-[#C29B69]/30 px-1.5 py-0.5 text-[10px] text-[#F6E1C3]">
+                {badgeVal}
+              </span>
+            )}
+          </div>
+          {hasChildren && (
+            <div className="mt-2 pt-1.5 border-t border-slate-800 space-y-1">
+              {item.children!.map((c) => (
+                <div key={c.key} className="text-[11px] text-slate-300">
+                  • {c.label}
+                </div>
+              ))}
+            </div>
           )}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Expandable sub-items tree */}
+      {hasChildren && !collapsed && expanded && (
+        <div className="ml-5 pl-3 border-l border-[#DFB76C]/30 my-1 space-y-1 py-0.5 animate-in fade-in duration-200">
+          {item.children!.map((child) => {
+            const [cPath, cQuery] = child.to.split("?");
+            const isCurrentSearch = typeof window !== "undefined" && cQuery
+              ? window.location.search.includes(cQuery)
+              : false;
+            const isChildActive = (pathname === cPath && (cQuery ? isCurrentSearch : true));
+            const ChildIcon = child.icon || Icon;
+
+            return (
+              <Link
+                key={child.key}
+                to={child.to}
+                onClick={onNavigate}
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-all ${
+                  isChildActive
+                    ? "bg-[#DFB76C]/20 text-[#F6E1C3] font-bold border border-[#DFB76C]/40 shadow-xs"
+                    : "text-slate-400 hover:text-white hover:bg-slate-900 font-medium"
+                }`}
+              >
+                <ChildIcon className={`size-3.5 shrink-0 ${isChildActive ? "text-[#DFB76C]" : "text-slate-500"}`} />
+                <span className="truncate flex-1 text-[12px]">{child.label}</span>
+                {child.badge && (
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">
+                    {child.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </div>
-      </TooltipContent>
-    </Tooltip>
+      )}
+    </div>
   );
 }
 

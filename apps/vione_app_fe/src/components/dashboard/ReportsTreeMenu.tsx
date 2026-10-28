@@ -75,12 +75,6 @@ export function ReportsTreeMenu({
           to: isSuperAdmin ? "/finance-report" : "/fees",
           icon: CreditCard,
         },
-        {
-          id: "fin_approvals",
-          label: "Báo Cáo Phê Duyệt Chi Tiền",
-          to: "/payment-approvals",
-          icon: CheckCircle2,
-        },
       ],
     },
     {

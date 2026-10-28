@@ -71,11 +71,32 @@ export interface PreservationMonitorItem {
 }
 
 export const HeritageAdminManager: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"heritage_list" | "gis_map" | "archives_vr360" | "preservation">("heritage_list");
+  const [activeTab, setActiveTab] = useState<"heritage_list" | "gis_map" | "archives_vr360" | "preservation">(() => {
+    if (typeof window !== "undefined") {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "heritage_list" || t === "gis_map" || t === "archives_vr360" || t === "preservation") {
+        return t as any;
+      }
+    }
+    return "heritage_list";
+  });
   const [sites, setSites] = useState<HeritageSite[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "heritage_list" || t === "gis_map" || t === "archives_vr360" || t === "preservation") {
+        setActiveTab(t as any);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
 
   // Sub-modules state
   const [gisZones, setGisZones] = useState<GisProtectionZone[]>([

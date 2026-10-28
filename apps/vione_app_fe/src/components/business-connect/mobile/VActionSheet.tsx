@@ -270,7 +270,7 @@ export function VActionSheet({
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--bc-mobile-muted)] px-1">
               VẬN HÀNH & GIÁM SÁT DOANH NGHIỆP
             </p>
-            <div className="mt-3 grid grid-cols-3 gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => {
@@ -306,25 +306,6 @@ export function VActionSheet({
                 </span>
                 <span className="text-[10px] text-[var(--bc-mobile-muted)]">
                   Tiến độ công việc
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  onOpenChange(false);
-                  void navigate({ to: "/payment-approvals" as any });
-                }}
-                className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--bc-mobile-border)] bg-[var(--bc-mobile-surface-2)] p-2.5 text-center transition-all hover:border-[var(--bc-mobile-border-gold)]"
-              >
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400">
-                  <ShieldCheck className="h-5 w-5" />
-                </span>
-                <span className="text-[12px] font-semibold text-[var(--bc-mobile-text)]">
-                  Phê duyệt
-                </span>
-                <span className="text-[10px] text-[var(--bc-mobile-muted)]">
-                  3 cấp chuẩn
                 </span>
               </button>
             </div>

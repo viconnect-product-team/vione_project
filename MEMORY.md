@@ -1,5 +1,152 @@
 # System Memory & Architecture
 
+## 0.0000000000.15. XÓA LUỒNG PHÊ DUYỆT TÀI CHÍNH, CHUYỂN NÚT CÀI PWA XUỐNG ĐÁY MÀN TÔI, SỬA LỖI VỠ GIAO DIỆN CỘNG ĐỒNG TRÊN IOS VÀ BỔ SUNG CÂY MENU ĐA CHỨC NĂNG CON CHO CÁC MODULE CRM (28/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+1. **Xóa hoàn toàn luồng phê duyệt tài chính cả CRM và App ViOne**:
+   - Gỡ bỏ phân hệ `payment-approvals` ("Phê duyệt tài chính", "Tờ trình chi", "Ký duyệt chi") khỏi toàn bộ CRM, App PWA và App Native ViOne.
+2. **Đưa nút cài PWA app ViOne tại trang chủ ViOne PWA vào dưới cùng của màn Tôi**:
+   - Gỡ card cài đặt PWA khỏi trang chủ Executive (`/connect-app`) và di chuyển xuống đáy màn hình "Tôi" (`/connect-app/me`).
+3. **Sửa giao diện cộng đồng đang bị vỡ trên thiết bị iOS (Ảnh 2)**:
+   - Khắc phục lỗi flex container khiến tiêu đề "Cộng đồng" và phụ đề "Điều hành · Giao việc · CRM · Cơ hội B2B" bị co ép thành từng chữ đơn/kí tự dọc do cạnh tranh không gian hàng ngang với các nút bấm trên iOS Safari.
+4. **Phát triển mỗi module CRM mới thêm 2 - 3 chức năng con bên trong nhóm**:
+   - Click vào từng module (ViOne Sport, ViOne Run, ViOne Heritage, ViOne Museum, ViOne Archive, ViOne Ticket, ViOne Review, ViOne Event) sẽ mở rộng cây menu hiển thị 2 - 3 chức năng con cụ thể với liên kết query parameter (`?tab=...`).
+5. **Sửa CRM ViOne không hiện thông báo như Ảnh 1**:
+   - Ẩn hoàn toàn thông báo "Bật thông báo trên màn hình khóa điện thoại..." (`NotificationPromptBanner`) trên toàn bộ môi trường Web CRM.
+
+### 2. Chi Tiết Thực Hiện & Thay Đổi Kỹ Thuật
+
+#### A. Ẩn Hoàn Toàn Notification Banner Trên Môi Trường CRM
+- Tệp: `apps/vione_app_fe/src/components/common/NotificationPromptBanner.tsx`
+- Bổ sung kiểm tra hàm `isCrmEnvironment()`:
+  * Phát hiện dựa trên cổng (`window.location.port === "5446"`), hostname (chứa `crm`), hoặc pathname không thuộc `/connect-app`.
+  * Lập tức trả về `null` và huỷ bỏ lắng nghe sự kiện, đảm bảo banner thông báo di động không bao giờ xuất hiện trên CRM desktop.
+
+#### B. Sửa Lỗi Vỡ Giao Diện Màn Cộng Đồng Trên Thiết Bị iOS Safari (Parity Cả 2 App)
+- **PWA ViOne**: `apps/vione_app_fe/src/components/business-connect/mobile/community/CommunityHome.tsx`
+  * Thay thế cấu trúc flex row cố định bằng `flex flex-col gap-3 w-full sm:flex-row sm:items-center sm:justify-between`.
+  * Tiêu đề và mô tả chiếm toàn bộ bề ngang (`min-w-0 flex-1`), phụ đề được hiển thị nguyên vẹn một dòng rõ ràng, không bị ngắt chữ dọc.
+  * Hàng nút hành động ("Đăng Ký Gói ViOne", "Tạo cộng đồng") tự động chuyển xuống hàng riêng trên mobile viewports, đảm bảo chuẩn kích thước chạm ngón tay.
+- **Native ViOne**: `apps/mobile_vione/src/screens/community/components/CommunityHomeScreen.tsx` & `community.styles.ts`
+  * Đồng bộ tiêu đề và phụ đề: "Điều hành · Giao việc · CRM · Cơ hội B2B".
+  * Tái cấu trúc layout container để nhóm nút bấm nằm ngay ngắn phía dưới khối tiêu đề, không chèn ép văn bản.
+
+#### C. Di Chuyển Nút Cài Đặt PWA ViOne Xuống Đáy Màn Hình "Tôi"
+- **Tạo mới component**: `apps/vione_app_fe/src/components/pwa/HomeOneTapInstall.tsx` -> export `MeInstallBannerCard()`.
+  * Nếu người dùng đã cài đặt hoặc đang ở chế độ Standalone PWA: Hiển thị thẻ xác nhận "ViOne Platform PWA Đang Hoạt Động" tinh tế kèm trạng thái kết nối máy chủ.
+  * Nếu đang duyệt web thường: Hiển thị nút "Cài Đặt App ViOne Lên Màn Hình Chính" một chạm mượt mà.
+- **Xóa khỏi Trang Chủ**: `apps/vione_app_fe/src/components/business-connect/mobile/ExecutiveHome.tsx`
+  * Gỡ bỏ `<HomeInstallBannerCard />` khỏi giao diện trang chủ điều hành.
+- **Đưa vào đáy Màn Tôi**: `apps/vione_app_fe/src/routes/connect-app.me.index.tsx`
+  * Nhúng `<MeInstallBannerCard />` tại vị trí cuối cùng dưới cụm Tài khoản & Bảo mật.
+
+#### D. Xóa Bỏ Hoàn Toàn Luồng Phê Duyệt Tài Chính (CRM, PWA & Native)
+1. **Phân hệ Web CRM (`apps/vione_app_fe`)**:
+   - `Sidebar.tsx`: Gỡ bỏ mục menu `/payment-approvals` khỏi danh mục siêu quản trị và danh mục tài chính.
+   - `ReportsTreeMenu.tsx`: Gỡ bỏ nhánh báo cáo `fin_approvals` (`/payment-approvals`).
+   - `platform.index.tsx`: Chuyển hướng thẻ chức năng tài chính từ phê duyệt chi sang theo dõi thu phí dịch vụ `/income`.
+2. **Phân hệ PWA ViOne (`apps/vione_app_fe`)**:
+   - `ExecutiveHome.tsx`: Gỡ bỏ `ApprovalsMobileSheet`, state `approvalsSheetOpen`, và chuyển đổi `EnterpriseOperationsCard` từ 3 cột sang 2 cột cân đối ("Chấm công GPS" và "Tiến độ nhân sự", xóa bỏ KPI 3 "Ký duyệt chi").
+   - `VActionSheet.tsx`: Gỡ bỏ thẻ tác vụ nhanh "Phê duyệt (3 cấp chuẩn)", tái cơ cấu grid 2 cột hài hòa.
+   - `ViOneVoiceAssistant.tsx`: Gỡ bỏ nhận diện câu lệnh giọng nói "ký duyệt chi", "phê duyệt tài chính".
+3. **Phân hệ Native Mobile (`apps/mobile_vione`)**:
+   - `ExecutiveCenterSection.tsx`: Gỡ bỏ KPI 3 ("Ký Duyệt Chi"), gỡ bỏ `setApprovalsVisible`, cập nhật mô tả module.
+   - `HomeScreen.tsx` & `AppNavigator.tsx`: Gỡ bỏ hoàn toàn `ApprovalsModal`, biến state `approvalsVisible`, prop pass và trigger.
+   - `VActionSheet.tsx`: Gỡ bỏ action tile "Phê duyệt (3 cấp chuẩn)".
+   - `ViOneVoiceAssistantModal.tsx`: Gỡ bỏ trigger giọng nói liên quan đến duyệt chi tài chính.
+
+#### E. Mở Rộng Cây Menu 2 - 3 Chức Năng Con Cho Tất Cả Các Module CRM Mới
+- **Sidebar Nâng Cấp (`apps/vione_app_fe/src/components/dashboard/Sidebar.tsx`)**:
+  * Bổ sung thuộc tính `children?: SubItem[]` cho định nghĩa `Item`.
+  * Thêm biểu tượng chevron xoay động `ChevronDown`, hiệu ứng toggle accordion mượt mà khi người dùng click vào từng module.
+  * Tích hợp các chức năng con chi tiết theo đúng nghiệp vụ:
+    1. **ViOne Sport** (`/platform/sport`):
+       - "Danh Sách Giải Đấu" (`?tab=tournaments`)
+       - "Câu Lạc Bộ Thể Thao" (`?tab=clubs`)
+       - "Sơ Đồ Thi Đấu & BXH" (`?tab=bracket`)
+    2. **ViOne Run** (`/platform/run`):
+       - "Giải Chạy & Cự Ly" (`?tab=races`)
+       - "Quản Lý BIB & Vận Động Viên" (`?tab=runners`)
+       - "Trạm Tiếp Nước & Checkpoints" (`?tab=checkpoints`)
+    3. **ViOne Event** (`/platform/events`):
+       - "Sự Kiện Của Tôi" (`?tab=my_events`)
+       - "Phát Hành & Quản Lý Vé" (`?tab=ticketing`)
+       - "Điểm Danh QR & Check-in" (`?tab=checkin`)
+    4. **ViOne Heritage** (`/platform/heritage`):
+       - "Hồ Sơ Di Sản Quốc Gia" (`?tab=heritage_list`)
+       - "Bản Đồ Số GIS & Khoanh Vùng" (`?tab=gis_map`)
+       - "Tour Thực Tế Ảo VR360" (`?tab=archives_vr360`)
+    5. **ViOne Museum** (`/platform/museum`):
+       - "Hệ Thống Bảo Tàng" (`?tab=museums`)
+       - "Hiện Vật 3D / AR" (`?tab=artifacts`)
+       - "Thuyết Minh Số Audio Guide" (`?tab=audioguide`)
+    6. **ViOne Archive** (`/platform/archive`):
+       - "Mộc Bản Triều Nguyễn" (`?tab=moc_ban`)
+       - "Châu Bản & Sắc Phong" (`?tab=chau_ban`)
+       - "Toàn Bộ Kho Tư Liệu Số" (`?tab=all`)
+    7. **ViOne Ticket** (`/platform/tickets`):
+       - "Danh Sách Vé Điện Tử" (`?tab=all`)
+       - "Cổng Soát Vé Quang Học" (`?tab=scanner`)
+       - "Báo Cáo Doanh Thu Vé" (`?tab=analytics`)
+    8. **ViOne Review** (`/platform/review`):
+       - "Trạm Chạm NFC Đánh Giá" (`?tab=stations`)
+       - "Điều Hướng Đánh Giá 5 Sao" (`?tab=routing`)
+       - "Khảo Sát & Ưu Đãi" (`?tab=incentives`)
+- **Đồng Bộ URL Query Parameter Trong Các Quản Trị Viên (`admin/`)**:
+  * Các admin manager (`SportAdminManager`, `HeritageAdminManager`, `MuseumAdminManager`, `ArchiveAdminManager`, `RunAdminManager`, `TicketAdminManager`, `ReviewAdminManager`) đều lắng nghe URL query param `?tab=...` để kích hoạt đúng tab con tương ứng ngay lập tức khi click từ Sidebar.
+
+### 3. Kết Quả Kiểm Thử Chất Lượng (Strict Verification)
+- **PWA ViOne & Web CRM (`apps/vione_app_fe`)**: Chạy `npx tsc --noEmit` -> **0 lỗi (exit code 0)**.
+- **Native ViOne App (`apps/mobile_vione`)**: Chạy `npx tsc --noEmit` -> **0 lỗi (exit code 0)**.
+- **Tính Nhất Quán Dual-App Parity**: Đồng bộ 100% về luồng và giao diện giữa bản Web/PWA và Native Mobile.
+
+---
+
+## 0.0000000000.14. PHÂN TÍCH VÀ VIẾT LẠI TOÀN DIỆN TÀI LIỆU [VIONE] 06. TRÌNH BÀY TÁC PHẨM (HỒ SƠ BẢN QUYỀN TÁC GIẢ), ĐÓNG GÓI ẢNH APP KHUNG ĐIỆN THOẠI, TẮT NÚT PWA VÀ CẬP NHẬT TÊN CHUẨN (28/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+- **Yêu cầu 1:** Đi vào subdomain của ViOne phân tích và viết lại tài liệu `[VIONE] 06. Trình bày tác phẩm.cop đĩa` do bản cũ chưa chi tiết, chưa mô tả đầy đủ các module của phần mềm ViOne, giao diện trong tài liệu cũ chưa phải mới nhất. Dùng lời văn câu chữ bình thường, trung thực, không dùng các từ khóa marketing để cố làm nổi bật.
+- **Yêu cầu 2:** Riêng phần ảnh thể hiện giao diện app ViOne phải được gói trong khung điện thoại (phone mockup/frame) và trước khi chụp phải tắt phần nút cài đặt PWA app. Không đưa ảnh lỗi, ảnh giao diện error vào tài liệu. Lấy code mới nhất đưa vào tài liệu.
+- **Yêu cầu 3:** Tên chuẩn của tác phẩm đăng ký bản quyền: **"Phần mềm ViOne Platform– Nền tảng định danh số, kết nối kinh doanh, quản trị cộng đồng, sự kiện và số hóa di sản văn hóa"**.
+
+### 2. Các Thay Đổi & Giải Pháp Kỹ Thuật Đã Hoàn Thành
+
+#### A. Khảo Sát Subdomain Thực Tế & Codebase Mới Nhất
+1. **Truy cập subdomain chính thức `https://vione.viconnect.vn/` và máy chủ dev:**
+   - Xác thực thành công tài khoản quản trị (`admin@connect.vn`).
+   - Khảo sát toàn bộ các module mới nhất:
+     * Nền tảng Định danh số (e-Profile, Smart Business Card, QR Code động, vCard, NFC, OCR danh thiếp).
+     * Kết nối kinh doanh (Business Matching, B2B Networking, Introductions Pipeline, 1-on-1 Meetings, Marketplace, Opportunities).
+     * Quản trị cộng đồng & Hiệp hội (Association Hub, Quản lý hội viên, Thẻ hội viên số, Quyền lợi & Ưu đãi, Thu phí thường niên, Gia hạn thẻ, Biểu quyết điện tử).
+     * Quản lý sự kiện & Điểm danh số (Tạo sự kiện, phát hành vé điện tử E-Tickets, ví vé cá nhân, Check-in QR thời gian thực).
+     * Số hóa di sản văn hóa & Bảo tàng số (`/platform/heritage`, `/platform/museum`, `/platform/archive`: Bản đồ GIS khoanh vùng bảo vệ, tham quan VR360, thuyết minh GPS, hiện vật 3D Photogrammetry/AR, kho tư liệu số sắc phong/châu bản).
+     * Quản trị vận hành & CRM doanh nghiệp (Dashboard, Leads/Customers, Kanban Workflow, Chấm công định vị GPS, Phê duyệt tài chính VietQR, Kho lưu trữ tài liệu phân cấp chuẩn Google Drive, Multi-tenant RBAC).
+
+#### B. Chụp & Đóng Khung Điện Thoại Cho 100% Ảnh Giao Diện App ViOne
+1. **Xử lý tắt nút/banner cài đặt PWA trước khi chụp:**
+   - Thiết lập cấu hình `standalone` trong `window.navigator` và môi trường Playwright để ngăn chặn `ViOnePwaInstallPrompt` hiển thị.
+   - Inject script DOM dọn dẹp triệt để mọi phần tử banner cài đặt PWA (`#pwa-install-prompt`, `[data-testid="pwa-install"]`, `div:has(button:has-text("Cài đặt"))`), popup xin quyền thông báo và thanh thông báo mock.
+2. **Khung điện thoại thông minh (Phone Mockup) chuẩn mực:**
+   - Xây dựng bộ renderer khung điện thoại iPhone 16 Pro cao cấp: Viền máy kim loại bo cong chuẩn xác (`rounded-[54px]`, bezel 10px, viền đa lớp), Dynamic Island ở đỉnh màn hình, thanh trạng thái (Status Bar: 09:41, sóng di động, Wi-Fi, pin) và thanh gạt Home Indicator.
+   - Đóng gói toàn bộ 16 màn hình di động (`app_01` đến `app_16`) và các màn hình di sản di động (`app_17`, `app_18`, `app_19`) vào khung điện thoại sắc nét, độ phân giải 2x, hoàn toàn không có lỗi, không có ảnh vỡ hay dữ liệu rác.
+3. **Cập nhật 20 màn hình Web CRM / Nền tảng:**
+   - Chụp mới từ hệ thống ở độ phân giải chuẩn 1440x900 @ 2x, phản ánh 100% dữ liệu thực từ PostgreSQL.
+
+#### C. Chuẩn Hóa Văn Phong & Viết Lại Toàn Diện Tài Liệu
+1. **Loại bỏ triệt để buzzwords / từ ngữ phóng đại:**
+   - Thay thế toàn bộ các từ: "Obsidian Luxury", "Titanium", "chuẩn thượng lưu", "siêu trợ lý AI Copilot 6.0", "Hộp thư Messenger 0ms", "xung đỏ phát sáng", "truy cập siêu tốc", "cách mạng công nghệ", "đột phá"...
+   - Chuyển đổi sang lời văn kỹ thuật, khách quan, trung tính, dễ hiểu, mạch lạc theo đúng quy chuẩn hồ sơ đăng ký quyền tác giả phần mềm nộp Cục Bản quyền tác giả (Bộ Văn hóa, Thể thao và Du lịch).
+2. **Bổ sung đầy đủ 5 trụ cột và 16 module chi tiết:**
+   - Cung cấp bảng đặc tả trường dữ liệu, kiểu điều khiển, quy tắc kiểm thực (validation regex), API RESTful và bảng CSDL PostgreSQL cho từng module.
+3. **Lấy mã nguồn mới nhất đưa vào Phụ lục IV:**
+   - Trích xuất trực tiếp 18 tệp nguồn cốt lõi từ `apps/vione_app_be`, `apps/vione_app_fe`, và `apps/mobile_vione`.
+
+#### D. Xuất Bản Cả 2 Định Dạng DOCX và Markdown
+1. **Tệp DOCX:** `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (15.07 MB) - Đã nhúng toàn bộ ảnh mới và cập nhật toàn bộ XML văn bản. Bản sao lưu trực tiếp tại `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`.
+2. **Tệp Markdown:** `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (482.5 KB) và bản sao tại `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`.
+
+---
+
 ## 0.0000000000.13. ĐỒNG BỘ DỮ LIỆU THỰC TOÀN HỆ THỐNG POSTGRESQL (ZERO-MOCK DATA), CHUẨN HÓA THEME SÁNG CRM VÀ PHÁT TRIỂN PWA DEVICE SIMULATOR CHUẨN KÍCH THƯỚC ĐIỆN THOẠI (28/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Người Dùng

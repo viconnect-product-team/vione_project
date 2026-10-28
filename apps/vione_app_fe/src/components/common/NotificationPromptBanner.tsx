@@ -12,8 +12,15 @@ export function NotificationPromptBanner() {
   const [permission, setPermission] = useState<NotificationPermissionState>("unsupported");
   const [dismissed, setDismissed] = useState(true);
 
+  const isCrmEnvironment = () => {
+    if (typeof window === "undefined") return true;
+    const isConnectApp = window.location.pathname.startsWith("/connect-app");
+    const isCrm = window.location.port === "5446" || window.location.hostname.includes("crm") || !isConnectApp;
+    return isCrm;
+  };
+
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || isCrmEnvironment()) return;
 
     const current = getNotificationPermission();
     setPermission(current);
@@ -41,7 +48,7 @@ export function NotificationPromptBanner() {
     };
   }, []);
 
-  if (dismissed || permission !== "default") {
+  if (dismissed || permission !== "default" || isCrmEnvironment()) {
     return null;
   }
 

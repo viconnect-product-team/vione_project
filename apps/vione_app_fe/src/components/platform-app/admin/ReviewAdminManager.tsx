@@ -68,10 +68,31 @@ export interface ReviewAnalyticsSummary {
 }
 
 export const ReviewAdminManager: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"stations" | "routing" | "incentives" | "analytics">("stations");
+  const [activeTab, setActiveTab] = useState<"stations" | "routing" | "incentives" | "analytics">(() => {
+    if (typeof window !== "undefined") {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "stations" || t === "routing" || t === "incentives" || t === "analytics") {
+        return t as any;
+      }
+    }
+    return "stations";
+  });
   const [stores, setStores] = useState<ReviewStoreItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "stations" || t === "routing" || t === "incentives" || t === "analytics") {
+        setActiveTab(t as any);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
 
   // Sub-modules state
   const [routingRules, setRoutingRules] = useState<SmartRoutingRule[]>([

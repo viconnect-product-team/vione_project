@@ -43,12 +43,31 @@ export interface SportClub {
 }
 
 export const SportAdminManager: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"tournaments" | "clubs">("tournaments");
+  const [activeTab, setActiveTab] = useState<"tournaments" | "clubs" | "bracket">(() => {
+    if (typeof window !== "undefined") {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "clubs" || t === "tournaments" || t === "bracket") return t as any;
+    }
+    return "tournaments";
+  });
   const [tournaments, setTournaments] = useState<SportTournament[]>([]);
   const [clubs, setClubs] = useState<SportClub[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sportFilter, setSportFilter] = useState("all");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "clubs" || t === "tournaments" || t === "bracket") {
+        setActiveTab(t as any);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
 
   // Modal Tournaments
   const [tourModalOpen, setTourModalOpen] = useState(false);
@@ -264,9 +283,16 @@ export const SportAdminManager: React.FC = () => {
     <div className="space-y-6">
       {/* Header action bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-[#0A101D]/80 border border-slate-200 dark:border-[#D8B282]/20 rounded-2xl p-4 shadow-sm backdrop-blur-md">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={() => setActiveTab("tournaments")}
+            onClick={() => {
+              setActiveTab("tournaments");
+              if (typeof window !== "undefined") {
+                const u = new URL(window.location.href);
+                u.searchParams.set("tab", "tournaments");
+                window.history.pushState({}, "", u.toString());
+              }
+            }}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
               activeTab === "tournaments"
                 ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] font-bold shadow-sm"
@@ -277,7 +303,14 @@ export const SportAdminManager: React.FC = () => {
             Quản Lý Giải Đấu ({tournaments.length})
           </button>
           <button
-            onClick={() => setActiveTab("clubs")}
+            onClick={() => {
+              setActiveTab("clubs");
+              if (typeof window !== "undefined") {
+                const u = new URL(window.location.href);
+                u.searchParams.set("tab", "clubs");
+                window.history.pushState({}, "", u.toString());
+              }
+            }}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
               activeTab === "clubs"
                 ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] font-bold shadow-sm"
@@ -286,6 +319,24 @@ export const SportAdminManager: React.FC = () => {
           >
             <Users className="inline w-4 h-4 mr-1.5" />
             Mạng Lưới CLB ({clubs.length})
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("bracket");
+              if (typeof window !== "undefined") {
+                const u = new URL(window.location.href);
+                u.searchParams.set("tab", "bracket");
+                window.history.pushState({}, "", u.toString());
+              }
+            }}
+            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === "bracket"
+                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] font-bold shadow-sm"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+            }`}
+          >
+            <Activity className="inline w-4 h-4 mr-1.5" />
+            Sơ Đồ Thi Đấu & BXH
           </button>
         </div>
 
@@ -399,7 +450,7 @@ export const SportAdminManager: React.FC = () => {
             </tbody>
           </table>
         </div>
-      ) : (
+      ) : activeTab === "clubs" ? (
         <div className="bg-white dark:bg-[#0A101D]/70 border border-slate-200 dark:border-[#D8B282]/20 rounded-2xl overflow-hidden shadow-sm backdrop-blur-md">
           <table className="w-full text-left text-sm text-slate-700 dark:text-gray-300">
             <thead className="bg-slate-50 dark:bg-[#050C15]/90 text-xs font-bold text-slate-600 dark:text-[#D8B282] uppercase border-b border-slate-200 dark:border-[#D8B282]/20">
@@ -450,6 +501,64 @@ export const SportAdminManager: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+      ) : (
+        /* Tab 3: Sơ Đồ Thi Đấu & BXH Bracket */
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-[#0A101D]/70 border border-slate-200 dark:border-[#D8B282]/20 rounded-2xl p-6 shadow-sm backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+              <div>
+                <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-[#D8B282]" />
+                  Sơ Đồ Phân Nhánh Thi Đấu (Tournament Bracket & Leaderboard)
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Sơ đồ loại trực tiếp (Knockout) và phân bảng thi đấu giải thể thao đa môn ViOne Sport.
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold self-start">
+                ● Cập nhật điểm số thời gian thực
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <div className="space-y-3">
+                <div className="text-xs font-bold uppercase text-slate-400">Tứ Kết (Quarter-finals)</div>
+                <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-1">
+                  <div className="flex justify-between text-xs font-semibold"><span>CLB Doanh Nhân Hà Nội</span><span className="font-mono text-emerald-500 font-bold">11</span></div>
+                  <div className="flex justify-between text-xs text-slate-400"><span>CLB Pickleball Cầu Giấy</span><span className="font-mono">7</span></div>
+                </div>
+                <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-1">
+                  <div className="flex justify-between text-xs font-semibold"><span>CLB Golf Doanh Nhân 1983</span><span className="font-mono text-emerald-500 font-bold">11</span></div>
+                  <div className="flex justify-between text-xs text-slate-400"><span>CLB Thể Thao ViConnect</span><span className="font-mono">9</span></div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-xs font-bold uppercase text-[#D8B282]">Bán Kết (Semi-finals)</div>
+                <div className="p-3.5 rounded-xl border border-[#D8B282]/40 bg-[#D8B282]/5 space-y-1.5 shadow-sm">
+                  <div className="flex justify-between text-xs font-bold text-[#F6E1C3]"><span>CLB Doanh Nhân Hà Nội</span><span className="font-mono font-bold">--</span></div>
+                  <div className="flex justify-between text-xs font-bold text-[#F6E1C3]"><span>CLB Golf Doanh Nhân 1983</span><span className="font-mono font-bold">--</span></div>
+                  <div className="text-[10px] text-[#D8B282] font-mono pt-1">Trận 1: 15:30 Hôm nay · Sân 1</div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-xs font-bold uppercase text-[#DFB76C] flex items-center gap-1">
+                  <Trophy className="w-3.5 h-3.5" />
+                  Chung Kết (Finals)
+                </div>
+                <div className="p-4 rounded-xl border border-[#D8B282]/50 bg-gradient-to-br from-[#D8B282]/15 via-amber-500/5 to-transparent space-y-2">
+                  <div className="text-center py-4 text-xs font-bold text-[#F6E1C3]">
+                    🏆 Tranh Cúp Vô Địch ViOne Champion 2026
+                  </div>
+                  <p className="text-[11px] text-center text-slate-400">
+                    Trao cúp & 50.000.000 VNĐ tiền thưởng
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

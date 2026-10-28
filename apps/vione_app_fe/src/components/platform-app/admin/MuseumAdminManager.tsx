@@ -91,11 +91,32 @@ export interface ArtifactLendingItem {
 }
 
 export const MuseumAdminManager: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"museums" | "artifacts" | "audioguide" | "nfc_tags" | "lending">("museums");
+  const [activeTab, setActiveTab] = useState<"museums" | "artifacts" | "audioguide" | "nfc_tags" | "lending">(() => {
+    if (typeof window !== "undefined") {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "museums" || t === "artifacts" || t === "audioguide" || t === "nfc_tags" || t === "lending") {
+        return t as any;
+      }
+    }
+    return "museums";
+  });
   const [museums, setMuseums] = useState<MuseumItem[]>([]);
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "museums" || t === "artifacts" || t === "audioguide" || t === "nfc_tags" || t === "lending") {
+        setActiveTab(t as any);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
 
   // Sub-modules state
   const [audioGuides, setAudioGuides] = useState<AudioGuideItem[]>([

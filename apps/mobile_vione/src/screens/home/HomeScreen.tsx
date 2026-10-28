@@ -31,7 +31,6 @@ import { MyQrModal } from "../quick-connect/MyQrModal";
 import { ScanQrModal } from "../quick-connect/ScanQrModal";
 import { AttendanceModal } from "../../components/AttendanceModal";
 import { WorkflowModal } from "../../components/WorkflowModal";
-import { ApprovalsModal } from "../../components/ApprovalsModal";
 import { ScheduleMeetingModal } from "../../components/ScheduleMeetingModal";
 import { CardScanReviewModal } from "../../components/CardScanReviewModal";
 import { EventDetailModal } from "../../components/EventDetailModal";
@@ -105,7 +104,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [scanQrVisible, setScanQrVisible] = useState(false);
   const [attendanceVisible, setAttendanceVisible] = useState(false);
   const [workflowVisible, setWorkflowVisible] = useState(false);
-  const [approvalsVisible, setApprovalsVisible] = useState(false);
   const [staffDailyModalVisible, setStaffDailyModalVisible] = useState(false);
   const [assignTaskModalVisible, setAssignTaskModalVisible] = useState(false);
   const [scheduleMeetingVisible, setScheduleMeetingVisible] = useState(false);
@@ -720,7 +718,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             setMyQrVisible={setMyQrVisible}
             setAttendanceVisible={setAttendanceVisible}
             setWorkflowVisible={setWorkflowVisible}
-            setApprovalsVisible={setApprovalsVisible}
             setAiAssistantVisible={setAiAssistantVisible}
           />
         ) : (
@@ -913,7 +910,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         onOpenCalendar={() => setCalendarModalVisible(true)}
         onOpenNotifications={() => setNotificationsVisible(true)}
         onOpenWorkflow={() => setWorkflowVisible(true)}
-        onOpenApprovals={() => setApprovalsVisible(true)}
       />
       <OpportunityDetailModal
         visible={opportunityDetailModalVisible}

@@ -70,6 +70,19 @@ export const TicketAdminManager: React.FC = () => {
     loadTickets();
   }, [statusFilter]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncTab = () => {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "scanner") {
+        setValidateModalOpen(true);
+      }
+    };
+    syncTab();
+    window.addEventListener("popstate", syncTab);
+    return () => window.removeEventListener("popstate", syncTab);
+  }, []);
+
   const handleIssueTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!issueForm.user_name.trim()) {
