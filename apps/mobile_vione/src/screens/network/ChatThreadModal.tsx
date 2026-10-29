@@ -22,7 +22,15 @@ import {
   Users,
   ShieldCheck,
   CheckCheck,
+  Ticket,
+  Calendar,
+  Clock,
+  MapPin,
+  QrCode,
+  CreditCard,
+  ExternalLink,
 } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../../theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { Avatar } from "../../components/common/Avatar";
@@ -372,6 +380,124 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                 }
 
                 const isMe = item.isFromMe;
+
+                // Check for Event Ticket Action Card
+                if (item.body.includes("[action:ticket")) {
+                  const safeDec = (v?: string) => {
+                    if (!v) return "";
+                    try { return decodeURIComponent(v); } catch { return v; }
+                  };
+                  const mEventTitle = safeDec(item.body.match(/eventTitle:([^|\]]+)/i)?.[1]) || "Vé sự kiện";
+                  const mTicketCode = item.body.match(/ticketCode:([^|\]]+)/i)?.[1] || "";
+                  const mLucky = item.body.match(/lucky:([^|\]]+)/i)?.[1];
+                  const mTime = safeDec(item.body.match(/time:([^|\]]+)/i)?.[1]);
+                  const mLocation = safeDec(item.body.match(/location:([^|\]]+)/i)?.[1]);
+                  const mAttendee = safeDec(item.body.match(/attendee:([^|\]]+)/i)?.[1]);
+                  const mQr = safeDec(item.body.match(/qr:([^|\]]+)/i)?.[1]);
+                  const mType = safeDec(item.body.match(/type:([^|\]]+)/i)?.[1]) || "Vé VIP";
+
+                  return (
+                    <View style={[styles.msgRow, isMe ? styles.msgRowRight : styles.msgRowLeft, { maxWidth: "90%" }]}>
+                      {!isMe && !currentThread.isGroup && (
+                        <View style={{ marginRight: 8, alignSelf: "flex-end" }}>
+                          <Avatar url={currentThread.avatarUrl} name={currentThread.displayName} size={34} showGoldBorder />
+                        </View>
+                      )}
+                      <View style={{ flex: 1, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(216,178,130,0.4)", backgroundColor: isDark ? "#0D131F" : "#FFFFFF" }}>
+                        <LinearGradient colors={["#D8B282", "#C29B69", "#8C653B"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", justifyContent: "between" }}>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                            <Ticket size={14} color="#050C15" />
+                            <Text style={{ fontSize: 11, fontWeight: "900", color: "#050C15", letterSpacing: 1 }}>VÉ ĐIỆN TỬ VIP</Text>
+                          </View>
+                          <Text style={{ fontSize: 10, fontWeight: "800", color: "#050C15", backgroundColor: "rgba(255,255,255,0.4)", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                            {mType}
+                          </Text>
+                        </LinearGradient>
+                        <View style={{ padding: 12, gap: 8 }}>
+                          <Text style={{ fontSize: 13, fontWeight: "800", color: isDark ? "#FFFFFF" : "#0F172A", lineHeight: 18 }}>
+                            {mEventTitle}
+                          </Text>
+                          <View style={{ backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F8FAFC", borderRadius: 10, padding: 8, gap: 4, borderWidth: 1, borderColor: isDark ? "rgba(255,255,255,0.08)" : "#E2E8F0" }}>
+                            {mAttendee ? (
+                              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                <Text style={{ fontSize: 11, color: isDark ? "#94A3B8" : "#64748B" }}>Tham dự:</Text>
+                                <Text style={{ fontSize: 11, fontWeight: "700", color: isDark ? "#F6E1C3" : "#0F172A" }}>{mAttendee}</Text>
+                              </View>
+                            ) : null}
+                            {mTime ? (
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                                <Clock size={12} color="#D8B282" />
+                                <Text style={{ fontSize: 11, color: isDark ? "#E2E8F0" : "#334155" }}>{mTime}</Text>
+                              </View>
+                            ) : null}
+                            {mLocation ? (
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                                <MapPin size={12} color="#F43F5E" />
+                                <Text style={{ fontSize: 11, color: isDark ? "#E2E8F0" : "#334155", flex: 1 }} numberOfLines={1}>{mLocation}</Text>
+                              </View>
+                            ) : null}
+                            {mLucky ? (
+                              <View style={{ flexDirection: "row", justifyContent: "space-between", paddingTop: 4, borderTopWidth: 1, borderTopColor: isDark ? "rgba(255,255,255,0.08)" : "#E2E8F0" }}>
+                                <Text style={{ fontSize: 11, color: "#D8B282", fontWeight: "600" }}>Số may mắn (Lucky):</Text>
+                                <Text style={{ fontSize: 12, fontWeight: "900", color: "#D8B282" }}>#{mLucky}</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                          {mQr ? (
+                            <View style={{ alignItems: "center", paddingVertical: 6, backgroundColor: "#FFFFFF", borderRadius: 8 }}>
+                              <Text style={{ fontSize: 9, fontWeight: "700", color: "#64748B", marginBottom: 4, letterSpacing: 0.5 }}>MÃ CHECK-IN TẠI SỰ KIỆN</Text>
+                              <Image source={{ uri: mQr }} style={{ width: 120, height: 120, resizeMode: "contain" }} />
+                            </View>
+                          ) : null}
+                          {mTicketCode ? (
+                            <Text style={{ fontSize: 10, color: isDark ? "#94A3B8" : "#64748B", textAlign: "center" }}>Mã vé: {mTicketCode}</Text>
+                          ) : null}
+                        </View>
+                      </View>
+                    </View>
+                  );
+                }
+
+                // Check for Payment Action Card
+                if (item.body.includes("[action:payment")) {
+                  const mAmount = item.body.match(/amount:(\d+)/i)?.[1];
+                  const mInvoice = item.body.match(/invoice:([^|\]]+)/i)?.[1] || "";
+                  const mQr = item.body.match(/qr:([^|\]]+)/i)?.[1];
+                  const mDue = item.body.match(/due:([^|\]]+)/i)?.[1];
+                  const formattedAmt = mAmount ? new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(Number(mAmount)) : "";
+
+                  return (
+                    <View style={[styles.msgRow, isMe ? styles.msgRowRight : styles.msgRowLeft, { maxWidth: "85%" }]}>
+                      {!isMe && !currentThread.isGroup && (
+                        <View style={{ marginRight: 8, alignSelf: "flex-end" }}>
+                          <Avatar url={currentThread.avatarUrl} name={currentThread.displayName} size={34} showGoldBorder />
+                        </View>
+                      )}
+                      <View style={{ flex: 1, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(216,178,130,0.3)", backgroundColor: isDark ? "#0F1624" : "#FFFFFF" }}>
+                        <View style={{ backgroundColor: "rgba(216,178,130,0.15)", paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 6 }}>
+                          <CreditCard size={15} color="#D8B282" />
+                          <Text style={{ fontSize: 11, fontWeight: "800", color: "#D8B282" }}>THÔNG BÁO THANH TOÁN</Text>
+                        </View>
+                        <View style={{ padding: 12, gap: 6 }}>
+                          {formattedAmt ? (
+                            <Text style={{ fontSize: 16, fontWeight: "900", color: "#22C55E" }}>{formattedAmt}</Text>
+                          ) : null}
+                          {mInvoice ? (
+                            <Text style={{ fontSize: 11, color: isDark ? "#94A3B8" : "#64748B" }}>Số HĐ: {mInvoice}</Text>
+                          ) : null}
+                          {mDue ? (
+                            <Text style={{ fontSize: 11, color: isDark ? "#94A3B8" : "#64748B" }}>Hạn: {mDue}</Text>
+                          ) : null}
+                          {mQr ? (
+                            <View style={{ alignItems: "center", padding: 6, backgroundColor: "#FFFFFF", borderRadius: 8, marginTop: 4 }}>
+                              <Image source={{ uri: mQr }} style={{ width: 110, height: 110, resizeMode: "contain" }} />
+                            </View>
+                          ) : null}
+                        </View>
+                      </View>
+                    </View>
+                  );
+                }
 
                 // Check for Opportunity Meeting Proposal card
                 if (item.body.startsWith("[opportunity_meeting_proposal]")) {

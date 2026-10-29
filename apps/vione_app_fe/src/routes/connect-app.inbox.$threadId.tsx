@@ -5,9 +5,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import {
+  Calendar,
   Check,
   CheckCheck,
   ChevronLeft,
+  Clock,
   Copy,
   CornerUpLeft,
   Download,
@@ -15,6 +17,7 @@ import {
   FileText,
   Image as ImageIcon,
   Loader2,
+  MapPin,
   Mic,
   MoreHorizontal,
   Paperclip,
@@ -55,6 +58,8 @@ import {
   ZaloTransactionCard,
   type ZaloTransactionData,
 } from "@/components/business-connect/mobile/ZaloTransactionCard";
+import { EventTicketCard } from "@/components/association-messages/EventTicketCard";
+import type { ActionTicketData } from "@/components/association-messages/types";
 import { OpportunityMeetingProposalCard } from "@/components/business-connect/mobile/inbox/OpportunityMeetingProposalCard";
 import { PersonalProfileBottomSheet } from "@/components/common/PersonalProfileBottomSheet";
 
@@ -170,6 +175,17 @@ function formatCallDuration(sec: number): string {
 
 type ParsedContent =
   | { type: "action_payment"; data: ZaloTransactionData }
+  | { type: "action_ticket"; data: ActionTicketData }
+  | {
+      type: "action_meeting";
+      data: {
+        title: string;
+        time: string;
+        location: string;
+        link?: string;
+        desc?: string;
+      };
+    }
   | { type: "image"; url: string; name?: string; caption?: string }
   | { type: "file"; url: string; name: string; size?: number; caption?: string }
   | { type: "voice"; url: string; duration?: number; caption?: string }
@@ -187,6 +203,59 @@ type ParsedContent =
   | { type: "text"; text: string };
 
 function parseMessageContent(body: string): ParsedContent {
+  // Pattern -2.5: Event Ticket Action [action:ticket|eventId:X|eventTitle:Y|ticketCode:Z|lucky:L|time:T|location:Loc|attendee:A|qr:Q|type:Type|count:C]
+  const ticketRegex = /\[action:ticket\|eventId:([^|]+)\|eventTitle:([^|]+)\|ticketCode:([^|]+)(?:\|lucky:([^|]+))?(?:\|time:([^|]+))?(?:\|location:([^|]+))?(?:\|attendee:([^|]+))?(?:\|qr:([^|]+))?(?:\|type:([^|]+))?(?:\|count:(\d+))?\]/i;
+  const ticketMatch = body.match(ticketRegex);
+  if (ticketMatch) {
+    const safeDec = (v?: string) => {
+      if (!v) return "";
+      try {
+        return decodeURIComponent(v);
+      } catch {
+        return v;
+      }
+    };
+    return {
+      type: "action_ticket",
+      data: {
+        eventId: ticketMatch[1],
+        eventTitle: safeDec(ticketMatch[2]),
+        ticketCode: ticketMatch[3],
+        luckyNumber: ticketMatch[4] || undefined,
+        time: safeDec(ticketMatch[5]),
+        location: safeDec(ticketMatch[6]),
+        attendee: safeDec(ticketMatch[7]),
+        qrUrl: safeDec(ticketMatch[8]),
+        ticketType: safeDec(ticketMatch[9]) || "Vé sự kiện",
+        count: ticketMatch[10] ? parseInt(ticketMatch[10], 10) : 1,
+      },
+    };
+  }
+
+  // Pattern -2.3: Meeting Invitation Action [action:meeting|title:T|time:Time|location:Loc|link:L|desc:D]
+  const meetRegex = /\[action:meeting\|title:([^|]+)\|time:([^|]+)\|location:([^|]+)(?:\|link:([^|]+))?(?:\|desc:([^\]]*))?\]/i;
+  const meetMatch = body.match(meetRegex);
+  if (meetMatch) {
+    const safeDec = (v?: string) => {
+      if (!v) return "";
+      try {
+        return decodeURIComponent(v);
+      } catch {
+        return v;
+      }
+    };
+    return {
+      type: "action_meeting",
+      data: {
+        title: safeDec(meetMatch[1]),
+        time: safeDec(meetMatch[2]),
+        location: safeDec(meetMatch[3]),
+        link: meetMatch[4] || undefined,
+        desc: safeDec(meetMatch[5]),
+      },
+    };
+  }
+
   // Pattern -2: Zalo OA Style Payment Action [action:payment|amount:X|invoice:Y|qr:Z|due:D|desc:S]
   const payRegex = /\[action:payment\|amount:(\d+)\|invoice:([^|]+)\|qr:([^|]+)(?:\|due:([^|]+))?(?:\|desc:([^\]]*))?\]/i;
   const payMatch = body.match(payRegex);
@@ -360,10 +429,13 @@ function ThreadPage() {
       if (latest && !latest.fromMe && (typeof document !== "undefined" && document.hidden)) {
         let preview = latest.body;
         if (preview.startsWith("[action:payment")) preview = "💳 Thông báo giao dịch thanh toán";
+        else if (preview.startsWith("[action:ticket")) preview = "🎟️ Xác nhận vé sự kiện & mã QR Check-in VIP";
+        else if (preview.startsWith("[action:meeting")) preview = "📅 Thư mời tham dự cuộc họp";
         else if (preview.startsWith("[image:")) preview = "📷 Đã gửi một hình ảnh";
         else if (preview.startsWith("[file:")) preview = "📎 Đã gửi một tệp đính kèm";
         else if (preview.startsWith("[voice:")) preview = "🎙️ Đã gửi một tin nhắn thoại";
         else if (preview.startsWith("[call:")) preview = "📞 Cuộc gọi";
+        else if (preview.startsWith("[action:")) preview = "🔔 Thông báo hệ thống";
 
         sendExternalNotification(thread?.displayName || "Tin nhắn mới", {
           body: preview,
@@ -940,7 +1012,7 @@ function ThreadPage() {
 
                                 <div
                                   className={`relative break-words transition-all shadow-xs overflow-hidden ${
-                                    content.type === "action_payment"
+                                    content.type === "action_payment" || content.type === "action_ticket" || content.type === "action_meeting"
                                       ? "rounded-2xl bg-transparent border-0 shadow-none p-0"
                                       : m.fromMe
                                         ? "rounded-2xl rounded-tr-xs bg-[linear-gradient(135deg,#F6E1C3_0%,#D8B282_50%,#C29B69_100%)] text-[#1A1206] font-medium shadow-[0_2px_10px_rgba(184,134,11,0.25)] border border-amber-300/40"
@@ -949,6 +1021,53 @@ function ThreadPage() {
                                 >
                                   {content.type === "action_payment" ? (
                                     <ZaloTransactionCard data={content.data} isFromMe={m.fromMe} />
+                                  ) : content.type === "action_ticket" ? (
+                                    <EventTicketCard data={content.data} isFromMe={m.fromMe} />
+                                  ) : content.type === "action_meeting" ? (
+                                    <div className="p-4 space-y-3 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-amber-500/30 rounded-2xl max-w-sm shadow-xl">
+                                      <div className="flex items-center gap-2">
+                                        <span className="rounded-lg bg-amber-500/10 p-1.5 text-amber-500 border border-amber-500/20">
+                                          <Calendar className="h-4 w-4" />
+                                        </span>
+                                        <div>
+                                          <p className="text-[11px] font-bold text-amber-500 tracking-wide uppercase">
+                                            Thư mời họp ViOne Connect
+                                          </p>
+                                          <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                                            Lịch công tác đối tác
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <h4 className="text-[13.5px] font-bold text-slate-900 dark:text-white leading-snug">
+                                        {content.data.title}
+                                      </h4>
+                                      <div className="space-y-1.5 text-[11.5px] text-slate-600 dark:text-slate-300 rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5 border border-slate-200/60 dark:border-white/5">
+                                        <div className="flex items-center gap-2">
+                                          <Clock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                                          <span className="font-medium">{content.data.time}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+                                          <span className="line-clamp-1">{content.data.location}</span>
+                                        </div>
+                                      </div>
+                                      {content.data.desc && (
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                                          "{content.data.desc}"
+                                        </p>
+                                      )}
+                                      {content.data.link && (
+                                        <a
+                                          href={content.data.link}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-black font-bold text-xs shadow-md hover:opacity-95 transition"
+                                        >
+                                          <ExternalLink className="h-3.5 w-3.5" />
+                                          Tham gia phòng họp trực tuyến
+                                        </a>
+                                      )}
+                                    </div>
                                   ) : content.type === "opportunity_meeting_proposal" ? (
                                     <OpportunityMeetingProposalCard
                                       data={content.data}

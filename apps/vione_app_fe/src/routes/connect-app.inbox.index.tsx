@@ -89,6 +89,39 @@ function formatMessagePreview(raw?: string | null, isFromMe?: boolean, youPrefix
     return `${prefix}💳 [Giao dịch] Thông báo thanh toán`;
   }
 
+  // Ticket action format: [action:ticket|eventId:X|eventTitle:Y|...]
+  if (/\[action:ticket/i.test(text)) {
+    const titleMatch = text.match(/eventTitle:([^|\]]+)/i);
+    let eventTitle = "";
+    if (titleMatch) {
+      try {
+        eventTitle = decodeURIComponent(titleMatch[1]);
+      } catch {
+        eventTitle = titleMatch[1];
+      }
+    }
+    return `${prefix}🎟️ [Vé điện tử] ${eventTitle ? eventTitle + " · " : ""}Mã QR Check-in VIP`;
+  }
+
+  // Meeting action format: [action:meeting|title:X|...]
+  if (/\[action:meeting/i.test(text)) {
+    const titleMatch = text.match(/title:([^|\]]+)/i);
+    let meetingTitle = "";
+    if (titleMatch) {
+      try {
+        meetingTitle = decodeURIComponent(titleMatch[1]);
+      } catch {
+        meetingTitle = titleMatch[1];
+      }
+    }
+    return `${prefix}📅 [Cuộc họp] ${meetingTitle ? meetingTitle + " · " : ""}Thư mời tham dự`;
+  }
+
+  // General action token format fallback
+  if (/^\[action:([^|\]]+)/i.test(text)) {
+    return `${prefix}🔔 [Thông báo hệ thống]`;
+  }
+
   // Image tag format: image:URL|NAME or image:URL or raw image url
   if (
     /\[image:(https?:\/\/[^|\]]+)(?:\|([^\]]*))?\]/i.test(text) ||

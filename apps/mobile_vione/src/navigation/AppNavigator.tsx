@@ -33,6 +33,8 @@ import { ViOneVoiceAssistantModal } from "../components/ai/ViOneVoiceAssistantMo
 import { DraggableFloatingAiOrb } from "../components/ai/DraggableFloatingAiOrb";
 import { CardScanReviewModal } from "../components/CardScanReviewModal";
 import { PostMomentModal } from "../components/PostMomentModal";
+import { MemberCardBottomSheet } from "../components/MemberCardBottomSheet";
+import { IdentityPrivacyModal } from "../components/IdentityPrivacyModal";
 import {
   IncomingQrConnectionModal,
   QrRequesterProfile,
@@ -98,6 +100,8 @@ export const AppNavigator: React.FC = () => {
   const [postMomentVisible, setPostMomentVisible] = useState(false);
   const [platformAppVisible, setPlatformAppVisible] = useState(false);
   const [platformTab, setPlatformTab] = useState<any>("overview");
+  const [memberCardVisible, setMemberCardVisible] = useState(false);
+  const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
   const [incomingRequester, setIncomingRequester] = useState<QrRequesterProfile | null>(null);
 
   const handleOpenPlatformTab = (tab: any = "overview") => {
@@ -144,6 +148,32 @@ export const AppNavigator: React.FC = () => {
         onOpenStaffActivity={() => setStaffActivityVisible(true)}
         onOpenAiAssistant={() => setAiAssistantVisible(true)}
         onOpenPlatformApp={() => handleOpenPlatformTab("overview")}
+        onOpenMemberCard={() => setMemberCardVisible(true)}
+        onOpenPrivacy={() => setPrivacyModalVisible(true)}
+      />
+
+      <MemberCardBottomSheet
+        visible={memberCardVisible}
+        onClose={() => setMemberCardVisible(false)}
+        member={user ? {
+          name: user.displayName || user.name || "Doanh nhân ViOne",
+          title: user.title || "Tổng Giám Đốc",
+          company: user.company || "ViOne Business Network",
+          phone: user.phone,
+          email: user.email,
+          code: user.code,
+          avatarUrl: user.avatarUrl,
+          website: user.website,
+        } : null}
+        onOpenMyQr={() => {
+          setMemberCardVisible(false);
+          setMyQrVisible(true);
+        }}
+      />
+
+      <IdentityPrivacyModal
+        visible={privacyModalVisible}
+        onClose={() => setPrivacyModalVisible(false)}
       />
 
       <Modal visible={platformAppVisible} animationType="slide">

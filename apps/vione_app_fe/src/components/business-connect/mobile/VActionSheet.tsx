@@ -19,7 +19,6 @@ import {
   QrCode,
   ScanLine,
   ShieldCheck,
-  Wallet,
   X,
   Landmark,
   type LucideIcon,
@@ -34,6 +33,8 @@ import {
 import { registerNfcTagDirect } from "@/lib/business-connect/mobile/nfc-tags.functions";
 import { webDisplay } from "@/lib/business-connect/mobile/public-actions";
 import { IdentityQrSheet } from "@/components/business-connect/mobile/me/IdentityQrSheet";
+import { IdentityPrivacySheet } from "@/components/business-connect/mobile/me/IdentityPrivacySheet";
+import { VipBusinessCard } from "@/components/business-connect/mobile/me/VipBusinessCard";
 import { NfcActionSheet } from "@/components/business-connect/mobile/me/NfcActionSheet";
 import { NfcSheet } from "@/components/business-connect/mobile/me/NfcSheet";
 import { TapToConnectSheet } from "@/components/business-connect/mobile/TapToConnectSheet";
@@ -118,6 +119,9 @@ export function VActionSheet({
   const [qrError, setQrError] = useState<string | null>(null);
   const [shareLink, setShareLink] = useState<IdentityShareLinkInfo | null>(null);
   const [rotating, setRotating] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [previewCardOpen, setPreviewCardOpen] = useState(false);
+  const [previewStyle, setPreviewStyle] = useState<"gold" | "silver">("gold");
 
   const openQr = async () => {
     onOpenChange(false);
@@ -212,29 +216,29 @@ export function VActionSheet({
             className="mt-6 h-px w-full bg-[var(--bc-mobile-border)] opacity-70"
           />
 
-          {/* Quick tiles */}
+          {/* Quick tiles (2 cols - Đã bỏ chức năng ví wallet theo yêu cầu) */}
           <div
             role="group"
             aria-label={t("bc.mobile.sheet.tilesLabel")}
-            className="mt-5 grid grid-cols-3 gap-2"
+            className="mt-5 grid grid-cols-2 gap-3"
           >
             <QuickTile
               icon={Contact}
               titleKey="bc.mobile.sheet.tile.digitalCard"
               descKey="bc.mobile.sheet.tile.digitalCard.desc"
-              onClick={() => go("/connect-app/me/card")}
-            />
-            <QuickTile
-              icon={Wallet}
-              titleKey="bc.mobile.sheet.tile.wallet"
-              descKey="bc.mobile.sheet.tile.wallet.desc"
-              onClick={() => go("/connect-app/me")}
+              onClick={() => {
+                onOpenChange(false);
+                setPreviewCardOpen(true);
+              }}
             />
             <QuickTile
               icon={ShieldCheck}
               titleKey="bc.mobile.sheet.tile.privacy"
               descKey="bc.mobile.sheet.tile.privacy.desc"
-              onClick={() => go("/connect-app/me")}
+              onClick={() => {
+                onOpenChange(false);
+                setPrivacyOpen(true);
+              }}
             />
           </div>
 
@@ -348,6 +352,80 @@ export function VActionSheet({
             ) : (
               <Loader2 className="size-6 animate-spin text-[var(--bc-mobile-muted)]" />
             )}
+          </div>
+        </MeSheet>
+      ) : null}
+
+      {privacyOpen ? (
+        <IdentityPrivacySheet
+          visibility={mine.data?.visibility || ({} as any)}
+          onSaved={() => mine.refetch()}
+          onClose={() => setPrivacyOpen(false)}
+        />
+      ) : null}
+
+      {previewCardOpen && identity ? (
+        <MeSheet
+          title="Danh Thiếp Số Doanh Nhân"
+          subtitle="Xem trước thẻ VIP & thông tin kết nối đối tác"
+          onClose={() => setPreviewCardOpen(false)}
+        >
+          <div className="pb-4 space-y-4">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-2">
+              <div className="flex items-center gap-1.5 pl-1">
+                <button
+                  type="button"
+                  onClick={() => setPreviewStyle("gold")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    previewStyle === "gold"
+                      ? "bg-gradient-to-r from-[#DFB76C] to-[#B38E5D] text-black shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Mạ Vàng VIP
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewStyle("silver")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    previewStyle === "silver"
+                      ? "bg-gradient-to-r from-slate-200 to-slate-400 text-black shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Mạ Bạc VIP
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPreviewCardOpen(false);
+                  openQr();
+                }}
+                className="flex items-center gap-1.5 rounded-xl border border-[#DFB76C]/40 bg-[#DFB76C]/10 px-3 py-1.5 text-xs font-bold text-[#DFB76C] hover:bg-[#DFB76C]/20 transition cursor-pointer"
+              >
+                <QrCode className="h-3.5 w-3.5" />
+                <span>Mã QR</span>
+              </button>
+            </div>
+
+            <VipBusinessCard
+              profile={{
+                displayName: identity.displayName || "Doanh nhân ViOne",
+                jobTitle: identity.jobTitle,
+                companyName: identity.companyName,
+                primaryPhone: identity.primaryPhone,
+                primaryEmail: identity.primaryEmail,
+                website: identity.website,
+                avatarUrl: identity.avatarUrl,
+                bio: identity.bio,
+                address: identity.address,
+                city: identity.city,
+              }}
+              style={previewStyle}
+              showActions={true}
+            />
           </div>
         </MeSheet>
       ) : null}

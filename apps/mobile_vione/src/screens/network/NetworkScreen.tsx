@@ -82,6 +82,34 @@ const B2B_CUSTOMERS: any[] = [];
 // Danh sách hội thoại tin nhắn (mặc định trống, tải từ API)
 const INITIAL_THREADS: DmThreadSummary[] = [];
 
+function formatDmMessagePreview(raw?: string | null): string {
+  if (!raw) return "Chưa có tin nhắn";
+  const text = raw.trim();
+  if (/\[action:payment/i.test(text)) return "💳 [Giao dịch] Thông báo thanh toán";
+  if (/\[action:ticket/i.test(text)) {
+    const titleMatch = text.match(/eventTitle:([^|\]]+)/i);
+    let eventTitle = "";
+    if (titleMatch) {
+      try { eventTitle = decodeURIComponent(titleMatch[1]); } catch { eventTitle = titleMatch[1]; }
+    }
+    return `🎟️ [Vé điện tử] ${eventTitle ? eventTitle + " · " : ""}Mã QR Check-in VIP`;
+  }
+  if (/\[action:meeting/i.test(text)) {
+    const titleMatch = text.match(/title:([^|\]]+)/i);
+    let meetingTitle = "";
+    if (titleMatch) {
+      try { meetingTitle = decodeURIComponent(titleMatch[1]); } catch { meetingTitle = titleMatch[1]; }
+    }
+    return `📅 [Cuộc họp] ${meetingTitle ? meetingTitle + " · " : ""}Thư mời tham dự`;
+  }
+  if (/^\[action:([^|\]]+)/i.test(text)) return "🔔 [Thông báo hệ thống]";
+  if (/\[image:/i.test(text) || /\.(jpeg|jpg|png|webp|gif)(\?.*)?$/i.test(text)) return "📷 [Hình ảnh]";
+  if (/\[file:/i.test(text)) return "📎 [Tệp đính kèm]";
+  if (/\[voice:/i.test(text)) return "🎙️ [Tin nhắn thoại]";
+  if (/\[call:/i.test(text)) return "📞 [Cuộc gọi]";
+  return text;
+}
+
 
 type NetworkTab = "network" | "customers" | "suggestions" | "messages" | "requests";
 type MessageCategory = "all" | "unread" | "groups" | "requests";
@@ -2102,7 +2130,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                               Bạn:{" "}
                             </Text>
                           )}
-                          {item.lastMessagePreview || "Chưa có tin nhắn"}
+                          {formatDmMessagePreview(item.lastMessagePreview)}
                         </Text>
 
                         {hasUnread && (

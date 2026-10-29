@@ -1,5 +1,16 @@
 # Vibe App Monorepo - Cursor Rules
 
+## -0.000. Quy Chuẩn Nút V (V-Button) & Phân Giải Token Tin Nhắn (STRICT V-BUTTON & MESSAGE TOKEN PROTOCOL)
+- **QUY CHUẨN BẢNG ĐIỀU KHIỂN NÚT V (V-BUTTON POPUP / VActionSheet)**:
+  * **Loại bỏ vĩnh viễn nút Ví Wallet**: Không đặt phím/tile thêm vào ví Apple/Google Wallet hoặc Ví thẻ tại nút V trên cả 2 bản PWA (`apps/vione_app_fe`) và Native (`apps/mobile_vione`).
+  * **Hàng phím chức năng (Quick Tiles) chuẩn 2 cột**:
+    1. **Danh thiếp số (Digital Card)**: Mở trực tiếp thẻ danh thiếp số VIP (`VipBusinessCard` trên PWA / `MemberCardBottomSheet` trên Native) với đầy đủ định danh mạ vàng 3D, vCard và mã QR kết nối.
+    2. **Quyền chia sẻ (Privacy Settings)**: Mở trực tiếp bộ điều khiển quyền hiển thị (`IdentityPrivacySheet` trên PWA / `IdentityPrivacyModal` trên Native) cho phép hội viên kiểm soát hiển thị số điện thoại, email, địa chỉ, chức vụ.
+- **PHÂN GIẢI TOKEN HÀNH ĐỘNG TIN NHẮN (STRICT ACTION TOKEN PARSER)**:
+  * Nghiêm cấm hiển thị chuỗi kỹ thuật thô (`[action:ticket|...`, `[action:meeting|...`, `[action:payment|...`) trong danh sách preview tin nhắn và phòng chat.
+  * Bắt buộc định dạng preview sang tiếng Việt thân thiện: `🎟️ [Vé điện tử]`, `📅 [Cuộc họp]`, `💳 [Giao dịch]`.
+  * Trong luồng chat: Bắt buộc render thẻ vé điện tử VIP (`EventTicketCard`) kèm mã QR check-in, thư mời họp trực tuyến, hoặc thẻ giao dịch thanh toán tự động.
+
 ## -0.00. Quy Chuẩn Màu Vàng Đồng Sáng CRM & Đồng Bộ Theme Sáng App/CRM (STRICT BRIGHT BRONZE GOLD & LIGHT THEME PARITY)
 - **CHUẨN HÓA MÀU VÀNG ĐỒNG SÁNG TRÊN TOÀN BỘ CRM (BRIGHT BRONZE GOLD)**:
   * Toàn bộ mã màu vàng nghệ, vàng chói cũ (`#DFB76C`, `#C99E55`) và các gam màu cam/amber (`bg-amber-*`, `text-amber-*`, `border-amber-*`) trên CRM BẮT BUỘC thay thế bằng hệ màu **Vàng đồng sáng hoàng gia (Bright Bronze Gold)**:

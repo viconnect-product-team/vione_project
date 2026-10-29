@@ -17,6 +17,7 @@ import {
   Sparkles,
   Clock,
   Package,
+  MessageSquare,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -154,6 +155,13 @@ export function CommunityHome({ initialTab }: { initialTab?: CommunityTab } = {}
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            to="/connect-app/inbox"
+            aria-label="Tin nhắn"
+            className="relative grid place-items-center rounded-full p-1 text-[var(--bc-mobile-muted)] transition-colors hover:bg-black/5 dark:hover:bg-[#ffffff14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8B282]"
+          >
+            <MessageSquare className="h-5 w-5 text-[var(--bc-mobile-muted)] hover:text-[var(--bc-mobile-text)]" strokeWidth={1.8} />
+          </Link>
           <CommunityNotificationsButton />
         </div>
       </header>

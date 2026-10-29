@@ -16,6 +16,7 @@ import { BusinessCardSDK } from "@/lib/business-card";
 import { useMyIdentity } from "@/hooks/use-my-identity";
 import type { BusinessCardSummary } from "@/lib/business-card/business-card.types";
 import { useT } from "@/lib/i18n";
+import { VipBusinessCard } from "@/components/business-connect/mobile/me/VipBusinessCard";
 
 export const Route = createFileRoute("/connect-app/me/card")({
   ssr: false,
@@ -59,7 +60,10 @@ function PresentQrPage() {
         const primary = list.find((c) => c.cardKind === "primary") ?? list[0];
         setSelectedId(primary?.id ?? null);
       })
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Error"));
+      .catch((e) => {
+        console.warn("Could not load cards, fallback to identity:", e);
+        if (active) setCards([]);
+      });
     return () => {
       active = false;
     };
@@ -80,49 +84,67 @@ function PresentQrPage() {
 
   return (
     <MobilePage>
-      <BusinessConnectTopBar title={t("bc.mobile.me.card.title")} />
-      <section className="flex flex-1 flex-col items-center pt-8">
-        {cards === null && !error ? (
+      <BusinessConnectTopBar title="Danh thiếp số & Đưa QR" back />
+      <section className="flex flex-1 flex-col items-center pt-4 pb-12 w-full max-w-md mx-auto px-4">
+        {cards === null && !identity ? (
           <Loader2 className="mt-16 size-6 animate-spin text-[var(--bc-mobile-muted)]" />
-        ) : error ? (
-          <p className="mt-16 text-[15px] text-[var(--bc-mobile-muted)]">{error}</p>
         ) : list.length === 0 ? (
           identity ? (
-            <div className="mt-2 flex flex-col items-center">
-              <p className="text-[12px] font-medium uppercase tracking-wide text-[var(--bc-mobile-muted)]">
-                {t("bc.mobile.presentQr.personaLabel")}
-              </p>
-              <p className="mt-1 text-[19px] font-semibold text-[var(--bc-mobile-text)]">
-                {identity.displayName || "Hội viên ViOne"}
-              </p>
-              {(identity.jobTitle || identity.headline || identity.companyName) && (
-                <p className="text-[14px] text-[var(--bc-mobile-muted)]">
-                  {[identity.jobTitle || identity.headline, identity.companyName]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
-              )}
-
-              <div className="mt-6 rounded-[28px] bg-white p-5 shadow-[var(--bc-mobile-shadow-v)]">
-                <QrCanvas
-                  value={fallbackQrValue}
-                  size={240}
-                  logoUrl={identity.avatarUrl}
-                  logoScale={0.22}
+            <div className="mt-2 flex flex-col items-center w-full space-y-5">
+              {/* Luxury VIP Business Card Preview */}
+              <div className="w-full">
+                <VipBusinessCard
+                  profile={{
+                    displayName: identity.displayName || "Doanh nhân ViOne",
+                    jobTitle: identity.jobTitle,
+                    companyName: identity.companyName,
+                    primaryPhone: identity.primaryPhone,
+                    primaryEmail: identity.primaryEmail,
+                    website: identity.website,
+                    avatarUrl: identity.avatarUrl,
+                    bio: identity.bio,
+                    address: identity.address,
+                    city: identity.city,
+                  }}
+                  style="gold"
+                  showActions={false}
                 />
               </div>
 
-              <p className="mt-5 max-w-[32ch] text-center text-[14px] leading-relaxed text-[var(--bc-mobile-muted)]">
-                {t("bc.mobile.presentQr.hint")}
-              </p>
+              {/* QR Code Presentation Box */}
+              <div className="flex flex-col items-center p-5 rounded-[28px] bg-white text-slate-900 shadow-xl border border-amber-300/40 w-full max-w-[280px]">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">
+                  MÃ QR KẾT NỐI NHANH
+                </p>
+                <QrCanvas
+                  value={fallbackQrValue}
+                  size={210}
+                  logoUrl={identity.avatarUrl}
+                  logoScale={0.22}
+                />
+                <p className="mt-3 text-[11px] text-center text-slate-500 font-medium">
+                  Đối tác quét bằng Camera hoặc Zalo để lưu danh bạ
+                </p>
+              </div>
 
-              <Link
-                to="/connect-app/me/edit"
-                className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--bc-mobile-border)] px-5 text-[14px] font-medium text-[var(--bc-mobile-text)] hover:bg-[var(--bc-mobile-surface-2)] transition-colors"
-              >
-                <Edit3 className="size-4" />
-                <span>Chỉnh sửa hồ sơ & danh thiếp</span>
-              </Link>
+              <div className="flex items-center gap-3 pt-2">
+                <Link
+                  to="/connect-app/me/edit"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--bc-mobile-border-gold)] px-5 text-[14px] font-semibold text-[var(--bc-mobile-text)] hover:bg-[var(--bc-mobile-surface-2)] transition-colors"
+                >
+                  <Edit3 className="size-4 text-[#D8B282]" />
+                  <span>Chỉnh sửa hồ sơ</span>
+                </Link>
+                <a
+                  href={fallbackQrValue}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--bc-mobile-accent-grad)] text-black px-5 text-[14px] font-bold shadow-md hover:opacity-95 transition"
+                >
+                  <ExternalLink className="size-4" />
+                  <span>Xem trang công khai</span>
+                </a>
+              </div>
             </div>
           ) : (
             <div className="mt-16 flex flex-col items-center text-center">

@@ -1039,13 +1039,7 @@ export function ExecutiveDashboard({ authReady }: { authReady: boolean }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-foreground">Hệ Thống ViOne CRM Realtime</span>
-              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                Đồng bộ tự động 4s
-              </span>
             </div>
-            <p className="text-[11.5px] text-muted-foreground">
-              Kết nối trực tiếp PostgreSQL vione_app · Đã nạp {s.totalMembers} hội viên &amp; {s.paidInvoices + s.unpaidInvoices} hóa đơn thực tế
-            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">

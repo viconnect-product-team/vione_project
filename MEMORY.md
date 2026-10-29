@@ -1,5 +1,50 @@
 # System Memory & Architecture
 
+## 0.0000000000.21. TỐI GIẢN HEADER VIONE CRM REALTIME & SỬA LỖI TIN NHẮN CỘNG ĐỒNG, DANH THIẾP SỐ, QUYỀN CHIA SẺ, LOẠI BỎ VÍ WALLET TRÊN CẢ HAI BẢN APP VIONE (29/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+1. **Hệ Thống ViOne CRM Realtime**:
+   - Loại bỏ phần nhãn và mô tả kỹ thuật: *"Đồng bộ tự động 4s \n Kết nối trực tiếp PostgreSQL vione_app · Đã nạp 1 hội viên & 0 hóa đơn thực tế"* tại đầu trang Tổng quan Điều hành ViOne CRM (`ExecutiveDashboard.tsx`).
+   - Giữ lại tiêu đề thanh lịch *"Hệ Thống ViOne CRM Realtime"* cùng chấm xanh realtime pulsing và nút "Làm mới dữ liệu".
+2. **App ViOne - Khắc Phục Lỗi Tin Nhắn ở Giao Diện Cộng Đồng**:
+   - Khắc phục lỗi hiển thị chuỗi mã hóa thô `[action:ticket|eventId:EV-MU9V2LK3|eventTitle:Di%E1%BB%85n...` trên màn hình danh sách hội thoại tin nhắn (`/connect-app/inbox`).
+   - Hiển thị preview chuẩn hóa: `🎟️ [Vé điện tử] {eventTitle} · Mã QR Check-in VIP`, `📅 [Cuộc họp] {meetingTitle} · Thư mời tham dự`, `💳 [Giao dịch] Thông báo thanh toán`.
+   - Trong phòng chat chi tiết (`$threadId.tsx`), phân giải token và render trực tiếp thẻ vé điện tử VIP (`EventTicketCard`) với đầy đủ mã QR check-in, số may mắn (lucky draw), thời gian, địa điểm, tên người tham dự; thư mời họp trực tuyến và thẻ giao dịch thanh toán.
+   - Bổ sung nút tin nhắn (`MessageSquare`) trên thanh tiêu đề `CommunityHome.tsx` để hội viên chuyển đổi mượt mà giữa Cộng đồng và Tin nhắn.
+3. **App ViOne - Xem Digital Card, Quản Lý Quyền Chia Sẻ & Xóa Ví Wallet Tại Nút ViOne (V-Button)**:
+   - **Xóa bỏ hoàn toàn chức năng Ví Wallet**: Loại bỏ nút/ô QuickTile "Ví thẻ / Thêm vào ví Wallet" trên bảng điều khiển nút V (`VActionSheet`) ở cả 2 bản PWA và Native. Hàng phím chức năng thu gọn về 2 ô sang trọng: `Danh thiếp số` và `Quyền chia sẻ`.
+   - **Khắc phục lỗi "Xem digital card đang fail"**:
+     * *Bản PWA*: Bấm "Danh thiếp số" mở trực tiếp sheet xem trước Thẻ VIP Kỹ Thuật Số (`VipBusinessCard`) với tùy chọn Mạ Vàng VIP / Mạ Bạc VIP, tải vCard và mã QR; đồng thời tại tuyến `/connect-app/me/card`, khắc phục triệt để lỗi chặn trang của `listGlobal()`, bổ sung nút quay lại (`back`) và render danh thiếp số hoàn chỉnh.
+     * *Bản Native*: Bấm "Danh thiếp số" kết nối trực tiếp `MemberCardBottomSheet` hiển thị đầy đủ thẻ danh thiếp số mạ vàng 3D của hội viên.
+   - **Khắc phục lỗi "Quản lý quyền chia sẻ đang fail"**:
+     * *Bản PWA*: Bấm "Quyền chia sẻ" mở trực tiếp `IdentityPrivacySheet` cho phép bật/tắt quyền hiển thị từng trường thông tin (số điện thoại, email, địa chỉ, website, chức vụ) và lưu đồng bộ lên server.
+     * *Bản Native*: Bấm "Quyền chia sẻ" kết nối trực tiếp `IdentityPrivacyModal` trong `AppNavigator.tsx` giúp điều chỉnh và bảo mật danh tính doanh nhân an toàn.
+
+### 2. Chi Tiết Tệp Tin Đã Xử Lý (Dual-App Parity Khớp 100%)
+1. **Web CRM ViOne**:
+   - `apps/vione_app_fe/src/components/dashboard/ExecutiveDashboard.tsx`: Xóa badge "Đồng bộ tự động 4s" và dòng text kết nối CSDL PostgreSQL.
+2. **PWA ViOne App (`apps/vione_app_fe`)**:
+   - `src/routes/connect-app.inbox.index.tsx`: Bổ sung parser cho `[action:ticket|...`, `[action:meeting|...`, và fallback an toàn cho `[action:`.
+   - `src/routes/connect-app.inbox.$threadId.tsx`: Nhúng `EventTicketCard`, bổ sung kiểu `action_ticket` & `action_meeting`, render giao diện vé điện tử QR và thư mời họp, chuẩn hóa preview thông báo đẩy.
+   - `src/routes/connect-app.me.card.tsx`: Bổ sung nút quay lại `back`, chặn crash khi `listGlobal()` lỗi, tích hợp `VipBusinessCard` hiển thị danh thiếp VIP kèm mã QR.
+   - `src/components/business-connect/mobile/VActionSheet.tsx`: Xóa hoàn toàn `Wallet`, chuyển quick tiles thành 2 cột (`Danh thiếp số` mở `VipBusinessCard`, `Quyền chia sẻ` mở `IdentityPrivacySheet`).
+   - `src/components/business-connect/mobile/community/CommunityHome.tsx`: Thêm nút tin nhắn `MessageSquare` trên header điều hướng tiện lợi.
+3. **Native ViOne App (`apps/mobile_vione`)**:
+   - `src/screens/network/NetworkScreen.tsx`: Thêm hàm `formatDmMessagePreview` phân giải token vé, họp, giao dịch trên danh sách hội thoại.
+   - `src/screens/network/ChatThreadModal.tsx`: Render trực tiếp thẻ vé VIP (`Ticket`, QR check-in, số may mắn) và thẻ thanh toán giao dịch trong luồng chat.
+   - `src/components/VActionSheet.tsx`: Xóa nút "Ví thẻ", bổ sung callback `onOpenMemberCard` và `onOpenPrivacy`.
+   - `src/navigation/AppNavigator.tsx`: Tích hợp và điều phối state mở `MemberCardBottomSheet` và `IdentityPrivacyModal` từ nút V.
+
+### 3. Kiểm Tra Chất Lượng Mã Nguồn & Xác Nhận Quy Tắc
+- **TypeScript AST Validation**: 100% 10 file mã nguồn đều vượt qua kiểm tra cú pháp với **0 errors**.
+- **Dual-App Parity**: Đảm bảo đồng bộ 100% giữa Native ViOne (`apps/mobile_vione`) và PWA ViOne (`apps/vione_app_fe`).
+- **Tuân thủ quy chuẩn nghiêm ngặt**:
+  - Không mock/fake dữ liệu ảo (Strict Rule 7).
+  - Nút bấm và giao diện chuẩn mạ vàng đồng sáng sang trọng (Strict Rule 8).
+  - Tuyệt đối không tự ý chạy `git commit` hay `git push` (Strict Rule 1).
+
+---
+
 ## 0.0000000000.20. HOÀN THIỆN ĐỒNG BỘ 3 HỒ SƠ PHÁP LÝ CHUẨN XÁC KHÔNG TRÙNG LẶP & ĐỒNG BỘ MÀU VÀNG ĐỒNG SÁNG CHO CRM CÙNG APP VIONE KHẮC PHỤC TRIỆT ĐỂ LỖI THEME SÁNG (29/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Cốt Lõi Của Người Dùng

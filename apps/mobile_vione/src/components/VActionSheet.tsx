@@ -24,7 +24,6 @@ import {
   ChevronRight,
   Globe,
   Contact,
-  Wallet,
   Landmark,
   Flame,
   Sparkles,
@@ -50,6 +49,8 @@ interface VActionSheetProps {
   onOpenStaffActivity?: () => void;
   onOpenAiAssistant?: () => void;
   onOpenPlatformApp?: () => void;
+  onOpenMemberCard?: () => void;
+  onOpenPrivacy?: () => void;
   hasCompanyWithStaff?: boolean;
 }
 
@@ -66,6 +67,8 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
   onOpenStaffActivity,
   onOpenAiAssistant,
   onOpenPlatformApp,
+  onOpenMemberCard,
+  onOpenPrivacy,
   hasCompanyWithStaff = false,
 }) => {
   const { user } = useAuth();
@@ -367,11 +370,16 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
                     },
                   ]}
                 >
+                  {/* Tile 1: Danh thiếp số (Mở thẻ VIP kỹ thuật số) */}
                   <TouchableOpacity
                     style={styles.quickTile}
                     onPress={() => {
                       onClose();
-                      onOpenMyQr();
+                      if (onOpenMemberCard) {
+                        onOpenMemberCard();
+                      } else {
+                        onOpenMyQr();
+                      }
                     }}
                   >
                     <View
@@ -386,35 +394,17 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
                       <Contact size={18} color="#D8B282" />
                     </View>
                     <Text style={[styles.quickTileTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>Danh thiếp số</Text>
-                    <Text style={[styles.quickTileDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>Xem thẻ của tôi</Text>
+                    <Text style={[styles.quickTileDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>Xem thẻ VIP của tôi</Text>
                   </TouchableOpacity>
 
+                  {/* Tile 2: Quyền chia sẻ & Bảo mật */}
                   <TouchableOpacity
                     style={styles.quickTile}
                     onPress={() => {
                       onClose();
-                      onOpenMyQr();
-                    }}
-                  >
-                    <View
-                      style={[
-                        styles.quickTileCircle,
-                        {
-                          backgroundColor: isDark ? "#181D2A" : "#F1F5F9",
-                          borderColor: isDark ? "rgba(216, 178, 130, 0.4)" : "#E2E8F0",
-                        },
-                      ]}
-                    >
-                      <Wallet size={18} color="#D8B282" />
-                    </View>
-                    <Text style={[styles.quickTileTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>Ví thẻ</Text>
-                    <Text style={[styles.quickTileDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>Danh bạ thẻ lưu</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.quickTile}
-                    onPress={() => {
-                      onClose();
+                      if (onOpenPrivacy) {
+                        onOpenPrivacy();
+                      }
                     }}
                   >
                     <View
@@ -428,8 +418,8 @@ export const VActionSheet: React.FC<VActionSheetProps> = ({
                     >
                       <ShieldCheck size={18} color="#D8B282" />
                     </View>
-                    <Text style={[styles.quickTileTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>Bảo mật</Text>
-                    <Text style={[styles.quickTileDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>Quyền riêng tư</Text>
+                    <Text style={[styles.quickTileTitle, { color: isDark ? "#FFFFFF" : "#0F172A" }]}>Quyền chia sẻ</Text>
+                    <Text style={[styles.quickTileDesc, { color: isDark ? "#94A3B8" : "#64748B" }]}>Bảo mật danh tính</Text>
                   </TouchableOpacity>
                 </View>
 
