@@ -852,6 +852,8 @@ Camera 12MP+ tự động lấy nét, GPS vệ tinh, NFC Tag Reader
 
 
 
+
+
 # PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)
 
 Cổng Web Quản Trị ViOne Platform cung cấp bộ công cụ quản trị điều hành doanh nghiệp toàn diện dành cho Ban Lãnh đạo, Hội đồng Quản trị và các cấp quản lý điều hành, bao gồm 23 phân hệ nghiệp vụ chuẩn mực:

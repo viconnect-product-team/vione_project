@@ -41,6 +41,13 @@ import {
   Store,
   ScanLine,
   AlertTriangle,
+  BookOpen,
+  Clock,
+  Eye,
+  Layers,
+  Search,
+  Users,
+  Activity,
 } from "lucide-react-native";
 import QRCode from "react-native-qrcode-svg";
 import { apiRequest } from "../../api/client";
@@ -49,6 +56,137 @@ import { Colors } from "../../theme/colors";
 const { width } = Dimensions.get("window");
 
 export type PlatformTab = "overview" | "heritage" | "museum" | "sport" | "run" | "tickets" | "review" | "archive";
+
+export interface MobileArticle {
+  id: string;
+  title: string;
+  category: string;
+  author: string;
+  readTime: string;
+  views: string;
+  publishedAt: string;
+  thumbnail: string;
+  summary: string;
+  content: string[];
+}
+
+const SHARED_ARTICLES: Record<string, MobileArticle[]> = {
+  museum: [
+    {
+      id: "art-ngoc-lu",
+      title: "Giải Mã Hoa Văn Hình Chim Lạc & Mặt Trời 14 Tia Trên Trống Đồng Ngọc Lũ",
+      category: "Bảo Vật Quốc Gia",
+      author: "GS. Trần Lâm Biền • Viện Di Sản",
+      readTime: "5 phút đọc",
+      views: "3.420",
+      publishedAt: "28/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
+      summary: "Trống đồng Ngọc Lũ là kiệt tác nghệ thuật đúc đồng Đông Sơn đỉnh cao, chứa đựng tư duy vũ trụ luận và tín ngưỡng phồn thực của người Việt cổ cách đây hơn 2.500 năm.",
+      content: [
+        "Trống đồng Ngọc Lũ (niên đại thế kỷ III - II TCN) được xếp hạng Bảo vật quốc gia đợt 1 năm 2012. Hoa văn chính giữa mặt trống là hình ngôi sao 14 tia tượng trưng cho mặt trời - nguồn cội của sự sống.",
+        "Xen kẽ giữa các tia là họa tiết lông công và lá dừa cách điệu. Vành 6 và vành 8 thể hiện hình ảnh chim Lạc bay ngược chiều kim đồng hồ, biểu tượng cho chu kỳ vận hành của mùa vụ nông nghiệp lúa nước.",
+        "Công nghệ 3D Photogrammetry trên ViOne Museum tái hiện từng rãnh đúc siêu nhỏ, giúp người xem xoay 360 độ và phóng to chi tiết với độ phân giải siêu nét.",
+        "Khi chạm điện thoại có tính năng NFC vào thẻ chip gắn tại bệ trưng bày bảo tàng, ứng dụng ViOne sẽ tự động kích hoạt bài thuyết minh âm thanh độ nét cao.",
+      ],
+    },
+    {
+      id: "art-ngai-vang",
+      title: "Nghệ Thuật Chạm Khắc Rồng Vàng Thời Nguyễn Trên Ngai Vàng Điện Thái Hòa",
+      category: "Cung Đình Huế",
+      author: "TS. Phan Thanh Hải • Trung Tâm Bảo Tồn Di Tích",
+      readTime: "4 phút đọc",
+      views: "2.890",
+      publishedAt: "26/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=600&q=80",
+      summary: "Biểu tượng quyền lực tối cao của 13 vị vua triều Nguyễn với kỹ thuật thếp vàng độc bản và nghệ thuật chạm khắc gỗ sơn son thếp vàng tinh xảo.",
+      content: [
+        "Ngai vàng triều Nguyễn đặt tại điện Thái Hòa - Hoàng thành Huế là bảo vật quốc gia duy nhất còn nguyên vẹn trong hệ thống cung đình phong kiến Việt Nam.",
+        "Ngai được làm từ gỗ quý, sơn son thếp vàng, chạm khắc tinh xảo hình tượng cửu long chầu nhật nguyệt.",
+      ],
+    },
+  ],
+  sport: [
+    {
+      id: "art-pickleball-tactics",
+      title: "Kỹ Thuật Đánh Dinking & Cú Smash Erne Chinh Phục Sân Pickleball Doanh Nhân",
+      category: "Pickleball Tips",
+      author: "HLV. Lê Hoàng Nam • Kiện tướng Pickleball",
+      readTime: "4 phút đọc",
+      views: "3.280",
+      publishedAt: "28/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80",
+      summary: "Bí quyết kiểm soát khu vực Non-Volley Zone (The Kitchen) và kỹ năng di chuyển đồng đội trong các trận thi đấu đôi nam nữ phong trào.",
+      content: [
+        "Pickleball không chỉ đòi hỏi thể lực mà cốt lõi là sự kiên nhẫn và khả năng đặt bóng tinh tế. Trong khu vực Non-Volley Zone (Kitchen), những cú Dinking chạm bóng mềm mại sát mép lưới sẽ buộc đối thủ rơi vào thế bị động.",
+        "Khi đối phương mất kiên nhẫn và nâng bóng bổng sang góc sân, cú nhảy Erne vòng qua vạch Kitchen sẽ tạo điểm số quyết định mà không vi phạm luật dẫm vạch.",
+      ],
+    },
+    {
+      id: "art-bracket-system",
+      title: "Thuật Toán Phân Nhánh Knockout & Tự Động Bốc Thăm Hạt Giống Chuẩn Quốc Tế",
+      category: "Công Nghệ Giải Đấu",
+      author: "Ban Công Nghệ ViConnect Sport",
+      readTime: "5 phút đọc",
+      views: "1.920",
+      publishedAt: "26/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80",
+      summary: "Cách thức cây nhánh đấu 2 bảng (Single & Double Elimination) vận hành realtime trên app ViOne mà không cần trọng tài ghi biên bản giấy.",
+      content: [
+        "ViOne Sport tích hợp thuật toán sinh cây thi đấu Bracket tự động, đảm bảo 2 hạt giống số 1 và số 2 chỉ gặp nhau tại trận Chung kết.",
+        "Trọng tài bàn chỉ cần cập nhật tỉ số từng set trên điện thoại, hệ thống lập tức thông báo đẩy đến từng VĐV và khán giả theo dõi.",
+      ],
+    },
+  ],
+  run: [
+    {
+      id: "art-marathon-pacing",
+      title: "Chiến Thuật Phân Phối Thể Lực Sub-3:30 Trong Cung Đường Di Sản Huế Marathon",
+      category: "Cẩm Nang Marathon",
+      author: "HLV. Nguyễn Quốc Anh • Chuyên gia Điền kinh",
+      readTime: "6 phút đọc",
+      views: "4.150",
+      publishedAt: "28/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=600&q=80",
+      summary: "Kế hoạch dinh dưỡng, kiểm soát nhịp tim Zone 3 và kỹ thuật vượt dốc cầu Trường Tiền để đạt kỷ lục cá nhân PR.",
+      content: [
+        "Cung đường di sản ViOne Heritage Marathon đi qua các địa danh lịch sử như Đại Nội, chùa Thiên Mụ và đồi Vọng Cảnh có độ dốc biến thiên nhẹ nhưng gió sông Hương có thể ảnh hưởng đến nhịp thở.",
+        "Chiến thuật tối ưu là chạy Negative Split (nửa sau nhanh hơn nửa đầu 1-2 phút). Từ km 0 đến km 21, runner nên giữ nhịp tim ở vùng Zone 3, nạp gel năng lượng mỗi 45 phút.",
+      ],
+    },
+    {
+      id: "art-rfid-timing",
+      title: "Hệ Thống Thảm Chip RFID Đa Tần Số & Thuật Toán Ghi Nhận BIB Tốc Độ Cao",
+      category: "Công Nghệ Thể Thao",
+      author: "Ban Công Nghệ ViConnect Platform",
+      readTime: "5 phút đọc",
+      views: "1.740",
+      publishedAt: "25/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=600&q=80",
+      summary: "Nguyên lý hoạt động của chip UHF RFID gắn mặt sau số BIB và cơ chế chống nhiễu khi hàng ngàn VĐV cùng qua vạch xuất phát.",
+      content: [
+        "Để đảm bảo tính công bằng và chính xác đến 1/1000 giây, ViOne Run tích hợp chip UHF tần số 860-960 MHz gắn trực tiếp trên số BIB của từng vận động viên.",
+        "Khi qua thảm thu phát sóng tại vạch Start, Split 10K, 21K và Finish, tín hiệu mã hóa được gửi realtime về server trung tâm, tự động phân tích checkpoint và cập nhật bảng xếp hạng.",
+      ],
+    },
+  ],
+  heritage: [
+    {
+      id: "art-hue-unesco",
+      title: "Kiến Trúc Thành Quách & Phong Thủy Triều Nguyễn Tại Cố Đô Huế",
+      category: "Di Sản UNESCO",
+      author: "PGS.TS. Đặng Văn Bài • Hội Di Sản Văn Hóa",
+      readTime: "5 phút đọc",
+      views: "3.780",
+      publishedAt: "28/10/2026",
+      thumbnail: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=80",
+      summary: "Sự kết hợp hoàn hảo giữa nguyên lý phong thủy Đông phương và nghệ thuật kiến trúc thành lũy Vauban phương Tây thế kỷ XIX.",
+      content: [
+        "Quần thể di tích Cố đô Huế được UNESCO vinh danh là Di sản Văn hóa Thế giới đầu tiên của Việt Nam năm 1993. Quy hoạch kinh thành dựa trên thuyết Ngũ hành và thuật phong thủy.",
+        "Ứng dụng công nghệ quét 3D VR360 trên ViOne Heritage cho phép du khách khám phá chiều sâu các công trình lăng tẩm và cung điện từ xa.",
+      ],
+    },
+  ],
+};
 
 export const PlatformAppScreen: React.FC<{
   navigation?: any;
@@ -64,11 +202,8 @@ export const PlatformAppScreen: React.FC<{
   const [stampsCount, setStampsCount] = useState(3);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (initialTab) {
-      setActiveTab(initialTab);
-    }
-  }, [initialTab]);
+  // Selected article for reader modal
+  const [selectedArticle, setSelectedArticle] = useState<MobileArticle | null>(null);
 
   // Data states
   const [overview, setOverview] = useState<any>(null);
@@ -98,6 +233,12 @@ export const PlatformAppScreen: React.FC<{
   const [regBibModalOpen, setRegBibModalOpen] = useState(false);
   const [runnerName, setRunnerName] = useState("Nguyễn Văn An");
   const [selectedDistance, setSelectedDistance] = useState(42.195);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   useEffect(() => {
     loadTabData(activeTab);
@@ -448,6 +589,56 @@ export const PlatformAppScreen: React.FC<{
           {/* TAB 2: HERITAGE */}
           {activeTab === "heritage" && (
             <View style={styles.tabContent}>
+              {/* Lối Tắt Tính Năng Nhanh */}
+              <View style={styles.quickGridCard}>
+                <View style={styles.quickGridHeader}>
+                  <Sparkles size={14} color="#D8B282" />
+                  <Text style={styles.quickGridTitle}>Tính Năng Nhanh Di Sản</Text>
+                </View>
+                <View style={styles.quickActionRow}>
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("VR360", "Đang mở không gian thực tế ảo Cố Đô...")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconGold}>
+                      <Compass size={16} color="#050C15" />
+                    </View>
+                    <Text style={styles.quickActionText}>Tour VR360</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Audio GPS", "Đang phát thuyết minh GPS tự động...")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Volume2 size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Audio GPS</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => setCitizenPassOpen(true)}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Award size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Đóng Dấu</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Bản Đồ", "Mở bản đồ số hóa di tích toàn quốc.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <MapPin size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Bản Đồ</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Danh sách Di tích */}
               <Text style={styles.sectionHeader}>Di Tích Lịch Sử & Danh Thắng Quốc Gia</Text>
               {(heritageSites.length > 0 ? heritageSites : [
                 { id: "1", name: "Quần thể Di tích Cố đô Huế", province: "Thừa Thiên Huế", category: "Di sản thế giới UNESCO", description: "Kinh đô của triều Nguyễn từ 1802 đến 1945, bảo tồn hệ thống thành quách, cung điện, lăng tẩm uy nghiêm.", vr_tour_url: "https://vr360.hue.vn" },
@@ -519,12 +710,85 @@ export const PlatformAppScreen: React.FC<{
                   </View>
                 </View>
               ))}
+
+              {/* Chuyên mục bài viết Di Sản */}
+              <Text style={styles.sectionHeader}>Bài Viết & Nghiên Cứu Di Sản</Text>
+              {SHARED_ARTICLES.heritage.map((art) => (
+                <TouchableOpacity
+                  key={art.id}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedArticle(art)}
+                  style={styles.articleCard}
+                >
+                  <Image source={{ uri: art.thumbnail }} style={styles.articleThumb} />
+                  <View style={styles.articleInfo}>
+                    <View style={styles.articleTagRow}>
+                      <Text style={styles.articleTag}>{art.category}</Text>
+                      <Text style={styles.articleReadTime}>{art.readTime}</Text>
+                    </View>
+                    <Text style={styles.articleTitle} numberOfLines={2}>{art.title}</Text>
+                    <View style={styles.articleMetaRow}>
+                      <Text style={styles.articleAuthor} numberOfLines={1}>{art.author}</Text>
+                      <Text style={styles.articleViews}>{art.views} xem</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           )}
 
           {/* TAB 3: MUSEUM */}
           {activeTab === "museum" && (
             <View style={styles.tabContent}>
+              {/* Lối Tắt Tính Năng Nhanh */}
+              <View style={styles.quickGridCard}>
+                <View style={styles.quickGridHeader}>
+                  <Sparkles size={14} color="#D8B282" />
+                  <Text style={styles.quickGridTitle}>Tính Năng Nhanh Bảo Tàng Số</Text>
+                </View>
+                <View style={styles.quickActionRow}>
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("NFC Cổ Vật", "Đã nhận diện thẻ NFC bảo vật! Đang tải thuyết minh chi tiết.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconGold}>
+                      <Radio size={16} color="#050C15" />
+                    </View>
+                    <Text style={styles.quickActionText}>Chạm NFC</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => setArtifactRotation((r) => (r + 45) % 360)}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <RotateCcw size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Xoay 3D</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Audio Guide", "Đang phát thuyết minh âm thanh bảo vật...")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Volume2 size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Audio Guide</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Đặt Vé VNPay", "Mở cổng thanh toán VNPay đặt vé bảo tàng.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Ticket size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Vé VNPay</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
               <Text style={styles.sectionHeader}>Bảo Vật Quốc Gia & Mô Phỏng Cổ Vật 3D</Text>
               
               {/* 3D Viewer Simulator Card */}
@@ -583,12 +847,85 @@ export const PlatformAppScreen: React.FC<{
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
+
+              {/* Chuyên mục bài viết Bảo Tàng */}
+              <Text style={styles.sectionHeader}>Bài Viết & Chuyên Đề Cổ Vật Hoàng Gia</Text>
+              {SHARED_ARTICLES.museum.map((art) => (
+                <TouchableOpacity
+                  key={art.id}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedArticle(art)}
+                  style={styles.articleCard}
+                >
+                  <Image source={{ uri: art.thumbnail }} style={styles.articleThumb} />
+                  <View style={styles.articleInfo}>
+                    <View style={styles.articleTagRow}>
+                      <Text style={styles.articleTag}>{art.category}</Text>
+                      <Text style={styles.articleReadTime}>{art.readTime}</Text>
+                    </View>
+                    <Text style={styles.articleTitle} numberOfLines={2}>{art.title}</Text>
+                    <View style={styles.articleMetaRow}>
+                      <Text style={styles.articleAuthor} numberOfLines={1}>{art.author}</Text>
+                      <Text style={styles.articleViews}>{art.views} xem</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           )}
 
           {/* TAB 4: SPORT */}
           {activeTab === "sport" && (
             <View style={styles.tabContent}>
+              {/* Lối Tắt Tính Năng Nhanh */}
+              <View style={styles.quickGridCard}>
+                <View style={styles.quickGridHeader}>
+                  <Sparkles size={14} color="#D8B282" />
+                  <Text style={styles.quickGridTitle}>Tính Năng Nhanh Thể Thao</Text>
+                </View>
+                <View style={styles.quickActionRow}>
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Đăng Ký", "Mở biểu mẫu đăng ký giải Pickleball Doanh Nhân.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconGold}>
+                      <Trophy size={16} color="#050C15" />
+                    </View>
+                    <Text style={styles.quickActionText}>Đăng Ký</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Nhánh Đấu", "Cập nhật cây thi đấu Knockout Bracket.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Activity size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Nhánh Đấu</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Tỉ Số Live", "Đang cập nhật tỉ số các trận đấu trực tiếp...")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Flame size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Tỉ Số Live</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Mạng Lưới CLB", "Xem danh bạ các CLB thể thao doanh nhân liên kết.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Users size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>CLB Thể Thao</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
               <Text style={styles.sectionHeader}>Giải Đấu Thể Thao Đa Môn ViConnect</Text>
               
               {/* Bracket Tree Preview */}
@@ -631,12 +968,85 @@ export const PlatformAppScreen: React.FC<{
                   </View>
                 </View>
               </View>
+
+              {/* Chuyên mục bài viết Thể Thao */}
+              <Text style={styles.sectionHeader}>Bài Viết & Cẩm Nang Thể Thao Đa Môn</Text>
+              {SHARED_ARTICLES.sport.map((art) => (
+                <TouchableOpacity
+                  key={art.id}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedArticle(art)}
+                  style={styles.articleCard}
+                >
+                  <Image source={{ uri: art.thumbnail }} style={styles.articleThumb} />
+                  <View style={styles.articleInfo}>
+                    <View style={styles.articleTagRow}>
+                      <Text style={styles.articleTag}>{art.category}</Text>
+                      <Text style={styles.articleReadTime}>{art.readTime}</Text>
+                    </View>
+                    <Text style={styles.articleTitle} numberOfLines={2}>{art.title}</Text>
+                    <View style={styles.articleMetaRow}>
+                      <Text style={styles.articleAuthor} numberOfLines={1}>{art.author}</Text>
+                      <Text style={styles.articleViews}>{art.views} xem</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           )}
 
           {/* TAB 5: RUN */}
           {activeTab === "run" && (
             <View style={styles.tabContent}>
+              {/* Lối Tắt Tính Năng Nhanh */}
+              <View style={styles.quickGridCard}>
+                <View style={styles.quickGridHeader}>
+                  <Sparkles size={14} color="#D8B282" />
+                  <Text style={styles.quickGridTitle}>Tính Năng Nhanh Giải Chạy & RFID</Text>
+                </View>
+                <View style={styles.quickActionRow}>
+                  <TouchableOpacity
+                    onPress={() => setRegBibModalOpen(true)}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconGold}>
+                      <Flame size={16} color="#050C15" />
+                    </View>
+                    <Text style={styles.quickActionText}>Đăng Ký BIB</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleSimulateSplit}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Radio size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Quét RFID</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Leaderboard", "Xem bảng thành tích xếp hạng Finisher.")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Trophy size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Xếp Hạng</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => Alert.alert("Chứng Nhận", "Đang tạo chứng nhận Finisher điện tử dạng PDF...")}
+                    style={styles.quickActionItem}
+                  >
+                    <View style={styles.quickIconBorder}>
+                      <Award size={16} color="#D8B282" />
+                    </View>
+                    <Text style={styles.quickActionText}>Chứng Nhận</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
               <Text style={styles.sectionHeader}>ViOne Heritage Marathon & Timing RFID</Text>
               
               {/* Race Info & BIB Registration CTA */}
@@ -746,57 +1156,67 @@ export const PlatformAppScreen: React.FC<{
                   </View>
                 ))}
               </View>
+
+              {/* Chuyên mục bài viết Chạy bộ */}
+              <Text style={styles.sectionHeader}>Bài Viết & Cẩm Nang Marathon</Text>
+              {SHARED_ARTICLES.run.map((art) => (
+                <TouchableOpacity
+                  key={art.id}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedArticle(art)}
+                  style={styles.articleCard}
+                >
+                  <Image source={{ uri: art.thumbnail }} style={styles.articleThumb} />
+                  <View style={styles.articleInfo}>
+                    <View style={styles.articleTagRow}>
+                      <Text style={styles.articleTag}>{art.category}</Text>
+                      <Text style={styles.articleReadTime}>{art.readTime}</Text>
+                    </View>
+                    <Text style={styles.articleTitle} numberOfLines={2}>{art.title}</Text>
+                    <View style={styles.articleMetaRow}>
+                      <Text style={styles.articleAuthor} numberOfLines={1}>{art.author}</Text>
+                      <Text style={styles.articleViews}>{art.views} xem</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           )}
 
           {/* TAB 6: TICKETS */}
           {activeTab === "tickets" && (
             <View style={styles.tabContent}>
-              <Text style={styles.sectionHeader}>Ví Vé Điện Tử (ViOne Tickets)</Text>
-
-              {/* Cổng Soát Vé Nhân Viên */}
-              <View style={styles.rfidCard}>
-                <View style={styles.bracketHeader}>
-                  <ScanLine size={16} color="#D8B282" />
-                  <Text style={styles.bracketTitle}>Cổng Soát Vé Nhanh (Ticket Validator)</Text>
-                </View>
-                <Text style={styles.bracketSub}>Nhập mã vé hoặc số BIB để xác thực và đổi trạng thái</Text>
-
-                <View style={styles.rfidInputRow}>
-                  <TextInput
-                    style={styles.bibInput}
-                    value={valCode}
-                    onChangeText={setValCode}
-                    placeholder="Mã vé (TK-HUE-2026-99)"
-                    placeholderTextColor="#64748B"
-                  />
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={handleValidateTicket}
-                    disabled={validatingTicket}
-                    style={styles.gradientBtnWrapper}
+              <Text style={styles.sectionHeader}>Soát Vé Điện Tử Tại Cổng (Validator)</Text>
+              
+              <View style={styles.validatorBox}>
+                <TextInput
+                  style={styles.valInput}
+                  value={valCode}
+                  onChangeText={setValCode}
+                  placeholder="Nhập mã vé hoặc quét QR..."
+                  placeholderTextColor="#64748B"
+                />
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={handleValidateTicket}
+                  disabled={validatingTicket}
+                  style={styles.gradientBtnWrapper}
+                >
+                  <LinearGradient
+                    colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.gradientBtn}
                   >
-                    <LinearGradient
-                      colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.gradientBtnSmall}
-                    >
-                      <ScanLine size={12} color="#050C15" />
-                      <Text style={styles.gradientBtnSmallText}>Soát Vé</Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </View>
-
-                {valResult && (
-                  <View style={[styles.matchItem, { marginTop: 6, borderColor: valResult.valid ? "#10B981" : "#EF4444" }]}>
-                    <Text style={{ fontSize: 11, fontWeight: "700", color: valResult.valid ? "#10B981" : "#EF4444" }}>
-                      {valResult.valid ? "VÉ HỢP LỆ — ĐÃ XÁC THỰC SOÁT VÉ" : "CẢNH BÁO: VÉ KHÔNG HỢP LỆ"}
+                    <ScanLine size={14} color="#050C15" />
+                    <Text style={styles.gradientBtnText}>
+                      {validatingTicket ? "Đang Kiểm Tra..." : "Xác Thực Vé"}
                     </Text>
-                    <Text style={{ fontSize: 10, color: "#94A3B8" }}>{valResult.message}</Text>
-                  </View>
-                )}
+                  </LinearGradient>
+                </TouchableOpacity>
               </View>
+
+              <Text style={[styles.sectionHeader, { marginTop: 12 }]}>Danh Sách Vé Của Tôi</Text>
 
               {(tickets.length > 0 ? tickets : [
                 { id: "tk1", ticket_code: "TK-HUE-2026-99", item_name: "Vé tham quan Quần thể Cố đô Huế", total_amount: 200000, status: "valid" },
@@ -860,7 +1280,7 @@ export const PlatformAppScreen: React.FC<{
             </View>
           )}
 
-          {/* TAB 7: ARCHIVE */}
+          {/* TAB 8: ARCHIVE */}
           {activeTab === "archive" && (
             <View style={styles.tabContent}>
               <Text style={styles.sectionHeader}>Kho Tư Liệu Số Triều Nguyễn</Text>
@@ -880,6 +1300,57 @@ export const PlatformAppScreen: React.FC<{
             </View>
           )}
         </ScrollView>
+      )}
+
+      {/* MODAL ĐỌC BÀI VIẾT CHI TIẾT */}
+      {selectedArticle && (
+        <Modal visible={!!selectedArticle} transparent animationType="slide">
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
+                  <Text style={styles.articleModalCategory}>{selectedArticle.category}</Text>
+                  <Text style={styles.articleModalTitle}>{selectedArticle.title}</Text>
+                  <Text style={styles.articleModalMeta}>
+                    {selectedArticle.author} • {selectedArticle.publishedAt} • {selectedArticle.readTime}
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={() => setSelectedArticle(null)} style={styles.closeBtn}>
+                  <X size={18} color="#D8B282" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+                <Image source={{ uri: selectedArticle.thumbnail }} style={styles.articleModalImage} />
+                <View style={styles.articleModalSummaryBox}>
+                  <Text style={styles.articleModalSummary}>"{selectedArticle.summary}"</Text>
+                </View>
+                <View style={styles.articleModalBody}>
+                  {selectedArticle.content.map((p, idx) => (
+                    <Text key={idx} style={styles.articleModalParagraph}>{p}</Text>
+                  ))}
+                </View>
+              </ScrollView>
+
+              <View style={styles.articleModalFooter}>
+                <Text style={styles.articleModalViews}>{selectedArticle.views} lượt đọc</Text>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => Alert.alert("Chia Sẻ", "Đã sao chép liên kết bài viết!")}
+                  style={styles.gradientBtnWrapper}
+                >
+                  <LinearGradient
+                    colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
+                    style={styles.gradientBtnSmall}
+                  >
+                    <Share2 size={12} color="#050C15" />
+                    <Text style={styles.gradientBtnSmallText}>Chia Sẻ</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       )}
 
       {/* Citizen Passport Modal */}
@@ -953,25 +1424,41 @@ export const PlatformAppScreen: React.FC<{
               </TouchableOpacity>
             </View>
 
-            <View style={{ marginTop: 12 }}>
-              <Text style={styles.inputLabel}>Họ và tên Vận động viên</Text>
-              <TextInput
-                style={styles.modalInput}
-                value={runnerName}
-                onChangeText={setRunnerName}
-                placeholder="Nhập họ tên"
-                placeholderTextColor="#64748B"
-              />
+            <View style={{ gap: 12, marginTop: 12 }}>
+              <View>
+                <Text style={styles.inputLabel}>Họ và tên VĐV:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={runnerName}
+                  onChangeText={setRunnerName}
+                  placeholderTextColor="#64748B"
+                />
+              </View>
 
-              <Text style={[styles.inputLabel, { marginTop: 12 }]}>Cự ly đăng ký: {selectedDistance} KM</Text>
-              <Text style={styles.modalDesc}>
-                Hệ thống sẽ tự động cấp phát số BIB và liên kết chip timing RFID cho bạn.
-              </Text>
+              <View>
+                <Text style={styles.inputLabel}>Cự ly đăng ký:</Text>
+                <View style={styles.distancesRow}>
+                  {[5, 10, 21, 42.195].map((d) => (
+                    <TouchableOpacity
+                      key={d}
+                      onPress={() => setSelectedDistance(d)}
+                      style={[
+                        styles.distanceChip,
+                        selectedDistance === d && styles.distanceChipActive,
+                      ]}
+                    >
+                      <Text style={[styles.distanceText, selectedDistance === d && styles.distanceTextActive]}>
+                        {d} KM
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
 
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleRegisterBib}
-                style={[styles.gradientBtnWrapper, { marginTop: 16 }]}
+                style={[styles.gradientBtnWrapper, { marginTop: 8 }]}
               >
                 <LinearGradient
                   colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
@@ -980,7 +1467,7 @@ export const PlatformAppScreen: React.FC<{
                   style={styles.gradientBtn}
                 >
                   <Flame size={14} color="#050C15" />
-                  <Text style={styles.gradientBtnText}>Xác Nhận & Cấp BIB</Text>
+                  <Text style={styles.gradientBtnText}>Xác Nhận Đăng Ký BIB</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -1113,7 +1600,59 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   tabContent: {
-    gap: 16,
+    gap: 14,
+  },
+  quickGridCard: {
+    backgroundColor: "#0B0F17",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.25)",
+  },
+  quickGridHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 10,
+  },
+  quickGridTitle: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#F6E1C3",
+  },
+  quickActionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  quickActionItem: {
+    alignItems: "center",
+    width: (width - 64) / 4,
+  },
+  quickIconGold: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#D8B282",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  quickIconBorder: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "rgba(216, 178, 130, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.35)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  quickActionText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#F6E1C3",
+    textAlign: "center",
   },
   heroCard: {
     borderRadius: 16,
@@ -1184,7 +1723,7 @@ const styles = StyleSheet.create({
     color: "#050C15",
   },
   sectionHeader: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "800",
     color: "#F6E1C3",
     marginTop: 4,
@@ -1198,15 +1737,15 @@ const styles = StyleSheet.create({
     width: (width - 42) / 2,
     backgroundColor: "#0B101D",
     borderRadius: 12,
+    padding: 12,
     borderWidth: 1,
     borderColor: "rgba(216, 178, 130, 0.25)",
-    padding: 12,
+    gap: 6,
   },
   pillarHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 8,
   },
   pillarTitle: {
     fontSize: 13,
@@ -1216,26 +1755,29 @@ const styles = StyleSheet.create({
   pillarSub: {
     fontSize: 10,
     color: "#94A3B8",
-    marginTop: 2,
+    lineHeight: 14,
   },
   heritageCard: {
-    backgroundColor: "#0A0F1A",
+    backgroundColor: "#0B0F17",
     borderRadius: 14,
+    padding: 14,
     borderWidth: 1,
     borderColor: "rgba(216, 178, 130, 0.25)",
-    padding: 14,
-    gap: 6,
+    gap: 8,
   },
   cardHeaderRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   cardCategory: {
-    fontSize: 10,
-    color: "#D8B282",
+    fontSize: 9,
     fontWeight: "700",
-    textTransform: "uppercase",
+    color: "#D8B282",
+    backgroundColor: "rgba(216, 178, 130, 0.12)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   locationTag: {
     flexDirection: "row",
@@ -1249,7 +1791,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#F6E1C3",
   },
   cardDesc: {
     fontSize: 11,
@@ -1258,46 +1800,47 @@ const styles = StyleSheet.create({
   },
   cardActionRow: {
     flexDirection: "row",
-    gap: 6,
-    marginTop: 6,
-    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
   },
   viewer3dCard: {
-    backgroundColor: "#0A0F1A",
-    borderRadius: 14,
+    backgroundColor: "#0B0F17",
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.3)",
-    padding: 14,
-    gap: 8,
+    borderColor: "rgba(216, 178, 130, 0.35)",
+    gap: 12,
   },
   viewerHeaderRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   viewerTitle: {
     fontSize: 13,
     fontWeight: "800",
     color: "#F6E1C3",
+    flex: 1,
   },
   badge3d: {
     fontSize: 9,
-    color: "#38BDF8",
-    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    fontWeight: "800",
+    color: "#050C15",
+    backgroundColor: "#D8B282",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
-    fontWeight: "700",
   },
   modelCanvas: {
     height: 140,
-    backgroundColor: "#050C15",
+    backgroundColor: "#121620",
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.2)",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.2)",
   },
   modelCanvasText: {
     fontSize: 12,
@@ -1306,21 +1849,20 @@ const styles = StyleSheet.create({
   },
   modelCanvasSub: {
     fontSize: 10,
-    color: "#64748B",
+    color: "#94A3B8",
   },
   rotationControls: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     gap: 8,
-    marginTop: 4,
   },
   bracketCard: {
-    backgroundColor: "#0A0F1A",
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.25)",
+    backgroundColor: "#0B0F17",
+    borderRadius: 16,
     padding: 14,
-    gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.3)",
+    gap: 10,
   },
   bracketHeader: {
     flexDirection: "row",
@@ -1337,33 +1879,35 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
   },
   matchItem: {
-    backgroundColor: "#050C15",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "#121620",
+    borderRadius: 10,
     padding: 10,
-    gap: 4,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.2)",
+    gap: 6,
   },
   matchTeamRow: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   teamName: {
     fontSize: 11,
-    color: "#FFFFFF",
-    fontWeight: "600",
+    fontWeight: "700",
+    color: "#E2E8F0",
   },
   teamScore: {
-    fontSize: 12,
-    color: "#D8B282",
+    fontSize: 13,
     fontWeight: "900",
+    color: "#D8B282",
   },
   matchDivider: {
     height: 1,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(216, 178, 130, 0.15)",
   },
   matchStatusRow: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     marginTop: 2,
   },
@@ -1377,16 +1921,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   raceHeroCard: {
-    backgroundColor: "#0A0F1A",
-    borderRadius: 14,
+    backgroundColor: "#0B0F17",
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
     borderColor: "rgba(216, 178, 130, 0.3)",
-    padding: 14,
-    gap: 6,
+    gap: 8,
   },
   raceTitle: {
     fontSize: 14,
-    fontWeight: "900",
+    fontWeight: "800",
     color: "#F6E1C3",
   },
   raceDate: {
@@ -1396,207 +1940,337 @@ const styles = StyleSheet.create({
   distancesRow: {
     flexDirection: "row",
     gap: 6,
-    marginTop: 6,
+    marginTop: 4,
   },
   distanceChip: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 6,
+    borderRadius: 8,
+    backgroundColor: "#121620",
     borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.3)",
-    backgroundColor: "#050C15",
+    borderColor: "rgba(216, 178, 130, 0.25)",
   },
   distanceChipActive: {
+    backgroundColor: "#D8B282",
     borderColor: "#D8B282",
-    backgroundColor: "rgba(216, 178, 130, 0.2)",
   },
   distanceText: {
     fontSize: 10,
-    color: "#94A3B8",
     fontWeight: "700",
+    color: "#CBD5E1",
   },
   distanceTextActive: {
-    color: "#F6E1C3",
+    color: "#050C15",
   },
   rfidCard: {
-    backgroundColor: "#0A0F1A",
-    borderRadius: 14,
+    backgroundColor: "#0B0F17",
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
     borderColor: "rgba(239, 68, 68, 0.3)",
-    padding: 14,
-    gap: 6,
+    gap: 10,
   },
   rfidInputRow: {
-    flexDirection: "row",
     gap: 8,
-    marginTop: 6,
   },
   bibInput: {
-    flex: 1,
-    backgroundColor: "#050C15",
-    borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.3)",
+    backgroundColor: "#121620",
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    color: "#FFFFFF",
-    fontSize: 11,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 12,
+    color: "#F6E1C3",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.25)",
   },
   splitSelector: {
     flexDirection: "row",
-    gap: 4,
+    gap: 6,
   },
   splitBtn: {
-    paddingHorizontal: 8,
+    flex: 1,
     paddingVertical: 6,
-    backgroundColor: "#050C15",
-    borderRadius: 6,
+    borderRadius: 8,
+    backgroundColor: "#121620",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
+    borderColor: "rgba(216, 178, 130, 0.2)",
   },
   splitBtnActive: {
-    borderColor: "#EF4444",
     backgroundColor: "rgba(239, 68, 68, 0.2)",
+    borderColor: "#EF4444",
   },
   splitText: {
     fontSize: 10,
+    fontWeight: "700",
     color: "#94A3B8",
   },
   splitTextActive: {
-    color: "#EF4444",
-    fontWeight: "700",
+    color: "#F87171",
   },
   leaderboardCard: {
-    backgroundColor: "#0A0F1A",
-    borderRadius: 14,
+    backgroundColor: "#0B0F17",
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
     borderColor: "rgba(216, 178, 130, 0.25)",
-    padding: 14,
     gap: 8,
   },
   leaderboardRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#050C15",
-    padding: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(216, 178, 130, 0.1)",
   },
   rankPill: {
     width: 28,
     height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(216, 178, 130, 0.2)",
+    borderRadius: 6,
+    backgroundColor: "#121620",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.3)",
   },
   rankText: {
     fontSize: 11,
     fontWeight: "900",
-    color: "#F6E1C3",
+    color: "#D8B282",
   },
   runnerName: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: "#F6E1C3",
   },
   runnerBib: {
-    fontSize: 9,
-    color: "#64748B",
+    fontSize: 10,
+    color: "#94A3B8",
   },
   runnerTime: {
     fontSize: 12,
     fontWeight: "800",
+    color: "#FBBF24",
+  },
+  articleCard: {
+    flexDirection: "row",
+    backgroundColor: "#0B0F17",
+    borderRadius: 14,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.2)",
+    gap: 10,
+  },
+  articleThumb: {
+    width: 80,
+    height: 70,
+    borderRadius: 10,
+    backgroundColor: "#121620",
+  },
+  articleInfo: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  articleTagRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  articleTag: {
+    fontSize: 9,
+    fontWeight: "700",
     color: "#D8B282",
-    fontFamily: "monospace",
+    backgroundColor: "rgba(216, 178, 130, 0.12)",
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 4,
+  },
+  articleReadTime: {
+    fontSize: 9,
+    color: "#64748B",
+  },
+  articleTitle: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#F6E1C3",
+    lineHeight: 16,
+  },
+  articleMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  articleAuthor: {
+    fontSize: 9,
+    color: "#94A3B8",
+    flex: 1,
+  },
+  articleViews: {
+    fontSize: 9,
+    color: "#64748B",
+  },
+  validatorBox: {
+    backgroundColor: "#0B0F17",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.25)",
+    gap: 8,
+  },
+  valInput: {
+    backgroundColor: "#121620",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 12,
+    color: "#F6E1C3",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.25)",
   },
   ticketCard: {
-    backgroundColor: "#0A0F1A",
+    backgroundColor: "#0B0F17",
     borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.3)",
     padding: 14,
-    gap: 4,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.25)",
+    gap: 8,
   },
   ticketHeaderRow: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   ticketCode: {
     fontSize: 11,
-    fontFamily: "monospace",
+    fontWeight: "800",
     color: "#D8B282",
-    fontWeight: "700",
   },
   ticketStatus: {
     fontSize: 10,
-    color: "#10B981",
     fontWeight: "700",
   },
   ticketName: {
     fontSize: 13,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#F6E1C3",
   },
   ticketAmount: {
     fontSize: 12,
-    color: "#F6E1C3",
     fontWeight: "700",
+    color: "#CBD5E1",
   },
   ticketQrContainer: {
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   archiveCard: {
-    backgroundColor: "#0A0F1A",
+    backgroundColor: "#0B0F17",
     borderRadius: 14,
+    padding: 14,
     borderWidth: 1,
     borderColor: "rgba(216, 178, 130, 0.25)",
-    padding: 14,
-    gap: 4,
+    gap: 6,
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.85)",
-    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
     justifyContent: "center",
-    padding: 16,
+    padding: 20,
   },
   modalContent: {
-    width: "100%",
-    maxWidth: 400,
-    backgroundColor: "#0A0F1A",
-    borderRadius: 18,
+    backgroundColor: "#0B0F17",
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
     borderColor: "rgba(216, 178, 130, 0.4)",
-    padding: 18,
+    gap: 12,
   },
   modalHeader: {
     flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-between",
-    alignItems: "center",
   },
   modalTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "900",
     color: "#F6E1C3",
   },
-  passportCard: {
-    marginTop: 14,
-    backgroundColor: "#050C15",
+  closeBtn: {
+    padding: 4,
+    borderRadius: 6,
+    backgroundColor: "#121620",
+  },
+  articleModalCategory: {
+    fontSize: 9,
+    fontWeight: "800",
+    color: "#D8B282",
+    textTransform: "uppercase",
+  },
+  articleModalTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#F6E1C3",
+    marginTop: 2,
+    lineHeight: 18,
+  },
+  articleModalMeta: {
+    fontSize: 10,
+    color: "#94A3B8",
+    marginTop: 2,
+  },
+  articleModalImage: {
+    width: "100%",
+    height: 160,
     borderRadius: 12,
+    marginBottom: 10,
+  },
+  articleModalSummaryBox: {
+    backgroundColor: "#121620",
+    borderRadius: 10,
+    padding: 10,
     borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.5)",
-    padding: 14,
+    borderColor: "rgba(216, 178, 130, 0.2)",
+    marginBottom: 10,
+  },
+  articleModalSummary: {
+    fontSize: 11,
+    color: "#F6E1C3",
+    fontStyle: "italic",
+    lineHeight: 16,
+  },
+  articleModalBody: {
+    gap: 8,
+  },
+  articleModalParagraph: {
+    fontSize: 11,
+    color: "#CBD5E1",
+    lineHeight: 16,
+  },
+  articleModalFooter: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(216, 178, 130, 0.15)",
+    paddingTop: 10,
+  },
+  articleModalViews: {
+    fontSize: 10,
+    color: "#64748B",
+  },
+  passportCard: {
+    backgroundColor: "#121620",
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.3)",
+    alignItems: "center",
+    gap: 6,
   },
   passId: {
-    fontSize: 10,
-    fontFamily: "monospace",
-    color: "#D8B282",
-    fontWeight: "800",
+    fontSize: 9,
+    color: "#94A3B8",
+    fontWeight: "700",
   },
   passName: {
     fontSize: 16,
@@ -1605,51 +2279,40 @@ const styles = StyleSheet.create({
   },
   passRank: {
     fontSize: 11,
-    color: "#10B981",
-    fontWeight: "700",
+    color: "#D8B282",
   },
   passQr: {
     marginTop: 8,
-    padding: 6,
-    borderRadius: 8,
-    backgroundColor: "#0A0F1A",
   },
   stampsHeader: {
     fontSize: 12,
     fontWeight: "800",
     color: "#F6E1C3",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   stampItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
     paddingVertical: 4,
   },
   stampText: {
     fontSize: 11,
-    color: "#CBD5E1",
+    color: "#E2E8F0",
   },
   inputLabel: {
     fontSize: 11,
-    fontWeight: "700",
-    color: "#F6E1C3",
+    color: "#94A3B8",
+    marginBottom: 4,
   },
-  modalInput: {
-    backgroundColor: "#050C15",
-    borderWidth: 1,
-    borderColor: "rgba(216, 178, 130, 0.3)",
+  input: {
+    backgroundColor: "#121620",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    color: "#FFFFFF",
     fontSize: 12,
-    marginTop: 4,
-  },
-  modalDesc: {
-    fontSize: 10,
-    color: "#94A3B8",
-    marginTop: 6,
-    lineHeight: 14,
+    color: "#F6E1C3",
+    borderWidth: 1,
+    borderColor: "rgba(216, 178, 130, 0.25)",
   },
 });

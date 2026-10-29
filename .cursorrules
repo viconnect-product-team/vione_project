@@ -1,5 +1,16 @@
 # Vibe App Monorepo - Cursor Rules
 
+## -0.0000. Quy Chuẩn Giao Diện App Di Động Cho Phân Hệ Nền Tảng (STRICT NATIVE APP UX FOR PLATFORM MODULES)
+- **CẤM TUYỆT ĐỐI GIAO DIỆN WEB THU NHỎ (ZERO RESPONSIVE WEB SHRINK RULE)**:
+  * Các màn hình di động thuộc hệ sinh thái ViOne Platform (ViOne Sport, ViOne Run, ViOne Museum, ViOne Heritage, ViOne Tickets) **CẤM TUYỆT ĐỐI** hiển thị dạng landing page web thu nhỏ với các đoạn văn bản tiếp thị dông dài, tiêu đề banner chiếm nửa màn hình.
+  * BẮT BUỘC tái cấu trúc theo bố cục chuẩn Native Mobile App cao cấp (Obsidian & Champagne Gold):
+    1. **Thanh Header & Bộ Lọc Nhanh (Top App Header & Filter Chips)**: Ô tìm kiếm bo tròn nhỏ gọn kèm các chip danh mục vuốt ngang mượt mà.
+    2. **Lưới Tính Năng Nhanh (Quick Action Grid)**: 4 hoặc 8 nút lối tắt tính năng dạng icon bo tròn sang trọng viền vàng (`Chạm NFC`, `Xoay 3D AR`, `Audio Guide`, `Vé VNPay`, `Đăng Ký Giải`, `Cây Nhánh Đấu`, `Tỉ Số Live`, `Cổng RFID`, `Bảng Xếp Hạng`, `Tour VR360`, `Đóng Dấu`).
+    3. **Thẻ Trực Quan & Tương Tác Trực Tiếp (Featured Visual Cards)**: Khung tương tác xoay 360 độ hiện vật 3D, sơ đồ nhánh đấu knockout bracket cập nhật tỉ số trực tiếp, mô phỏng thảm chip RFID và bảng xếp hạng Top Finisher.
+    4. **Chuyên Mục Bài Viết & Cẩm Nang (Articles & Editorial Feed)**: Danh sách thẻ bài viết chuyên sâu (ảnh thumbnail, danh mục, thời gian đọc, lượt xem, tác giả) và modal đọc toàn văn bài viết (Full Article Reader).
+- **ĐỒNG BỘ 100% CẢ HAI BẢN APP (DUAL-APP PARITY)**:
+  * Toàn bộ tính năng, lối tắt nhanh và chuyên mục bài viết phải đồng bộ nhất quán giữa PWA (`apps/vione_app_fe/src/components/platform-app/`) và Native (`apps/mobile_vione/src/screens/platform/PlatformAppScreen.tsx`).
+
 ## -0.000. Quy Chuẩn Nút V (V-Button) & Phân Giải Token Tin Nhắn (STRICT V-BUTTON & MESSAGE TOKEN PROTOCOL)
 - **QUY CHUẨN BẢNG ĐIỀU KHIỂN NÚT V (V-BUTTON POPUP / VActionSheet)**:
   * **Loại bỏ vĩnh viễn nút Ví Wallet**: Không đặt phím/tile thêm vào ví Apple/Google Wallet hoặc Ví thẻ tại nút V trên cả 2 bản PWA (`apps/vione_app_fe`) và Native (`apps/mobile_vione`).

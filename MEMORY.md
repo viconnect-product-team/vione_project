@@ -1,5 +1,66 @@
 # System Memory & Architecture
 
+## 0.0000000000.22. CHUẨN HÓA GIAO DIỆN APP DI ĐỘNG CHO VIONE SPORT, RUN, MUSEUM & HERITAGE: TÍNH NĂNG NHANH, BÀI VIẾT CHUYÊN ĐỀ & ĐỒNG BỘ HAI BẢN APP (29/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Của Người Dùng
+- **Hiện trạng trước sửa**: Các màn hình di động của phân hệ ViOne Museum ("muser"), ViOne Sport, ViOne Run, ViOne Heritage trước đây được dựng như một trang web thu nhỏ (responsive web landing page) với các banner chữ dông dài, giải thích tiếp thị cồng kềnh, thiếu bố cục chuẩn của một ứng dụng di động cao cấp.
+- **Yêu cầu từ người dùng**:
+  1. Xóa bỏ hoàn toàn dạng layout web thu nhỏ.
+  2. Tái cấu trúc chuẩn giao diện Mobile App cao cấp (Obsidian & Champagne Gold) cho cả 4 phân hệ: ViOne Museum, ViOne Heritage, ViOne Sport và ViOne Run.
+  3. Bổ sung **Lưới Tính Năng Nhanh (Quick Action Grid)**: các phím tắt tác vụ nhanh 1-chạm (Quét NFC hiện vật, Xoay 3D AR, Audio Guide, Vé VNPay, Nhánh đấu Bracket, Tỉ số live, Đăng ký BIB, Quét RFID timing, Đóng dấu Hộ chiếu số).
+  4. Bổ sung **Chuyên Mục Bài Viết & Tin Tức (Articles & News Feed)**: danh sách các bài viết chuyên đề nghiên cứu lịch sử văn hóa, bảo vật hoàng gia, cẩm nang thể thao và chạy bộ; tích hợp modal đọc bài viết đầy đủ (Full Article Reader).
+  5. Thiết kế **Thẻ Trực Quan & Mô Phỏng Tương Tác**: thẻ xoay 360 độ hiện vật 3D, thẻ trận đấu knockout bracket thời gian thực, mô phỏng thảm chip RFID và bảng xếp hạng Top Finisher.
+  6. **Đồng Bộ Hai Bản (Strict Rule 4)**: Cập nhật đồng thời trên PWA (`apps/vione_app_fe`) và Native Mobile (`apps/mobile_vione`).
+  7. **Cập nhật hình ảnh & tài liệu pháp lý**: Chụp lại bộ ảnh điện thoại bọc khung mockup (`app_17_sport.png`, `app_18_run.png`, `app_19_museum.png`, `app_20_heritage.png`) và cập nhật lại tệp `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` & `.md`.
+
+### 2. Chi Tiết Thay Đổi Kỹ Thuật (Dual-App Parity 100%)
+1. **PWA ViOne App (`apps/vione_app_fe`)**:
+   - `src/components/platform-app/MuseumExplorer.tsx`:
+     * Thanh tìm kiếm & bộ lọc danh mục (Tất cả, Bảo vật quốc gia, Cổ vật 3D, Audio thuyết minh).
+     * Lưới 4-8 tính năng nhanh: `Chạm NFC`, `Xoay 3D AR`, `Audio Guide`, `Vé VNPay`.
+     * Khung tương tác xoay 360 độ Trống đồng Ngọc Lũ, Ngai vàng Triều Nguyễn với thanh trượt góc độ và mô phỏng chạm NFC 1-tap.
+     * Chuyên mục bài viết nghiên cứu cổ vật hoàng gia với danh sách bài viết chuẩn app và Modal đọc bài viết chi tiết.
+   - `src/components/platform-app/SportTournamentHub.tsx`:
+     * Bộ lọc môn thể thao: Tất cả, Pickleball Đỉnh Cao, Bóng Đá Cúp, Golf Doanh Nhân, Tennis Racket.
+     * Lưới tính năng nhanh: `Đăng Ký Giải`, `Cây Nhánh Đấu`, `Tỉ Số Trực Tiếp`, `CLB Doanh Nhân`.
+     * Thẻ giải đấu tiêu biểu tích hợp sơ đồ knockout 2 nhánh và cập nhật tỷ số từng set trực tiếp.
+     * Chuyên mục bài viết cẩm nang thể thao (chiến thuật Dinking Pickleball, thuật toán phân nhánh Knockout, dinh dưỡng hồi phục) kèm modal đọc.
+   - `src/components/platform-app/RunRaceHub.tsx`:
+     * Bộ lọc cự ly: 42.195 KM, 21 KM, 10 KM, 5 KM.
+     * Lưới tính năng nhanh: `Đăng Ký BIB`, `Quét RFID`, `Leaderboard`, `Chứng Nhận E-Certificate`.
+     * Mô phỏng cổng đo RFID thời gian thực (Start, 10K, 21K, Finish) và bảng xếp hạng Finisher cập nhật độ trễ <10ms.
+     * Chuyên mục bài viết cẩm nang marathon di sản và modal đọc bài viết.
+   - `src/components/platform-app/HeritageExplorer.tsx`:
+     * Bộ lọc di sản: UNESCO, Cố đô & Cung đình, Đô thị cổ, Khảo cổ học.
+     * Lưới tính năng nhanh: `Tour VR360`, `Audio GPS`, `Đóng Dấu`, `Bản Đồ Di Tích`.
+     * Thẻ di tích danh thắng tích hợp nút xem VR360, nghe audio thuyết minh GPS và đóng dấu vào Hộ chiếu số.
+     * Chuyên mục bài viết nghiên cứu di sản dân tộc kèm modal đọc bài viết.
+   - `src/components/platform-app/TicketWallet.tsx`: Thay thế toàn bộ text "VietQR" bằng chuẩn "Cổng VNPay & Zalo OA 24/7".
+2. **Native ViOne App (`apps/mobile_vione`)**:
+   - `src/screens/platform/PlatformAppScreen.tsx`:
+     * Tái cấu trúc toàn diện 4 tab Heritage, Museum, Sport, Run với cùng cấu trúc Lưới Tính Năng Nhanh (Quick Action Grid).
+     * Bổ sung nguồn dữ liệu bài viết chuẩn `SHARED_ARTICLES` (museum, sport, run, heritage).
+     * Tích hợp `ArticleDetailModal` native React Native cho phép đọc chi tiết từng bài viết kèm tóm tắt và nút chia sẻ.
+     * Đảm bảo 100% các nút bấm tuân thủ quy chuẩn gradient hoàng gia Champagne Gold (`#F6E1C3` -> `#8C653B`), Đen thạch anh viền vàng (`#2A2418`) và Xanh ngọc lục bảo (`#10B981`) theo Strict Rule 8.
+3. **Chụp Ảnh Mockup Điện Thoại & Tài Liệu Pháp Lý**:
+   - Khởi động Vite dev server cục bộ và sử dụng Playwright (`scratch/capture_new_mobile_modules.js`) để chụp trực tiếp các màn hình chuẩn app mới:
+     * `app_17_sport.png` (432 KB)
+     * `app_18_run.png` (432 KB)
+     * `app_19_museum.png` (590 KB)
+     * `app_20_heritage.png` (438 KB)
+   - Đóng khung mockup điện thoại sang trọng (Dynamic Island, viền kim loại 3 lớp, bo góc 54px).
+   - Tái tạo thành công tệp tài liệu tổng thể `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (34.4 MB) và `[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` đồng bộ cả trong thư mục `document/` và thư mục `Downloads`.
+
+### 3. Kiểm Tra Chất Lượng Mã Nguồn
+- **TypeScript AST Validation**: Toàn bộ 6 tệp mã nguồn được kiểm tra với 0 lỗi cú pháp (**0 syntax errors, exit code 0**).
+- **Dual-App Parity**: Đảm bảo đồng bộ 100% giữa Native ViOne và PWA ViOne.
+- **Tuân thủ quy chuẩn nghiêm ngặt**:
+  - Không mock/fake dữ liệu ảo (Strict Rule 7).
+  - 100% nút bấm gradient theo chuẩn nhận diện thương hiệu ViOne (Strict Rule 8).
+  - Tuyệt đối không tự ý chạy `git commit` hay `git push` (Strict Rule 1).
+
+---
+
 ## 0.0000000000.21. TỐI GIẢN HEADER VIONE CRM REALTIME & SỬA LỖI TIN NHẮN CỘNG ĐỒNG, DANH THIẾP SỐ, QUYỀN CHIA SẺ, LOẠI BỎ VÍ WALLET TRÊN CẢ HAI BẢN APP VIONE (29/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Người Dùng

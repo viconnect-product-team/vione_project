@@ -209,7 +209,7 @@ export const TicketWallet: React.FC = () => {
                           </p>
                           <p className="flex items-center gap-1.5">
                             <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />
-                            <span className="text-emerald-400 font-semibold">Đã thanh toán Napas VietQR 24/7</span>
+                            <span className="text-emerald-400 font-semibold">Đã thanh toán Cổng VNPay & Zalo OA 24/7</span>
                           </p>
                         </div>
                       </div>
