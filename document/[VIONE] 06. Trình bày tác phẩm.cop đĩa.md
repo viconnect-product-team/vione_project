@@ -854,6 +854,10 @@ Camera 12MP+ tự động lấy nét, GPS vệ tinh, NFC Tag Reader
 
 
 
+
+
+
+
 # PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)
 
 Cổng Web Quản Trị ViOne Platform cung cấp bộ công cụ quản trị điều hành doanh nghiệp toàn diện dành cho Ban Lãnh đạo, Hội đồng Quản trị và các cấp quản lý điều hành, bao gồm 23 phân hệ nghiệp vụ chuẩn mực:
@@ -1371,51 +1375,51 @@ Cổng Web Quản Trị ViOne Platform cung cấp bộ công cụ quản trị �
 
 ### 17. Giao Diện Di Động Giải Đấu Thể Thao ViOne Sport
 
-**Mục đích:** Theo dõi lịch thi đấu, tỷ số trực tiếp và bảng xếp hạng giải đấu thể thao doanh nghiệp ngay trên điện thoại.
+**Mục đích:** Giao diện di động chuẩn app tích hợp lưới tính năng nhanh (Đăng ký giải, Cây nhánh đấu Bracket, Tỉ số live, Mạng lưới CLB), danh sách giải đấu đa môn trực quan và chuyên mục bài viết cẩm nang thể thao chuyên sâu.
 
 **Các bước thực hiện:**
 - **Bước 1:** Mở phân hệ Thể thao ViOne Sport trên ứng dụng.
-- **Bước 2:** Xem lịch thi đấu các bộ môn: Bóng đá, Golf, Tennis, Pickleball.
-- **Bước 3:** Cập nhật tỷ số trận đấu theo thời gian thực và xem bảng tổng sắp huy chương.
+- **Bước 2:** Sử dụng các lối tắt tính năng nhanh để xem cây nhánh đấu Bracket hoặc cập nhật tỷ số trực tiếp.
+- **Bước 3:** Đọc các bài viết cẩm nang chiến thuật thi đấu Pickleball và thể thao đa môn.
 
 ![Hình 3.17 – Giao Diện Di Động Giải Đấu Thể Thao ViOne Sport](../images/evidence_v9/app_17_sport.png)
 
 *Hình 3.17 – Giao Diện Di Động Giải Đấu Thể Thao ViOne Sport*
 
-### 18. Giao Diện Di Động Giải Chạy ViOne Run Marathon
+### 18. Giao Diện Di Động Giải Chạy & Chip Timing RFID ViOne Run
 
-**Mục đích:** Đồng bộ dữ liệu chạy bộ, đếm bước chân và quãng đường qua GPS điện thoại, vinh danh Top Runners cộng đồng.
+**Mục đích:** Bàn làm việc di động giải chạy marathon di sản chuẩn app: lối tắt tính năng nhanh, đăng ký số BIB điện tử, mô phỏng thảm chip RFID thời gian thực, bảng xếp hạng Finisher và cẩm nang chạy bộ.
 
 **Các bước thực hiện:**
 - **Bước 1:** Truy cập phân hệ ViOne Run trên ứng dụng di động.
-- **Bước 2:** Bật chế độ ghi nhận cự ly chạy bộ hoặc đồng bộ dữ liệu từ cảm biến sức khỏe điện thoại.
-- **Bước 3:** Xem bảng vinh danh thành tích Top Runners toàn mạng lưới doanh nhân.
+- **Bước 2:** Đăng ký cự ly (42K, 21K, 10K, 5K) và nhận số BIB điện tử định danh cá nhân.
+- **Bước 3:** Theo dõi kết quả chip timing qua từng trạm kiểm soát và đọc bài viết cẩm nang phân bổ thể lực.
 
-![Hình 3.18 – Giao Diện Di Động Giải Chạy ViOne Run Marathon](../images/evidence_v9/app_18_run.png)
+![Hình 3.18 – Giao Diện Di Động Giải Chạy & Chip Timing RFID ViOne Run](../images/evidence_v9/app_18_run.png)
 
-*Hình 3.18 – Giao Diện Di Động Giải Chạy ViOne Run Marathon*
+*Hình 3.18 – Giao Diện Di Động Giải Chạy & Chip Timing RFID ViOne Run*
 
-### 19. Giao Diện Di Động Bảo Tàng Số 3D ViOne Museum
+### 19. Giao Diện Di Động Bảo Tàng Số 3D & Thuyết Minh NFC ViOne Museum
 
-**Mục đích:** Trải nghiệm không gian trưng bày hiện vật 3D, xoay phóng tương tác đa chiều và chạm NFC nhận thuyết minh.
+**Mục đích:** Không gian bảo tàng số chuẩn mobile app: lưới tính năng nhanh (Chạm NFC, Xoay 3D AR, Audio Guide, Vé VNPay), thẻ cổ vật 3D tương tác 360 độ và chuyên mục bài viết nghiên cứu bảo vật hoàng gia.
 
 **Các bước thực hiện:**
 - **Bước 1:** Vào phân hệ Bảo tàng số ViOne Museum trên di động.
-- **Bước 2:** Chọn hiện vật lịch sử để mở chế độ tương tác 3D đa chiều trên màn hình cảm ứng.
-- **Bước 3:** Chạm lưng điện thoại vào quầy hiện vật vật lý tại bảo tàng để nghe thuyết minh tự động.
+- **Bước 2:** Chọn hiện vật lịch sử hoặc chạm NFC tại bệ tủ kính để mở chế độ tương tác 3D đa chiều và nghe audio thuyết minh AI.
+- **Bước 3:** Đọc các bài viết chuyên đề nghiên cứu lịch sử và mua vé tham quan qua cổng VNPay.
 
-![Hình 3.19 – Giao Diện Di Động Bảo Tàng Số 3D ViOne Museum](../images/evidence_v9/app_19_museum.png)
+![Hình 3.19 – Giao Diện Di Động Bảo Tàng Số 3D & Thuyết Minh NFC ViOne Museum](../images/evidence_v9/app_19_museum.png)
 
-*Hình 3.19 – Giao Diện Di Động Bảo Tàng Số 3D ViOne Museum*
+*Hình 3.19 – Giao Diện Di Động Bảo Tàng Số 3D & Thuyết Minh NFC ViOne Museum*
 
 ### 20. Giao Diện Di Động Số Hóa Di Sản Văn Hóa ViOne Heritage
 
-**Mục đích:** Khám phá bản đồ số GIS di sản văn hóa, tham quan thực tế ảo VR360 và tự động kích hoạt thuyết minh theo tọa độ GPS.
+**Mục đích:** Bản đồ số định vị di sản văn hóa toàn quốc chuẩn mobile app: lối tắt tính năng nhanh, tham quan thực tế ảo VR360, thuyết minh GPS tự động, đóng dấu Hộ chiếu công dân số và kho bài viết nghiên cứu di sản dân tộc.
 
 **Các bước thực hiện:**
 - **Bước 1:** Mở phân hệ Di sản ViOne Heritage trên ứng dụng.
-- **Bước 2:** Xem bản đồ số định vị các điểm di tích lịch sử và danh thắng văn hóa.
-- **Bước 3:** Di chuyển tới gần di tích để ứng dụng tự động phát bài thuyết minh lịch sử chuẩn xác.
+- **Bước 2:** Khám phá các di tích danh thắng UNESCO qua tour VR360 toàn cảnh và nghe audio thuyết minh GPS.
+- **Bước 3:** Đóng dấu lưu niệm di sản vào Hộ chiếu số và tìm hiểu kiến thức qua các bài viết lịch sử chuyên sâu.
 
 ![Hình 3.20 – Giao Diện Di Động Số Hóa Di Sản Văn Hóa ViOne Heritage](../images/evidence_v9/app_20_heritage.png)
 

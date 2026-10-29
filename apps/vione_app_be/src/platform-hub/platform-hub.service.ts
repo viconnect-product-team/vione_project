@@ -263,7 +263,13 @@ export class PlatformHubService {
     const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
 
     const races = await this.prisma.$queryRawUnsafe<any[]>(`
-      SELECT r.*, COUNT(b.id)::int as runners_count
+      SELECT r.*, COUNT(b.id)::int as runners_count,
+        COALESCE(
+          (SELECT json_agg(d.distance_km ORDER BY d.distance_km ASC)
+           FROM public.vione_race_distances d
+           WHERE d.race_id = r.id),
+          '[5, 10, 21, 42.195]'::json
+        ) as distances
       FROM public.vione_races r
       LEFT JOIN public.vione_race_bibs b ON b.race_id = r.id
       ${where}

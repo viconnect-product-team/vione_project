@@ -236,8 +236,13 @@ export const PlatformPwaApp: React.FC<PlatformPwaAppProps> = ({
           </div>
         )}
 
-        {/* Premium App Top Header Bar */}
-        <header className="sticky top-0 z-30 w-full bg-[#050C15]/95 backdrop-blur-md border-b border-[#D8B282]/20 px-4 py-3">
+        {/* Premium App Top Header Bar with Safe Area Top */}
+        <header
+          className="sticky top-0 z-30 w-full bg-[#050C15]/95 backdrop-blur-md border-b border-[#D8B282]/20 px-4 pb-3"
+          style={{
+            paddingTop: "max(var(--bc-mobile-safe-top, 0px), 52px)",
+          }}
+        >
           <div className="flex items-center justify-between">
             {/* User Profile Avatar & Switch Account */}
             <div className="flex items-center gap-2.5">

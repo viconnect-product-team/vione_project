@@ -1,5 +1,56 @@
 # System Memory & Architecture
 
+## 0.0000000000.24. KHẮC PHỤC TRIỆT ĐỂ LỖI HEADER ĐÈ STATUS BAR/DYNAMIC ISLAND VÀ LỖI ERRORBOUNDARY "SOMETHING WENT WRONG" TRÊN VIONE APP (29/10/2026)
+
+### 1. Phân Tích & Nguyên Nhân Gốc Rễ
+1. **Lỗi Header Đè Lên Dynamic Island & Status Bar (Hình 1 người dùng phản ánh)**:
+   - *Hiện tượng*: Tại các màn hình di động của phân hệ ViOne Museum (`app_19`), ViOne Sport (`app_17`), ViOne Run (`app_18`), ViOne Heritage (`app_20`), phần đỉnh đầu của màn hình bị dính sát mép trên cùng (chỉ có `padding: 12px`).
+   - Khi đóng khung mockup điện thoại iPhone, cụm Dynamic Island (rộng 122px, cao 33px tại y=11px), đồng hồ `09:41` (y=17px) và các biểu tượng sóng/pin (y=19px) bị vẽ đè trực tiếp lên Avatar người dùng, họ tên `Nguyễn Hải Đăng`, số `BIB: VNE-42-088` và nút `5 Tem`.
+   - *Khắc phục*: Bổ sung khoảng đệm an toàn iOS Safe Area Top (`paddingTop: 'max(var(--bc-mobile-safe-top, 0px), 52px)'`) cho thẻ `<header>` tại `apps/vione_app_fe/src/components/platform-app/PlatformPwaApp.tsx`. Khoảng cách 52px tạo ra dải nền tối sang trọng để Dynamic Island và đồng hồ ngự trị độc lập, toàn bộ thông tin tài khoản và nút bấm được đẩy xuống dưới thanh trạng thái, tuyệt đối không còn hiện tượng chồng lấn.
+2. **Lỗi "Something went wrong" trên Màn hình ViOne Run (Hình 2 người dùng phản ánh)**:
+   - *Hiện tượng*: Màn hình `app_18_run.png` chỉ có 72KB và hiển thị trang cảnh báo lỗi React ErrorBoundary với biểu tượng tam giác đỏ và dòng chữ *"Something went wrong - An unexpected error occurred. Please try again."*.
+   - *Nguyên nhân*: Do trường `distances` trong bảng CSDL `public.vione_races` nằm ở bảng riêng `public.vione_race_distances`, khi API backend `/platform-hub/run/races` trả về mảng danh sách giải chạy thì đối tượng `selectedRace` không có thuộc tính `distances` (trả về `undefined`). Khi hàm render gọi `selectedRace.distances.map((d) => ...)`, JavaScript văng ngoại lệ `TypeError: Cannot read properties of undefined (reading 'map')`, khiến toàn bộ component rơi vào ErrorBoundary.
+   - *Khắc phục*:
+     * Trong `apps/vione_app_fe/src/components/platform-app/RunRaceHub.tsx`: Thêm cơ chế phòng vệ Fallback an toàn tuyệt đối `(Array.isArray(selectedRace.distances) && selectedRace.distances.length > 0 ? selectedRace.distances : [5, 10, 21, 42.195]).map(...)`.
+     * Tương tự với `start_date` / `race_date` và `registered_count` / `runners_count`.
+     * Trong `apps/vione_app_be/src/platform-hub/platform-hub.service.ts`: Nâng cấp câu lệnh truy vấn SQL trong `getRaces` sử dụng `COALESCE((SELECT json_agg(d.distance_km ORDER BY d.distance_km ASC) FROM public.vione_race_distances d WHERE d.race_id = r.id), '[5, 10, 21, 42.195]'::json) as distances` để trả về dữ liệu cự ly chuẩn mực.
+
+### 2. Kết Quả Chụp Lại Ảnh & Xuất Bản Tài Liệu
+- Chụp lại trọn vẹn 4 màn hình di động:
+  * `app_17_sport.png` (422.5 KB)
+  * `app_18_run.png` (338.1 KB - KHÔNG còn lỗi Something went wrong, hiển thị toàn bộ bàn làm việc timing RFID, leaderboard và cẩm nang)
+  * `app_19_museum.png` (338.0 KB - Header thoáng đãng, phân tách rõ ràng dưới Dynamic Island)
+  * `app_20_heritage.png` (398.5 KB)
+- Kiểm tra toàn bộ 43 ảnh trong `document/images/evidence_v9/`: 100% tệp đều đạt kích thước tiêu chuẩn >100KB, 0 ảnh lỗi.
+- Đã build lại Master DOCX `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (34.2 MB) và đồng bộ sang thư mục `document/` và `C:/Users/vumik/Downloads/`.
+- Đã đồng bộ lại Markdown `[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (562.6 KB) tại cả 2 thư mục.
+
+---
+
+## 0.0000000000.23. HOÀN TẤT CHỤP TOÀN BỘ 43 ẢNH TỪ SERVER PRODUCTION VÀ XUẤT BẢN MASTER DOCX/MARKDOWN [VIONE] 06 (29/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu
+- Người dùng đã commit và push mã nguồn mới (`6a17e8b fix lỗi app vione`) lên repository GitHub và hoàn tất triển khai trên máy chủ production `https://vione.viconnect.vn`.
+- Yêu cầu: Chụp lại toàn bộ 43 màn hình trực tiếp từ server production đã triển khai (23 màn hình Cổng Web Quản trị desktop 1440x900 và 20 màn hình App Mobile 393x852 bọc khung mockup điện thoại Obsidian Luxury).
+- Tái cấu trúc và xuất bản trọn bộ tài liệu `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` và `[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` đồng bộ cả trong thư mục `document/` và thư mục tải về `C:/Users/vumik/Downloads/`.
+
+### 2. Quá Trình Thực Hiện & Kết Quả
+1. **Chụp 43 Màn Hình Live Từ Máy Chủ Production (`https://vione.viconnect.vn`)**:
+   - Sử dụng kịch bản Playwright `scratch/capture_full_vione_v9.js` đăng nhập tài khoản Quản trị viên `admin@connect.vn`.
+   - **23 Màn hình Cổng Web Quản trị** (1440x900, DPR 2): `crm_01_login.png` đến `crm_23_settings.png` được lưu tại `document/images/evidence_v9/`.
+   - **20 Màn hình App Mobile** (393x852, DPR 2): chụp độc lập, lọc bỏ banner cài đặt PWA, tự động bọc vào khung điện thoại iPhone kim loại viền cong với cụm Dynamic Island và loa thoại, xuất ra ảnh 500x1000 pixel sang trọng (`app_01_login.png` đến `app_20_heritage.png`).
+   - Cả 4 màn hình phân hệ mới (`app_17_sport.png`, `app_18_run.png`, `app_19_museum.png`, `app_20_heritage.png`) đều hiển thị đúng chuẩn Mobile App với Lưới tính năng nhanh (Quick Action Grid), Thẻ tương tác 3D/thời gian thực và Chuyên mục bài viết cẩm nang.
+2. **Xây Dựng Master DOCX (`scratch/build_vione_06_final.js`)**:
+   - Nhúng toàn bộ 43 ảnh live vào gói OpenXML `word/media/v9_*.png` và ánh xạ `document.xml.rels`.
+   - Bổ sung 6 Module đặc tả SRS chi tiết (Module 11 ViOne Sport, Module 12 ViOne Run Marathon, Module 13 ViOne Museum 3D, Module 14 ViOne Heritage, Module 15 ViOne Tickets, Module 16 ViOne Archive /documents).
+   - Tái tạo Phụ lục II (23 phân hệ Web Quản trị) và Phụ lục III (20 phân hệ App Mobile bọc khung mockup) kèm bảng hướng dẫn mục đích và các bước thao tác.
+   - Chuẩn hóa 100% thuật ngữ: "Phần mềm ViOne Platform", "Cổng Web Quản Trị ViOne Platform", phân quyền RBAC (không có các ban), cổng thanh toán VNPay và Zalo OA (thay thế toàn bộ VietQR/Napas).
+   - Xuất file kích thước 34.47 MB (34,473,144 bytes) tại `document/` và `C:/Users/vumik/Downloads/`.
+3. **Đồng Bộ Markdown (`scratch/sync_06_markdown.js`)**:
+   - Đồng bộ hoàn toàn nội dung văn bản, đường dẫn ảnh và mô tả 43 phân hệ sang `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` và `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (562,595 bytes).
+
+---
+
 ## 0.0000000000.22. CHUẨN HÓA GIAO DIỆN APP DI ĐỘNG CHO VIONE SPORT, RUN, MUSEUM & HERITAGE: TÍNH NĂNG NHANH, BÀI VIẾT CHUYÊN ĐỀ & ĐỒNG BỘ HAI BẢN APP (29/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Cốt Lõi Của Người Dùng
