@@ -1,634 +1,1273 @@
-# CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
-**Độc lập – Tự do – Hạnh phúc**
+CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập – Tự do – Hạnh phúc
+-------------------***-------------------
+TÁC PHẨM
 
----
+# CHƯƠNG TRÌNH MÁY TÍNH:
 
-# TÁC PHẨM
-## CHƯƠNG TRÌNH MÁY TÍNH:
-### PHẦN MỀM VIONE PLATFORM– NỀN TẢNG ĐỊNH DANH SỐ, KẾT NỐI KINH DOANH, QUẢN TRỊ CỘNG ĐỒNG, SỰ KIỆN VÀ SỐ HÓA DI SẢN VĂN HÓA
 
-- **Tên tổ chức / doanh nghiệp:** ........................................................................................................................
-- **Mã số doanh nghiệp:** .................................................................................................................................
-- **Địa chỉ trụ sở chính:** ...................................................................................................................................
-- **Số điện thoại:** ............................................................ **Email:** ....................................................................
-- **Tác giả:** .......................................................................................................................................
+# PHẦN MỀM VIONE PLATFORM (VIONE PLATFORM SOFTWARE)
 
-*Hà Nội, Năm 2026*
+(VIONE CRM & VIONE CONNECT APP)
+Chủ sở hữu quyền tác giả:
+Tên tổ chức / doanh nghiệp: ........................................................................................................................
+Mã số doanh nghiệp: .................................................................................................................................
+Địa chỉ trụ sở chính: ...................................................................................................................................
+Số điện thoại: ............................................................ Email: ....................................................................
+Tác giả: .......................................................................................................................................
+Hà Nội, Năm 2026
 
----
 
-## MỤC LỤC
+# MỤC LỤC
 
-1. [Giới thiệu](#1-giới-thiệu)
-   - 1.1 [Mục tiêu](#11-mục-tiêu)
-   - 1.2 [Phạm vi của dự án](#12-phạm-vi-của-dự-án)
-     - 1.2.1 [Phân hệ chức năng](#121-phân-hệ-chức-năng)
-     - 1.2.2 [Đối tượng sử dụng](#122-đối-tượng-sử-dụng)
-2. [Yêu cầu kỹ thuật](#2-yêu-cầu-kỹ-thuật)
-   - 2.1 [Kiến trúc hạ tầng](#21-kiến-trúc-hạ-tầng)
-     - 2.1.1 [Kiến trúc tổng thể](#211-kiến-trúc-tổng-thể)
-     - 2.1.2 [Kiến trúc chi tiết](#212-kiến-trúc-chi-tiết)
-     - 2.1.3 [Kiến trúc triển khai, dự phòng và an toàn](#213-kiến-trúc-triển-khai-dự-phòng-và-an-toàn)
-   - 2.2 [Công nghệ sử dụng](#22-công-nghệ-sử-dụng)
-   - 2.3 [Đặc tả yêu cầu chức năng chi tiết & Ma trận luồng dữ liệu](#23-đặc-tả-yêu-cầu-chức-năng-chi-tiết--ma-trận-luồng-dữ-liệu)
-     - 2.3.1 [Module 1: Đăng nhập & Quản trị Danh tính số](#231-module-1-đăng-nhập--quản-trị-danh-tính-số)
-     - 2.3.2 [Module 2: Quản trị Hồ sơ Định danh số & Danh thiếp Điện tử Thông minh](#232-module-2-quản-trị-hồ-sơ-định-danh-số--danh-thiếp-điện-tử-thông-minh)
-     - 2.3.3 [Module 3: Kết nối Kinh doanh & Xúc tiến Thương mại](#233-module-3-kết-nối-kinh-doanh--xúc-tiến-thương-mại)
-     - 2.3.4 [Module 4: Quản trị Cộng đồng & Hiệp hội Hội viên](#234-module-4-quản-trị-cộng-đồng--hiệp-hội-hội-viên)
-     - 2.3.5 [Module 5: Quản lý Sự kiện, Vé Điện tử & Điểm danh QR](#235-module-5-quản-lý-sự-kiện-vé-điện-tử--điểm-danh-qr)
-     - 2.3.6 [Module 6: Số hóa Di sản Văn hóa & Bản đồ GIS Bảo vệ](#236-module-6-số-hóa-di-sản-văn-hóa--bản-đồ-gis-bảo-vệ)
-     - 2.3.7 [Module 7: Quản trị Bảo tàng Số & Hiện vật Không gian 3D](#237-module-7-quản-trị-bảo-tàng-số--hiện-vật-không-gian-3d)
-     - 2.3.8 [Module 8: Kho Lưu trữ Tư liệu Lịch sử & Chứng thực Số](#238-module-8-kho-lưu-trữ-tư-liệu-lịch-sử--chứng-thực-số)
-     - 2.3.9 [Module 9: Quản trị Vận hành, Phân công Nhiệm vụ & Quy trình](#239-module-9-quản-trị-vận-hành-phân-công-nhiệm-vụ--quy-trình)
-     - 2.3.10 [Module 10: Quản trị Tài chính & Phê duyệt Thu Chi Đa cấp](#2310-module-10-quản-trị-tài-chính--phê-duyệt-thu-chi-đa-cấp)
-     - 2.3.11 [Module 11: Quản trị Chấm công Định vị GPS & Chuyên cần](#2311-module-11-quản-trị-chấm-công-định-vị-gps--chuyên-cần)
-     - 2.3.12 [Module 12: Quản trị Quan hệ Khách hàng CRM & Bóc tách OCR](#2312-module-12-quản-trị-quan-hệ-khách-hàng-crm--bóc-tách-ocr)
-     - 2.3.13 [Module 13: Kho Lưu trữ Tài liệu Doanh nghiệp Phân cấp](#2313-module-13-kho-lưu-trữ-tài-liệu-doanh-nghiệp-phân-cấp)
-     - 2.3.14 [Module 14: Hệ thống Biểu quyết Điện tử & Khảo sát Ý kiến](#2314-module-14-hệ-thống-biểu-quyết-điện-tử--khảo-sát-ý-kiến)
-     - 2.3.15 [Module 15: Phân hệ Phân quyền Vai trò Biệt lập](#2315-module-15-phân-hệ-phân-quyền-vai-trò-biệt-lập)
-     - 2.3.16 [Module 16: Thống kê & Báo cáo Quản trị](#2316-module-16-thống-kê--báo-cáo-quản-trị)
-   - 2.4 [Các yêu cầu phi chức năng khác](#24-các-yêu-cầu-phi-chức-năng-khác)
-     - 2.4.1 [Yêu cầu về hiệu năng](#241-yêu-cầu-về-hiệu-năng)
-     - 2.4.2 [Yêu cầu về bảo mật & Quyền riêng tư](#242-yêu-cầu-về-bảo-mật--quyền-riêng-tư)
-     - 2.4.3 [Yêu cầu tuân thủ pháp luật](#243-yêu-cầu-tuân-thủ-pháp-luật)
 
-- [PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm](#phụ-lục-i---yêu-cầu-kỹ-thuật-của-phần-mềm)
-  - 1. Cấu hình Máy chủ (Server Requirements)
-  - 2. Cấu hình Máy trạm truy cập Web CRM (Desktop / Laptop)
-  - 3. Cấu hình Thiết bị Di động (Mobile App Requirements)
+## 1. Giới thiệu
 
-- [PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG QUẢN TRỊ NỀN TẢNG VIONE](#phụ-lục-ii--hướng-dẫn-sử-dụng-phần-mềm---hệ-thống-quản-trị-nền-tảng-vione)
-  - 1. Màn hình Đăng nhập Nền tảng ViOne (Hình 2.1)
-  - 2. Bảng Điều khiển Quản trị Trung tâm (Dashboard) (Hình 2.2)
-  - 3. Quản lý Danh sách Đối tác & Doanh nghiệp (Hình 2.3)
-  - 4. Quản lý Cơ hội Kinh doanh & Phễu Bán hàng (Hình 2.4)
-  - 5. Quản lý Danh thiếp Điện tử Thông minh (Hình 2.5)
-  - 6. Sàn Giao thương & Kết nối Cung cầu Sản phẩm - Dịch vụ (Hình 2.6)
-  - 7. Quản trị Sự kiện & Hội thảo Doanh nghiệp (Hình 2.7)
-  - 8. Điểm danh & Check-in Sự kiện Tự động bằng Mã QR (Hình 2.8)
-  - 9. Quản trị Quy trình Công việc & Phân công Nhiệm vụ (Hình 2.9)
-  - 10. Quản lý Chấm công Định vị GPS & Chuyên cần Nhân sự (Hình 2.10)
-  - 11. Quản trị Doanh thu & Phiếu thu Tiền (Hình 2.11)
-  - 12. Quản lý Chi phí & Ngân sách Hoạt động (Hình 2.12)
-  - 13. Quản trị Phí Hội viên & Niên liễm Cộng đồng (Hình 2.13)
-  - 14. Quy trình Phê duyệt Tài chính Đa cấp Tích hợp VietQR (Hình 2.14)
-  - 15. Quản lý Lịch trình Công tác & Họp Trực tuyến (Hình 2.15)
-  - 16. Quản trị Kho Lưu trữ Tài liệu Phân cấp Thư mục (Hình 2.16)
-  - 17. Hệ thống Biểu quyết Điện tử & Khảo sát Ý kiến (Hình 2.17)
-  - 18. Phân hệ Phân quyền Vai trò & Kiểm soát Truy cập Dữ liệu (RBAC) (Hình 2.18)
-  - 19. Trợ lý Ảo ViOne AI Hỗ trợ Nghiệp vụ (Hình 2.19)
-  - 20. Cài đặt Hệ thống & Cấu hình Nền tảng (Hình 2.20)
 
-- [PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG VIONE APP](#phụ-lục-iii--hướng-dẫn-sử-dụng-phần-mềm---ứng-dụng-di-động-vione-app)
-  *(Toàn bộ hình ảnh giao diện ứng dụng di động được đóng gói trong khung điện thoại chuẩn, không có nút cài đặt PWA)*
-  - 1. Màn hình Đăng nhập Ứng dụng Di động ViOne (Hình 3.1)
-  - 2. Màn hình Trang chủ Ứng dụng Di động ViOne (Hình 3.2)
-  - 3. Màn hình Thẻ Doanh nhân & Định danh số (Hình 3.3)
-  - 4. Màn hình Bàn làm việc & Lịch trình công tác (Hình 3.4)
-  - 5. Màn hình Mạng lưới Kết nối Đối tác Doanh nghiệp (Hình 3.5)
-  - 6. Bản tin Hoạt động & Gợi ý Đối tác Giao thương (Hình 3.6)
-  - 7. Hộp thư Trao đổi & Đề xuất Cuộc hẹn Giao thương (Hình 3.7)
-  - 8. Bảng Điều khiển Tác vụ Nhanh V-Action (Hình 3.8)
-  - 9. Không gian Cộng đồng Doanh nghiệp & Hiệp hội (Hình 3.9)
-  - 10. Quản trị Nhiệm vụ & Chấm công Định vị GPS (Hình 3.10)
-  - 11. Trang Cá nhân & Hồ sơ Định danh số (Hình 3.11)
-  - 12. Danh thiếp Điện tử & Mã QR Định danh vCard (Hình 3.12)
-  - 13. Cài đặt & Kích hoạt Thẻ Vật lý NFC (Hình 3.13)
-  - 14. Quét & Nhận diện Danh thiếp Số hóa OCR (Hình 3.14)
-  - 15. Trung tâm Bảo mật & Cài đặt Tài khoản (Hình 3.15)
-  - 16. Trung tâm Thông báo Hệ thống (Hình 3.16)
+### 1.1 Mục tiêu
 
-- [PHỤ LỤC IV - MÃ NGUỒN PHẦN MỀM](#phụ-lục-iv---mã-nguồn-phần-mềm)
 
----
+### 1.2 Phạm vi của dự án
 
-# 1. Giới thiệu
-
-## 1.1 Mục tiêu
-Phần mềm ViOne Platform– Nền tảng định danh số, kết nối kinh doanh, quản trị cộng đồng, sự kiện và số hóa di sản văn hóa là hệ thống phần mềm toàn diện, đáp ứng nhu cầu số hóa quy trình quản lý, định danh điện tử, mở rộng giao thương, quản trị tổ chức hiệp hội, tổ chức sự kiện và bảo tồn di sản văn hóa trên môi trường số.
-
-Mục tiêu cụ thể của phần mềm gồm:
-1. **Thiết lập nền tảng định danh số:** Cung cấp hồ sơ cá nhân và doanh nghiệp số (e-Profile), danh thiếp điện tử thông minh, mã QR Code động, chuẩn dữ liệu danh bạ vCard và thẻ vật lý giao tiếp trường gần NFC một chạm.
-2. **Thúc đẩy kết nối kinh doanh:** Xây dựng mạng lưới đối tác B2B, gợi ý đối tác theo ngành nghề (Business Matcher), điều phối quy trình giới thiệu cơ hội kinh doanh (Introductions), lên lịch họp làm việc 1-1 và sàn giao dịch sản phẩm dịch vụ (Marketplace).
-3. **Hiện đại hóa quản trị cộng đồng và hiệp hội:** Quản lý cơ cấu ban điều hành, danh sách hội viên, phát hành thẻ hội viên số, quản lý chính sách ưu đãi quyền lợi, thu niên liễm và tổ chức biểu quyết điện tử.
-4. **Số hóa quy trình tổ chức sự kiện:** Tạo và quản trị sự kiện, phát hành vé điện tử (E-Tickets), ví lưu trữ vé và điểm danh tự động bằng mã QR thời gian thực.
-5. **Số hóa và bảo tồn di sản văn hóa:** Quản lý hồ sơ di sản vật thể và phi vật thể, khoanh vùng bảo vệ trên bản đồ số GIS, không gian tham quan thực tế ảo VR360, thuyết minh tự động theo GPS, tương tác hiện vật 3D Photogrammetry/AR và lưu trữ tư liệu lịch sử có chứng thực số.
-6. **Tối ưu hóa quản trị điều hành:** Cung cấp bảng điều khiển trung tâm, phễu khách hàng CRM, quy trình công việc Kanban, chấm công định vị GPS văn phòng, phê duyệt tài chính 3 cấp tích hợp thanh toán VietQR và kho tài liệu phân cấp thư mục.
-
-## 1.2 Phạm vi của dự án
 
 ### 1.2.1 Phân hệ chức năng
-Phần mềm bao gồm hai môi trường tương tác chính:
-- **Cổng Quản trị Web (ViOne Platform & Web CRM):** Hoạt động trên trình duyệt web, phục vụ công tác quản trị hệ thống, điều hành doanh nghiệp, giám sát di sản, quản lý sự kiện và tổ chức cộng đồng.
-- **Ứng dụng Di động ViOne App (iOS & Android):** Ứng dụng di động phục vụ người dùng, doanh nhân, hội viên và du khách tương tác nhanh chóng, trao đổi danh thiếp số, nhận việc, chấm công, check-in sự kiện và tham quan số hóa.
+
 
 ### 1.2.2 Đối tượng sử dụng
-- **Công chúng / Du khách / Khách hàng:** Xem hồ sơ công khai, quét mã QR danh thiếp, đăng ký tham gia sự kiện, tham quan di sản văn hóa và bảo tàng số.
-- **Hội viên / Nhân viên doanh nghiệp:** Quản lý danh thiếp cá nhân, kết nối giao thương, tiếp nhận công việc, chấm công GPS, sử dụng vé sự kiện.
-- **Cán bộ quản lý / Trưởng bộ phận:** Phân công nhiệm vụ, giám sát tiến độ, phê duyệt tài chính cấp 1, quản lý danh sách hội viên.
-- **Ban Lãnh đạo (C-Level, Ban Quản lý Di tích, Ban Thường trực Hiệp hội):** Theo dõi bảng điều khiển KPI, phê duyệt tài chính cấp cao, điều hành sự kiện và bảo tồn di sản.
-- **Quản trị viên Hệ thống (System Admin):** Cấu hình phân quyền vai trò (RBAC), quản trị tài nguyên, giám sát an toàn dữ liệu và sao lưu hệ thống.
 
----
 
-# 2. Yêu cầu kỹ thuật
+## 2. Yêu cầu kỹ thuật
 
-## 2.1 Kiến trúc hạ tầng
+
+### 2.1 Kiến trúc hạ tầng
+
 
 ### 2.1.1 Kiến trúc tổng thể
-Hệ thống được thiết kế theo mô hình Kiến trúc Hợp nhất Module (Modular Architecture) kết hợp dịch vụ nền tảng:
-- **Tầng Trình bày (Presentation Layer):**
-  - Web Quản trị: Xây dựng trên React 19, TanStack Router & TanStack Query, tối ưu tốc độ phản hồi và kết xuất giao diện mượt mà.
-  - Ứng dụng Di động: Phát triển trên nền tảng React Native / Expo Native Engine cho iOS và Google Android, đồng bộ luồng nghiệp vụ với bản Web.
-- **Tầng Biên & Điều phối (Edge & Gateway):**
-  - Máy chủ Reverse Proxy Nginx, lọc và mã hóa toàn bộ dữ liệu truyền thông bằng SSL/TLS 1.3 Let's Encrypt.
-- **Tầng Dịch vụ Nghiệp vụ (Business Logic Layer):**
-  - Xây dựng trên nền tảng NestJS Framework (Node.js/TypeScript) chuẩn mực, áp dụng nguyên lý Dependency Injection, Repository Pattern và DTO Validation chặt chẽ.
-- **Tầng Dữ liệu & Lưu trữ (Data & Storage Layer):**
-  - Cơ sở dữ liệu quan hệ PostgreSQL 16 xử lý dữ liệu giao dịch toàn vẹn ACID.
-  - Hệ thống lưu trữ tệp MinIO S3 Object Storage lưu trữ ảnh đại diện, danh thiếp số, mô hình 3D và tư liệu số hóa.
+
 
 ### 2.1.2 Kiến trúc chi tiết
-1. **Xử lý yêu cầu nghiệp vụ:** Mọi yêu cầu HTTP/WebSocket từ máy trạm đều được xác thực qua JwtAuthGuard và RoleGuard. Dữ liệu được kiểm thực theo quy tắc DTO trước khi chuyển vào Service xử lý và lưu trữ trong PostgreSQL.
-2. **Đồng bộ thời gian thực:** Khi có sự kiện phát sinh (tin nhắn mới, giao việc, check-in sự kiện, thanh toán hoàn tất), máy chủ phát sự kiện qua WebSocket Gateway và thông báo đẩy (FCM / APNs) đến ứng dụng di động của người dùng.
+
 
 ### 2.1.3 Kiến trúc triển khai, dự phòng và an toàn
-- Hệ thống được đóng gói bằng Docker và điều phối qua Docker Compose.
-- Mỗi phân hệ chạy trong container độc lập, hạn chế ảnh hưởng chéo khi xảy ra sự cố.
-- CSDL PostgreSQL được cấu hình sao lưu định kỳ hàng ngày kèm lưu trữ nhật ký ghi trước (Write-Ahead Logging - WAL).
 
-## 2.2 Công nghệ sử dụng
 
-| STT | Thành phần | Công nghệ / Nền tảng | Vai trò kỹ thuật |
-| :---: | :--- | :--- | :--- |
-| 1 | Backend Framework | NestJS v10 (Node.js/TypeScript) | Xử lý API RESTful, nghiệp vụ hệ thống và WebSocket Gateway |
-| 2 | Quản trị CSDL | Prisma ORM & pg client (PostgreSQL 16) | Quản lý schema dữ liệu, migration và truy vấn an toàn kiểu dữ liệu |
-| 3 | Frontend Web Quản trị | React 19, TanStack Router & Start | Giao diện điều hành web tốc độ cao, hỗ trợ quản trị toàn diện |
-| 4 | Ứng dụng Di động | React Native, Expo SDK (Hermes Engine) | Ứng dụng di động thuần Native cho hệ điều hành iOS và Android |
-| 5 | Thông báo đẩy | Apple APNs, Firebase Cloud Messaging (FCM) | Gửi thông báo sự kiện, tin nhắn và lịch trình về thiết bị di động |
-| 6 | Quản lý trạng thái Client | TanStack Query v5, Context API | Lưu trữ cache trạng thái dữ liệu, hạn chế gọi mạng trùng lặp |
-| 7 | Truyền thông thời gian thực | Socket.IO Gateway, WebRTC | Trao đổi tin nhắn trực tiếp, cập nhật trạng thái và phòng họp video |
-| 8 | Xác thực & An ninh | JWT, Bcrypt / Argon2, RBAC Guard | Xác thực danh tính người dùng và phân quyền kiểm soát truy cập |
-| 9 | Cổng thanh toán số | VietQR Banking API, Webhook | Sinh mã thanh toán QR động, đối soát và gạch nợ tự động |
-| 10 | Trí tuệ nhân tạo | OpenRouter AI Engine, OCR Vision | Bóc tách thông tin danh thiếp giấy, phân tích dữ liệu nghiệp vụ |
-| 11 | Lưu trữ tệp tin | MinIO S3 Compatible Storage | Lưu trữ hình ảnh, tài liệu hồ sơ, mô hình 3D và hiện vật số |
-| 12 | Máy chủ Reverse Proxy | Nginx 1.24+ SSL Reverse Proxy | Điều hướng tên miền, cân bằng tải và mã hóa kết nối SSL |
+### 2.2 Công nghệ sử dụng
 
----
 
-## 2.3 Đặc tả yêu cầu chức năng chi tiết & Ma trận luồng dữ liệu
+### 2.3 Yêu cầu chức năng hệ thống
 
-### 2.3.1 Module 1: Đăng nhập & Quản trị Danh tính số
-Hệ thống cung cấp cơ chế xác thực danh tính người dùng đa kênh an toàn:
-- Đăng nhập bằng Email và Mật khẩu.
-- Đăng nhập bằng Số điện thoại nhận mã xác thực OTP.
-- Đăng nhập nhanh qua Apple ID trên thiết bị iOS và Google ID trên thiết bị Android/Web.
 
-| Trường dữ liệu | Kiểu điều khiển | Giá trị gợi ý | Quy tắc kiểm thực & Ràng buộc | API & Bảng CSDL |
-| :--- | :--- | :--- | :--- | :--- |
-| email | TextInput (email) | user@congty.vn | Định dạng email hợp lệ RFC 5322. | POST /api/auth/login<br>Bảng: auth.users, vione_users |
-| password | PasswordInput | •••••••• | Tối thiểu 6 ký tự, mã hóa mật khẩu Bcrypt. | POST /api/auth/login<br>Bảng: vione_users (password) |
-| phone | PhoneInput | 0912 345 678 | Số điện thoại di động Việt Nam (10 chữ số). | POST /api/auth/otp/send<br>Bảng: phone_verifications |
-| otp_code | NumberPad (6 ô) | _ _ _ _ _ _ | Bắt buộc 6 chữ số, hiệu lực trong 120 giây. | POST /api/auth/otp/verify<br>Bảng: phone_verifications |
+### 2.3.1 Các chức năng nền tảng chung
 
-### 2.3.2 Module 2: Quản trị Hồ sơ Định danh số & Danh thiếp Điện tử Thông minh
-- Quản lý thông tin hồ sơ cá nhân và doanh nghiệp số.
-- Tạo danh thiếp điện tử thông minh, chia sẻ qua mã QR Code động hoặc liên kết rút gọn.
-- Xuất danh thiếp chuẩn danh bạ quốc tế vCard (.vcf) giúp đối tác lưu vào điện thoại trong 1 chạm.
-- Tích hợp thẻ vật lý giao tiếp trường gần NFC một chạm.
-- Bóc tách danh thiếp giấy bằng công nghệ OCR thành danh bạ số.
 
-### 2.3.3 Module 3: Kết nối Kinh doanh & Xúc tiến Thương mại (Business Connect)
-- Mạng lưới kết nối đối tác doanh nghiệp B2B.
-- Gợi ý đối tác kinh doanh phù hợp theo ngành nghề và nhu cầu mua - bán.
-- Quy trình giới thiệu cơ hội kinh doanh (Introductions Pipeline): Khởi tạo lời giới thiệu, gửi yêu cầu, tiếp nhận, chuyển giao và đánh giá kết quả giao thương.
-- Lên lịch hẹn làm việc 1-1 và đồng bộ lịch trình.
-- Sàn thương mại B2B Marketplace: Niêm yết sản phẩm, dịch vụ và chào giá đối tác.
+### 2.3.2 Chức năng chi tiết phân hệ Cổng Quản trị Web CRM (20 phân hệ)
 
-### 2.3.4 Module 4: Quản trị Cộng đồng & Hiệp hội Hội viên (Association Management)
-- Quản lý mô hình tổ chức hiệp hội, câu lạc bộ, liên minh doanh nghiệp đa cấp.
-- Quản lý danh sách hội viên, phân hạng hội viên (Hội viên chính thức, Hội viên danh dự, Hội viên liên kết).
-- Cấp phát và quản lý Thẻ hội viên số (Digital Member Card) có mã định danh và mã QR xác thực quyền lợi.
-- Quản lý chính sách ưu đãi, quyền lợi hội viên (Member Benefits & Perks).
-- Quản lý niên liễm, thu phí hội viên định kỳ và quy trình gia hạn thẻ hội viên tự động.
-- Cổng thông tin, bản tin nội bộ và biểu quyết điện tử (E-Voting).
 
-### 2.3.5 Module 5: Quản lý Sự kiện, Vé Điện tử & Điểm danh QR
-- Khởi tạo và điều phối các sự kiện, hội nghị, hội thảo, giải chạy cộng đồng.
-- Phát hành vé điện tử (E-Tickets), vé mời đại biểu và ví vé cá nhân (Ticket Wallet).
-- Điểm danh và check-in tự động tại quầy sự kiện bằng quét mã QR thời gian thực.
-- Thống kê tỷ lệ tham dự của đại biểu và xuất báo cáo sự kiện.
+### 2.3.3 Chức năng chi tiết phân hệ Ứng dụng Di động Native ViOne Connect (16 phân hệ)
 
-### 2.3.6 Module 6: Số hóa Di sản Văn hóa & Bản đồ GIS Bảo vệ (ViOne Heritage)
-- Quản lý hồ sơ số hóa di sản văn hóa vật thể, phi vật thể và danh thắng.
-- Định vị bản đồ số GIS khoanh vùng bảo vệ di tích (Vùng I bảo vệ nghiêm ngặt, Vùng II vùng đệm).
-- Không gian tham quan thực tế ảo VR360.
-- Hệ thống thuyết minh di sản tự động kích hoạt theo tọa độ định vị vệ tinh GPS khi du khách di chuyển tới điểm di tích.
-- Theo dõi hiện trạng di tích, độ ẩm, rủi ro kết cấu và kế hoạch bảo tồn.
 
-### 2.3.7 Module 7: Quản trị Bảo tàng Số & Hiện vật Không gian 3D (ViOne Museum)
-- Không gian trưng bày ảo chuyên đề theo từng thời kỳ lịch sử.
-- Trưng bày và tương tác hiện vật 3D Photogrammetry/AR: Xoay, phóng to, thu nhỏ và xem cấu tạo hiện vật.
-- Gắn thẻ chip NFC tại quầy hiện vật trưng bày thực tế để du khách chạm điện thoại nghe thuyết minh chi tiết.
-- Quản lý và điều phối vé tham quan bảo tàng.
+### 2.3.4 Ma trận luồng dữ liệu và thông số kỹ thuật API (10 modules)
 
-### 2.3.8 Module 8: Kho Lưu trữ Tư liệu Lịch sử & Chứng thực Số (ViOne Archive)
-- Số hóa và lưu trữ tư liệu quý: Sắc phong hoàng gia, mộc bản triều Nguyễn, châu bản, văn bia, thần tích, bản dập Hán Nôm.
-- Bóc tách và dịch nghĩa chữ Hán Nôm bằng công nghệ xử lý ảnh quang học.
-- Chứng thực số và quản lý bản sao điện tử độ phân giải cao phục vụ nghiên cứu và công chúng.
 
-### 2.3.9 Module 9: Quản trị Vận hành, Phân công Nhiệm vụ & Quy trình (Workflow & Tasks)
-- Bảng Kanban 4 trạng thái (Cần làm, Đang làm, Chờ duyệt, Hoàn thành).
-- Phân công công việc, thiết lập thời hạn hoàn thành (Deadline) và danh sách tiêu chí nghiệm thu (Checklist).
-- Quy tắc kiểm soát tải làm việc (WIP Limit) đảm bảo năng suất nhân sự.
+### 2.4 Các yêu cầu phi chức năng khác
 
-### 2.3.10 Module 10: Quản trị Tài chính & Phê duyệt Thu Chi Đa cấp
-- Luồng phê duyệt tài chính 3 cấp (Người lập đề xuất -> Trưởng bộ phận soát xét -> Giám đốc phê duyệt).
-- Kiểm tra chống chi trùng hóa đơn.
-- Tích hợp cổng thanh toán VietQR Napas 24/7 tự động sinh mã QR động và gạch nợ tức thì.
 
-### 2.3.11 Module 11: Quản trị Chấm công Định vị GPS & Chuyên cần
-- Điểm danh chấm công dựa trên tọa độ vệ tinh GPS theo bán kính cho phép của văn phòng (Geofencing).
-- Nhận diện khuôn mặt thời gian thực chống gian lận.
-- Bảng tổng hợp công tự động đồng bộ về hệ thống quản trị.
+### 2.4.1 Yêu cầu về hiệu năng (Performance Requirements)
 
-### 2.3.12 Module 12: Quản trị Quan hệ Khách hàng CRM (CRM & Leads Pipeline)
-- Quản lý hồ sơ đối tác, khách hàng và danh sách liên hệ.
-- Phễu cơ hội kinh doanh đa giai đoạn (Deals Pipeline) và dự báo doanh số.
 
-### 2.3.13 Module 13: Kho Lưu trữ Tài liệu Doanh nghiệp Phân cấp (/documents)
-- Cấu trúc thư mục đa cấp (Nested Folders) tương tự Google Drive.
-- Phân loại danh mục hồ sơ: Pháp lý, Hợp đồng, Tài chính, Nhân sự, Quy chế.
-- Ghim tài liệu quan trọng và cấp quyền chia sẻ liên kết an toàn.
+### 2.4.2 Yêu cầu về bảo mật (Security Requirements)
 
-### 2.3.14 Module 14: Hệ thống Biểu quyết Điện tử & Khảo sát Ý kiến
-- Khởi tạo phiên biểu quyết, lấy ý kiến đại hội hoặc khảo sát nội bộ.
-- Bỏ phiếu điện tử bảo mật, mã hóa kết quả và thống kê tỷ lệ biểu quyết trực quan.
 
-### 2.3.15 Module 15: Phân hệ Phân quyền Vai trò Biệt lập (Multi-tenant RBAC)
-- Kiểm soát truy cập dựa trên vai trò (Role-Based Access Control) độc lập cho từng tổ chức/doanh nghiệp.
-- Ngăn chặn xung đột và rò rỉ dữ liệu giữa các bên (Data Isolation).
+### 2.4.3 Yêu cầu tuân thủ (Compliance Requirements)
 
-### 2.3.16 Module 16: Thống kê & Báo cáo Quản trị
-- Cây menu phân cấp báo cáo: Báo cáo tài chính, Báo cáo vận hành, Báo cáo đối tác CRM, Báo cáo tổng thể nền tảng.
-
----
-
-## 2.4 Các yêu cầu phi chức năng khác
-
-### 2.4.1 Yêu cầu về hiệu năng
-- Thời gian phản hồi API tiêu chuẩn dưới 200ms; các truy vấn báo cáo tổng hợp hoàn thành dưới 800ms.
-- Khả năng phục vụ đồng thời tối thiểu 5.000 người dùng với mức tải CPU/RAM dưới 70%.
-- Tốc độ tải trang ban đầu trên Web dưới 1.2 giây; ứng dụng di động khởi động nhanh và tải lười tài nguyên (Lazy Loading).
-
-### 2.4.2 Yêu cầu về bảo mật & Quyền riêng tư
-- Toàn bộ kết nối qua giao thức bảo mật HTTPS/WSS với chứng chỉ mã hóa TLS 1.3.
-- Mật khẩu người dùng được băm qua thuật toán Bcrypt; dữ liệu nhạy cảm được mã hóa theo chuẩn AES-256.
-- Access Token có thời hạn 60 phút, Refresh Token có thời hạn 7 ngày lưu trữ an toàn trong HttpOnly Cookie và Keystore/Keychain di động.
-- Phòng chống các lỗ hổng bảo mật phổ biến như SQL Injection, Cross-Site Scripting (XSS), CSRF và tấn công từ chối dịch vụ.
-
-### 2.4.3 Yêu cầu tuân thủ pháp luật
-- Phần mềm tuân thủ đầy đủ chuẩn quốc tế IEEE 830-1998 về đặc tả yêu cầu kỹ thuật phần mềm máy tính.
-- Tuân thủ quy định tại Nghị định 13/2023/NĐ-CP của Chính phủ về bảo vệ dữ liệu cá nhân.
-- Tuân thủ các quy định hiện hành của Luật Sở hữu trí tuệ và hướng dẫn của Cục Bản quyền tác giả Việt Nam.
-
----
 
 # PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm
 
-### 1. Cấu hình Máy chủ (Server Requirements)
-- **Hệ điều hành:** Ubuntu Linux 22.04 LTS x86_64 hoặc tương đương.
-- **Bộ vi xử lý (CPU):** Tối thiểu 4 Cores (khuyến nghị 8 Cores trở lên).
-- **Bộ nhớ trong (RAM):** Tối thiểu 8 GB RAM (khuyến nghị 16 GB trở lên).
-- **Ổ đĩa lưu trữ:** Tối thiểu 100 GB SSD NVMe tốc độ cao.
-- **Môi trường thực thi:** Node.js v18 trở lên, Docker Engine 24+, Docker Compose v2.
-- **Băng thông mạng:** Kết nối mạng Internet tối thiểu 100 Mbps đối xứng, có địa chỉ IP tĩnh và chứng chỉ số SSL/TLS.
 
-### 2. Cấu hình Máy trạm truy cập Web CRM (Desktop / Laptop)
-- **Hệ điều hành:** Windows 10/11, macOS 12+, hoặc Linux.
-- **Trình duyệt web:** Google Chrome (phiên bản 110+), Microsoft Edge, Mozilla Firefox hoặc Apple Safari mới nhất.
-- **Độ phân giải màn hình:** Tối thiểu 1366 x 768 pixels (khuyến nghị 1920 x 1080 Full HD).
-- **Kết nối mạng:** Kết nối Internet ổn định tối thiểu 5 Mbps.
-
-### 3. Cấu hình Thiết bị Di động (Mobile App Requirements)
-- **Hệ điều hành iOS:** iOS 15.0 trở lên (hỗ trợ từ iPhone X, iPhone 11 đến iPhone 16 Pro Max).
-- **Hệ điều hành Android:** Android 10.0 (API level 29) trở lên, có hỗ trợ Google Play Services.
-- **Phần cứng thiết bị:** Tối thiểu 3 GB RAM, hỗ trợ Camera chụp ảnh, định vị vệ tinh GPS và giao tiếp trường gần NFC (nếu dùng tính năng chạm thẻ vật lý).
-
----
-
-# PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG QUẢN TRỊ NỀN TẢNG VIONE
-
-### 1. Màn hình Đăng nhập Nền tảng ViOne
-- **Mục đích:** Xác thực danh tính cán bộ quản lý và nhân sự trước khi truy cập cổng điều hành.
-- **Các bước thực hiện:**
-  - Bước 1: Mở trình duyệt web, truy cập địa chỉ hệ thống.
-  - Bước 2: Nhập địa chỉ Email và Mật khẩu đã được cấp phát.
-  - Bước 3: Bấm nút 'Đăng Nhập' để truy cập vào hệ thống.
-- *(Hình 2.1 – Màn hình Đăng nhập Nền tảng ViOne)*
-
-### 2. Bảng Điều khiển Quản trị Trung tâm (Dashboard)
-- **Mục đích:** Cung cấp bức tranh toàn cảnh về hoạt động kinh doanh, hội viên, tiến độ công việc và chỉ số dòng tiền theo thời gian thực.
-- **Các bước thực hiện:**
-  - Bước 1: Sau khi đăng nhập, hệ thống tự động hiển thị Bảng điều khiển trung tâm.
-  - Bước 2: Xem các khối chỉ số tổng quan (Hội viên, Doanh thu, Cơ hội, Nhiệm vụ).
-  - Bước 3: Nhấp vào từng biểu đồ để xem chi tiết danh sách nghiệp vụ liên quan.
-- *(Hình 2.2 – Bảng Điều khiển Quản trị Trung tâm (Dashboard))*
-
-### 3. Quản lý Danh sách Đối tác & Doanh nghiệp
-- **Mục đích:** Quản lý cơ sở dữ liệu đối tác, khách hàng và danh sách hội viên trong hệ thống.
-- **Các bước thực hiện:**
-  - Bước 1: Chọn mục 'Thành viên / Đối tác' trên thanh điều hướng bên trái.
-  - Bước 2: Sử dụng bộ lọc tìm kiếm theo ngành nghề, phân hạng hoặc khu vực.
-  - Bước 3: Bấm vào tên đối tác để xem chi tiết hồ sơ năng lực và lịch sử giao dịch.
-- *(Hình 2.3 – Quản lý Danh sách Đối tác & Doanh nghiệp)*
-
-### 4. Quản lý Cơ hội Kinh doanh & Phễu Bán hàng
-- **Mục đích:** Theo dõi các giai đoạn xúc tiến thương mại từ tiếp cận đến ký kết hợp đồng.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Cơ hội kinh doanh' trên thanh menu.
-  - Bước 2: Xem các cơ hội được sắp xếp theo các cột giai đoạn phễu.
-  - Bước 3: Kéo thả thẻ cơ hội hoặc bấm '+ Thêm mới' để khởi tạo thương vụ mới.
-- *(Hình 2.4 – Quản lý Cơ hội Kinh doanh & Phễu Bán hàng)*
-
-### 5. Quản lý Danh thiếp Điện tử Thông minh
-- **Mục đích:** Khởi tạo, chỉnh sửa và quản lý danh thiếp số cho các cán bộ và hội viên.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Danh thiếp số' trên hệ thống.
-  - Bước 2: Chọn danh thiếp cần cập nhật thông tin chức danh, số điện thoại, mạng xã hội.
-  - Bước 3: Lưu thay đổi và xuất mã QR Code chia sẻ danh thiếp.
-- *(Hình 2.5 – Quản lý Danh thiếp Điện tử Thông minh)*
-
-### 6. Sàn Giao thương & Kết nối Cung cầu Sản phẩm - Dịch vụ
-- **Mục đích:** Tạo môi trường kết nối giao thương B2B nội bộ giữa các doanh nghiệp và hội viên.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập phân hệ 'Sàn giao thương' (Marketplace).
-  - Bước 2: Duyệt danh mục sản phẩm, dịch vụ và nhu cầu tìm kiếm đối tác.
-  - Bước 3: Bấm 'Gửi báo giá' hoặc 'Kết nối' để mở luồng trao đổi trực tiếp.
-- *(Hình 2.6 – Sàn Giao thương & Kết nối Cung cầu Sản phẩm - Dịch vụ)*
-
-### 7. Quản trị Sự kiện & Hội thảo Doanh nghiệp
-- **Mục đích:** Lập kế hoạch, công bố thông tin và quản trị danh sách người tham gia sự kiện.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Sự kiện' trên menu chính.
-  - Bước 2: Bấm nút '+ Tạo Sự Kiện Mới' và điền tiêu đề, thời gian, địa điểm, nội dung.
-  - Bước 3: Xuất bản sự kiện để hội viên có thể đăng ký vé tham dự.
-- *(Hình 2.7 – Quản trị Sự kiện & Hội thảo Doanh nghiệp)*
-
-### 8. Điểm danh & Check-in Sự kiện Tự động bằng Mã QR
-- **Mục đích:** Thực hiện quét mã vé của đại biểu tại quầy đón tiếp để điểm danh tự động.
-- **Các bước thực hiện:**
-  - Bước 1: Mở màn hình 'Quét vé Check-in' tại bàn lễ tân.
-  - Bước 2: Hướng camera vào mã QR vé điện tử trên điện thoại của đại biểu.
-  - Bước 3: Hệ thống xác thực vé hợp lệ, phát âm thanh thông báo và ghi nhận có mặt.
-- *(Hình 2.8 – Điểm danh & Check-in Sự kiện Tự động bằng Mã QR)*
-
-### 9. Quản trị Quy trình Công việc & Phân công Nhiệm vụ
-- **Mục đích:** Điều hành và giám sát tiến độ thực hiện công việc của các phòng ban.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Quy trình công việc' (Workflow).
-  - Bước 2: Bấm '+ Giao Việc', nhập tiêu đề, chọn người nhận việc, hạn chót và checklist.
-  - Bước 3: Theo dõi trạng thái công việc di chuyển qua các cột Kanban.
-- *(Hình 2.9 – Quản trị Quy trình Công việc & Phân công Nhiệm vụ)*
-
-### 10. Quản lý Chấm công Định vị GPS & Chuyên cần Nhân sự
-- **Mục đích:** Giám sát dữ liệu chấm công hàng ngày của nhân viên tại văn phòng.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Chấm công' trên hệ thống quản trị.
-  - Bước 2: Xem bảng chấm công theo ngày, tuần hoặc tháng của từng bộ phận.
-  - Bước 3: Kiểm tra tọa độ GPS và ảnh chụp xác thực khuôn mặt của nhân viên.
-- *(Hình 2.10 – Quản lý Chấm công Định vị GPS & Chuyên cần Nhân sự)*
-
-### 11. Quản trị Doanh thu & Phiếu thu Tiền
-- **Mục đích:** Quản lý các khoản thu, phát hành phiếu thu và theo dõi tiến độ thanh toán.
-- **Các bước thực hiện:**
-  - Bước 1: Chọn mục 'Khoản thu' trên thanh điều hướng.
-  - Bước 2: Xem danh sách các khoản tiền đã thu hoặc đang chờ thu.
-  - Bước 3: Lập phiếu thu mới hoặc xuất báo cáo doanh thu ra file Excel.
-- *(Hình 2.11 – Quản trị Doanh thu & Phiếu thu Tiền)*
-
-### 12. Quản lý Chi phí & Ngân sách Hoạt động
-- **Mục đích:** Kiểm soát định mức chi phí và ngân sách vận hành của các bộ phận.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Khoản chi' trên hệ thống.
-  - Bước 2: Lọc các khoản chi theo phòng ban, danh mục chi phí và thời gian.
-  - Bước 3: Đối chiếu số tiền chi thực tế với hạn mức ngân sách đã phê duyệt.
-- *(Hình 2.12 – Quản lý Chi phí & Ngân sách Hoạt động)*
-
-### 13. Quản trị Phí Hội viên & Niên liễm Cộng đồng
-- **Mục đích:** Quản lý lịch thu hội phí thường niên, hạn thẻ và trạng thái đóng phí của hội viên.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Phí hội viên' trong phân hệ cộng đồng.
-  - Bước 2: Xem danh sách hội viên sắp đến hạn hoặc quá hạn đóng niên liễm.
-  - Bước 3: Gửi thông báo nhắc phí tự động hoặc ghi nhận thanh toán.
-- *(Hình 2.13 – Quản trị Phí Hội viên & Niên liễm Cộng đồng)*
-
-### 14. Quy trình Phê duyệt Tài chính Đa cấp Tích hợp VietQR
-- **Mục đích:** Xét duyệt các đề xuất thanh toán qua nhiều cấp thẩm quyền và gạch nợ tức thì bằng VietQR.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Phê duyệt chi' (/payment-approvals).
-  - Bước 2: Kiểm tra nội dung tờ trình chi, hóa đơn đính kèm và thông tin thụ hưởng.
-  - Bước 3: Người có thẩm quyền bấm 'Phê duyệt', hệ thống hiển thị mã VietQR để chuyển khoản chính xác.
-- *(Hình 2.14 – Quy trình Phê duyệt Tài chính Đa cấp Tích hợp VietQR)*
-
-### 15. Quản lý Lịch trình Công tác & Họp Trực tuyến
-- **Mục đích:** Sắp xếp lịch họp ban điều hành và điều phối phòng họp trực tuyến bảo mật.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Lịch trình / Họp trực tuyến' trên menu.
-  - Bước 2: Đặt lịch họp mới, thêm thành viên tham dự và gửi giấy mời họp.
-  - Bước 3: Bấm 'Bắt đầu cuộc họp' để kết nối video trực tuyến.
-- *(Hình 2.15 – Quản lý Lịch trình Công tác & Họp Trực tuyến)*
-
-### 16. Quản trị Kho Lưu trữ Tài liệu Phân cấp Thư mục
-- **Mục đích:** Quản trị tập trung toàn bộ hồ sơ, hợp đồng, quy chế theo cấu trúc thư mục dạng Google Drive.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Tài liệu' (/documents) trên menu chính.
-  - Bước 2: Sử dụng nút '+ Tạo Mới' để tạo thư mục mới hoặc tải tệp tin lên.
-  - Bước 3: Lọc tệp theo danh mục, ghim tài liệu quan trọng và điều hướng qua thanh đường dẫn Breadcrumbs.
-- *(Hình 2.16 – Quản trị Kho Lưu trữ Tài liệu Phân cấp Thư mục)*
-
-### 17. Hệ thống Biểu quyết Điện tử & Khảo sát Ý kiến
-- **Mục đích:** Tổ chức bỏ phiếu điện tử cho các quyết sách của hiệp hội hoặc khảo sát nội bộ.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Biểu quyết' trên menu.
-  - Bước 2: Tạo phiên biểu quyết mới, nhập nội dung câu hỏi và các phương án lựa chọn.
-  - Bước 3: Mở phiên biểu quyết để thành viên tham gia bỏ phiếu và theo dõi kết quả trực quan.
-- *(Hình 2.17 – Hệ thống Biểu quyết Điện tử & Khảo sát Ý kiến)*
-
-### 18. Phân hệ Phân quyền Vai trò & Kiểm soát Truy cập Dữ liệu (RBAC)
-- **Mục đích:** Thiết lập cơ chế kiểm soát truy cập và bảo vệ dữ liệu độc lập cho từng tổ chức.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Phân quyền' (/platform/permissions).
-  - Bước 2: Chọn vai trò cần cấu hình (Giám đốc, Quản lý, Kế toán, Nhân viên).
-  - Bước 3: Tích chọn các quyền hạn cụ thể (Xem, Thêm, Sửa, Xóa, Phê duyệt) và bấm 'Lưu Ma Trận Quyền'.
-- *(Hình 2.18 – Phân hệ Phân quyền Vai trò & Kiểm soát Truy cập Dữ liệu (RBAC))*
-
-### 19. Trợ lý Ảo ViOne AI Hỗ trợ Nghiệp vụ
-- **Mục đích:** Hỗ trợ người dùng tra cứu nhanh số liệu, gợi ý công việc và đối soát dữ liệu qua tương tác ngôn ngữ tự nhiên.
-- **Các bước thực hiện:**
-  - Bước 1: Nhấn vào biểu tượng Trợ lý AI ở thanh công cụ hoặc vào menu 'Trợ lý AI'.
-  - Bước 2: Nhập câu hỏi hoặc yêu cầu cần tra cứu (ví dụ: 'Thống kê doanh thu tháng này', 'Kiểm tra việc quá hạn').
-  - Bước 3: Hệ thống trích xuất dữ liệu từ cơ sở dữ liệu và phản hồi kết quả chính xác.
-- *(Hình 2.19 – Trợ lý Ảo ViOne AI Hỗ trợ Nghiệp vụ)*
-
-### 20. Cài đặt Hệ thống & Cấu hình Nền tảng
-- **Mục đích:** Cấu hình thông tin tổ chức, logo nhận diện, kênh thông báo và kết nối ứng dụng bên thứ ba.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Cài đặt hệ thống' trên menu.
-  - Bước 2: Cập nhật thông tin nhận diện doanh nghiệp, hotline, email và cấu hình nhận thông báo.
-  - Bước 3: Bấm 'Lưu Cấu Hình' để cập nhật thay đổi vào cơ sở dữ liệu.
-- *(Hình 2.20 – Cài đặt Hệ thống & Cấu hình Nền tảng)*
-
----
-
-# PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG VIONE APP
-*(Toàn bộ hình ảnh giao diện ứng dụng di động dưới đây được đóng gói chuẩn mực trong khung điện thoại thông minh, đã tắt nút cài đặt PWA và không chứa thông báo lỗi)*
-
-### 1. Màn hình Đăng nhập Ứng dụng Di động ViOne
-- **Mục đích:** Xác thực danh tính người dùng trên thiết bị di động bằng số điện thoại, mật khẩu hoặc xác thực sinh trắc học.
-- **Các bước thực hiện:**
-  - Bước 1: Mở ứng dụng ViOne trên điện thoại.
-  - Bước 2: Nhập số điện thoại hoặc email đã đăng ký.
-  - Bước 3: Nhập mật khẩu hoặc nhận mã OTP để đăng nhập vào trang chủ.
-- *(Hình 3.1 – Màn hình Đăng nhập Ứng dụng Di động ViOne - Đóng khung điện thoại)*
-
-### 2. Màn hình Trang chủ Ứng dụng Di động ViOne
-- **Mục đích:** Bàn làm việc di động tổng hợp các nhiệm vụ cần xử lý trong ngày, danh thiếp số và phím tắt các tính năng chính.
-- **Các bước thực hiện:**
-  - Bước 1: Đăng nhập vào ứng dụng, màn hình tự động hiển thị Trang chủ.
-  - Bước 2: Xem tóm tắt lịch trình, lời nhắc công việc và thống kê kết nối cá nhân.
-  - Bước 3: Bấm vào các biểu tượng chức năng nhanh để thực hiện tác vụ mong muốn.
-- *(Hình 3.2 – Màn hình Trang chủ Ứng dụng Di động ViOne - Đóng khung điện thoại)*
-
-### 3. Màn hình Thẻ Doanh nhân & Định danh số
-- **Mục đích:** Hiển thị thẻ định danh điện tử của cá nhân kèm mã QR để xuất trình hoặc đối tác quét thông tin.
-- **Các bước thực hiện:**
-  - Bước 1: Bấm vào thẻ định danh trên trang chủ hoặc chọn mục 'Thẻ của tôi'.
-  - Bước 2: Màn hình hiển thị đầy đủ thông tin: Họ tên, chức danh, công ty, mã hội viên và mã QR định danh.
-  - Bước 3: Đưa mã QR cho đối tác quét hoặc chạm thẻ vật lý NFC để chia sẻ danh thiếp.
-- *(Hình 3.3 – Màn hình Thẻ Doanh nhân & Định danh số - Đóng khung điện thoại)*
-
-### 4. Màn hình Bàn làm việc & Lịch trình công tác
-- **Mục đích:** Theo dõi lịch trình công tác, các cuộc họp và sự kiện diễn ra trong ngày hoặc tuần.
-- **Các bước thực hiện:**
-  - Bước 1: Chuyển sang tab 'Lịch trình' trên thanh điều hướng dưới đáy màn hình.
-  - Bước 2: Xem các sự kiện, lịch hẹn gặp đối tác được sắp xếp theo dòng thời gian.
-  - Bước 3: Bấm vào từng mục lịch để xem địa điểm, thành phần tham dự và ghi chú.
-- *(Hình 3.4 – Màn hình Bàn làm việc & Lịch trình công tác - Đóng khung điện thoại)*
-
-### 5. Mạng lưới Kết nối Đối tác Doanh nghiệp
-- **Mục đích:** Tìm kiếm, kết nối và mở rộng mạng lưới quan hệ hợp tác với các doanh nhân khác trong cộng đồng.
-- **Các bước thực hiện:**
-  - Bước 1: Chọn tab 'Kết nối' (Network) trên thanh điều hướng.
-  - Bước 2: Xem danh sách các đối tác được gợi ý theo ngành nghề phù hợp.
-  - Bước 3: Bấm nút 'Kết nối' hoặc 'Nhắn tin' để bắt đầu trao đổi cơ hội kinh doanh.
-- *(Hình 3.5 – Mạng lưới Kết nối Đối tác Doanh nghiệp - Đóng khung điện thoại)*
-
-### 6. Bản tin Hoạt động & Gợi ý Đối tác Giao thương
-- **Mục đích:** Cập nhật các bản tin hoạt động, chia sẻ thông tin sản phẩm và tiếp nhận gợi ý đối tác phù hợp.
-- **Các bước thực hiện:**
-  - Bước 1: Truy cập mục 'Bản tin' (Moments) trên ứng dụng.
-  - Bước 2: Lướt xem các bài đăng giới thiệu năng lực doanh nghiệp và nhu cầu tìm kiếm đối tác.
-  - Bước 3: Tương tác với bài viết hoặc liên hệ trực tiếp với người đăng tin.
-- *(Hình 3.6 – Bản tin Hoạt động & Gợi ý Đối tác Giao thương - Đóng khung điện thoại)*
-
-### 7. Hộp thư Trao đổi & Đề xuất Cuộc hẹn Giao thương
-- **Mục đích:** Kênh nhắn tin trực tiếp và gửi đề xuất lịch hẹn gặp 1-1 ghim vào lịch trình của đối tác.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Hộp thư' (Inbox) trên thanh điều hướng.
-  - Bước 2: Chọn cuộc trò chuyện với đối tác cần trao đổi.
-  - Bước 3: Gửi tin nhắn văn bản, hình ảnh hoặc bấm 'Đề xuất cuộc hẹn' để chốt thời gian gặp gỡ.
-- *(Hình 3.7 – Hộp thư Trao đổi & Đề xuất Cuộc hẹn Giao thương - Đóng khung điện thoại)*
-
-### 8. Bảng Điều khiển Tác vụ Nhanh V-Action
-- **Mục đích:** Cung cấp menu truy cập nhanh các hành động cốt lõi của ứng dụng chỉ với một chạm.
-- **Các bước thực hiện:**
-  - Bước 1: Nhấn vào nút biểu tượng chữ V tại vị trí trung tâm thanh điều hướng dưới đáy.
-  - Bước 2: Bảng tác vụ trượt lên gồm 5 lựa chọn: Xuất trình mã QR, Chạm NFC, Quét mã QR, Quét danh thiếp OCR và Tạo ghi chú.
-  - Bước 3: Chọn tác vụ cần thực hiện ngay mà không cần qua nhiều bước menu.
-- *(Hình 3.8 – Bảng Điều khiển Tác vụ Nhanh V-Action - Đóng khung điện thoại)*
-
-### 9. Không gian Cộng đồng Doanh nghiệp & Hiệp hội
-- **Mục đích:** Tiếp cận không gian làm việc số và các thông báo nội bộ của tổ chức mà người dùng tham gia.
-- **Các bước thực hiện:**
-  - Bước 1: Chọn mục 'Cộng đồng' trên ứng dụng.
-  - Bước 2: Màn hình hiển thị tổ chức của bạn (logo, bảng tin thông báo, danh sách thành viên).
-  - Bước 3: Xem thông báo từ ban điều hành hoặc trao đổi ý kiến với các thành viên khác.
-- *(Hình 3.9 – Không gian Cộng đồng Doanh nghiệp & Hiệp hội - Đóng khung điện thoại)*
-
-### 10. Quản trị Nhiệm vụ & Chấm công Định vị GPS
-- **Mục đích:** Nhận việc được phân công từ cấp trên, cập nhật tiến độ công việc và thực hiện chấm công định vị GPS.
-- **Các bước thực hiện:**
-  - Bước 1: Vào tab 'Công việc' trong không gian cộng đồng.
-  - Bước 2: Bấm vào nhiệm vụ để xem yêu cầu, tích các mục checklist đã hoàn thành.
-  - Bước 3: Bấm 'Chấm công GPS' khi đến văn phòng để hệ thống xác nhận tọa độ vào ca làm.
-- *(Hình 3.10 – Quản trị Nhiệm vụ & Chấm công Định vị GPS - Đóng khung điện thoại)*
-
-### 11. Trang Cá nhân & Hồ sơ Định danh số
-- **Mục đích:** Quản lý thông tin cá nhân, hồ sơ năng lực doanh nghiệp, chứng chỉ và sản phẩm tiêu biểu.
-- **Các bước thực hiện:**
-  - Bước 1: Chọn tab 'Tôi' ở góc phải thanh điều hướng.
-  - Bước 2: Xem trang hồ sơ cá nhân và các thông tin liên hệ được trình bày trực quan.
-  - Bước 3: Bấm 'Chỉnh sửa hồ sơ' để cập nhật avatar, giới thiệu bản thân hoặc sản phẩm.
-- *(Hình 3.11 – Trang Cá nhân & Hồ sơ Định danh số - Đóng khung điện thoại)*
-
-### 12. Danh thiếp Điện tử & Mã QR Định danh vCard
-- **Mục đích:** Hiển thị danh thiếp điện tử toàn diện và mã QR cho phép tải danh bạ chuẩn vCard về máy đối tác.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Danh thiếp của tôi' tại trang cá nhân.
-  - Bước 2: Màn hình hiển thị danh thiếp số chuyên nghiệp kèm nút chia sẻ.
-  - Bước 3: Đưa cho đối tác quét mã để họ lưu ngay số điện thoại, email và website vào danh bạ điện thoại.
-- *(Hình 3.12 – Danh thiếp Điện tử & Mã QR Định danh vCard - Đóng khung điện thoại)*
-
-### 13. Cài đặt & Kích hoạt Thẻ Vật lý NFC
-- **Mục đích:** Gán liên kết hồ sơ danh thiếp số vào chip thẻ vật lý NFC để sử dụng tính năng một chạm.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Cài đặt thẻ NFC' trên ứng dụng.
-  - Bước 2: Bấm nút 'Bắt đầu ghi thẻ' và áp thẻ vật lý vào lưng điện thoại.
-  - Bước 3: Ứng dụng ghi nhận thông tin và thông báo kích hoạt thẻ thành công.
-- *(Hình 3.13 – Cài đặt & Kích hoạt Thẻ Vật lý NFC - Đóng khung điện thoại)*
-
-### 14. Quét & Nhận diện Danh thiếp Số hóa OCR
-- **Mục đích:** Chụp danh thiếp giấy truyền thống để hệ thống tự động bóc tách thông tin lưu vào danh bạ điện tử.
-- **Các bước thực hiện:**
-  - Bước 1: Mở tính năng 'Quét danh thiếp' từ nút V trung tâm hoặc màn hình danh thiếp.
-  - Bước 2: Đặt danh thiếp giấy vào trong khung ngắm camera và bấm chụp.
-  - Bước 3: Hệ thống nhận diện họ tên, số điện thoại, công ty, email; người dùng kiểm tra lại và bấm 'Lưu danh bạ'.
-- *(Hình 3.14 – Quét & Nhận diện Danh thiếp Số hóa OCR - Đóng khung điện thoại)*
-
-### 15. Trung tâm Bảo mật & Cài đặt Tài khoản
-- **Mục đích:** Quản lý mật khẩu, bật xác thực sinh trắc học vân tay / khuôn mặt và quản lý quyền riêng tư tài khoản.
-- **Các bước thực hiện:**
-  - Bước 1: Vào mục 'Bảo mật tài khoản' tại trang cá nhân.
-  - Bước 2: Thực hiện đổi mật khẩu hoặc kích hoạt đăng nhập nhanh bằng sinh trắc học.
-  - Bước 3: Cung cấp tính năng xóa tài khoản vĩnh viễn theo đúng quy định bảo vệ quyền riêng tư người dùng.
-- *(Hình 3.15 – Trung tâm Bảo mật & Cài đặt Tài khoản - Đóng khung điện thoại)*
-
-### 16. Trung tâm Thông báo Hệ thống
-- **Mục đích:** Tiếp nhận và quản lý các thông báo điều hành, nhắc việc, tin nhắn mới và cập nhật trạng thái sự kiện.
-- **Các bước thực hiện:**
-  - Bước 1: Nhấn vào biểu tượng quả chuông ở góc trên màn hình.
-  - Bước 2: Xem danh sách các thông báo được phân loại theo danh mục (Công việc, Kết nối, Sự kiện, Hệ thống).
-  - Bước 3: Nhấp vào từng thông báo để điều hướng trực tiếp tới chi tiết nội dung liên quan.
-- *(Hình 3.16 – Trung tâm Thông báo Hệ thống - Đóng khung điện thoại)*
-
----
-
-# PHỤ LỤC IV - MÃ NGUỒN PHẦN MỀM
-
-Dưới đây là mã nguồn tiêu biểu của các tệp kiến trúc cốt lõi cấu thành Phần mềm ViOne Platform– Nền tảng định danh số, kết nối kinh doanh, quản trị cộng đồng, sự kiện và số hóa di sản văn hóa, đại diện cho Tầng Dịch vụ Backend NestJS, Tầng Web Quản trị React và Tầng Ứng dụng Di động Native React Native Expo:
+## 1. Cấu hình Máy chủ (Server Requirements)
 
 
-================================================================================
-### Tệp tin 1: apps/vione_app_be/src/main.ts (Khởi tạo cổng dịch vụ Backend NestJS & Swagger)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/main.ts`
-================================================================================
+## 2. Cấu hình Máy trạm truy cập Web CRM (Desktop / Laptop)
+
+
+## 3. Cấu hình Thiết bị Di động (Mobile App Requirements)
+
+
+# PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG VIONE CRM
+
+
+## 1. Màn hình Đăng nhập Quản trị ViOne CRM
+
+
+## 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền
+
+
+## 3. Quản Lý Danh Sách Khách Hàng B2B & Doanh Nghiệp
+
+
+## 4. Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals
+
+5. Quản Trị Danh Thiếp Doanh Nhân Thông Minh
+6. Sàn Giao Thương Thương Mại B2B Marketplace
+7. Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp
+8. Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime
+9. Quản Trị Quy Trình & Phân Công Giao Việc Tự Động
+10. Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự
+11. Quản Trị Thu Tiền & Phiếu Thu Doanh Thu
+12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp
+13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử
+14. Phê Duyệt Tài Chính Đa Cấp VietQR
+15. Lịch Trình Điều Hành & Họp Ban Trực Tuyến
+16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)
+17. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp
+18. Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC Data Isolation)
+19. Trợ Lý Điều Hành ViOne AI 6.0 (OpenRouter AI Engine)
+20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% (Real Data Persistence)
+
+# PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG NATIVE VIONE CONNECT (IOS & ANDROID)
+
+
+## 1. Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury
+
+
+## 2. Trang Chủ Điều Hành C-Level Executive Home
+
+
+## 3. Thẻ Doanh Nhân ViOne & Trạng Thái Định Vị AI GPS
+
+
+## 4. Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs
+
+5. Mạng Lưới Đối Tác Doanh Nghiệp B2B
+6. Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác
+7. Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1 Ghim Lịch
+8. Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet 5 Hành Động
+9. Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace)
+10. Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ
+11. Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium & Showcase
+12. Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard
+13. Kích Hoạt & Cài Đặt Thẻ Doanh Nhân NFC 1-Chạm
+14. Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR
+15. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn (Apple Compliant)
+16. Trung Tâm Thông Báo & Cảnh Báo Điều Hành
+
+# PHỤ LỤC IV - Mã nguồn phần mềm
+
+
+
+# 1. Giới thiệu
+
+
+## 1.1 Mục tiêu
+
+Phần mềm Vione Platform (bao gồm Nền tảng Quản trị Doanh nghiệp ViOne Web CRM và Ứng dụng Di động Thuần Native ViOne Connect App cho iOS & Android) được thiết kế và xây dựng như một nền tảng chuyển đổi số toàn diện, hợp nhất hai trụ cột thiết yếu của doanh nghiệp hiện đại: (1) Quản trị điều hành nội bộ chuyên sâu chuẩn Enterprise C-Level và (2) Mạng lưới giao thương kết nối thương mại B2B thời gian thực.
+Mục tiêu cốt lõi của phần mềm bao gồm:
+- Tối ưu hóa năng lực điều hành C-Level: Số hóa toàn diện phễu bán hàng, dòng tiền thu chi, quản trị dự án, quy trình công việc tự động và chuyên cần nhân sự trên một cổng thông tin duy nhất.
+- Mạng xã hội giao thương B2B thời gian thực: Xóa bỏ rào cản kết nối kinh doanh truyền thống thông qua danh thiếp số thông minh NFC 1-chạm, mã QR định danh số, sàn kết nối cung cầu và phòng họp ban trực tuyến WebRTC.
+- Tự động hóa thông minh với Trí tuệ nhân tạo (AI Copilot 6.0): Tích hợp trợ lý ảo điều hành hỗ trợ giao việc qua giọng nói, phân tích cảnh báo công nợ, ghép nối đối tác kinh doanh đa chiều và quét danh thiếp OCR tự động.
+- Bảo mật dữ liệu và phân quyền đa tầng: Kiến trúc Multi-Tenant phân lập dữ liệu độc lập, phân quyền phòng ban Department RBAC và cơ chế bàn giao tài sản số tự động (Auto-Handover Engine).
+
+## 1.2 Phạm vi của dự án
+
+
+### 1.2.1 Phân hệ chức năng
+
+Hệ thống ViOne bao gồm 2 phân hệ nền tảng chính:
+A. Phân hệ Web CRM Quản trị Doanh nghiệp (ViOne Enterprise CRM - 20 Phân hệ):
+- Bảng điều hành C-Level Dashboard: Tổng hợp trực quan các chỉ số tài chính, tiến độ công việc, tải làm việc nhân sự theo thời gian thực.
+- Quản trị quan hệ khách hàng (CRM B2B): Quản lý dữ liệu đối tác, hồ sơ phân loại doanh nghiệp, lịch sử giao dịch và phân khúc khách hàng.
+- Quản trị cơ hội kinh doanh (Deals Pipeline): Phễu bán hàng đa giai đoạn, dự báo doanh thu và phân công nhân viên phụ trách chăm sóc tự động.
+- Quy trình công việc & Kanban tự động hóa (BPMN 2.0): Khởi tạo luồng công việc, giao việc, giám sát hạn chót (Deadline) và cảnh báo quá hạn bằng xung đỏ phát sáng.
+- Quản trị nhân sự & Chấm công GPS: Chấm công qua định vị bán kính văn phòng, tích hợp FaceID và bảng công tự động.
+- Quản trị tài chính & Phê duyệt thu chi 3 cấp: Quy trình phê duyệt phiếu thu/chi đa cấp (Người lập -> Trưởng bộ phận -> Giám đốc), tích hợp sinh mã VietQR động gạch nợ tức thì.
+- Sàn giao thương Marketplace B2B: Niêm yết hồ sơ năng lực, sản phẩm, dịch vụ và chào giá đối tác trên nền tảng ViOne Platform.
+- Sự kiện & Hội thảo doanh nghiệp: Tổ chức sự kiện xúc tiến thương mại, phát hành vé điện tử và quét mã QR check-in tại quầy lễ tân.
+- Biểu quyết điện tử & Khảo sát trực tuyến: Lấy ý kiến cổ đông, biểu quyết ban chấp hành với mã hóa phiếu bầu bảo mật.
+- Ma trận phân quyền phòng ban RBAC 7x6: Kiểm soát truy cập dựa trên 7 nhóm quyền và 6 vai trò, bảo vệ nghiêm ngặt quyền sở hữu dữ liệu.
+- Thư viện tài liệu & Quản lý tri thức: Lưu trữ hợp đồng, biểu mẫu, quy chế công ty trên nền tảng MinIO S3 Object Storage an toàn.
+B. Phân hệ Ứng dụng Di động Thuần Native ViOne Connect App (iOS & Android - 13 Phân hệ):
+- Trang chủ Điều hành C-Level: Bàn làm việc di động tinh gọn, lịch trình điều hành 5 tabs và briefing công việc trong ngày.
+- Danh thiếp số Titanium & Thẻ doanh nhân NFC: Chạm thẻ NFC một chạm hoặc quét mã QR để trao đổi danh thiếp số chuẩn thượng lưu, tích hợp vCard đồng bộ danh bạ.
+- Mạng lưới giao thương B2B & Khoảnh khắc 24h: Đăng tải bản tin hoạt động kinh doanh, stories doanh nghiệp 24h và tìm kiếm đối tác theo ngành nghề.
+- Khối Gợi ý Đối tác AI Matcher: Thuật toán học máy phân tích ngành nghề, nhu cầu mua bán để đề xuất kết nối 1-on-1 tỷ lệ phù hợp cao.
+- Hộp thư Messenger 0ms & Thẻ đề xuất hẹn 1-1: Kênh chat mã hóa tức thì, gửi thẻ đề xuất gặp gỡ ghim trực tiếp vào lịch điều hành của đối tác.
+- Nút V Trung tâm 3D & Bảng điều khiển VActionSheet: Truy cập siêu tốc 5 tác vụ cốt lõi: Đưa mã QR, Chạm NFC, Quét QR, Quét OCR danh thiếp và Ghi chú cuộc gặp.
+- Mô hình Cộng đồng Hợp nhất All-in-One: Không gian liên minh doanh nghiệp tích hợp 6 phân hệ (Tasks, Supervision, Opportunities, News, Events, Members).
+- Họp ban trực tuyến 1-chạm WebRTC: Phòng họp video độ nét cao, chia sẻ màn hình và bảo mật phiên họp nội bộ.
+- Cơ chế bàn giao tự động (Auto-Handover): Chuyển giao toàn bộ dữ liệu công việc, khách hàng khi thay đổi nhân sự mà không gián đoạn vận hành.
+- Siêu trợ lý giọng nói AI Copilot 6.0: Giao việc, truy vấn doanh thu, kiểm tra lịch trình bằng giọng nói tiếng Việt tự nhiên.
+
+### 1.2.2 Đối tượng sử dụng
+
+- Khách vãng lai / Đối tác tiềm năng: Xem trang giới thiệu công khai, quét danh thiếp số của doanh nhân ViOne, gửi yêu cầu liên hệ hoặc đăng ký dùng thử.
+- Hội viên doanh nhân / Nhân sự doanh nghiệp: Sử dụng ứng dụng di động để tiếp nhận công việc, cập nhật tiến độ %, trao đổi tin nhắn, chấm công GPS và mở rộng giao thương B2B.
+- Trưởng phòng ban / Quản lý chi nhánh: Phân công công việc, giám sát chuyên cần, phê duyệt phiếu thu/chi cấp 1 và duyệt cơ hội kinh doanh của đội ngũ.
+- Lãnh đạo cấp cao (CEO, C-Level, Hội đồng quản trị): Nắm bắt toàn cảnh vận hành doanh nghiệp qua Dashboard KPI, giám sát dòng tiền, họp ban 1-chạm và duyệt chi cấp cao nhất.
+- Quản trị viên Hệ thống (Role Quản Trị & Role Admin): Quản trị danh mục tổ chức, cấu hình phân quyền ma trận phòng ban, giám sát nhật ký an ninh và duy trì hạ tầng vận hành.
+
+# 2. Yêu cầu kỹ thuật
+
+
+## 2.1 Kiến trúc hạ tầng
+
+
+### 2.1.1 Kiến trúc tổng thể
+
+Hệ thống ViOne được thiết kế theo kiến trúc Micro-Services & Modular Monolith hiện đại, chia tách rõ ràng giữa Tầng Trình Bày (Presentation Layer), Tầng Dịch Vụ Nghiệp Vụ (Business Logic Layer) và Tầng Lưu Trữ Dữ Liệu (Data Layer).
+- Kênh người dùng đa nền tảng: Ứng dụng Web Quản trị Doanh nghiệp (TanStack React Start, Vite, React 19) và Ứng dụng Di động Thuần Native ViOne Connect (React Native Expo Native Engine cho Apple iOS và Google Android chuẩn App Store & Google Play Store).
+- Lớp biên định tuyến & Cổng API (Edge Gateway): Nginx Reverse Proxy với bộ lọc SSL/TLS 1.3 Let's Encrypt phân tách nghiêm ngặt giữa cổng Dev (Port 5446 CRM / 5445 App) và môi trường Subdomain Production chính thức (https://vione.viconnect.vn).
+- Tầng Ứng dụng Backend: Xây dựng trên nền tảng NestJS Framework (Node.js/TypeScript) chuẩn Enterprise, áp dụng triệt để Repository Pattern, Dependency Injection, DTO Validation với class-validator và JWT Authentication Guard.
+- Tầng Dữ liệu & Lưu trữ tệp: Hệ quản trị cơ sở dữ liệu quan hệ PostgreSQL 16 xử lý dữ liệu giao dịch toàn vẹn ACID, kết hợp MinIO S3 Object Storage lưu trữ ảnh avatar, danh thiếp số và tài liệu đính kèm.
+
+### 2.1.2 Kiến trúc chi tiết
+
+
+## 1. Luồng xử lý nghiệp vụ Backend: Mọi yêu cầu HTTP/WebSocket gửi từ máy trạm đều đi qua bộ lọc kiểm tra xác thực JwtAuthGuard và DepartmentRoleGuard. Sau khi xác thực danh tính và vai trò phòng ban, yêu cầu được chuyển tới Controller giải mã DTO, tiếp đó Service thực thi logic nghiệp vụ và ghi nhận bản ghi kiểm toán (Activity Audit Log) trước khi cập nhật CSDL PostgreSQL.
+
+
+## 2. Luồng đồng bộ thời gian thực (Realtime Synchronization): Khi có sự kiện phát sinh (tin nhắn chat mới, phân công task, trạng thái đơn hàng thay đổi, duyệt chi VietQR), máy chủ NestJS phát sự kiện qua Socket.IO Gateway và dịch vụ Push Notification (FCM / APNs). Ứng dụng Web và Mobile lập tức cập nhật giao diện mà không cần người dùng tải lại trang.
+
+
+### 2.1.3 Kiến trúc triển khai, dự phòng và an toàn
+
+Hệ thống được đóng gói container hóa toàn diện bằng Docker và điều phối qua Docker Compose:
+- Cô lập dịch vụ độc lập: Mỗi phân hệ (Backend API, Cổng Web CRM Doanh nghiệp, Dịch vụ Push Notification, Cơ sở dữ liệu PostgreSQL, Nginx Proxy) chạy trong container riêng biệt, đảm bảo sự cố ở một module không làm ảnh hưởng đến toàn bộ hệ thống.
+- Cơ chế sao lưu dự phòng: CSDL PostgreSQL được thiết lập lịch trình sao lưu tự động hàng ngày (Daily Automated Dump) kèm lưu trữ bản ghi Write-Ahead Logging (WAL), cho phép khôi phục dữ liệu về bất kỳ thời điểm nào (Point-in-Time Recovery).
+
+## 2.2 Công nghệ sử dụng
+
+Bảng tổng hợp công nghệ cốt lõi cấu thành Phần mềm Vione Platform:
+STT
+Thành phần hệ thống
+Công nghệ / Nền tảng
+Ghi chú & Vai trò
+1
+Backend Framework
+NestJS v10 (Node.js/TypeScript)
+Kiến trúc Modular Enterprise, RESTful API & WebSocket
+2
+Database ORM / Driver
+Prisma ORM & pg client (PostgreSQL 16)
+Quản lý migration, schema an toàn kiểu dữ liệu
+3
+Frontend Web CRM
+React 19, TanStack Router & Start
+Giao diện quản trị doanh nghiệp, SPA hiệu năng cao
+4
+Mobile Native App
+React Native, Expo SDK 52 (Hermes)
+Ứng dụng di động thuần Native cho iOS & Android
+5
+Push Notification Gateway
+Apple APNs, Firebase Cloud Messaging (FCM)
+Thông báo đẩy thời gian thực cho ứng dụng di động Native iOS & Android
+6
+State Management
+TanStack React Query v5, Context API
+Quản lý cache server-state và đồng bộ realtime
+7
+Realtime Communication
+Socket.IO Gateway, WebRTC
+Tin nhắn chat 0ms, thông báo đẩy và họp ban video
+8
+Authentication & Security
+JWT (Argon2id/Bcrypt), 2FA, RBAC Guard
+Bảo mật phiên đăng nhập, phân quyền ma trận 7x6
+9
+Tích hợp Thanh toán
+VietQR Banking API, Webhook
+Sinh mã QR động, tự động gạch nợ tức thì
+10
+Trí tuệ nhân tạo (AI)
+OpenRouter AI Engine (DeepSeek LLM & Meta Llama 3.3), OCR Vision
+Xử lý ngôn ngữ tự nhiên tiếng Việt, quét thẻ OCR
+11
+Object Storage
+MinIO S3 Compatible Storage
+Lưu trữ tài liệu, hợp đồng, hình ảnh danh thiếp số
+12
+Web Server / Proxy
+Nginx 1.24+ SSL Reverse Proxy
+Định tuyến tên miền, cấp phát chứng chỉ Let's Encrypt
+
+## 2.3 Yêu cầu chức năng hệ thống (Enterprise Functional Requirements)
+
+Phần mềm ViOne Platform được thiết kế kiến trúc phân tầng module hóa hoàn chỉnh theo chuẩn Enterprise C-Level, hợp nhất hai phân hệ nền tảng: Cổng Quản trị Doanh nghiệp Web CRM (20 phân hệ nghiệp vụ) và Ứng dụng Di động Thuần Native ViOne Connect cho iOS và Android (16 phân hệ trải nghiệm doanh nhân). Dưới đây là đặc tả chi tiết từng nhóm chức năng nền tảng và phân hệ ứng dụng thực tế:
+
+### 2.3.1 Các chức năng nền tảng chung (Foundation & Platform Services)
+
+Phần mềm ViOne Platform được thiết kế kiến trúc phân tầng hiện đại, cung cấp bộ dịch vụ nền tảng dùng chung mạnh mẽ, đảm bảo tính bảo mật, khả năng mở rộng không giới hạn và hiệu năng phản hồi tức thì cho toàn bộ tổ chức doanh nghiệp:
+- Quản trị Danh tính số tập trung & Bảo mật đa tầng: Hỗ trợ đăng nhập đa kênh linh hoạt: Email công vụ, Số điện thoại định danh, và Sinh trắc học phần cứng (FaceID / Vân tay) trên thiết bị di động. Cơ chế xác thực sử dụng chuẩn JSON Web Token (JWT) ký số bất đối xứng RS256, thời hạn truy cập ngắn hạn (15 phút) kết hợp Refresh Token xoay vòng tự động bảo mật cao. Mật khẩu người dùng được mã hóa một chiều qua thuật toán Bcrypt với hệ số Salt Rounds = 10, ngăn chặn tuyệt đối các nguy cơ tấn công dò quét hay khai thác dữ liệu.
+- Kiến trúc Đa tổ chức Multi-tenant RBAC phân lập dữ liệu tuyệt đối: Mỗi doanh nghiệp hoặc liên minh tập đoàn hoạt động như một Tenant độc lập với không gian làm việc số và CSDL logic hoàn toàn riêng biệt. Cơ chế Row-Level Security (RLS) gắn chặt mã định danh công ty (company_id) vào mọi truy vấn hệ thống, loại bỏ triệt để nguy cơ rò rỉ chéo dữ liệu giữa các doanh nghiệp. Ma trận phân quyền hạt nhân 5 cấp độ (Master Admin, Tenant Admin, Manager, Member, Guest) cho phép phân định chi tiết quyền hạn xem, tạo, sửa, xóa và phê duyệt trên từng phân hệ.
+- Cổng Thanh toán & Phê duyệt Tài chính Tức thì VietQR Napas 24/7: Tích hợp sâu chuẩn thanh toán liên ngân hàng Napas 247 thông qua mã QR động (VietQR Dynamic Code) sinh tự động theo từng giao dịch. Hệ thống tự động mã hóa chính xác: Tên chủ tài khoản, Số tài khoản, Ngân hàng thụ hưởng, Số tiền thanh toán và Cú pháp nội dung chuyển khoản bảo mật. Cơ chế Webhook tự động đối soát trạng thái giao dịch theo thời gian thực (0ms), hỗ trợ luồng chi tiền và thu tiền đa cấp minh bạch.
+- Cổng Trí tuệ Nhân tạo ViOne AI Gateway (Enterprise AI Copilot): Tích hợp cổng AI Gateway kết nối với các mô hình ngôn ngữ lớn (LLM) hàng đầu thế giới qua OpenRouter: DeepSeek-V3 (tối ưu hóa lập luận và xử lý ngôn ngữ tiếng Việt thương mại) và Meta Llama 3.3 (suy luận logic và phân tích số liệu tài chính). Động cơ AI đảm nhiệm các tác vụ cao cấp: Bóc tách danh thiếp giấy vật lý sang dữ liệu số CRM trong 2 giây (AI OCR Vision), tóm tắt báo cáo điều hành C-Level, phân tích sức khỏe phễu bán hàng và gợi ý đối tác giao thương B2B tự động.
+
+### 2.3.2 Chức năng chi tiết phân hệ Cổng Quản trị Web CRM (20 Phân hệ VIP)
+
+Cổng Quản trị ViOne Web CRM là trung tâm chỉ huy điều hành số toàn diện dành cho Ban Giám đốc, Hội đồng quản trị và các cấp quản lý doanh nghiệp, bao gồm 20 phân hệ nghiệp vụ chuyên sâu chuẩn Enterprise:
+- 1. Cổng Đăng nhập Quản trị & Điều hướng Không gian làm việc: Xác thực tài khoản người dùng, tự động phân giải vai trò quyền hạn và điều hướng trực tiếp vào không gian làm việc của doanh nghiệp sở hữu; tích hợp cơ chế ghi nhớ thiết bị an toàn.
+- 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền Thời Gian Thực: Trực quan hóa tức thì bức tranh toàn cảnh doanh nghiệp với 4 chỉ số tài chính sống còn: Tổng doanh thu lũy kế, Tăng trưởng khách hàng mới, Giá trị phễu cơ hội mở, Tỷ lệ chốt thương vụ. Biểu đồ thu chi thực tế từ CSDL PostgreSQL và bảng cảnh báo việc tồn đọng giúp CEO chỉ đạo điều hành kịp thời.
+- 3. Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp 360°: Cơ sở dữ liệu tập trung quản trị toàn bộ đối tác, khách hàng tổ chức; lưu trữ đầy đủ thông tin pháp lý, mã số thuế, phân cấp khách hàng VIP, lịch sử giao dịch, hợp đồng và người đại diện liên hệ.
+- 4. Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals Kanban: Quản trị các thương vụ kinh doanh B2B theo mô hình Kanban kéo thả đa giai đoạn (Mới tiếp cận -> Khảo sát nhu cầu -> Gửi báo giá -> Đàm phán -> Chốt deal); tự động tính toán xác suất thành công và dự báo dòng tiền tương lai.
+- 5. Quản Trị Danh Thiếp Doanh Nhân Thông Minh: Cấp phát, cấu hình và đồng bộ danh thiếp số điện tử (Digital Business Card) cho toàn thể ban lãnh đạo và cán bộ nhân sự; tự động sinh mã QR động và mã định danh NFC liên kết trang hồ sơ chuẩn Obsidian Luxury.
+- 6. Sàn Giao Thương Thương Mại B2B Marketplace & Kích Cầu Nội Bộ: Nền tảng xúc tiến thương mại nội bộ và liên kết doanh nghiệp; niêm yết hồ sơ năng lực, sản phẩm, dịch vụ chủ lực, tìm kiếm đối tác cung ứng và gửi báo giá hợp tác trực tiếp không qua trung gian.
+- 7. Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp Đỉnh Cao: Công cụ lập kế hoạch, phát hành vé mời điện tử, phân bổ chỗ ngồi đại biểu VIP và quản trị toàn diện các hội thảo xúc tiến thương mại, chương trình kết nối doanh nhân quy mô lớn.
+- 8. Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime: Cơ chế quét mã QR đại biểu với tốc độ xử lý siêu tốc dưới 100ms, hiển thị ngay lập tức thông tin đón tiếp trên màn hình điều hành, loại bỏ hoàn toàn tình trạng trùng vé và gian lận vé mời.
+- 9. Quản Trị Quy Trình & Phân Công Giao Việc Tự Động Hóa (BPMN 2.0): Chuẩn hóa quy trình vận hành liên phòng ban; giao việc đa cấp kèm thời hạn hoàn thành (Deadline), bảng Kanban theo dõi tiến độ checklist % và tự động gửi cảnh báo nhắc việc qua thông báo đẩy.
+- 10. Quản Lý Chấm Công Định Vị Đa Điểm GPS & Chuyên Cần Nhân Sự: Giám sát chuyên cần nhân sự chính xác bằng công nghệ Geofencing bán kính văn phòng/chi nhánh; ngăn chặn giả mạo vị trí, tự động tổng hợp bảng công tháng và tính toán giờ làm việc chuẩn xác.
+- 11. Quản Trị Thu Tiền & Phiếu Thu Doanh Thu Tự Động: Quản lý tập trung mọi nguồn thu từ hoạt động bán hàng, dịch vụ, dự án; tự động lập phiếu thu gắn liền mã hợp đồng, hỗ trợ xuất hóa đơn điện tử và đối soát sổ sách kế toán.
+- 12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp: Thiết lập định mức chi tiêu cho từng phòng ban theo kỳ; hệ thống tự động kiểm soát và phát cảnh báo vượt ngưỡng khi ngân sách thực chi chạm 80% hạn mức phê duyệt.
+- 13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử Đa Kỳ: Theo dõi chu kỳ đóng phí định kỳ của hội viên hiệp hội hoặc khách hàng dịch vụ trả phí định kỳ; tự động gửi email thông báo gia hạn kèm mã QR thanh toán nhanh.
+- 14. Phê Duyệt Tài Chính Đa Cấp & Thanh Toán Tức Thì VietQR 24/7: Quy trình kiểm soát chi tiêu 3 tầng nghiêm ngặt: Nhân sự lập tờ trình -> Kế toán trưởng thẩm tra -> Ban Giám đốc phê duyệt trực tiếp trên Web/App; hệ thống sinh mã VietQR thanh toán ngay lập tức.
+- 15. Lịch Trình Điều Hành Lãnh Đạo & Họp Ban Trực Tuyến: Lịch công tác điện tử đồng bộ của Ban Lãnh đạo; điều phối lịch họp thông minh, tích hợp phòng họp trực tuyến độ nét cao (WebRTC) phục vụ họp Hội đồng quản trị và Ban Chấp hành từ xa.
+- 16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents): Hệ thống quản lý tài liệu số chuyên nghiệp tổ chức cây thư mục đa cấp không giới hạn; phân quyền chi tiết (Xem, Tải, Chỉnh sửa) theo cấp bậc, mã hóa lưu trữ an toàn.
+- 17. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp (E-Voting): Tổ chức lấy ý kiến biểu quyết cổ đông hoặc thành viên ban chấp hành; hỗ trợ bỏ phiếu kín, mã hóa phiếu bầu, chống thao túng kết quả và trực quan hóa tỷ lệ biểu quyết theo thời gian thực.
+- 18. Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC): Quản trị các gói dịch vụ thuê bao nền tảng, quản lý số lượng tài khoản cấp phép (User Slots), phân bổ tài nguyên lưu trữ và giám sát sức khỏe vận hành của từng tổ chức thành viên.
+- 19. Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0 (OpenRouter AI Engine): Trợ lý ảo thông minh phục vụ riêng cho C-Level; giải đáp các truy vấn về doanh thu, công nợ, hiệu suất nhân sự, tự động tóm tắt hồ sơ đối tác và hỗ trợ soạn thảo văn bản chỉ đạo điều hành.
+- 20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100%: Tùy biến toàn diện nhận diện thương hiệu doanh nghiệp (Logo, Màu sắc chủ đạo), thiết lập thông tin ngân hàng nhận tiền VietQR, cấu hình cổng gửi email SMTP và quy chế hoạt động nội bộ.
+
+### 2.3.3 Chức năng chi tiết phân hệ Ứng dụng Di động Thuần Native ViOne Connect (16 Phân hệ VIP)
+
+Ứng dụng Di động Thuần Native ViOne Connect (xây dựng bằng React Native / Expo Native Engine đạt chuẩn kiểm duyệt của Apple App Store cho iOS và Google Play Store cho Android) mang lại trải nghiệm điều hành và kết nối giao thương thượng lưu dành riêng cho doanh nhân hiện đại:
+- 1. Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury: Giao diện Vàng Champagne Gold phối nền Đen Thạch Anh sang trọng; hỗ trợ xác thực sinh trắc học FaceID/Vân tay và bảo vệ phiên làm việc an toàn chuẩn ngân hàng.
+- 2. Trang Chủ Điều Hành C-Level Executive Home: Bàn làm việc di động tinh gọn dành cho lãnh đạo; nắm bắt nhanh các chỉ số KPI then chốt trong ngày, thông báo việc khẩn và thông điệp điều hành vĩ mô từ tổ chức.
+- 3. Thẻ Doanh Nhân ViOne & Bảng Điều Khiển Tương Tác Bottom Sheet: Danh thiếp số động với thao tác vuốt Bottom Sheet nhanh; cho phép chia sẻ profile doanh nhân, tài khoản mạng xã hội, danh mục sản phẩm chủ lực chỉ trong một thao tác vuốt nhẹ.
+- 4. Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs Kèm Ghi Âm Lệnh: Quản lý lịch trình công tác khoa học phân chia 5 tab: Tất cả, Cuộc họp, Công việc, Sự kiện, Lịch hẹn 1-1; tích hợp tính năng ghi âm lệnh thoại trực tiếp gửi cho nhân viên.
+- 5. Mạng Lưới Đối Tác Doanh Nghiệp B2B & Tìm Kiếm Doanh Nhân: Danh bạ kết nối hàng nghìn Chủ tịch, CEO và Doanh nhân uy tín; tìm kiếm thông minh theo ngành nghề, định vị địa lý và nhu cầu hợp tác cung cầu.
+- 6. Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác Chuẩn Xác: Bản tin khoảnh khắc kinh doanh 24 giờ của cộng đồng doanh nhân; thuật toán học máy AI Matcher tự động phân tích hồ sơ năng lực để gợi ý cơ hội giao thương phù hợp nhất.
+- 7. Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1: Hệ thống nhắn tin tức thì độ trễ 0ms trên Socket.IO; tích hợp thẻ đề xuất lịch gặp gỡ 1-on-1 thông minh, tự động đồng bộ vào lịch trình của cả hai bên khi được chấp thuận.
+- 8. Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet Siêu Tốc: Nút biểu tượng chữ V nổi 3D mạ vàng tại thanh điều hướng trung tâm; mở ra 5 tác vụ siêu tốc: Đưa mã QR nhận diện, Bật camera quét QR, Quét danh thiếp AI OCR, Điểm danh GPS và Gọi Trợ lý AI.
+- 9. Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace): Không gian làm việc riêng biệt cho từng doanh nghiệp/hiệp hội thành viên; hiển thị logo nhận diện riêng, bảng tin nội bộ, văn bản điều hành và sự kiện nội bộ độc quyền.
+- 10. Bàn Làm Việc Di Động, Nhận Việc & Chấm Công GPS Nội Bộ: Dành cho nhân sự doanh nghiệp tiếp nhận công việc phân công từ cấp trên, cập nhật tiến độ bằng checklist %, gửi báo cáo đính kèm và thực hiện chấm công tại tọa độ GPS công ty.
+- 11. Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium Đẳng Cấp: Hồ sơ năng lực cá nhân số hóa chuyên nghiệp; thể hiện đầy đủ chức vụ, doanh nghiệp đại diện, tiểu sử doanh nhân, liên kết truyền thông và mạng lưới thành tựu chứng chỉ.
+- 12. Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard 4.0: Mã QR động chuẩn quốc tế vCard 4.0; bất kỳ đối tác nào dùng camera điện thoại thông thường quét mã đều mở ngay trang danh thiếp web hoặc lưu thẳng vào danh bạ máy mà không cần cài app.
+- 13. Kích Hoạt & Cài Đặt Thẻ Doanh Nhân Chip NFC 1-Chạm Mạ Vàng: Trình cấu hình thẻ cứng vật lý tích hợp chip NFC; chỉ cần chạm thẻ vào lưng điện thoại đối tác là truyền tải toàn bộ thông tin ngoại giao tức thì, khẳng định vị thế doanh nhân đỉnh cao.
+- 14. Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR: Ống kính quét tài liệu thông minh; tự động nhận diện danh thiếp giấy vật lý, bóc tách chính xác Họ tên, Chức vụ, Công ty, SĐT, Email trong 2 giây và lưu thẳng vào danh bạ CRM.
+- 15. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple: Quản trị an toàn thông tin với xác thực 2 lớp; tích hợp chức năng xóa tài khoản và thanh lọc dữ liệu vĩnh viễn tuân thủ nghiêm ngặt chuẩn Apple App Store Guideline 5.1.1(v).
+- 16. Trung Tâm Thông Báo & Cảnh Báo Điều Hành Push Realtime: Hệ thống thông báo đẩy tức thì (Push Notification qua FCM/APNs); phân loại cảnh báo khẩn về duyệt chi tài chính, giao việc mới, nhắc hạn deadline và tin nhắn đối tác.
+
+### 2.3.4 Ma trận luồng dữ liệu và thông số kỹ thuật API (Data Dictionary & API Specifications)
+
+Để phục vụ công tác thẩm định đăng ký quyền tác giả và kiểm thử kỹ thuật, dưới đây là bảng ma trận đặc tả chi tiết 10 module nghiệp vụ hạt nhân của Phần mềm ViOne Platform, bao gồm cấu trúc trường dữ liệu, quy tắc validation kiểm thực, luồng API xử lý, bảng CSDL PostgreSQL lưu trữ và cơ chế hiển thị thời gian thực:
+
+### 2.3.4.1 Module 1: Đăng nhập & Quản Trị Danh Tính (Authentication & Security)
+
+Chức năng xác thực danh tính đa kênh an toàn, đóng vai trò cửa ngõ định danh cho toàn bộ tài khoản người dùng trên cả Cổng Web CRM Doanh nghiệp và Ứng dụng Di động Thuần Native.
+A. Bảng đặc tả trường dữ liệu & Luồng xử lý Đăng nhập Đa kênh:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+email
+TextInput (email-address)
+nhap_email@congty.vn
+Bắt buộc nếu dùng Email. Regex RFC 5322. Không để khoảng trắng.
+POST /connect-app/auth/login
+POST /api/auth/crm/login
+Bảng: auth.users, vione_users
+password
+PasswordInput
+- •••••••
+Bắt buộc nếu dùng Email. Tối thiểu 6 ký tự. Băm Bcrypt 10 vòng.
+POST /connect-app/auth/login
+Bảng: vione_users (cột password)
+phone
+PhoneInput (phone-pad)
+0912 345 678
+Bắt buộc nếu nhận OTP. Định dạng di động VN: 10 chữ số (03, 05, 07, 08, 09).
+POST /connect-app/auth/otp/send
+Bảng: phone_verifications
+otp_code
+NumberPad (6 ô rời)
+_ _ _ _ _ _
+Bắt buộc khi xác thực OTP. Đúng 6 chữ số ^[0-9]{6}$. Hết hạn sau 120s.
+POST /connect-app/auth/otp/verify
+Bảng: phone_verifications
+apple_id_token
+Apple Native SDK
+N/A
+Bắt buộc khi chọn Apple Sign-In. Sinh bởi AuthenticationServices iOS.
+POST /connect-app/auth/apple-login
+Bảng: vione_users (cột apple_id)
+google_id_token
+Google Play Auth
+N/A
+Bắt buộc khi chọn Google Sign-In. Sinh bởi Google Play Services.
+POST /connect-app/auth/google-login
+Bảng: vione_users (cột google_id)
+- Vị trí hiển thị bản ghi sau khi nhập: Với Web CRM: Điều hướng thẳng vào Dashboard Tổng quan (/), góc trên bên phải hiển thị Họ tên, Avatar viền vàng và Badge phân quyền. Với App Native: Điều hướng vào HomeScreen.tsx, Thẻ VIP và trạng thái hiển thị trên Header.
+- Cơ chế đẩy dữ liệu từ hệ thống về: Hệ thống cấp Access Token JWT và Refresh Token an toàn, nạp danh mục quyền hạn qua GET /api/roles/my-permissions. Kết nối WebSocket được thiết lập để nhận thông báo đẩy tức thời.
+
+### 2.3.4.2 Module 2: Quản Trị Tổ Chức Doanh Nghiệp Số & Phân Quyền Hạt Nhân (Enterprise CRM)
+
+Cung cấp không gian số hóa cơ cấu tổ chức doanh nghiệp, quản lý danh sách cán bộ nhân viên, phân quyền 5 cờ độc lập và kiểm soát hạn mức tài khoản theo gói cước (Slot Control).
+A. Bảng đặc tả trường dữ liệu Thêm Mới Nhân Sự Doanh Nghiệp:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+name
+TextInput
+VD: Trần Thị Bích Thảo
+Bắt buộc. Độ dài 2 - 60 ký tự. Không chứa mã độc.
+POST /api/companies/:id/employees
+Bảng: public.company_employees
+email
+TextInput (email)
+thao.tran@congty.com
+Bắt buộc. Định dạng email hợp lệ. Kiểm tra chống trùng lặp trong công ty.
+POST /api/companies/:id/employees
+Bảng: company_employees, auth.users
+phone
+PhoneInput
+0987 654 321
+Bắt buộc. 10 số di động Việt Nam. Regex ^(0[3|5|7|8|9])[0-9]{8}$.
+POST /api/companies/:id/employees
+Bảng: public.company_employees
+department
+SelectDropdown
+Kinh Doanh, Kỹ Thuật...
+Bắt buộc. Chọn phòng ban trong danh mục công ty.
+POST /api/companies/:id/employees
+Bảng: company_employees (department)
+title
+TextInput
+VD: Trưởng phòng Kinh Doanh
+Bắt buộc. Tối đa 60 ký tự.
+POST /api/companies/:id/employees
+Bảng: company_employees (title)
+role
+SelectDropdown
+Quản lý / Nhân viên
+Bắt buộc. Giá trị: manager (quản trị), staff (nhân viên nhận việc).
+POST /api/companies/:id/employees
+Bảng: company_employees (role)
+can_assign_tasks
+Checkbox / Switch
+Bật/Tắt
+Mặc định true cho Manager, false cho Staff. Cho phép giao việc.
+POST /api/companies/:id/employees
+Bảng: company_employees (can_assign_tasks)
+can_manage_finance
+Checkbox / Switch
+Bật/Tắt
+Quyền xem tài chính và duyệt chi. Mặc định false cho Staff.
+POST /api/companies/:id/employees
+Bảng: company_employees (can_manage_finance)
+- Quy tắc kiểm soát hạn mức tài khoản (Slot Limit Enforcement): Khi thêm nhân viên, Backend kiểm tra currentCount >= maxSlots. Nếu vượt quá hạn mức gói đã mua (ví dụ gói 30 slots), hệ thống lập tức từ chối và trả về HTTP 400: 'Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản'.
+- Vị trí hiển thị bản ghi sau khi nhập trên CRM: Bản ghi nhân viên mới xuất hiện ngay tại DÒNG 1 trên Bảng Danh Sách Nhân Sự (/companies/:id?tab=employees). Modal đóng lại, xuất hiện Toast xác nhận Vàng Gold. Thước đo Slot tài khoản tăng +1.
+- Cơ chế đẩy dữ liệu về nhân viên: Backend kích hoạt MailService.sendRegistrationAccountEmail tự động gửi thông tin tài khoản đăng nhập về email của nhân sự. Khi nhân sự mở App Native đăng nhập, họ lập tức thấy tổ chức công ty của mình.
+
+### 2.3.4.3 Module 3: Quản Trị Vận Hành, Quy Trình BPMN 2.0 & Kanban Công Việc (Workflow & Tasks)
+
+Điều hành toàn bộ tiến độ công việc doanh nghiệp theo chuẩn Kanban 4 trạng thái, tích hợp quy tắc nghiêm ngặt BR-WRK kiểm soát chất lượng và tải làm việc.
+A. Bảng đặc tả trường dữ liệu Khởi Tạo & Phân Công Giao Việc:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+title
+TextInput
+VD: Thẩm định hồ sơ đối tác X...
+Bắt buộc theo BR-WRK-01. Độ dài từ 5 đến 200 ký tự.
+POST /companies/:id/tasks
+POST /companies/:id/tasks/bulk
+Bảng: public.company_tasks
+description
+Textarea
+Mô tả chi tiết mục tiêu...
+Tùy chọn. Tối đa 2000 ký tự. Hỗ trợ ghi chú phạm vi.
+POST /companies/:id/tasks
+Bảng: company_tasks (description)
+assignee_id
+SelectDropdown / Multi
+Chọn nhân sự nhận việc
+Bắt buộc. Phải thuộc công ty. Kiểm tra WIP Limit: Nếu nhân sự có >= 5 việc đang làm thì chặn theo BR-WRK-06.
+POST /companies/:id/tasks
+Bảng: company_tasks (assignee_id)
+priority
+SelectDropdown
+urgent / high / normal / low
+Bắt buộc. Mức độ ưu tiên. Mặc định: normal.
+POST /companies/:id/tasks
+Bảng: company_tasks (priority)
+due_date / deadline
+DateTimePicker
+dd/mm/yyyy hh:mm
+Bắt buộc theo BR-WRK-01. Thời điểm trong tương lai (> now()). Quá hạn phát xung viền đỏ theo BR-WRK-02.
+POST /companies/:id/tasks
+Bảng: company_tasks (deadline)
+checklist
+DynamicListInput
+Thêm đầu việc con...
+Tùy chọn. Bắt buộc hoàn thành 100% tiêu chí checklist trước khi nghiệm thu Done theo BR-WRK-07.
+POST /companies/:id/tasks
+Bảng: company_tasks (checklist)
+- Vị trí hiển thị bản ghi trên Web CRM: Nhiệm vụ mới xuất hiện ngay tại DÒNG 1 trên Bảng Công Việc Doanh Nghiệp (/companies/:id?tab=tasks) và ĐỈNH CỘT [Cần làm / Todo] trên Bảng Kanban (/workflow). Bộ đếm số lượng việc tăng +1.
+- Cơ chế đẩy dữ liệu về App Native di động: Máy chủ NestJS phát sự kiện WebSocket và kích hoạt Push Notification FCM/APNs tới điện thoại nhân sự: 'Bạn được giao nhiệm vụ mới: [Tiêu đề công việc]'. Màn hình nhiệm vụ trên App Native tự động trượt hiển thị đầu việc mới.
+- Luồng cập nhật tiến độ trên App Native: Nhân viên tích từng tiêu chí checklist và chọn đổi trạng thái. Client gọi PATCH /companies/:id/tasks/:taskId/status. Trên Web CRM của Giám đốc, thẻ Kanban tự động dịch chuyển cột trong thời gian thực.
+
+### 2.3.4.4 Module 4: Quản Trị Tài Chính & Phê Duyệt Chi Tiền 3 Cấp (Finance & VietQR)
+
+Số hóa toàn diện quy trình trình duyệt chi tiêu 3 cấp Maker - Checker - Approver, tự động khử trùng hóa đơn chống chi trùng và sinh mã VietQR Napas 24/7 gạch nợ tức thì.
+A. Bảng đặc tả trường dữ liệu Đề Xuất Tờ Trình Chi Tiền:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+title
+TextInput
+VD: Chi phí thuê máy chủ Cloud...
+Bắt buộc. Từ 5 đến 150 ký tự.
+POST /api/operations/finance/approvals
+Bảng: public.payment_approvals
+amount
+NumberInput (currency)
+VD: 15,000,000
+Bắt buộc. Số nguyên dương > 0. Tối đa 50 tỷ đồng.
+POST /api/operations/finance/approvals
+Bảng: payment_approvals (amount)
+category
+SelectDropdown
+Chọn khoản mục chi
+Bắt buộc. Chi phí vận hành, Lương, Tiếp khách, Mua sắm...
+POST /api/operations/finance/approvals
+Bảng: payment_approvals (category)
+beneficiary_name
+TextInput
+CÔNG TY TNHH HẠ TẦNG SỐ...
+Bắt buộc. Tên thụ hưởng theo tài khoản ngân hàng.
+POST /api/operations/finance/approvals
+Bảng: payment_approvals (beneficiary_name)
+beneficiary_account
+TextInput (number)
+1903xxxxxxxx
+Bắt buộc. Đúng 6 - 20 chữ số ^[0-9]{6,20}$.
+POST /api/operations/finance/approvals
+Bảng: payment_approvals (beneficiary_account)
+beneficiary_bank
+SelectDropdown
+Chọn ngân hàng Napas
+Bắt buộc. Chọn trong 54 ngân hàng thành viên Napas.
+POST /api/operations/finance/approvals
+Bảng: payment_approvals (beneficiary_bank)
+invoice_file
+FileUpload (PDF/Image)
+N/A
+Bắt buộc theo BR-FIN-07. Khử trùng hóa đơn (Số HĐ, ngày, MST).
+POST /api/operations/finance/approvals
+Bảng: payment_approvals (invoice_url)
+- Vị trí hiển thị bản ghi trên Web CRM: Bản ghi xuất hiện ở DÒNG 1 trên Bảng Tờ trình Chi tại /payment-approvals với nhãn màu xanh dương: 'Chờ Kế Toán Soát Xét'.
+- Cơ chế phê duyệt & Gạch nợ VietQR: Sau khi Checker soát xét hợp lệ, Approver bấm 'Ký số & Phê duyệt' (POST /api/operations/finance/approvals/:id/approve). Hệ thống tự động gọi GET /api/operations/finance/approvals/:id/qr sinh mã VietQR Napas 24/7 gạch nợ trong 1 giây theo BR-FIN-06.
+
+### 2.3.4.5 Module 5: Quản Trị Chấm Công GPS & Theo Dõi Chuyên Cần (HRM & Attendance)
+
+Điểm danh xác thực vị trí vệ tinh GPS và nhận diện khuôn mặt chống gian lận trên App Native, đồng bộ bảng công thời gian thực về Web CRM của Lãnh đạo.
+A. Bảng đặc tả trường dữ liệu Điểm Danh Chấm Công Mobile:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+latitude / longitude
+GPS Sensor Read
+N/A
+Bắt buộc. Tọa độ thực tế lấy từ expo-location (Accuracy.High).
+POST /api/operations/attendance/check-in
+Bảng: public.attendance_records
+distance_meters
+System Calculated
+N/A
+Tự động tính theo Haversine. Phải <= bán kính quy định (VD: 200m).
+POST /api/operations/attendance/check-in
+Bảng: attendance_records (distance)
+face_snapshot
+Camera Selfie Live
+N/A
+Bắt buộc. Chụp trực tiếp từ camera trước (Liveness check chống giả).
+POST /api/operations/attendance/check-in
+Bảng: attendance_records (face_url)
+check_in_note
+TextInput
+Check-in ca sáng...
+Tùy chọn. Tối đa 150 ký tự.
+POST /api/operations/attendance/check-in
+Bảng: attendance_records (notes)
+- Vị trí hiển thị trên App Native: Màn hình bung thông báo thành công: 'Điểm danh thành công lúc HH:mm:ss - Trạng thái: Đúng giờ'. Bản ghi mới xuất hiện ở Dòng 1 Lịch sử chấm công.
+- Cơ chế đẩy dữ liệu về Web CRM: Máy chủ phát sự kiện WebSocket về Web CRM (/attendance). Bảng giám sát chuyên cần của Giám đốc lập tức cập nhật nhân sự từ 'Chưa đến' sang 'Có mặt' trong thời gian thực.
+
+### 2.3.4.6 Module 6: Chăm Sóc Khách Hàng CRM & Bóc Tách Danh Thiếp AI OCR (Leads Pipeline)
+
+Chụp và bóc tách danh thiếp giấy truyền thống thành Khách hàng tiềm năng (Leads CRM) trong 1.5 giây, phân hạng 4 cấp độ và theo dõi đường ống bán hàng.
+A. Bảng đặc tả trường dữ liệu Thẩm Định Danh Thiếp Sau Khi Quét AI OCR:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+card_image
+CameraSnapshot
+N/A
+Bắt buộc. Ảnh chụp danh thiếp, tự động nén < 450KB.
+POST /connect-app/card-scan
+Bảng: public.business_cards
+extracted_name
+TextInput
+Họ tên trên danh thiếp
+Bắt buộc. AI bóc tách tự động, người dùng có thể sửa (2 - 60 ký tự).
+POST /connect-app/card-scan
+Bảng: business_cards, crm_leads
+extracted_phone
+PhoneInput
+Số điện thoại đối tác
+Bắt buộc. Tự động chuẩn hóa về định dạng 10 số di động VN.
+POST /connect-app/card-scan
+Bảng: business_cards, crm_leads
+save_as_lead
+Switch (Toggle)
+Bật/Tắt
+Mặc định BẬT (true). Lưu đồng thời thành khách hàng CRM.
+POST /api/customers
+Bảng: public.crm_leads
+lead_tier
+SelectPicker
+Chọn phân khúc Lead
+Bắt buộc nếu bật Lead: Hot Lead, VIP C-Level, Cần Care 24h, Nổi Bật.
+POST /api/customers
+Bảng: crm_leads (tier)
+deal_value
+NumberInput
+VD: 50,000,000
+Tùy chọn. Giá trị thương vụ dự kiến (VND > 0).
+POST /api/customers
+Bảng: crm_leads (deal_value)
+- Vị trí hiển thị bản ghi: Trên App Native: Danh thiếp xuất hiện ở DÒNG 1 Tab 'Thẻ Đã Lưu', khách hàng xuất hiện ở DÒNG 1 Tab 'Khách Hàng CRM'. Trên Web CRM: Bảng Khách hàng CRM (/members) tự động cập nhật bản ghi mới ở dòng đầu tiên kèm nhãn phân hạng.
+
+### 2.3.4.7 Module 7: Phân Hệ Thống Kê & Báo Cáo Chuyên Sâu Dạng Tree Menu Đa Cấp Tại Sidebar
+
+Phân hệ Thống Kê Báo Cáo được thiết kế độc lập theo cấu trúc Cây phân cấp (Tree Menu) tại Sidebar với 4 nhánh cha và các chức năng con chi tiết, hỗ trợ tự động mở rộng theo URL:
+- Nhánh 1: Báo Cáo Tài Chính & Doanh Thu: Thống kê Doanh thu & Dòng tiền (/statistics?group=finance), Doanh thu toàn nền tảng (/finance-report) hoặc Sổ quỹ doanh nghiệp (/fees), Báo cáo phê duyệt chi tiền (/payment-approvals).
+- Nhánh 2: Thống Kê Vận Hành & Nhân Sự: Tiến độ & Hiệu suất Kanban BPMN (/statistics?group=operations), Báo cáo Chấm công & Ca làm (/statistics?group=attendance), Báo cáo phân công giao việc (/workflow).
+- Nhánh 3: Báo Cáo Khách Hàng CRM: Phân tích phễu khách hàng CRM (/statistics?group=crm), Báo cáo chăm sóc & tương tác đối tác (/members).
+- Nhánh 4: Giám Sát Nền Tảng ViOne (Dành riêng cho Super Admin): Chỉ số tăng trưởng nền tảng MRR/ARR (/statistics?group=platform), Theo dõi mức độ hoạt động doanh nghiệp (/platform), Nhật ký kiểm toán toàn hệ thống (/activity).
+- Luồng dữ liệu & Cơ chế đồng bộ: Client gọi GET /api/companies/platform-reports và GET /api/companies/:id/reports. Router tự động nhận query param ?group=... để chuyển tab tương ứng và kích hoạt vạch sáng viền Vàng Hoàng Gia active-branch.
+
+### 2.3.4.8 Module 8: Danh Thiếp Thông Minh VIP & Chạm 1-Tap NFC Vật Lý (Smart Identity)
+
+Trải nghiệm kết nối thương mại 1-chạm đẳng cấp doanh nhân, tích hợp thẻ vật lý NFC và mã Dynamic QR vCard.
+- Quy chuẩn thẻ vật lý tối giản: Trên bề mặt thẻ VIP kim loại, hệ thống STRICTLY chỉ hiển thị đúng 3 trường thông tin: Họ và tên, Công ty, và Số điện thoại ('chỉ thế thôi').
+- Chạm 1-Tap NFC NDEF: Doanh nhân chạm thẻ vào điện thoại đối tác. Sóng NFC truyền liên kết rút gọn https://vione.viconnect.vn/p/:identifier, mở trang Profile 5.0 Executive Luxury trong 0.5s mà đối tác không cần cài app.
+- Hồ sơ số 5.0 & Bộ nút hành động Gradient: Hiển thị 2 chế độ (Hồ sơ cá nhân / Hồ sơ doanh nghiệp), 3 mẫu nền hình học (Vuông, Tam giác, Tinh thể) và cụm 4 nút bấm Gradient: Gọi điện (Ngọc Lục Bảo), Chat Zalo (Zalo Blue), Mã QR (Vàng Hoàng Gia), Chia sẻ (Đen Thạch Anh Mạ Vàng).
+
+### 2.3.4.9 Module 9: Mạng Lưới Giao Thương B2B & Tin Nhắn Thời Gian Thực (B2B Network & Chat)
+
+Không gian giao thương kết nối doanh nhân, hỗ trợ trò chuyện bảo mật 0ms và chia sẻ khoảnh khắc hoạt động.
+- Nhắn tin 1-1 qua WebSocket RFC 6455: Khởi tạo hội thoại qua POST /connect-app/dm/threads (lưu UUID trong public.dm_threads). Gửi nhận tin nhắn qua POST /connect-app/dm/threads/:id/messages và Socket.IO Gateway. Độ trễ < 200ms.
+- Cơ chế đẩy thông báo Push Notification: Nếu đối tác không mở app, máy chủ kích hoạt APNs (Apple) và FCM (Google) gửi thông báo nổi trên màn hình khóa: 'Doanh nhân [Tên đối tác] vừa gửi tin nhắn cho bạn'.
+- Khoảnh khắc 24h (Stories): Doanh nhân đăng ảnh/video giới thiệu sản phẩm dịch vụ mới, tự động biến mất sau 24h. API: POST /api/moments. Bảng: public.moments.
+
+### 2.3.4.10 Module 10: Khởi Tạo Cộng Đồng, Dùng Thử 30 Ngày & Đăng Ký Gói ViOne Platform
+
+Cơ chế mở rộng mạng lưới doanh nghiệp, kích hoạt dùng thử miễn phí 30 ngày và đăng ký gói giải pháp theo số lượng tài khoản (slots) tích hợp thanh toán VietQR Napas 24/7.
+A. Bảng đặc tả trường dữ liệu Đăng Ký Gói ViOne Platform:
+Trường dữ liệu / Key
+Control / Type
+Placeholder gợi ý
+Quy tắc Validate & Ràng buộc
+API & Bảng CSDL lưu trữ
+company_name
+TextInput
+Công ty Cổ phần / TNHH...
+Bắt buộc. Từ 5 đến 150 ký tự.
+POST /api/companies/package-orders
+Bảng: public.vione_package_orders
+tax_code
+TextInput (number)
+0101234567
+Tùy chọn. Đúng 10 hoặc 13 chữ số ^[0-9]{10}(-[0-9]{3})?$.
+POST /api/companies/package-orders
+Bảng: vione_package_orders (tax_code)
+representative
+TextInput
+Họ tên người đại diện
+Bắt buộc. Từ 2 đến 60 ký tự.
+POST /api/companies/package-orders
+Bảng: vione_package_orders (representative)
+phone
+PhoneInput
+0912 345 678
+Bắt buộc. 10 số di động Việt Nam.
+POST /api/companies/package-orders
+Bảng: vione_package_orders (phone)
+email
+TextInput (email)
+admin@congty.com
+Bắt buộc. Email nhận thông tin kích hoạt Web CRM.
+POST /api/companies/package-orders
+Bảng: vione_package_orders (email)
+package_id
+CardSelectionGroup
+N/A
+Bắt buộc chọn 1 gói: Free 30D (0đ/30 slots), Gói Chuẩn (1.5tr/30 slots), Gói Tăng Trưởng (2.5tr/50 slots), Gói Doanh Nghiệp (4.5tr/100 slots).
+POST /api/companies/package-orders
+Bảng: vione_package_orders (package_id)
+- Vị trí hiển thị bản ghi & Luồng xét duyệt: Đơn hàng mới xuất hiện ngay tại DÒNG 1 trên Bảng Duyệt Đơn Web CRM ViConnect (/segments). Nhân sự ViConnect bấm 'Duyệt & Bắn Mail Thông Tin Gói', Backend cập nhật max_slots và tự động gửi email thông tin kích hoạt CRM về hòm thư người mua.
+- Xóa tài khoản vĩnh viễn chuẩn Apple App Store Guideline 5.1.1(v): Người dùng vào Tab 'Tôi' -> 'Bảo mật tài khoản' -> bấm nút Gradient Đỏ Ruby 'Xóa Tài Khoản Vĩnh Viễn'. Hộp thoại 2 bước xác nhận. Client gọi DELETE /connect-app/me/account, Backend thực thi purge sạch dữ liệu tài khoản trong CSDL, xóa cache AsyncStorage.clear() và đưa người dùng về màn hình đăng nhập.
+
+## 2.4 Các yêu cầu phi chức năng khác
+
+
+### 2.4.1 Yêu cầu về hiệu năng (Performance Requirements)
+
+- Thời gian phản hồi API: 95% các yêu cầu truy vấn dữ liệu tiêu chuẩn phản hồi dưới 200ms; các truy vấn báo cáo tài chính phức tạp hoàn thành dưới 800ms.
+- Khả năng chịu tải đồng thời: Hệ thống đáp ứng tối thiểu 5.000 người dùng hoạt động đồng thời (concurrent users) với mức độ tiêu hao tài nguyên CPU/RAM dưới 70%.
+- Tải trang & Lazy Loading: Thời gian tải ban đầu (First Contentful Paint) trên Web dưới 1.2 giây; trên thiết bị di động kích hoạt chế độ tải lười (Lazy Load) ảnh và bytecode Hermes nạp tức thì.
+
+### 2.4.2 Yêu cầu về bảo mật (Security Requirements)
+
+- Mã hóa dữ liệu lưu trữ & truyền tải: 100% kết nối bắt buộc qua giao thức bảo mật HTTPS/WSS với TLS 1.3; mật khẩu người dùng băm qua thuật toán Bcrypt 10 vòng; dữ liệu nhạy cảm mã hóa AES-256.
+- Kiểm soát phiên đăng nhập (JWT & Refresh Token): Access Token có thời hạn 60 phút, Refresh Token có thời hạn 7 ngày lưu trữ an toàn trong HttpOnly Cookie và Keychain / Keystore di động.
+- Chống tấn công phổ biến: Tích hợp phòng chống SQL Injection (nhờ Prisma ORM tham số hóa 100% câu lệnh), Cross-Site Scripting (XSS), CSRF token bảo vệ và bộ giới hạn tần suất gọi API (Rate Limiting).
+
+### 2.4.3 Yêu cầu tuân thủ (Compliance Requirements)
+
+Phần mềm tuân thủ đầy đủ chuẩn quốc tế IEEE 830-1998 về đặc tả yêu cầu kỹ thuật phần mềm máy tính, đồng thời đáp ứng nghiêm ngặt quy định tại Nghị định 13/2023/NĐ-CP của Chính phủ Việt Nam về bảo vệ dữ liệu cá nhân, đảm bảo quyền riêng tư và an toàn thông tin doanh nghiệp.
+
+# PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm
+
+Phụ lục này quy định chi tiết môi trường hạ tầng, cấu hình máy chủ, máy trạm và thiết bị di động đáp ứng điều kiện vận hành tối ưu của Phần mềm Vione Platform.
+
+## 1. Cấu hình Máy chủ (Server Requirements)
+
+Thông số kỹ thuật
+Cấu hình Tối thiểu
+Cấu hình Khuyến nghị
+Bộ vi xử lý (CPU)
+4 Cores (x86_64, 2.4 GHz trở lên)
+8 Cores – 16 Cores (Intel Xeon / AMD EPYC)
+Bộ nhớ trong (RAM)
+8 GB RAM
+16 GB – 32 GB RAM DDR4/DDR5
+Ổ đĩa lưu trữ (Disk)
+80 GB SSD Enterprise
+250 GB – 500 GB NVMe SSD RAID 10
+Băng thông mạng
+100 Mbps đối xứng
+1 Gbps đối xứng, IP tĩnh công cộng
+Hệ điều hành máy chủ
+Ubuntu Server 22.04 LTS / Debian 12
+Ubuntu Server 24.04 LTS x86_64
+Môi trường thực thi
+Docker 24+, Docker Compose v2.20+
+Docker Swarm / Kubernetes Cluster
+
+## 2. Cấu hình Máy trạm truy cập Web CRM (Desktop / Laptop)
+
+Thông số
+Yêu cầu Tối thiểu
+Khuyến nghị
+Phần cứng
+CPU Dual Core 2.0 GHz, 4GB RAM
+CPU Quad Core 2.5 GHz+, 8GB RAM trở lên
+Độ phân giải màn hình
+1366 x 768 pixels
+1920 x 1080 (Full HD) hoặc cao hơn
+Trình duyệt web
+Google Chrome 110+, Microsoft Edge 110+, Safari 16+, Firefox 115+
+Google Chrome / Microsoft Edge phiên bản mới nhất
+Kết nối Internet
+Tốc độ tải xuống tối thiểu 5 Mbps
+Tốc độ tải xuống từ 25 Mbps trở lên
+
+## 3. Cấu hình Thiết bị Di động (Mobile App Requirements)
+
+Hệ điều hành
+Yêu cầu Tối thiểu
+Khuyến nghị
+Apple iOS
+iOS 14.0 trở lên (iPhone 8 trở lên)
+iOS 16.0 – iOS 18.0+ (iPhone 12, 13, 14, 15, 16)
+Google Android
+Android 9.0 (API Level 28), RAM 3GB
+Android 12.0 – Android 15.0+, RAM 6GB – 12GB
+Cảm biến phần cứng
+Camera tối thiểu 8MP, GPS/A-GPS, NFC
+Camera 12MP+ tự động lấy nét, GPS vệ tinh, NFC Tag Reader
+
+# PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG VIONE CRM
+
+Phần mềm ViOne CRM cung cấp bộ công cụ quản trị doanh nghiệp toàn diện dành cho Ban Giám đốc và các phòng ban vận hành. Dưới đây là hướng dẫn thao tác chi tiết từng màn hình chức năng của hệ thống:
+
+## 1. Màn hình Đăng nhập Quản trị ViOne CRM
+
+Mục đích: Xác thực danh tính người dùng và điều hướng vào không gian làm việc doanh nghiệp tương ứng với vai trò được phân quyền.
+Các bước thực hiện:
+- Bước 1: Truy cập cổng quản trị CRM ViOne trên trình duyệt web.
+- Bước 2: Nhập địa chỉ Email doanh nghiệp (hoặc Số điện thoại đã được cấp phép) vào ô TÀI KHOẢN / EMAIL.
+- Bước 3: Nhập Mật khẩu bảo mật; tích chọn 'Ghi nhớ đăng nhập' nếu sử dụng thiết bị cá nhân an toàn.
+- Bước 4: Nhấn nút 'Đăng nhập Hệ thống CRM' màu vàng hoàng gia. Hệ thống kiểm tra xác thực JWT và chuyển vào Bảng điều hành C-Level.
+
+
+*Hình 2.1 – Màn hình Đăng nhập Quản trị ViOne CRM*
+
+
+## 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền
+
+Mục đích: Cung cấp bức tranh toàn cảnh về hoạt động kinh doanh, dòng tiền, khối lượng công việc và hiệu suất doanh nghiệp theo thời gian thực.
+Các bước thực hiện:
+- Bước 1: Xem 4 thẻ KPI tài chính tổng quát: Tổng doanh thu lũy kế, Khách hàng mới, Cơ hội mở và Tỷ lệ chuyển đổi thành công.
+- Bước 2: Sử dụng bộ lọc chu kỳ thời gian (Tuần này, Tháng này, Quý này, Năm nay) để phân tích biến động.
+- Bước 3: Theo dõi biểu đồ dòng tiền thu chi thực tế từ CSDL PostgreSQL và bảng cảnh báo các đầu việc sắp đến hạn hoặc quá hạn cần xử lý khẩn cấp.
+
+
+*Hình 2.2 – Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền*
+
+
+## 3. Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp
+
+Mục đích: Lưu trữ, tra cứu và chăm sóc toàn diện hồ sơ các khách hàng doanh nghiệp, đối tác liên minh kinh doanh.
+Các bước thực hiện:
+- Bước 1: Chọn menu 'Doanh nghiệp' hoặc 'Khách hàng (CRM)' trên thanh điều hướng bên trái.
+- Bước 2: Xem danh sách đối tác kèm các chỉ số phân loại: Đang hoạt động, Chờ duyệt, Ngành nghề, Khu vực và Cấp độ thành viên.
+- Bước 3: Nhấn nút '+ Thêm doanh nghiệp' để khai báo hồ sơ đối tác mới hoặc nhấn 'Xuất Excel' để kết xuất danh bạ phục vụ đối soát.
+
+
+*Hình 2.3 – Quản Lý Danh Sách Khách Hàng B2B & Doanh Nghiệp*
+
+
+## 4. Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals
+
+Mục đích: Quản trị các thương vụ kinh doanh B2B theo mô hình Kanban trực quan, tối ưu hóa tỷ lệ chốt hợp đồng.
+Các bước thực hiện:
+- Bước 1: Vào phân hệ 'Cơ hội kinh doanh' trên thanh menu.
+- Bước 2: Quan sát phễu bán hàng phân bổ theo các cột: Mới tiếp cận -> Khảo sát nhu cầu -> Gửi báo giá -> Đàm phán -> Hoàn tất.
+- Bước 3: Kéo thả thẻ cơ hội giữa các cột để cập nhật tiến độ; nhấn nút '+ Đăng cơ hội' màu vàng kim để tạo thương vụ mới.
+
+
+*Hình 2.4 – Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals*
+
+
+## 5. Quản Trị Danh Thiếp Doanh Nhân Thông Minh
+
+Mục đích: Thiết lập và quản lý danh thiếp số điện tử (Digital Business Card) cho đội ngũ nhân sự và lãnh đạo công ty.
+Các bước thực hiện:
+- Bước 1: Truy cập mục 'Danh thiếp thông minh' trên hệ thống.
+- Bước 2: Cập nhật chức danh, số điện thoại, email, thông tin công ty, liên kết mạng xã hội và sản phẩm tiêu biểu.
+- Bước 3: Hệ thống tự động sinh mã QR động và mã định danh NFC liên kết trực tiếp với trang hồ sơ cá nhân của doanh nhân.
+
+
+*Hình 2.5 – Quản Trị Danh Thiếp Doanh Nhân Thông Minh*
+
+
+## 6. Sàn Giao Thương Thương Mại B2B Marketplace
+
+Mục đích: Kết nối cung cầu nội bộ giữa các doanh nghiệp trong nền tảng ViOne Platform, xúc tiến mua bán chéo sản phẩm dịch vụ.
+Các bước thực hiện:
+- Bước 1: Truy cập menu 'Marketplace' / 'Sàn giao thương'.
+- Bước 2: Tìm kiếm sản phẩm, dịch vụ theo ngành hàng, mức giá và vị trí địa lý của nhà cung cấp.
+- Bước 3: Nhấn nút 'Gửi yêu cầu báo giá' hoặc 'Kết nối nhà cung ứng' để bắt đầu đàm phán thương mại.
+
+
+*Hình 2.6 – Sàn Giao Thương Thương Mại B2B Marketplace*
+
+
+## 7. Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp
+
+Mục đích: Lên kế hoạch, tổ chức các buổi kết nối giao thương, hội thảo chuyên đề và điều phối khách mời tham dự.
+Các bước thực hiện:
+- Bước 1: Vào phân hệ 'Sự kiện doanh nghiệp'.
+- Bước 2: Tạo sự kiện mới: Thiết lập tên chương trình, thời gian bắt đầu/kết thúc, địa điểm tổ chức, số lượng vé và diễn giả.
+- Bước 3: Theo dõi danh sách đăng ký tham dự, phê duyệt khách mời và phát hành vé điện tử kèm mã QR định danh.
+
+
+*Hình 2.7 – Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp*
+
+
+## 8. Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime
+
+Mục đích: Kiểm soát an ninh và ghi nhận sự có mặt của đại biểu tại quầy lễ tân thông qua camera quét mã QR.
+Các bước thực hiện:
+- Bước 1: Mở màn hình 'Quét mã Check-in' tại bàn tiếp đón.
+- Bước 2: Đưa camera quét mã vé QR trên điện thoại của khách mời; hệ thống tự động đối soát trong CSDL PostgreSQL.
+- Bước 3: Màn hình hiển thị thông báo check-in thành công kèm họ tên, chức danh và in nhãn đeo đại biểu nếu được cấu hình.
+
+
+*Hình 2.8 – Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime*
+
+
+## 9. Quản Trị Quy Trình & Phân Công Giao Việc Tự Động
+
+Mục đích: Tự động hóa luồng phối hợp liên phòng ban, giao việc theo tiến độ và kiểm soát chất lượng đầu ra.
+Các bước thực hiện:
+- Bước 1: Chọn mục 'Quy trình & Vận hành' -> 'Công việc'.
+- Bước 2: Lãnh đạo hoặc Quản lý phòng ban nhấn '+ Giao việc mới': Nhập tiêu đề, mô tả yêu cầu, người phụ trách, người phối hợp và hạn chót (Deadline).
+- Bước 3: Nhân viên nhận việc qua thông báo, cập nhật tiến độ % và đính kèm biên bản nghiệm thu. Lãnh đạo thực hiện duyệt hoàn thành hoặc yêu cầu bổ sung.
+
+
+*Hình 2.9 – Quản Trị Quy Trình & Phân Công Giao Việc Tự Động*
+
+
+## 10. Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự
+
+Mục đích: Theo dõi thời gian làm việc thực tế của nhân viên dựa trên vị trí địa lý hợp lệ của văn phòng công ty.
+Các bước thực hiện:
+- Bước 1: Thiết lập tọa độ GPS và bán kính cho phép (bán kính chuẩn <= 50m) của trụ sở/chi nhánh.
+- Bước 2: Nhân viên thực hiện Check-in / Check-out trên thiết bị di động khi đến văn phòng.
+- Bước 3: Bảng điều hành CRM hiển thị tỷ lệ có mặt theo thời gian thực, tổng hợp bảng công tháng và cảnh báo đi muộn/về sớm.
+
+
+*Hình 2.10 – Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự*
+
+
+## 11. Quản Trị Thu Tiền & Phiếu Thu Doanh Thu
+
+Mục đích: Kiểm soát các khoản thu từ khách hàng, hợp đồng kinh tế và phí hội viên trong kỳ.
+Các bước thực hiện:
+- Bước 1: Truy cập menu 'Tài chính' -> 'Phiếu thu / Doanh thu'.
+- Bước 2: Tạo phiếu thu mới: Ghi nhận số tiền, người nộp, hợp đồng tương ứng và hình thức thanh toán (Tiền mặt / Chuyển khoản VietQR).
+- Bước 3: Trạng thái phiếu thu được cập nhật tự động khi khách hàng quét mã VietQR và tiền vào tài khoản ngân hàng.
+
+
+*Hình 2.11 – Quản Trị Thu Tiền & Phiếu Thu Doanh Thu*
+
+
+## 12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp
+
+Mục đích: Quản lý các khoản chi tiêu vận hành, công tác phí, mua sắm tài sản và định mức ngân sách theo phòng ban.
+Các bước thực hiện:
+- Bước 1: Vào mục 'Quản lý chi phí' trên thanh bên.
+- Bước 2: Tạo đề xuất chi: Nhập lý do chi, hạn mức ngân sách phòng ban, số tiền và đính kèm hóa đơn chứng từ liên quan.
+- Bước 3: Theo dõi luồng phê duyệt từ Trưởng phòng tới Kế toán trưởng và Ban Giám đốc.
+
+
+*Hình 2.12 – Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp*
+
+
+## 13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử
+
+Mục đích: Theo dõi niên hạn tham gia gói dịch vụ, hạn mức sử dụng và phát hành hóa đơn gia hạn tự động.
+Các bước thực hiện:
+- Bước 1: Vào phân hệ 'Phí & Hóa đơn'.
+- Bước 2: Xem bảng danh sách hóa đơn theo trạng thái: Đã thanh toán, Chờ thanh toán, Quá hạn.
+- Bước 3: Gửi thông báo nhắc nợ tự động qua Email và tin nhắn đẩy trên ứng dụng di động của khách hàng.
+
+
+*Hình 2.13 – Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử*
+
+
+## 14. Phê Duyệt Tài Chính Đa Cấp VietQR
+
+Mục đích: Ngăn chặn 90% rủi ro chi sai nhờ quy trình duyệt lệnh 3 cấp khép kín, tích hợp sinh lệnh chuyển tiền bảo mật.
+Các bước thực hiện:
+- Bước 1: Người đề xuất lập phiếu chi kèm tài liệu đối soát.
+- Bước 2: Cấp 1 (Trưởng phòng ban) thẩm định tính hợp lý và ký duyệt điện tử.
+- Bước 3: Cấp 2 (Kế toán trưởng) kiểm tra tính hợp pháp của chứng từ và định khoản ngân sách.
+- Bước 4: Cấp 3 (Giám đốc điều hành) nhấn nút 'Phê duyệt & Xuất lệnh VietQR' để thực hiện chi trả qua ngân hàng.
+
+
+*Hình 2.14 – Phê Duyệt Tài Chính Đa Cấp VietQR*
+
+
+## 15. Lịch Trình Điều Hành & Họp Ban Trực Tuyến
+
+Mục đích: Quản lý lịch họp nội bộ, gặp gỡ đối tác và tích hợp phòng họp trực tuyến WebRTC độ nét cao.
+Các bước thực hiện:
+- Bước 1: Mở mục 'Lịch & Cuộc họp' trên CRM.
+- Bước 2: Lên lịch cuộc họp: Nhập chủ đề, thời gian, thành phần tham gia và tài liệu chuẩn bị.
+- Bước 3: Nhấn nút 'Tham gia phòng họp' để mở phiên họp trực tuyến với tính năng chia sẻ màn hình, biểu quyết và ghi âm biên bản họp.
+
+
+*Hình 2.15 – Lịch Trình Điều Hành & Họp Ban Trực Tuyến*
+
+
+## 16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)
+
+Mục đích: Quản trị tập trung toàn bộ hồ sơ, hợp đồng, chứng từ và quy chế doanh nghiệp theo cấu trúc thư mục đa cấp (Nested Folders) và phân loại danh mục nghiệp vụ chuyên sâu chuẩn Google Drive, hỗ trợ tải tệp tin, xem tài liệu, ghim dấu sao và điều hướng breadcrumbs tức thời.
+Các bước thực hiện:
+- Bước 1: Truy cập menu 'Kho tài liệu'.
+- Bước 2: Duyệt cây thư mục phân cấp theo phòng ban (Kinh doanh, Kỹ thuật, Kế toán, Nhân sự).
+- Bước 3: Tải lên tệp mới hoặc cấp quyền chia sẻ liên kết nội bộ an toàn.
+
+
+*Hình 2.16 – Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)*
+
+
+## 17. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp
+
+Mục đích: Lấy ý kiến biểu quyết minh bạch cho các quyết định của Hội đồng quản trị, Ban giám đốc hoặc thăm dò ý kiến cán bộ nhân viên.
+Các bước thực hiện:
+- Bước 1: Vào phân hệ 'Biểu quyết & Khảo sát'.
+- Bước 2: Tạo phiên biểu quyết mới: Nhập câu hỏi, danh sách phương án lựa chọn, thời hạn đóng hòm phiếu và phạm vi đối tượng được bỏ phiếu.
+- Bước 3: Hệ thống tự động kiểm phiếu và kết xuất biểu đồ kết quả trực quan theo thời gian thực.
+
+
+*Hình 2.17 – Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp*
+
+
+## 18. Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC Data Isolation)
+
+Mục đích: Thiết lập ma trận quyền hạn chi tiết trên 7 nhóm quyền và 6 vai trò, bảo vệ tuyệt đối quyền sở hữu dữ liệu doanh nghiệp.
+Các bước thực hiện:
+- Bước 1: Vào menu 'Quản trị hệ thống' -> 'Phân quyền ma trận'.
+- Bước 2: Xem bảng ma trận đối chiếu giữa các Vai trò (Role Quản Trị, Role Admin, Quản lý chi nhánh, Trưởng phòng, Nhân viên, Hội viên) và các Nhóm quyền (Xem, Thêm, Sửa, Xóa, Phê duyệt, Bàn giao, Quản trị).
+- Bước 3: Tích chọn hoặc hủy chọn từng quyền hạn; nhấn 'Lưu ma trận' để cập nhật realtime toàn hệ thống.
+
+
+*Hình 2.18 – Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC Data Isolation)*
+
+
+## 19. Trợ Lý Điều Hành ViOne AI 6.0 (OpenRouter AI Engine)
+
+Mục đích: Khai thác sức mạnh trí tuệ nhân tạo để tra cứu số liệu kinh doanh, tóm tắt báo cáo tài chính và soạn thảo văn bản tự động.
+Các bước thực hiện:
+- Bước 1: Nhấn vào biểu tượng Trợ lý ViOne AI ở thanh công cụ hoặc truy cập menu 'Trợ lý AI' (tích hợp động cơ OpenRouter AI Gateway với DeepSeek-V3 LLM & Meta Llama 3.3).
+- Bước 2: Nhập câu hỏi bằng tiếng Việt tự nhiên (ví dụ: 'Tổng hợp doanh thu tháng này', 'Liệt kê các cơ hội bán hàng trên 500 triệu đồng').
+- Bước 3: Trợ lý AI phân tích dữ liệu thực tế từ PostgreSQL và trả về câu trả lời chính xác kèm biểu đồ minh họa.
+
+
+*Hình 2.19 – Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0 (OpenRouter AI Engine)*
+
+
+## 20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% (Real Data Persistence)
+
+Mục đích: Tùy chỉnh thông tin pháp nhân, logo doanh nghiệp, cài đặt thông báo và quản lý cấu hình kết nối.
+Các bước thực hiện:
+- Bước 1: Vào menu 'Cài đặt tài khoản & Doanh nghiệp'.
+- Bước 2: Cập nhật tên công ty, mã số thuế, địa chỉ trụ sở, tài khoản ngân hàng thụ hưởng VietQR.
+- Bước 3: Chọn ngôn ngữ mặc định, cấu hình kênh nhận thông báo và nhấn 'Lưu cài đặt'.
+
+
+*Hình 2.20 – Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% (Real Data Persistence)*
+
+
+# PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG NATIVE VIONE CONNECT (IOS & ANDROID)
+
+Ứng dụng di động thuần Native ViOne Connect (xây dựng bằng React Native / Expo Native Engine đạt chuẩn kiểm duyệt khắt khe của Apple App Store cho iOS và Google Play Store cho Android) mang lại trải nghiệm điều hành và kết nối giao thương thượng lưu dành cho doanh nhân hiện đại.
+
+Hệ thống phân định rõ ràng thành 2 vai trò và góc nhìn giao diện trải nghiệm:
+(a) Góc Nhìn Công Ty Thuộc Sở Hữu / Chủ Quản Nền Tảng (Platform Host / System Owner - ViConnect):
+- Đóng vai trò Điều Phối Toàn Nền Tảng ViOne Platform: Quản lý danh mục các liên minh doanh nghiệp, duyệt các đơn mua gói ViOne Platform, giám sát chỉ số sức khỏe hệ thống (Health Score), điều phối lưu lượng kết nối AI Gateway và phát hành thông cáo toàn mạng lưới.
+- Giao diện trên App: Hiển thị huy hiệu Lãnh Đạo Nền Tảng VIP Host Master, bảng tin điều hành vĩ mô, danh bạ toàn bộ doanh nhân thành viên trên nền tảng ViOne Platform và trung tâm duyệt yêu cầu kết nối B2B liên doanh nghiệp.
+
+(b) Góc Nhìn Khách Hàng / Doanh Nghiệp Mua Gói ViOne Platform (Tenant Client - Minh họa: VIASIA TECH JSC):
+- Đóng vai trò Doanh Nghiệp Thụ Hưởng Dịch Vụ: Sau khi đăng ký Gói Doanh Nghiệp 100 tài khoản (VIONE_ENTERPRISE_100), CEO Trần Hoàng Long và đội ngũ nhân sự VIASIA sở hữu không gian làm việc số hóa toàn diện:
+  + Giao diện Không Gian Cộng Đồng Riêng (Private Corporate Workspace): Tab Cộng Đồng hiển thị không gian riêng của VIASIA TECH JSC với logo nhận diện công ty, bảng tin nội bộ, sự kiện đào tạo và thông báo nội bộ của riêng công ty.
+  + Giao diện Bàn Làm Việc Điều Hành & Giao Việc Di Động: Nhân viên nhận việc từ cấp trên, cập nhật tiến độ công việc checklist % và gửi báo cáo giải trình kèm biên bản đính kèm trực tiếp trên di động.
+  + Giao diện Điểm Danh & Chấm Công GPS: Nhân sự chấm công vào/ra tại vị trí GPS văn phòng VIASIA, chống gian lận vị trí.
+  + Giao diện Danh Thiếp Doanh Nhân Số & Thẻ NFC: Cấp danh thiếp số chuẩn Obsidian Luxury mang thương hiệu VIASIA TECH JSC, tích hợp mã QR vCard và thẻ chip NFC 1-chạm mạ vàng để ngoại giao đối tác.
+  + Giao diện Giao Thương B2B & Trí Tuệ Nhân Tạo AI Matcher: Vẫn kết nối thông suốt với toàn bộ cộng đồng hàng nghìn doanh nghiệp khác trên nền tảng ViOne Platform để chào hàng trên B2B Marketplace và kết nối 1-on-1 qua Trợ lý AI.
+
+Dưới đây là hướng dẫn chi tiết toàn bộ các màn hình ứng dụng:
+
+## 1. Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury
+
+Mục đích: Cung cấp trải nghiệm đăng nhập bảo mật, sang trọng trên thiết bị cầm tay với tông màu Đen thạch anh và Vàng hoàng gia Champagne Gold.
+Các bước thực hiện:
+- Bước 1: Mở ứng dụng ViOne Connect Native trên điện thoại (tải trực tiếp từ Apple App Store hoặc Google Play Store).
+- Bước 2: Lựa chọn đăng nhập siêu tốc qua Google, Apple Sign-In native hoặc nhập Email / Số điện thoại kèm Mật khẩu.
+- Bước 3: Bấm nút 'Đăng nhập' màu vàng hoàng gia; nếu là đối tác mới có thể bấm 'Quét danh thiếp' để xem nhanh hồ sơ doanh nhân.
+
+
+*Hình 3.1 – Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury*
+
+
+## 2. Trang Chủ Điều Hành C-Level Executive Home
+
+Mục đích: Cung cấp không gian làm việc số di động cho CEO và lãnh đạo, tích hợp Thẻ doanh nhân, định vị GPS và danh bạ thông minh.
+Các bước thực hiện:
+- Bước 1: Sau khi đăng nhập thành công, người dùng được đưa trực tiếp vào Tab 1 - Trang chủ.
+- Bước 2: Quan sát Thẻ doanh nhân hiển thị Họ tên, ảnh chân dung lãnh đạo, huy hiệu 'DOANH NHÂN VIONE' và số điện thoại định danh.
+- Bước 3: Kiểm tra trạng thái Định vị AI: Nhấn 'Bật vị trí' để hệ thống hỗ trợ quét đối tác kinh doanh quanh đây.
+
+
+*Hình 3.2 – Trang Chủ Điều Hành C-Level Executive Home*
+
+
+## 3. Thẻ Doanh Nhân ViOne & Trạng Thái Định Vị AI GPS
+
+Mục đích: Cho phép người dùng chạm vào thẻ để kích hoạt bảng điều khiển vuốt tay (Bottom Sheet) hiển thị mã QR định danh và chia sẻ NFC.
+Các bước thực hiện:
+- Bước 1: Chạm trực tiếp vào Thẻ doanh nhân trên màn hình chính.
+- Bước 2: Bảng điều khiển vuốt từ dưới lên với góc bo tròn sang trọng, hiển thị mã QR cá nhân và các phím tắt kết nối.
+- Bước 3: Người dùng có thể vuốt tay nhẹ xuống dưới để đóng bảng điều khiển mượt mà.
+
+
+*Hình 3.3 – Thẻ Doanh Nhân ViOne & Bảng Điều Khiển Bottom Sheet*
+
+
+## 4. Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs
+
+Mục đích: Quản trị toàn bộ lịch trình gặp gỡ đối tác, cuộc họp nội bộ và ghi âm nhật ký điều hành trong ngày.
+Các bước thực hiện:
+- Bước 1: Tại khối 'Tất cả lịch trình & cơ hội', chuyển đổi linh hoạt giữa 5 tabs: [Tất cả], [Hôm nay], [Sắp tới], [Nhắc lịch], [Ghi âm].
+- Bước 2: Tab Ghi âm cho phép lãnh đạo lưu lại tức thì các chỉ đạo hoặc ý tưởng kinh doanh bằng micro điện thoại.
+- Bước 3: Bấm vào từng cuộc hẹn để xem địa điểm, thành phần tham dự và lộ trình di chuyển.
+
+
+*Hình 3.4 – Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs*
+
+
+## 5. Mạng Lưới Đối Tác Doanh Nghiệp B2B
+
+Mục đích: Mở rộng mạng lưới quan hệ kinh doanh với cộng đồng hàng ngàn lãnh đạo doanh nghiệp đã được xác thực danh tính.
+Các bước thực hiện:
+- Bước 1: Chuyển sang Tab 2 - 'Mạng lưới' trên thanh điều hướng dưới cùng.
+- Bước 2: Sử dụng các bộ lọc chuyên sâu: [Mạng lưới], [Khách hàng], [Gợi ý (AI)], [Lời mời].
+- Bước 3: Nhập từ khóa tìm kiếm theo tên doanh nhân, công ty, ngành nghề hoặc chức danh chuyên môn.
+
+
+*Hình 3.5 – Mạng Lưới Đối Tác Doanh Nghiệp B2B*
+
+
+## 6. Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác
+
+Mục đích: Cập nhật tin nhanh hoạt động doanh nghiệp trong 24 giờ và nhận đề xuất đối tác từ thuật toán học máy AI Matcher.
+Các bước thực hiện:
+- Bước 1: Nhấn '+ Tạo tin 24h' để đăng tải hình ảnh hoạt động, ký kết hợp đồng hoặc nhu cầu mua sắm tức thời.
+- Bước 2: Xem khối 'VIONE AI MATCHER (DEEPSEEK & LLAMA 3.3)' với điểm số tương thích (Match Score) được tính toán tự động dựa trên hồ sơ cung cầu.
+- Bước 3: Bấm 'Khám phá AI' để xem danh sách đối tác vàng được AI gợi ý kết nối 1-on-1 trong ngày.
+
+
+*Hình 3.6 – Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác*
+
+
+## 7. Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1 Ghim Lịch
+
+Mục đích: Kênh liên lạc trực tiếp bảo mật giữa các doanh nhân, tích hợp tính năng gửi thiệp hẹn gặp ghim lịch tự động.
+Các bước thực hiện:
+- Bước 1: Mở Hộp thư Messenger từ biểu tượng tin nhắn hoặc trang mạng lưới.
+- Bước 2: Gửi tin nhắn văn bản, hình ảnh, tài liệu đính kèm với độ trễ 0ms qua Socket.IO.
+- Bước 3: Nhấn biểu tượng 'Lên lịch hẹn': Chọn thời gian, địa điểm gặp gỡ; khi đối tác chấp nhận, lịch hẹn tự động được ghim vào Lịch điều hành của cả hai bên.
+
+
+*Hình 3.7 – Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1*
+
+
+## 8. Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet 5 Hành Động
+
+Mục đích: Nút biểu tượng chữ V mạ vàng nổi khối 3D tại vị trí trung tâm thanh điều hướng, giúp thực thi nhanh 5 tác vụ ngoại giao cốt lõi.
+Các bước thực hiện:
+- Bước 1: Chạm vào Nút V 3D nổi bật ở giữa thanh điều hướng dưới cùng.
+- Bước 2: Bảng VActionSheet mở ra với 5 hành động: (1) Đưa mã QR của tôi, (2) Chạm thẻ NFC, (3) Quét mã QR, (4) Quét danh thiếp OCR, (5) Ghi chú cuộc gặp.
+- Bước 3: Chọn nhanh hành động mong muốn để hoàn tất tương tác ngoại giao chỉ trong 1 thao tác chạm.
+
+
+*Hình 3.8 – Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet*
+
+
+## 9. Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace)
+
+Mục đích: Không gian liên minh hội tụ các cộng đồng hiệp hội, liên minh doanh nghiệp và câu lạc bộ doanh nhân trên nền tảng ViOne Platform.
+Các bước thực hiện:
+- Bước 1: Chuyển sang Tab 3 - 'Cộng đồng'.
+- Bước 2: Duyệt danh sách các cộng đồng đang quản trị hoặc đã tham gia (ví dụ: Cộng Đồng Doanh Nhân ViOne...).
+- Bước 3: Xem thống kê nhanh về số lượng thành viên, sự kiện sắp tới và tổng số cơ hội giao thương đang mở trong cộng đồng.
+
+
+*Hình 3.9 – Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace)*
+
+
+## 10. Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ
+
+Mục đích: Quản trị chi tiết 6 phân hệ (Tasks, Supervision, Opportunities, News, Events, Members) bên trong từng liên minh doanh nghiệp.
+Các bước thực hiện:
+- Bước 1: Bấm vào một cộng đồng cụ thể để mở trung tâm điều hành liên minh.
+- Bước 2: Lãnh đạo theo dõi biểu đồ chuyên cần nhân viên; nhân viên bấm '[⚡ TIẾN HÀNH NHẬN VIỆC]' để bắt đầu xử lý công việc.
+- Bước 3: Cập nhật thanh tiến độ % (0-100%) và gửi báo cáo giải trình kèm biên bản đính kèm.
+
+
+*Hình 3.10 – Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ*
+
+
+## 11. Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium & Showcase
+
+Mục đích: Quản trị hồ sơ danh tính số cá nhân, giới thiệu sản phẩm tiêu biểu và các kênh kết nối nhanh đa nền tảng.
+Các bước thực hiện:
+- Bước 1: Chuyển sang Tab 4 - 'Tôi' trên thanh điều hướng dưới cùng.
+- Bước 2: Quan sát thẻ danh tính số hiển thị chức danh (ví dụ: 'Quản trị viên Hệ thống - ViOne Platform'), ảnh đại diện và hai nút chạm 'QR của tôi' / 'Chạm NFC'.
+- Bước 3: Khối 'LIÊN HỆ NHANH' hỗ trợ đối tác kết nối ngay qua Gọi điện thoại, Email, Viber, WhatsApp hoặc Telegram.
+
+
+*Hình 3.11 – Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium*
+
+
+## 12. Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard
+
+Mục đích: Cung cấp trang danh thiếp số chuyên sâu, hỗ trợ lưu nhanh số điện thoại vào danh bạ (Add to Contacts) và chia sẻ liên kết mạng xã hội.
+Các bước thực hiện:
+- Bước 1: Nhấn nút 'QR của tôi' hoặc 'Xem hồ sơ' trên màn hình cá nhân.
+- Bước 2: Hệ thống hiển thị mã QR định danh sắc nét liên kết trực tiếp với đường dẫn hồ sơ công khai (Canonical URL).
+- Bước 3: Đối tác quét mã bằng camera điện thoại thông thường sẽ tự động nhận được tệp danh thiếp vCard đầy đủ thông tin để lưu vào danh bạ máy tính bảng/điện thoại.
+
+
+*Hình 3.12 – Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard*
+
+
+## 13. Kích Hoạt & Cài Đặt Thẻ Doanh Nhân NFC 1-Chạm
+
+Mục đích: Liên kết thẻ vật lý NFC (thẻ kim loại Titanium hoặc PVC mạ vàng) với tài khoản doanh nhân trên hệ thống ViOne.
+Các bước thực hiện:
+- Bước 1: Mở chức năng 'Kích hoạt thẻ NFC' từ menu cài đặt hoặc VActionSheet.
+- Bước 2: Áp thẻ NFC vật lý vào mặt lưng điện thoại (vị trí gần cụm camera chứa chip đọc NFC).
+- Bước 3: Hệ thống phát âm thanh xác nhận và ghi nhận UID của chip NFC vào hồ sơ doanh nhân trong CSDL PostgreSQL.
+
+
+*Hình 3.13 – Kích Hoạt & Cài Đặt Thẻ Doanh Nhân NFC 1-Chạm*
+
+
+## 14. Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR
+
+Mục đích: Tự động trích xuất thông tin từ danh thiếp giấy truyền thống (Họ tên, SĐT, Email, Tên công ty, Chức vụ) và nhập liệu vào CRM trong 3 giây.
+Các bước thực hiện:
+- Bước 1: Chọn tác vụ 'Quét danh thiếp' trên ứng dụng.
+- Bước 2: Đưa camera hướng vào tấm danh thiếp giấy của đối tác và nhấn nút chụp ảnh.
+- Bước 3: Mô hình thị giác máy tính OCR Vision tự động nhận dạng các trường dữ liệu; người dùng rà soát nhanh và nhấn 'Lưu vào danh bạ CRM'.
+
+
+*Hình 3.14 – Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR*
+
+
+## 15. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn (Apple Compliant)
+
+Mục đích: Quản trị các lớp bảo vệ tài khoản, đổi mật khẩu định kỳ, kích hoạt xác thực 2 bước (2FA) và quản lý phiên đăng nhập thiết bị.
+Các bước thực hiện:
+- Bước 1: Vào mục 'Bảo mật tài khoản' trong trang cá nhân.
+- Bước 2: Nhập mật khẩu hiện tại, nhập mật khẩu mới và xác nhận (bắt buộc tối thiểu 6 ký tự gồm chữ và số).
+- Bước 3: Xem danh sách các thiết bị đang đăng nhập; nhấn 'Đăng xuất khỏi thiết bị khác' nếu phát hiện đăng nhập lạ.
+
+
+*Hình 3.15 – Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn (Apple Compliant)*
+
+
+## 16. Trung Tâm Thông Báo & Cảnh Báo Điều Hành
+
+Mục đích: Tập trung toàn bộ thông báo nghiệp vụ, nhắc hẹn cuộc gặp, phê duyệt chi tiền và cơ hội giao thương mới theo thời gian thực.
+Các bước thực hiện:
+- Bước 1: Nhấn biểu tượng chuông thông báo ở góc trên màn hình.
+- Bước 2: Lọc thông báo theo phân loại: [Tất cả], [Chưa đọc], [Công việc], [Giao thương].
+- Bước 3: Chạm vào từng thông báo để mở trực tiếp tài liệu hoặc thương vụ tương ứng.
+
+
+*Hình 3.16 – Trung Tâm Thông Báo & Cảnh Báo Điều Hành*
+
+
+# PHỤ LỤC IV - Mã nguồn phần mềm
+
+Dưới đây là mã nguồn của 18 tệp kiến trúc cốt lõi cấu thành Phần mềm Vione Platform (tương đương 150 trang in mã nguồn tiêu chuẩn theo quy định của Cục Bản quyền tác giả), bao gồm các phân hệ xử lý nghiệp vụ Backend NestJS, Cổng quản trị Web CRM TanStack React và Ứng dụng Di động Thuần Native ViOne Connect (iOS & Android):
+========================================================================================
+
+### Tệp 1/18: apps/vione_app_be/src/main.ts  (123 dòng)
 
 ```typescript
+========================================================================================
 import * as fs from 'fs';
 import * as path from 'path';
 import * as net from 'net';
-
+ 
 function loadEnvFile(envPath: string) {
   if (fs.existsSync(envPath)) {
     const content = fs.readFileSync(envPath, 'utf-8');
@@ -647,11 +1286,11 @@ function loadEnvFile(envPath: string) {
     }
   }
 }
-
+ 
 // Load root .env
 loadEnvFile(path.join(__dirname, '../../../../.env'));
 loadEnvFile(path.join(process.cwd(), '.env'));
-
+ 
 function probeTcp(host: string, port: number, timeoutMs = 1200): Promise<boolean> {
   return new Promise((resolve) => {
     const socket = new net.Socket();
@@ -674,7 +1313,7 @@ function probeTcp(host: string, port: number, timeoutMs = 1200): Promise<boolean
     }
   });
 }
-
+ 
 async function resolveDatabaseConfig() {
   // Trong môi trường production, tuyệt đối tuân thủ DATABASE_URL đã nạp từ biến môi trường/Docker compose
   if (process.env.NODE_ENV === 'production') {
@@ -683,7 +1322,7 @@ async function resolveDatabaseConfig() {
     }
     return;
   }
-
+ 
   const remoteUrl =
     process.env.REMOTE_DATABASE_URL ||
     process.env.DATABASE_URL ||
@@ -691,9 +1330,9 @@ async function resolveDatabaseConfig() {
   const localUrl =
     process.env.LOCAL_DATABASE_URL ||
     'postgresql://app1:5%5ES0CEpvYwC1(%23YN1UoJ@127.0.0.1:6433/vione_project?schema=public';
-
+ 
   const isRemoteReachable = await probeTcp('113.20.107.184', 6432, 1200);
-
+ 
   if (isRemoteReachable) {
     process.env.DATABASE_URL = remoteUrl;
     console.log('\x1b[32m%s\x1b[0m', '================================================================');
@@ -708,22 +1347,22 @@ async function resolveDatabaseConfig() {
     console.log('\x1b[33m%s\x1b[0m', '================================================================');
   }
 }
-
+ 
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { createVietnameseValidationPipe } from './common/pipes/validation.pipe';
-
+ 
 // Bảo vệ tiến trình không bị crash đột ngột khi gặp lỗi async chưa bắt
 process.on('unhandledRejection', (reason, promise) => {
   console.error('⚠️ [CẢNH BÁO BẢO VỆ TIẾN TRÌNH] Unhandled Rejection:', reason);
 });
-
+ 
 process.on('uncaughtException', (err) => {
   console.error('⚠️ [CẢNH BÁO BẢO VỆ TIẾN TRÌNH] Uncaught Exception:', err);
 });
-
+ 
 async function bootstrap() {
   await resolveDatabaseConfig();
   const app = await NestFactory.create(AppModule);
@@ -735,28 +1374,27 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-
+ 
   // Đăng ký bộ chuẩn hóa Validate và Bắt lỗi tiếng Việt toàn cục
   app.useGlobalPipes(createVietnameseValidationPipe());
   app.useGlobalFilters(new AllExceptionsFilter());
-
+ 
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4001;
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: http://0.0.0.0:${port}/api`);
 }
 void bootstrap();
-
-
-
+ 
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 2: apps/vione_app_be/src/app.module.ts (Module hạt nhân điều phối kiến trúc Modular Backend)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/app.module.ts`
-================================================================================
+### Tệp 2/18: apps/vione_app_be/src/app.module.ts  (59 dòng)
 
 ```typescript
+========================================================================================
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -782,9 +1420,7 @@ import { OperationsModule } from './operations/operations.module';
 import { CompaniesModule } from './companies/companies.module';
 import { RolesModule } from './roles/roles.module';
 import { AnalyticsModule } from './analytics/analytics.module';
-import { SettingsModule } from './settings/settings.module';
-import { PlatformHubModule } from './platform-hub/platform-hub.module';
-
+ 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -811,24 +1447,21 @@ import { PlatformHubModule } from './platform-hub/platform-hub.module';
     CompaniesModule,
     RolesModule,
     AnalyticsModule,
-    SettingsModule,
-    PlatformHubModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 3: apps/vione_app_be/src/auth/auth.controller.ts (Cổng API xác thực danh tính đa kênh)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/auth/auth.controller.ts`
-================================================================================
+### Tệp 3/18: apps/vione_app_be/src/auth/auth.controller.ts  (104 dòng)
 
 ```typescript
+========================================================================================
 import {
   Controller,
   Post,
@@ -843,57 +1476,57 @@ import {
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
-
+ 
 export class ForgotPasswordDto {
   email!: string;
 }
-
+ 
 export class ResetPasswordDto {
   email?: string;
   token?: string;
   newPassword!: string;
 }
-
+ 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+ 
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post(['login', 'mobile/login'])
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
-
+ 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Body('refresh_token') refreshToken: string) {
     return this.authService.refreshToken(refreshToken);
   }
-
+ 
   @Post('register')
   async register(@Body() registerDto: Record<string, any>) {
     return this.authService.register(registerDto);
   }
-
+ 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() body: ForgotPasswordDto) {
     return this.authService.forgotPassword(body.email);
   }
-
+ 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() body: ResetPasswordDto) {
     return this.authService.resetPassword(body);
   }
-
+ 
   @Post('google')
   @HttpCode(HttpStatus.OK)
   async googleLogin(@Body('token') token: string) {
     return this.authService.googleLogin(token);
   }
-
+ 
   @Post('apple')
   @HttpCode(HttpStatus.OK)
   async appleLogin(
@@ -909,13 +1542,13 @@ export class AuthController {
       email,
     });
   }
-
+ 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getProfile(@Request() req) {
     return req.user;
   }
-
+ 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
@@ -931,17 +1564,16 @@ export class AuthController {
     );
   }
 }
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 4: apps/vione_app_be/src/auth/auth.service.ts (Logic nghiệp vụ băm mật khẩu Argon2/Bcrypt & cấp JWT)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/auth/auth.service.ts`
-================================================================================
+### Tệp 4/18: apps/vione_app_be/src/auth/auth.service.ts  (395 dòng)
 
 ```typescript
+========================================================================================
 /* eslint-disable */
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
@@ -952,12 +1584,12 @@ import { OAuth2Client } from 'google-auth-library';
 import * as jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import axios from 'axios';
-
+ 
 @Injectable()
 export class AuthService {
   private googleClient: OAuth2Client;
   private appleJwksClient: jwksClient.JwksClient;
-
+ 
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -970,7 +1602,7 @@ export class AuthService {
       rateLimit: true,
     });
   }
-
+ 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByUsername(username);
     if (!user || !user.password) {
@@ -988,7 +1620,7 @@ export class AuthService {
     }
     return null;
   }
-
+ 
   async login(user: any) {
     const payload = { username: user.username, sub: user.id, name: user.name, email: user.email };
     const refreshPayload = { sub: user.id, type: 'refresh' };
@@ -1008,7 +1640,7 @@ export class AuthService {
       },
     };
   }
-
+ 
   async refreshToken(refreshToken: string) {
     try {
       const decoded = this.jwtService.verify(refreshToken) as any;
@@ -1036,23 +1668,23 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token đã hết hạn hoặc không hợp lệ');
     }
   }
-
+ 
   async register(data: any) {
     const existingUser = await this.usersService.findByUsername(data.username);
     if (existingUser) {
       throw new BadRequestException('Tên đăng nhập hoặc địa chỉ email này đã tồn tại trên hệ thống ViOne. Vui lòng sử dụng thông tin khác!');
     }
-
+ 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(data.password, salt);
-
+ 
     const rawUsername = (data.username || data.email || '').trim();
     if (!rawUsername) {
       throw new BadRequestException('Vui lòng cung cấp tên đăng nhập hoặc địa chỉ email!');
     }
-
+ 
     const email = (data.email || (rawUsername.includes('@') ? rawUsername : '') || '').trim();
-
+ 
     const newUser = await this.usersService.createUser({
       username: rawUsername,
       password: hashedPassword,
@@ -1060,9 +1692,9 @@ export class AuthService {
       name: data.name || data.fullName,
       email_verified: false,
     });
-
+ 
     const { password, ...result } = newUser;
-
+ 
     // Gửi email chào mừng đăng ký thành công về email người dùng
     if (this.mailService && email && email.includes('@')) {
       const applicantName = data.name || data.fullName || rawUsername || 'Quý Thành viên';
@@ -1077,7 +1709,7 @@ export class AuthService {
         console.warn('Could not send app welcome email:', err?.message);
       });
     }
-
+ 
     return {
       message: 'Registration successful',
       user: {
@@ -1086,40 +1718,40 @@ export class AuthService {
       },
     };
   }
-
+ 
   // ── GOOGLE SIGN IN ─────────────────────────────────────────────────────────
-
+ 
   async googleLogin(idToken: string) {
     const clientIdWeb = process.env.GOOGLE_CLIENT_ID_WEB;
     const clientIdIos = process.env.GOOGLE_CLIENT_ID_IOS;
     const allowedAudience = [clientIdWeb, clientIdIos].filter(Boolean) as string[];
-
+ 
     if (allowedAudience.length === 0) {
       throw new BadRequestException('Google Client IDs not configured on backend');
     }
-
+ 
     try {
       const ticket = await this.googleClient.verifyIdToken({
         idToken,
         audience: allowedAudience,
       });
-
+ 
       const payload = ticket.getPayload();
       if (!payload) {
         throw new UnauthorizedException('Invalid Google token payload');
       }
-
+ 
       // Check claims
       const iss = payload.iss;
       if (iss !== 'accounts.google.com' && iss !== 'https://accounts.google.com') {
         throw new UnauthorizedException('Invalid token issuer');
       }
-
+ 
       const googleId = payload.sub;
       const email = payload.email || '';
       const name = payload.name || '';
       const picture = payload.picture || '';
-
+ 
       // User Logic
       let user = await this.usersService.findByGoogleId(googleId);
       
@@ -1127,7 +1759,7 @@ export class AuthService {
         // Fallback check by email to link accounts
         user = await this.usersService.findByEmail(email);
       }
-
+ 
       if (!user) {
         // Create user
         user = await this.usersService.createUser({
@@ -1145,20 +1777,20 @@ export class AuthService {
         if (!user.email_verified) updateData.email_verified = true;
         if (!user.name && name) updateData.name = name;
         if (!user.avatar_url && picture) updateData.avatar_url = picture;
-
+ 
         if (Object.keys(updateData).length > 0) {
           user = await this.usersService.updateUser(user.id, updateData) as any;
         }
       }
-
+ 
       return this.login(user);
     } catch (e) {
       throw new UnauthorizedException(e.message || 'Google authentication failed');
     }
   }
-
+ 
   // ── SIGN IN WITH APPLE ─────────────────────────────────────────────────────
-
+ 
   private getAppleSigningKey(kid: string): Promise<string> {
     return new Promise((resolve, reject) => {
       this.appleJwksClient.getSigningKey(kid, (err, key) => {
@@ -1170,36 +1802,36 @@ export class AuthService {
       });
     });
   }
-
+ 
   async appleLogin(data: { identityToken: string; authorizationCode?: string; fullName?: any; email?: string }) {
     const bundleId = process.env.APPLE_BUNDLE_ID;
     const serviceId = process.env.APPLE_SERVICE_ID;
     const allowedAudience = [bundleId, serviceId].filter(Boolean) as string[];
-
+ 
     if (allowedAudience.length === 0) {
       throw new BadRequestException('Apple Bundle/Service ID not configured on backend');
     }
-
+ 
     try {
       // Decode JWT header to find kid
       const decodedToken = jwt.decode(data.identityToken, { complete: true }) as any;
       if (!decodedToken || !decodedToken.header || !decodedToken.header.kid) {
         throw new UnauthorizedException('Invalid Apple token format');
       }
-
+ 
       const kid = decodedToken.header.kid;
       const publicKey = await this.getAppleSigningKey(kid);
-
+ 
       // Verify token signature and claims
       const payload = jwt.verify(data.identityToken, publicKey, {
         audience: allowedAudience as [string, ...string[]],
         issuer: 'https://appleid.apple.com',
       }) as any;
-
+ 
       if (!payload || !payload.sub) {
         throw new UnauthorizedException('Invalid Apple token payload');
       }
-
+ 
       const appleId = payload.sub;
       const tokenEmail = payload.email || '';
       
@@ -1212,14 +1844,14 @@ export class AuthService {
         const lastName = data.fullName.lastName || '';
         name = `${firstName} ${lastName}`.trim();
       }
-
+ 
       let user = await this.usersService.findByAppleId(appleId);
-
+ 
       if (!user && email) {
         // Fallback check by email to link accounts
         user = await this.usersService.findByEmail(email);
       }
-
+ 
       if (!user) {
         // Create user
         user = await this.usersService.createUser({
@@ -1235,12 +1867,12 @@ export class AuthService {
         if (!user.apple_id) updateData.apple_id = appleId;
         if (!user.email_verified) updateData.email_verified = true;
         if (!user.name && name) updateData.name = name;
-
+ 
         if (Object.keys(updateData).length > 0) {
           user = await this.usersService.updateUser(user.id, updateData) as any;
         }
       }
-
+ 
       // Exchange code for refresh token if provided
       if (data.authorizationCode && user) {
         try {
@@ -1252,27 +1884,27 @@ export class AuthService {
           console.error('[Apple Auth] Code exchange failed:', err.message);
         }
       }
-
+ 
       return this.login(user);
     } catch (e) {
       throw new UnauthorizedException(e.message || 'Apple authentication failed');
     }
   }
-
+ 
   private generateAppleClientSecret(clientId: string): string {
     const teamId = process.env.APPLE_TEAM_ID;
     const keyId = process.env.APPLE_KEY_ID;
     let privateKey = process.env.APPLE_PRIVATE_KEY || '';
-
+ 
     if (!teamId || !keyId || !privateKey) {
       throw new Error('Apple configuration missing (TEAM_ID, KEY_ID, PRIVATE_KEY)');
     }
-
+ 
     // Format PEM formatting if it is on single line
     if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
       privateKey = `-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----`;
     }
-
+ 
     const payload = {
       iss: teamId,
       iat: Math.floor(Date.now() / 1000),
@@ -1280,13 +1912,13 @@ export class AuthService {
       aud: 'https://appleid.apple.com',
       sub: clientId,
     };
-
+ 
     return jwt.sign(payload, privateKey, {
       algorithm: 'ES256',
       keyid: keyId,
     });
   }
-
+ 
   private async exchangeAppleCode(clientId: string, code: string): Promise<string | null> {
     const clientSecret = this.generateAppleClientSecret(clientId);
     
@@ -1295,16 +1927,16 @@ export class AuthService {
     params.append('client_secret', clientSecret);
     params.append('code', code);
     params.append('grant_type', 'authorization_code');
-
+ 
     const response = await axios.post('https://appleid.apple.com/auth/token', params.toString(), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-
+ 
     return response.data?.refresh_token || null;
   }
-
+ 
   async forgotPassword(email: string) {
     if (!email || !email.trim()) {
       throw new BadRequestException('Email is required');
@@ -1313,7 +1945,7 @@ export class AuthService {
     // Return success to avoid email enumeration
     return { ok: true, message: 'Nếu email tồn tại trên hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.' };
   }
-
+ 
   async resetPassword(data: { email?: string; token?: string; newPassword?: string }) {
     if (!data.newPassword || data.newPassword.length < 6) {
       throw new BadRequestException('Mật khẩu mới phải có ít nhất 6 ký tự');
@@ -1331,25 +1963,24 @@ export class AuthService {
     await this.usersService.updateUser(user.id, { password: hashedPassword });
     return { ok: true, message: 'Đặt lại mật khẩu thành công! Hãy đăng nhập với mật khẩu mới.' };
   }
-
+ 
   async changePassword(userId: string, currentPass: string, newPass: string) {
     return this.usersService.changePassword(userId, currentPass, newPass);
   }
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 5: apps/vione_app_be/src/auth/jwt.strategy.ts (Bộ lọc kiểm soát phiên đăng nhập Bearer Token)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/auth/jwt.strategy.ts`
-================================================================================
+### Tệp 5/18: apps/vione_app_be/src/auth/jwt.strategy.ts  (25 dòng)
 
 ```typescript
+========================================================================================
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-
+ 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -1359,7 +1990,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: process.env.JWT_SECRET || 'super-secret-jwt-key',
     });
   }
-
+ 
   async validate(payload: any) {
     const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     if (payload.sub !== 'mock-admin-id' && !uuidRegex.test(payload.sub)) {
@@ -1369,17 +2000,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return { id, username: payload.username, email: payload.email, name: payload.name };
   }
 }
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 6: apps/vione_app_be/src/users/users.service.ts (Quản trị danh tính số người dùng & hồ sơ vCard)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/users/users.service.ts`
-================================================================================
+### Tệp 6/18: apps/vione_app_be/src/users/users.service.ts  (853 dòng)
 
 ```typescript
+========================================================================================
 import {
   Injectable,
   BadRequestException,
@@ -1389,15 +2019,15 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { vione_users, app_role } from '@vibe/db';
 import * as bcrypt from 'bcrypt';
-
+ 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-
+ 
   async findByUsername(username: string): Promise<vione_users | null> {
     const trimmed = (username || '').trim();
     if (!trimmed) return null;
-
+ 
     // 1. Direct match by username or email
     const user = await this.prisma.vione_users
       .findFirst({
@@ -1406,11 +2036,11 @@ export class UsersService {
         },
       })
       .catch(() => null);
-
+ 
     if (user) {
       return user;
     }
-
+ 
     // 2. Check by phone number format (supports 0912..., +84..., or formatted phone numbers)
     const digitsOnly = trimmed.replace(/\D/g, '');
     if (digitsOnly.length >= 8) {
@@ -1426,11 +2056,11 @@ export class UsersService {
           },
         })
         .catch(() => null);
-
+ 
       if (phoneUser) {
         return phoneUser;
       }
-
+ 
       // 2b. Lookup by phone in public.members or public.member_business_cards
       try {
         const memberMatches = await this.prisma.$queryRawUnsafe<any[]>(`
@@ -1440,7 +2070,7 @@ export class UsersService {
           WHERE m.phone = $1 OR m.phone = $2 OR b.work_phone = $1 OR b.work_phone = $2
           LIMIT 1
         `, trimmed, digitsOnly);
-
+ 
         if (memberMatches && memberMatches.length > 0) {
           return memberMatches[0] as vione_users;
         }
@@ -1448,7 +2078,7 @@ export class UsersService {
         // Fall through to fallback
       }
     }
-
+ 
     if (trimmed === 'admin@connect.vn') {
       return {
         id: '00000000-0000-0000-0000-000000000000',
@@ -1466,21 +2096,21 @@ export class UsersService {
         updated_at: new Date(),
       } as vione_users;
     }
-
+ 
     return null;
   }
-
+ 
   async findById(id: string): Promise<vione_users | null> {
     const user = await this.prisma.vione_users
       .findUnique({
         where: { id },
       })
       .catch(() => null);
-
+ 
     if (user) {
       return user;
     }
-
+ 
     if (id === 'mock-admin-id' || id === '00000000-0000-0000-0000-000000000000') {
       return {
         id: '00000000-0000-0000-0000-000000000000',
@@ -1498,10 +2128,10 @@ export class UsersService {
         updated_at: new Date(),
       } as vione_users;
     }
-
+ 
     return null;
   }
-
+ 
   async findByGoogleId(googleId: string): Promise<vione_users | null> {
     return this.prisma.vione_users
       .findUnique({
@@ -1509,7 +2139,7 @@ export class UsersService {
       })
       .catch(() => null);
   }
-
+ 
   async findByAppleId(appleId: string): Promise<vione_users | null> {
     return this.prisma.vione_users
       .findUnique({
@@ -1517,7 +2147,7 @@ export class UsersService {
       })
       .catch(() => null);
   }
-
+ 
   async findByEmail(email: string): Promise<vione_users | null> {
     return this.prisma.vione_users
       .findUnique({
@@ -1525,7 +2155,7 @@ export class UsersService {
       })
       .catch(() => null);
   }
-
+ 
   async createUser(data: {
     username: string;
     password?: string;
@@ -1548,8 +2178,8 @@ export class UsersService {
         email_verified: data.email_verified || false,
       },
     });
-
-
+ 
+ 
     // Auto-link to approved member in public.members if matching phone or email
     const cleanPhone = (newUser.username || '').replace(/\D/g, '');
     const userEmail = (newUser.email || '').toLowerCase().trim();
@@ -1564,7 +2194,7 @@ export class UsersService {
           );
       `;
     }
-
+ 
     // Auto-sync into auth.users and user_profiles to ensure referential integrity across the ecosystem
     try {
       const syncEmail = newUser.email || (newUser.username?.includes('@') ? newUser.username : `${newUser.username}@vione.app`);
@@ -1581,10 +2211,10 @@ export class UsersService {
     } catch (syncErr: any) {
       console.warn('Could not sync into auth.users or user_profiles:', syncErr?.message);
     }
-
+ 
     return newUser;
   }
-
+ 
   async updateUser(id: string, data: Partial<vione_users>) {
     return this.prisma.vione_users.update({
       where: { id },
@@ -1594,9 +2224,9 @@ export class UsersService {
       },
     });
   }
-
+ 
   // ── ACCOUNT MANAGEMENT METHODS ──────────────────────────────────────────
-
+ 
   async checkIsAdmin(userId: string): Promise<boolean> {
     if (userId === 'mock-admin-id' || userId === '00000000-0000-0000-0000-000000000000') {
       return true;
@@ -1604,22 +2234,22 @@ export class UsersService {
     const roles = await this.prisma.user_roles.findMany({
       where: { user_id: userId },
     }).catch(() => [] as any[]);
-
+ 
     const hasAdminRole = roles.some(
       (r: any) => r.role === 'quan_tri' || r.role === 'admin' || r.role === 'platform_admin' || r.role === 'tenant_admin',
     );
     if (hasAdminRole) return true;
-
+ 
     // Check association admin in memberships via raw SQL
     const memberships = await this.prisma.$queryRaw<any[]>`
       SELECT role FROM public.memberships WHERE user_id = ${userId}::uuid
     `.catch(() => [] as any[]);
-
+ 
     return memberships.some(
       (m: any) => m.role === 'quan_tri' || m.role === 'admin' || m.role === 'association_admin',
     );
   }
-
+ 
   /**
    * Phân quyền dữ liệu (Data Permission):
    * Không cho tài khoản khác chỉnh sửa bản ghi của người khác tạo ra,
@@ -1631,24 +2261,24 @@ export class UsersService {
       ...(user.roles || []),
       ...(user.role ? [user.role] : []),
     ].map((r) => String(r).toLowerCase());
-
+ 
     const isHighestAdmin =
       userRoles.includes('quan_tri') ||
       userRoles.includes('admin') ||
       userRoles.includes('platform_admin') ||
       user.id === '00000000-0000-0000-0000-000000000000';
-
+ 
     if (isHighestAdmin) return true;
     if (!recordCreatorId || !user.id) return false;
     return String(recordCreatorId) === String(user.id);
   }
-
+ 
   async getAccountDetails(userId: string) {
     const user = await this.findById(userId);
     if (!user) {
       throw new NotFoundException('Không tìm thấy thông tin tài khoản');
     }
-
+ 
     const [profile, roles, memberships] = await Promise.all([
       this.prisma.user_profiles.findUnique({
         where: { user_id: userId },
@@ -1660,7 +2290,7 @@ export class UsersService {
         SELECT role FROM public.memberships WHERE user_id = ${userId}::uuid
       `.catch(() => [] as any[]),
     ]);
-
+ 
     // Chuẩn hoá roles: 'quan_tri' là to nhất, 'admin' là to nhì, không dùng 'platform_admin'
     const roleList = roles.map((r) => (r.role === 'platform_admin' ? 'quan_tri' : r.role));
     const isAssocAdmin = (memberships ?? []).some(
@@ -1669,14 +2299,14 @@ export class UsersService {
     if (isAssocAdmin && !roleList.includes('admin')) {
       roleList.push('admin');
     }
-
+ 
     if (
       (userId === '00000000-0000-0000-0000-000000000000' || user.username === 'admin@connect.vn')
     ) {
       if (!roleList.includes('quan_tri')) roleList.push('quan_tri');
       if (!roleList.includes('admin')) roleList.push('admin');
     }
-
+ 
     return {
       id: user.id,
       username: user.username,
@@ -1706,7 +2336,7 @@ export class UsersService {
       roles: roleList,
     };
   }
-
+ 
   async updateAccountProfile(
     userId: string,
     data: {
@@ -1726,7 +2356,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Không tìm thấy tài khoản');
     }
-
+ 
     if (data.email && data.email !== user.email) {
       const existing = await this.prisma.vione_users.findFirst({
         where: {
@@ -1738,7 +2368,7 @@ export class UsersService {
         throw new BadRequestException('Email đã được sử dụng bởi một tài khoản khác');
       }
     }
-
+ 
     // Update vione_users
     await this.prisma.vione_users.update({
       where: { id: userId },
@@ -1749,7 +2379,7 @@ export class UsersService {
         updated_at: new Date(),
       },
     });
-
+ 
     // Upsert user_profiles
     await this.prisma.user_profiles.upsert({
       where: { user_id: userId },
@@ -1781,23 +2411,23 @@ export class UsersService {
         updated_at: new Date(),
       },
     });
-
-
+ 
+ 
     return this.getAccountDetails(userId);
   }
-
+ 
   async changePassword(userId: string, currentPass: string, newPass: string) {
     if (!newPass || newPass.length < 6) {
       throw new BadRequestException('Mật khẩu mới phải có ít nhất 6 ký tự');
     }
-
+ 
     const user = await this.prisma.vione_users.findUnique({
       where: { id: userId },
     });
     if (!user) {
       throw new NotFoundException('Tài khoản không tồn tại');
     }
-
+ 
     // If user has an existing password, verify it
     if (user.password && user.password.length > 0) {
       if (!currentPass) {
@@ -1808,10 +2438,10 @@ export class UsersService {
         throw new BadRequestException('Mật khẩu hiện tại không chính xác');
       }
     }
-
+ 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPass, salt);
-
+ 
     await this.prisma.vione_users.update({
       where: { id: userId },
       data: {
@@ -1819,21 +2449,21 @@ export class UsersService {
         updated_at: new Date(),
       },
     });
-
-
+ 
+ 
     // Đánh dấu onboarding_status = 'completed' để hoàn tất quy trình đổi mật khẩu bắt buộc
     await this.prisma.$executeRaw`
       UPDATE public.user_profiles
       SET onboarding_status = 'completed'::public.onboarding_status, updated_at = now()
       WHERE user_id = ${userId}::uuid
     `.catch(() => null);
-
+ 
     return {
       success: true,
       message: 'Mật khẩu đã được thay đổi thành công',
     };
   }
-
+ 
   async checkMustChangePassword(userId: string): Promise<boolean> {
     try {
       const rows = await this.prisma.$queryRaw<any[]>`
@@ -1850,7 +2480,7 @@ export class UsersService {
       return false;
     }
   }
-
+ 
   async deactivateAccount(userId: string, password?: string) {
     const user = await this.prisma.vione_users.findUnique({ where: { id: userId } });
     if (!user) {
@@ -1875,9 +2505,9 @@ export class UsersService {
     });
     return { success: true, message: 'Tài khoản đã được vô hiệu hóa thành công' };
   }
-
+ 
   // ── ADMIN USER MANAGEMENT METHODS ───────────────────────────────────────
-
+ 
   async listUsers(params: {
     search?: string;
     role?: string;
@@ -1888,7 +2518,7 @@ export class UsersService {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(100, Math.max(1, Number(params.limit) || 10));
     const skip = (page - 1) * limit;
-
+ 
     const where: any = {};
     if (params.search && params.search.trim()) {
       const q = params.search.trim();
@@ -1898,7 +2528,7 @@ export class UsersService {
         { name: { contains: q, mode: 'insensitive' } },
       ];
     }
-
+ 
     const [total, rawUsers] = await Promise.all([
       this.prisma.vione_users.count({ where }),
       this.prisma.vione_users.findMany({
@@ -1908,9 +2538,9 @@ export class UsersService {
         orderBy: { created_at: 'desc' },
       }),
     ]);
-
+ 
     const userIds = rawUsers.map((u) => u.id);
-
+ 
     const [profiles, roles] = await Promise.all([
       this.prisma.user_profiles.findMany({
         where: { user_id: { in: userIds } },
@@ -1919,7 +2549,7 @@ export class UsersService {
         where: { user_id: { in: userIds } },
       }).catch(() => [] as any[]),
     ]);
-
+ 
     const profileMap = new Map<string, any>();
     for (const p of profiles as any[]) {
       profileMap.set(p.user_id, p);
@@ -1930,7 +2560,7 @@ export class UsersService {
       list.push(r.role);
       roleMap.set(r.user_id, list);
     }
-
+ 
     let items = rawUsers.map((u) => {
       const p = profileMap.get(u.id);
       const userRoles = roleMap.get(u.id) || [];
@@ -1940,7 +2570,7 @@ export class UsersService {
       ) {
         userRoles.push('platform_admin');
       }
-
+ 
       return {
         id: u.id,
         username: u.username,
@@ -1956,7 +2586,7 @@ export class UsersService {
         updated_at: u.updated_at,
       };
     });
-
+ 
     // Optional in-memory role & status filters if applied
     if (params.role && params.role !== 'all') {
       items = items.filter((u) => u.roles.includes(params.role as any));
@@ -1964,7 +2594,7 @@ export class UsersService {
     if (params.status && params.status !== 'all') {
       items = items.filter((u) => u.account_status === params.status);
     }
-
+ 
     // Quick stats overview
     const [allProfiles, allRoles] = await Promise.all([
       this.prisma.user_profiles.findMany({
@@ -1974,13 +2604,13 @@ export class UsersService {
         select: { role: true },
       }).catch(() => [] as any[]),
     ]);
-
+ 
     const activeCount = (allProfiles as any[]).filter((p: any) => p.account_status === 'active').length;
     const suspendedCount = (allProfiles as any[]).filter((p: any) => p.account_status === 'suspended').length;
     const adminCount = (allRoles as any[]).filter(
       (r: any) => r.role === 'platform_admin' || r.role === 'tenant_admin',
     ).length;
-
+ 
     return {
       users: items,
       pagination: {
@@ -1997,7 +2627,7 @@ export class UsersService {
       },
     };
   }
-
+ 
   async adminCreateUser(data: {
     username: string;
     email?: string;
@@ -2010,7 +2640,7 @@ export class UsersService {
       throw new BadRequestException('Tên đăng nhập không được để trống');
     }
     const username = data.username.trim();
-
+ 
     const existing = await this.prisma.vione_users.findFirst({
       where: {
         OR: [
@@ -2022,11 +2652,11 @@ export class UsersService {
     if (existing) {
       throw new BadRequestException('Tên đăng nhập hoặc Email đã tồn tại');
     }
-
+ 
     const rawPassword = data.password && data.password.trim() ? data.password : 'Vione@123';
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(rawPassword, salt);
-
+ 
     const newUser = await this.createUser({
       username,
       email: data.email ? data.email.trim() : (username.includes('@') ? username : undefined),
@@ -2034,7 +2664,7 @@ export class UsersService {
       name: data.name ? data.name.trim() : username,
       email_verified: true,
     });
-
+ 
     const accountStatus = data.account_status || 'active';
     await this.prisma.user_profiles.upsert({
       where: { user_id: newUser.id },
@@ -2048,7 +2678,7 @@ export class UsersService {
         account_status: accountStatus,
       },
     });
-
+ 
     if (data.role) {
       await this.prisma.user_roles.create({
         data: {
@@ -2057,10 +2687,10 @@ export class UsersService {
         },
       }).catch(() => {});
     }
-
+ 
     return this.getAccountDetails(newUser.id);
   }
-
+ 
   async adminUpdateUser(
     id: string,
     data: {
@@ -2074,7 +2704,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Không tìm thấy tài khoản người dùng');
     }
-
+ 
     if (data.email && data.email !== user.email) {
       const existing = await this.prisma.vione_users.findFirst({
         where: {
@@ -2086,7 +2716,7 @@ export class UsersService {
         throw new BadRequestException('Email đã thuộc về tài khoản khác');
       }
     }
-
+ 
     await this.prisma.vione_users.update({
       where: { id },
       data: {
@@ -2095,7 +2725,7 @@ export class UsersService {
         updated_at: new Date(),
       },
     });
-
+ 
     if (data.account_status || data.name) {
       await this.prisma.user_profiles.upsert({
         where: { user_id: id },
@@ -2111,12 +2741,12 @@ export class UsersService {
         },
       });
     }
-
+ 
     if (data.role) {
       await this.prisma.user_roles.deleteMany({
         where: { user_id: id },
       }).catch(() => {});
-
+ 
       await this.prisma.user_roles.create({
         data: {
           user_id: id,
@@ -2124,23 +2754,23 @@ export class UsersService {
         },
       }).catch(() => {});
     }
-
+ 
     return this.getAccountDetails(id);
   }
-
+ 
   async adminResetPassword(id: string, newPass: string) {
     if (!newPass || newPass.length < 6) {
       throw new BadRequestException('Mật khẩu mới phải có tối thiểu 6 ký tự');
     }
-
+ 
     const user = await this.findById(id);
     if (!user) {
       throw new NotFoundException('Tài khoản không tồn tại');
     }
-
+ 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPass, salt);
-
+ 
     await this.prisma.vione_users.update({
       where: { id },
       data: {
@@ -2148,30 +2778,30 @@ export class UsersService {
         updated_at: new Date(),
       },
     });
-
-
+ 
+ 
     return {
       success: true,
       message: 'Mật khẩu đã được thiết lập lại thành công',
     };
   }
-
+ 
   async adminToggleStatus(id: string, newStatus?: string) {
     const user = await this.findById(id);
     if (!user) {
       throw new NotFoundException('Tài khoản không tồn tại');
     }
-
+ 
     const currentProfile = await this.prisma.user_profiles.findUnique({
       where: { user_id: id },
     }).catch(() => null);
-
+ 
     let nextStatus = newStatus;
     if (!nextStatus) {
       const current = currentProfile?.account_status || 'active';
       nextStatus = current === 'active' ? 'suspended' : 'active';
     }
-
+ 
     await this.prisma.user_profiles.upsert({
       where: { user_id: id },
       create: {
@@ -2184,7 +2814,7 @@ export class UsersService {
         updated_at: new Date(),
       },
     });
-
+ 
     return {
       id,
       status: nextStatus,
@@ -2194,54 +2824,53 @@ export class UsersService {
           : 'Tài khoản đã bị tạm khóa',
     };
   }
-
+ 
   async adminDeleteUser(callerId: string, targetId: string) {
     if (callerId === targetId) {
       throw new BadRequestException('Bạn không thể xóa tài khoản của chính mình');
     }
-
+ 
     if (
       targetId === '00000000-0000-0000-0000-000000000000' ||
       targetId === 'mock-admin-id'
     ) {
       throw new ForbiddenException('Không thể xóa tài khoản quản trị viên gốc');
     }
-
+ 
     const user = await this.findById(targetId);
     if (!user) {
       throw new NotFoundException('Tài khoản không tồn tại');
     }
-
+ 
     await this.prisma.user_roles.deleteMany({
       where: { user_id: targetId },
     }).catch(() => {});
-
+ 
     await this.prisma.user_profiles.delete({
       where: { user_id: targetId },
     }).catch(() => {});
-
+ 
     await this.prisma.vione_users.delete({
       where: { id: targetId },
     }).catch(() => {});
-
-
+ 
+ 
     return {
       success: true,
       message: 'Đã xóa tài khoản người dùng thành công',
     };
   }
 }
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 7: apps/vione_app_be/src/companies/companies.controller.ts (Cổng API điều phối doanh nghiệp, nhân sự, gói cước)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/companies/companies.controller.ts`
-================================================================================
+### Tệp 7/18: apps/vione_app_be/src/companies/companies.controller.ts  (269 dòng)
 
 ```typescript
+========================================================================================
 import {
   Controller,
   Get,
@@ -2257,11 +2886,11 @@ import {
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
+ 
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
-
+ 
   /**
    * Kiểm tra người dùng đã đăng ký mua gói ViOne Platform chưa
    */
@@ -2270,7 +2899,7 @@ export class CompaniesController {
     const userId = req.user?.id || req.headers?.['x-user-id'] || '00000000-0000-0000-0000-000000000002';
     return this.companiesService.checkPlatformSubscription(userId);
   }
-
+ 
   /**
    * Đăng ký mua / Kích hoạt gói ViOne Platform
    */
@@ -2279,7 +2908,7 @@ export class CompaniesController {
     const userId = req.user?.id || req.headers?.['x-user-id'] || 'a0000000-0000-4000-8000-000000000002';
     return this.companiesService.subscribePlatformPackage(userId, body);
   }
-
+ 
   /**
    * Lấy danh sách doanh nghiệp
    * CHỈ KHI NÀO ĐĂNG KÝ GÓI VIONE PLATFORM THÌ MỚI CÓ DỮ LIỆU!
@@ -2289,7 +2918,7 @@ export class CompaniesController {
     const userId = req.user?.id || req.headers?.['x-user-id'] || 'a0000000-0000-4000-8000-000000000002';
     return this.companiesService.listCompanies(userId);
   }
-
+ 
   /**
    * Danh sách các gói cước ViOne Platform
    */
@@ -2297,7 +2926,7 @@ export class CompaniesController {
   async listPackages(@Query('includeInactive') includeInactive?: string) {
     return this.companiesService.listSubscriptionPackages(includeInactive === 'true');
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Tạo gói dịch vụ ViOne mới
    */
@@ -2305,7 +2934,7 @@ export class CompaniesController {
   async createPackage(@Body() body: any) {
     return this.companiesService.createSubscriptionPackage(body);
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Cập nhật gói dịch vụ
    */
@@ -2313,7 +2942,7 @@ export class CompaniesController {
   async updatePackage(@Param('id') id: string, @Body() body: any) {
     return this.companiesService.updateSubscriptionPackage(id, body);
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Xóa / Ẩn gói dịch vụ
    */
@@ -2321,7 +2950,7 @@ export class CompaniesController {
   async deletePackage(@Param('id') id: string) {
     return this.companiesService.deleteSubscriptionPackage(id);
   }
-
+ 
   /**
    * APP VIONE USER: Gửi hồ sơ đăng ký gói cước từ App ViOne
    */
@@ -2330,7 +2959,7 @@ export class CompaniesController {
     const userId = req.user?.id || req.headers?.['x-user-id'] || 'a0000000-0000-4000-8000-000000000002';
     return this.companiesService.createPackageOrder(userId, body);
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Danh sách hồ sơ đăng ký gói
    */
@@ -2338,7 +2967,7 @@ export class CompaniesController {
   async listPackageOrders(@Query('status') status?: string) {
     return this.companiesService.listPackageOrders(status);
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Xem chi tiết 1 hồ sơ đăng ký gói
    */
@@ -2346,7 +2975,7 @@ export class CompaniesController {
   async getPackageOrder(@Param('id') id: string) {
     return this.companiesService.getPackageOrder(id);
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Phê duyệt hồ sơ đăng ký gói & Bắn email cho khách hàng
    */
@@ -2355,7 +2984,7 @@ export class CompaniesController {
     const approvedBy = req.user?.id || req.headers?.['x-user-id'] || null;
     return this.companiesService.approvePackageOrder(id, approvedBy);
   }
-
+ 
   /**
    * SUPER ADMIN / STAFF: Từ chối hồ sơ đăng ký gói
    */
@@ -2363,7 +2992,7 @@ export class CompaniesController {
   async rejectPackageOrder(@Param('id') id: string, @Body() body: { reason?: string }) {
     return this.companiesService.rejectPackageOrder(id, body?.reason);
   }
-
+ 
   /**
    * SUPER ADMIN: GIÁM SÁT NỀN TẢNG & MỨC ĐỘ HOẠT ĐỘNG CÁC DOANH NGHIỆP CÓ GÓI VIONE
    */
@@ -2371,7 +3000,7 @@ export class CompaniesController {
   async getPlatformMonitoring() {
     return this.companiesService.getPlatformMonitoring();
   }
-
+ 
   /**
    * SUPER ADMIN: TRUNG TÂM THỐNG KÊ BÁO CÁO NỀN TẢNG TOÀN DIỆN (Dashboard, Biểu đồ cột/tròn, Cây đơn vị, Báo cáo tài khoản, Báo cáo tài liệu, Báo cáo dòng tiền)
    */
@@ -2379,7 +3008,7 @@ export class CompaniesController {
   async getPlatformReports() {
     return this.companiesService.getPlatformReports();
   }
-
+ 
   /**
    * SUPER ADMIN: TẠO CỘNG ĐỒNG CHO TÀI KHOẢN MUA GÓI VIONE PLATFORM
    */
@@ -2387,7 +3016,7 @@ export class CompaniesController {
   async createPlatformCommunity(@Body() body: any) {
     return this.companiesService.createPlatformCommunity(body);
   }
-
+ 
   /**
    * SUPER ADMIN: CẬP NHẬT THÔNG TIN CỘNG ĐỒNG
    */
@@ -2398,7 +3027,7 @@ export class CompaniesController {
   ) {
     return this.companiesService.updatePlatformCommunity(id, body);
   }
-
+ 
   /**
    * SUPER ADMIN: XÓA CỘNG ĐỒNG
    */
@@ -2406,7 +3035,7 @@ export class CompaniesController {
   async deletePlatformCommunity(@Param('id') id: string) {
     return this.companiesService.deletePlatformCommunity(id);
   }
-
+ 
   /**
    * SUPER ADMIN: CẬP NHẬT / GIA HẠN / MỞ KHÓA GÓI CƯỚC DOANH NGHIỆP
    */
@@ -2417,7 +3046,7 @@ export class CompaniesController {
   ) {
     return this.companiesService.updateCompanySubscription(companyId, body);
   }
-
+ 
   /**
    * Lấy chi tiết hồ sơ một doanh nghiệp
    */
@@ -2426,7 +3055,7 @@ export class CompaniesController {
     const userId = req.user?.id || req.headers?.['x-user-id'];
     return this.companiesService.getCompanyById(id, userId);
   }
-
+ 
   /**
    * Kiểm tra hạn mức Slots tài khoản của doanh nghiệp
    */
@@ -2434,7 +3063,7 @@ export class CompaniesController {
   async getSlotUsage(@Param('id') companyId: string) {
     return this.companiesService.getCompanySlotUsage(companyId);
   }
-
+ 
   /**
    * 1. QUẢN LÝ NHÂN VIÊN DOANH NGHIỆP
    */
@@ -2442,12 +3071,12 @@ export class CompaniesController {
   async listEmployees(@Param('id') companyId: string) {
     return this.companiesService.listCompanyEmployees(companyId);
   }
-
+ 
   @Post(':id/employees')
   async addEmployee(@Param('id') companyId: string, @Body() body: any) {
     return this.companiesService.addCompanyEmployee(companyId, body);
   }
-
+ 
   @Patch(':id/employees/:employeeId')
   async updateEmployee(
     @Param('id') companyId: string,
@@ -2456,7 +3085,7 @@ export class CompaniesController {
   ) {
     return this.companiesService.updateCompanyEmployee(companyId, employeeId, body);
   }
-
+ 
   @Delete(':id/employees/:employeeId')
   async deleteEmployee(
     @Param('id') companyId: string,
@@ -2464,7 +3093,7 @@ export class CompaniesController {
   ) {
     return this.companiesService.deleteCompanyEmployee(companyId, employeeId);
   }
-
+ 
   /**
    * 2. GIAO VIỆC & PHÂN CÔNG NHIỆM VỤ DOANH NGHIỆP
    */
@@ -2477,7 +3106,7 @@ export class CompaniesController {
   ) {
     return this.companiesService.listCompanyTasks(companyId, { status, priority, assigneeId });
   }
-
+ 
   @Post(':id/tasks')
   async createTask(
     @Request() req: any,
@@ -2487,7 +3116,7 @@ export class CompaniesController {
     const assignerName = req.user?.name || 'Ban Lãnh Đạo Doanh Nghiệp';
     return this.companiesService.createCompanyTask(companyId, { ...body, assignerName });
   }
-
+ 
   /**
    * Giao việc hàng loạt (Bulk task dispatch) cho 1 hoặc nhiều người
    */
@@ -2500,7 +3129,7 @@ export class CompaniesController {
     const assignerName = req.user?.name || 'Ban Lãnh Đạo Doanh Nghiệp';
     return this.companiesService.createCompanyTasksBulk(companyId, { ...body, assignerName });
   }
-
+ 
   @Patch(':id/tasks/:taskId/status')
   async updateTaskStatus(
     @Param('id') companyId: string,
@@ -2510,22 +3139,21 @@ export class CompaniesController {
     return this.companiesService.updateCompanyTaskStatus(companyId, taskId, status);
   }
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 8: apps/vione_app_be/src/companies/companies.service.ts (Logic nghiệp vụ quản lý tổ chức & kiểm soát hạn mức slot)
-**Đường dẫn tệp tin:** `apps/vione_app_be/src/companies/companies.service.ts`
-================================================================================
+### Tệp 8/18: apps/vione_app_be/src/companies/companies.service.ts  (1949 dòng)
 
 ```typescript
+========================================================================================
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
-
+ 
 export interface SubscriptionStatus {
   hasSubscription: boolean;
   plan?: string;
@@ -2538,16 +3166,16 @@ export interface SubscriptionStatus {
   usedSlots?: number;
   remainingSlots?: number;
 }
-
+ 
 @Injectable()
 export class CompaniesService {
   private readonly logger = new Logger(CompaniesService.name);
-
+ 
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
   ) {}
-
+ 
   /**
    * Kiểm tra điều kiện tiên quyết: Người dùng đã đăng ký mua gói ViOne Platform chưa?
    * Chỉ khi nào đăng ký gói ViOne Platform thì chức năng doanh nghiệp mới có dữ liệu!
@@ -2559,7 +3187,7 @@ export class CompaniesService {
         message: 'Chưa xác thực người dùng.',
       };
     }
-
+ 
     try {
       // 1. Kiểm tra bảng đăng ký gói vione_community_subscriptions
       const subs = await this.prisma.$queryRawUnsafe<any[]>(
@@ -2569,13 +3197,13 @@ export class CompaniesService {
          ORDER BY expires_at DESC LIMIT 1`,
         userId,
       );
-
+ 
       if (subs && subs.length > 0) {
         const sub = subs[0];
         const diffMs = new Date(sub.expires_at).getTime() - Date.now();
         const daysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
         const maxSlots = sub.max_slots || 10;
-
+ 
         return {
           hasSubscription: true,
           plan: sub.plan,
@@ -2586,7 +3214,7 @@ export class CompaniesService {
           maxSlots,
         };
       }
-
+ 
       // 2. Mặc định mở hết tất cả chức năng cho ViConnect, Admin, Quản trị, Super Admin
       if (
         userId === '00000000-0000-0000-0000-000000000000' ||
@@ -2604,7 +3232,7 @@ export class CompaniesService {
           maxSlots: 999999,
         };
       }
-
+ 
       // Kiểm tra trong database: nếu user thuộc ViConnect hoặc có role admin/quản trị/platform_admin
       try {
         const userCheck = await this.prisma.$queryRawUnsafe<any[]>(
@@ -2633,7 +3261,7 @@ export class CompaniesService {
       } catch {
         // ignore
       }
-
+ 
       return {
         hasSubscription: false,
         message: 'Tài khoản chưa đăng ký gói ViOne Platform.',
@@ -2646,7 +3274,7 @@ export class CompaniesService {
       };
     }
   }
-
+ 
   /**
    * Kích hoạt / Đăng ký mua gói ViOne Platform (Lưu trực tiếp vào CSDL PostgreSQL)
    */
@@ -2654,7 +3282,7 @@ export class CompaniesService {
     if (!userId) {
       throw new BadRequestException('Vui lòng đăng nhập để đăng ký gói ViOne Platform');
     }
-
+ 
     const now = new Date();
     const isTrial = body?.isTrial ?? false;
     const days = isTrial ? 30 : 365;
@@ -2666,7 +3294,7 @@ export class CompaniesService {
     } else if (plan.includes('pro') || plan.includes('annual')) {
       maxSlots = 50;
     }
-
+ 
     try {
       // 1. Thêm bản ghi đăng ký gói ViOne Platform vào public.vione_community_subscriptions
       const subId = crypto.randomUUID();
@@ -2686,14 +3314,14 @@ export class CompaniesService {
         now,
         now,
       );
-
+ 
       // 2. Đảm bảo người dùng sở hữu ít nhất 1 doanh nghiệp trong public.companies
       let company: any = null;
       const existing = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT id, name FROM public.companies WHERE owner_user_id = $1::uuid LIMIT 1`,
         userId,
       );
-
+ 
       if (existing.length > 0) {
         company = existing[0];
       } else {
@@ -2705,7 +3333,7 @@ export class CompaniesService {
           .replace(/[\u0300-\u036f]/g, '')
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
-
+ 
         await this.prisma.$executeRawUnsafe(
           `INSERT INTO public.companies 
              (id, owner_user_id, name, slug, industry, size, country, city, description, verified, visibility, status, created_at, updated_at) 
@@ -2716,13 +3344,13 @@ export class CompaniesService {
           companyName,
           slug,
         );
-
+ 
         company = { id: companyId, name: companyName };
-
+ 
         // Seed luôn nhân sự và công việc mẫu thực tế cho doanh nghiệp mới này
         await this.seedEmployeesAndTasks(companyId);
       }
-
+ 
       // 3. Tự động gửi Email thông tin lợi ích của gói và link đi đến ViOne CRM quản trị
       let userEmail = (body as any)?.email?.trim() || '';
       let userName = (body as any)?.fullName?.trim() || '';
@@ -2738,10 +3366,10 @@ export class CompaniesService {
       } catch {
         // ignore fallback
       }
-
+ 
       if (!userName) userName = 'Ban Lãnh Đạo Doanh Nghiệp';
       if (!userEmail) userEmail = `admin@${company.slug || 'vione'}.vn`;
-
+ 
       try {
         const planDisplayName =
           plan === 'vione_platform_enterprise' || plan.includes('enterprise')
@@ -2751,7 +3379,7 @@ export class CompaniesService {
             : isTrial
             ? 'Gói Trải Nghiệm ViOne Platform (30 Ngày Miễn Phí)'
             : 'Gói ViOne Doanh Nghiệp Toàn Diện';
-
+ 
         await this.mailService.sendPackageSubscriptionEmail({
           to: userEmail,
           fullName: userName,
@@ -2767,7 +3395,7 @@ export class CompaniesService {
       } catch (mailErr) {
         this.logger.warn(`Could not send onboarding email: ${(mailErr as Error).message}`);
       }
-
+ 
       return {
         ok: true,
         hasSubscription: true,
@@ -2782,14 +3410,14 @@ export class CompaniesService {
       throw new BadRequestException('Không thể kích hoạt gói ViOne Platform: ' + (err as Error).message);
     }
   }
-
+ 
   /**
    * Lấy danh sách doanh nghiệp
    * Điều kiện tiên quyết: CHỈ khi nào người dùng đăng ký mua gói ViOne Platform thì mới có dữ liệu!
    */
   async listCompanies(userId?: string) {
     const subStatus = await this.checkPlatformSubscription(userId);
-
+ 
     if (!subStatus.hasSubscription) {
       return {
         ok: true,
@@ -2798,7 +3426,7 @@ export class CompaniesService {
         message: 'Chức năng doanh nghiệp chỉ có dữ liệu khi người dùng đăng ký gói ViOne Platform.',
       };
     }
-
+ 
     try {
       // Khi đã có gói ViOne Platform: Trả về danh sách doanh nghiệp từ public.companies kèm số lượng nhân viên & công việc thực tế
       let rows = await this.prisma.$queryRawUnsafe<any[]>(`
@@ -2827,7 +3455,7 @@ export class CompaniesService {
         FROM public.companies c
         ORDER BY c.created_at ASC
       `);
-
+ 
       // Tự động khởi tạo doanh nghiệp mẫu ViConnect nếu hệ thống chưa có công ty nào
       if (rows.length === 0) {
         const defaultCompanyId = 'c1000000-0000-4000-8000-000000000001';
@@ -2839,9 +3467,9 @@ export class CompaniesService {
             ('${defaultCompanyId}', '${adminUserId}', 'Hệ Thống Doanh Nghiệp ViConnect', 'viconnect-holdings', 'Công nghệ & Chuyển đổi số', '50-100', 'Việt Nam', 'Hà Nội', 'Nền tảng Quản trị Doanh nghiệp All-in-one & Sàn Giao thương B2B ViOne Platform', true, 'public', 'active', now(), now())
           ON CONFLICT (id) DO NOTHING
         `).catch(() => null);
-
+ 
         await this.seedEmployeesAndTasks(defaultCompanyId);
-
+ 
         rows = await this.prisma.$queryRawUnsafe<any[]>(`
           SELECT 
             c.id,
@@ -2880,7 +3508,7 @@ export class CompaniesService {
           rows[0].id,
         ).then(r => r[0]?.c || 0);
       }
-
+ 
       return {
         ok: true,
         hasSubscription: true,
@@ -2897,13 +3525,13 @@ export class CompaniesService {
       };
     }
   }
-
+ 
   /**
    * Lấy chi tiết một doanh nghiệp theo ID
    */
   async getCompanyById(companyId: string, userId?: string) {
     const subStatus = await this.checkPlatformSubscription(userId);
-
+ 
     const rows = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT 
          c.id,
@@ -2932,17 +3560,17 @@ export class CompaniesService {
        LIMIT 1`,
       companyId,
     );
-
+ 
     if (!rows || rows.length === 0) {
       throw new NotFoundException(`Không tìm thấy hồ sơ doanh nghiệp với mã: ${companyId}`);
     }
-
+ 
     return {
       ...rows[0],
       hasSubscription: subStatus.hasSubscription,
     };
   }
-
+ 
   /**
    * 1. QUẢN LÝ NHÂN VIÊN DOANH NGHIỆP
    * Truy vấn bảng public.company_employees
@@ -2976,20 +3604,20 @@ export class CompaniesService {
          ORDER BY ce.joined_at ASC, ce.created_at ASC`,
         companyId,
       );
-
+ 
       // Nếu rỗng, tự động khởi tạo dữ liệu nhân sự nền tảng ViOne ban đầu
       if (rows.length === 0) {
         await this.seedEmployeesAndTasks(companyId);
         return this.listCompanyEmployees(companyId);
       }
-
+ 
       return rows;
     } catch (err) {
       this.logger.error('Error listing employees:', err);
       return [];
     }
   }
-
+ 
   /**
    * Thêm nhân viên mới vào doanh nghiệp kèm phân quyền vai trò
    */
@@ -3011,14 +3639,14 @@ export class CompaniesService {
     if (!data.fullName?.trim()) {
       throw new BadRequestException('Họ và tên nhân viên là bắt buộc');
     }
-
+ 
     // 1. SLOT LIMIT & LICENSE GUARD CHECK
     const countRes = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT COUNT(*)::int as count FROM public.company_employees WHERE community_id = $1`,
       companyId,
     );
     const currentCount = countRes[0]?.count || 0;
-
+ 
     const subRes = await this.prisma.$queryRawUnsafe<any[]>(`
       SELECT s.plan, s.max_slots as "maxSlots"
       FROM public.vione_community_subscriptions s
@@ -3026,49 +3654,49 @@ export class CompaniesService {
         AND s.status = 'active' AND s.expires_at > now()
       ORDER BY s.expires_at DESC LIMIT 1
     `, companyId);
-
+ 
     const compRes = await this.prisma.$queryRawUnsafe<any[]>(`
       SELECT max_slots as "maxSlots" FROM public.companies WHERE id = $1::uuid LIMIT 1
     `, companyId).catch(() => []);
-
+ 
     const maxSlots = subRes[0]?.maxSlots || compRes[0]?.maxSlots || 30;
     if (currentCount >= maxSlots) {
       throw new BadRequestException(
         `Gói của bạn chỉ có thể tạo được ${maxSlots} tài khoản. Hiện tại công ty đã có ${currentCount}/${maxSlots} tài khoản. Vui lòng liên hệ ViConnect nâng cấp gói để thêm thành viên!`
       );
     }
-
+ 
     const employeeId = crypto.randomUUID();
     const now = new Date();
     const role = data.role || 'staff';
     const isManager = role === 'manager' || role === 'owner' || role === 'admin';
-
+ 
     const canAssignTasks = data.canAssignTasks !== undefined ? Boolean(data.canAssignTasks) : isManager;
     const canManageMembers = data.canManageMembers !== undefined ? Boolean(data.canManageMembers) : isManager;
     const canManageFinance = data.canManageFinance !== undefined ? Boolean(data.canManageFinance) : (role === 'owner');
     const canManageDocs = data.canManageDocs !== undefined ? Boolean(data.canManageDocs) : isManager;
     const canManageCrm = data.canManageCrm !== undefined ? Boolean(data.canManageCrm) : isManager;
     const permissionsJson = JSON.stringify(data.permissions || []);
-
+ 
     // 1. Tạo tài khoản đăng nhập ViOne cho nhân viên và gửi thông tin qua email
     let assignedUserId: string | null = null;
     let generatedPassword = '';
     const employeeEmail = data.email?.trim() ? data.email.trim().toLowerCase() : null;
-
+ 
     if (employeeEmail) {
       try {
         const existingUsers = await this.prisma.$queryRawUnsafe<any[]>(
           `SELECT id, name FROM public.users WHERE email = $1 LIMIT 1`,
           employeeEmail,
         );
-
+ 
         if (existingUsers.length > 0) {
           assignedUserId = existingUsers[0].id;
         } else {
           assignedUserId = crypto.randomUUID();
           generatedPassword = `ViOne@${Math.floor(100000 + Math.random() * 900000)}`;
           const hashedPassword = await bcrypt.hash(generatedPassword, 10);
-
+ 
           await this.prisma.$executeRawUnsafe(
             `INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, role, raw_user_meta_data, created_at, updated_at)
              VALUES ($1::uuid, $2, $3, now(), 'authenticated', $4::jsonb, now(), now())
@@ -3078,7 +3706,7 @@ export class CompaniesService {
             hashedPassword,
             JSON.stringify({ name: data.fullName.trim() }),
           ).catch(() => {});
-
+ 
           await this.prisma.$executeRawUnsafe(
             `INSERT INTO public.users (id, name, email, phone, created_at, updated_at)
              VALUES ($1::uuid, $2, $3, $4, now(), now())
@@ -3088,14 +3716,14 @@ export class CompaniesService {
             employeeEmail,
             data.phone?.trim() || null,
           ).catch(() => {});
-
+ 
           // Lấy tên công ty
           const companyRes = await this.prisma.$queryRawUnsafe<any[]>(
             `SELECT name FROM public.companies WHERE id = $1::uuid LIMIT 1`,
             companyId,
           ).catch(() => []);
           const companyName = companyRes[0]?.name || 'Doanh Nghiệp ViOne Platform';
-
+ 
           // Gửi email cấp tài khoản
           await this.mailService.sendRegistrationAccountEmail({
             to: employeeEmail,
@@ -3112,7 +3740,7 @@ export class CompaniesService {
         this.logger.warn(`Error provisioning employee user account: ${(userErr as Error).message}`);
       }
     }
-
+ 
     await this.prisma.$executeRawUnsafe(
       `INSERT INTO public.company_employees 
          (id, community_id, user_id, full_name, email, phone, role, role_title, department, avatar_url, status, joined_at, active_tasks_count, customers_count, created_at, updated_at, can_assign_tasks, can_manage_members, can_manage_finance, can_manage_docs, can_manage_crm, permissions) 
@@ -3138,7 +3766,7 @@ export class CompaniesService {
       canManageCrm,
       permissionsJson,
     );
-
+ 
     return {
       id: employeeId,
       communityId: companyId,
@@ -3161,7 +3789,7 @@ export class CompaniesService {
       permissions: data.permissions || [],
     };
   }
-
+ 
   /**
    * Cập nhật thông tin & phân quyền nhân viên doanh nghiệp
    */
@@ -3185,22 +3813,22 @@ export class CompaniesService {
       companyId,
       employeeId,
     );
-
+ 
     if (existing.length === 0) {
       throw new NotFoundException('Không tìm thấy nhân viên trong doanh nghiệp');
     }
-
+ 
     const current = existing[0];
     const role = data.role !== undefined ? data.role : current.role;
     const isManager = role === 'manager' || role === 'owner' || role === 'admin';
-
+ 
     const canAssignTasks = data.canAssignTasks !== undefined ? Boolean(data.canAssignTasks) : (isManager || current.can_assign_tasks);
     const canManageMembers = data.canManageMembers !== undefined ? Boolean(data.canManageMembers) : (isManager || current.can_manage_members);
     const canManageFinance = data.canManageFinance !== undefined ? Boolean(data.canManageFinance) : (current.can_manage_finance);
     const canManageDocs = data.canManageDocs !== undefined ? Boolean(data.canManageDocs) : (isManager || current.can_manage_docs);
     const canManageCrm = data.canManageCrm !== undefined ? Boolean(data.canManageCrm) : (isManager || current.can_manage_crm);
     const permissionsJson = JSON.stringify(data.permissions !== undefined ? data.permissions : (current.permissions || []));
-
+ 
     await this.prisma.$executeRawUnsafe(
       `UPDATE public.company_employees SET
          full_name = COALESCE($1, full_name),
@@ -3234,7 +3862,7 @@ export class CompaniesService {
       companyId,
       employeeId,
     );
-
+ 
     return {
       ok: true,
       message: 'Cập nhật phân quyền nhân viên thành công!',
@@ -3247,7 +3875,7 @@ export class CompaniesService {
       canManageCrm,
     };
   }
-
+ 
   /**
    * Xóa nhân viên khỏi doanh nghiệp
    */
@@ -3259,7 +3887,7 @@ export class CompaniesService {
     );
     return { ok: true, message: 'Đã xóa nhân viên thành công' };
   }
-
+ 
   /**
    * 2. GIAO VIỆC & PHÂN CÔNG NHIỆM VỤ DOANH NGHIỆP
    * Truy vấn bảng public.company_tasks
@@ -3290,7 +3918,7 @@ export class CompaniesService {
         WHERE ct.community_id = $1
       `;
       const params: any[] = [companyId];
-
+ 
       if (query?.status && query.status !== 'all') {
         params.push(query.status);
         sql += ` AND ct.status = $${params.length}`;
@@ -3303,9 +3931,9 @@ export class CompaniesService {
         params.push(query.assigneeId);
         sql += ` AND ct.assignee_id = $${params.length}`;
       }
-
+ 
       sql += ` ORDER BY ct.created_at DESC`;
-
+ 
       const rows = await this.prisma.$queryRawUnsafe<any[]>(sql, ...params);
       return rows;
     } catch (err) {
@@ -3313,7 +3941,7 @@ export class CompaniesService {
       return [];
     }
   }
-
+ 
   /**
    * Giao việc mới cho nhân viên
    */
@@ -3332,10 +3960,10 @@ export class CompaniesService {
     if (!data.title?.trim()) {
       throw new BadRequestException('Tiêu đề công việc là bắt buộc');
     }
-
+ 
     const taskId = crypto.randomUUID();
     const now = new Date();
-
+ 
     // Tìm tên người được giao nếu chưa có
     let assigneeName = data.assigneeName;
     if (!assigneeName && data.assigneeId) {
@@ -3347,7 +3975,7 @@ export class CompaniesService {
         assigneeName = emp[0].full_name;
       }
     }
-
+ 
     await this.prisma.$executeRawUnsafe(
       `INSERT INTO public.company_tasks 
          (id, community_id, title, description, assignee_id, assignee_name, assigner_name, priority, status, deadline, customer_name, customer_phone, customer_contact, customer_requirements, created_at, updated_at) 
@@ -3369,7 +3997,7 @@ export class CompaniesService {
       now,
       now,
     );
-
+ 
     // Tăng active_tasks_count cho nhân viên đó
     if (data.assigneeId) {
       await this.prisma.$executeRawUnsafe(
@@ -3379,7 +4007,7 @@ export class CompaniesService {
         data.assigneeId,
       );
     }
-
+ 
     return {
       id: taskId,
       communityId: companyId,
@@ -3395,7 +4023,7 @@ export class CompaniesService {
       createdAt: now.toISOString(),
     };
   }
-
+ 
   /**
    * Cập nhật trạng thái công việc (Đang làm, Hoàn thành)
    */
@@ -3404,17 +4032,17 @@ export class CompaniesService {
     if (!validStatuses.includes(status)) {
       throw new BadRequestException(`Trạng thái không hợp lệ: ${status}`);
     }
-
+ 
     const now = new Date();
     let completedAt: Date | null = null;
     let acceptedAt: Date | null = null;
-
+ 
     if (status === 'completed') {
       completedAt = now;
     } else if (status === 'in_progress') {
       acceptedAt = now;
     }
-
+ 
     await this.prisma.$executeRawUnsafe(
       `UPDATE public.company_tasks 
        SET status = $1, 
@@ -3426,7 +4054,7 @@ export class CompaniesService {
       companyId,
       taskId,
     );
-
+ 
     // Nếu hoàn thành, giảm active_tasks_count
     if (status === 'completed') {
       const task = await this.prisma.$queryRawUnsafe<any[]>(
@@ -3442,10 +4070,10 @@ export class CompaniesService {
         );
       }
     }
-
+ 
     return { ok: true, taskId, status };
   }
-
+ 
   /**
    * Khởi tạo dữ liệu nhân sự & phân công công việc mẫu chuẩn thực tế cho doanh nghiệp
    */
@@ -3456,7 +4084,7 @@ export class CompaniesService {
       const emp2Id = crypto.randomUUID();
       const emp3Id = crypto.randomUUID();
       const emp4Id = crypto.randomUUID();
-
+ 
       // Thêm 4 nhân sự chủ chốt
       await this.prisma.$executeRawUnsafe(`
         INSERT INTO public.company_employees 
@@ -3467,12 +4095,12 @@ export class CompaniesService {
           ('${emp3Id}', '${companyId}', null, 'Lê Thị Thu Thảo', 'thao.lt@vione.vn', '0903 221 199', 'staff', 'Kế Toán Trưởng & Tài Chính', 'Khối Tài Chính Kế Toán', null, 'active', now(), 1, 0, now(), now()),
           ('${emp4Id}', '${companyId}', null, 'Phạm Hoàng Nam', 'nam.ph@vione.vn', '0977 443 322', 'staff', 'Chuyên Viên Triển Khai Giải Pháp CRM', 'Khối Vận Hành & Khách Hàng', null, 'active', now(), 1, 8, now(), now())
       `);
-
+ 
       // Thêm các tác vụ giao việc ban đầu
       const t1 = crypto.randomUUID();
       const t2 = crypto.randomUUID();
       const t3 = crypto.randomUUID();
-
+ 
       await this.prisma.$executeRawUnsafe(`
         INSERT INTO public.company_tasks 
           (id, community_id, title, description, assignee_id, assignee_name, assigner_name, priority, status, deadline, customer_name, customer_requirements, created_at, updated_at) 
@@ -3485,7 +4113,7 @@ export class CompaniesService {
       this.logger.warn('Seed company employees/tasks warning:', err);
     }
   }
-
+ 
   /**
    * 3. GIAO VIỆC HÀNG LOẠT (BULK / BATCH TASK DISPATCH)
    * Giao 1 việc cho nhiều nhân sự cùng lúc hoặc giao việc nhanh
@@ -3504,11 +4132,11 @@ export class CompaniesService {
     if (!data.title?.trim()) {
       throw new BadRequestException('Tiêu đề công việc là bắt buộc');
     }
-
+ 
     const assigneeIds = Array.isArray(data.assigneeIds) && data.assigneeIds.length > 0
       ? data.assigneeIds
       : [''];
-
+ 
     const createdTasks: any[] = [];
     for (const assigneeId of assigneeIds) {
       const task = await this.createCompanyTask(companyId, {
@@ -3524,7 +4152,7 @@ export class CompaniesService {
       });
       createdTasks.push(task);
     }
-
+ 
     return {
       ok: true,
       message: `Đã giao việc thành công cho ${createdTasks.length} nhân sự`,
@@ -3532,7 +4160,7 @@ export class CompaniesService {
       count: createdTasks.length,
     };
   }
-
+ 
   /**
    * 4. QUẢN LÝ HẠN MỨC SLOTS TÀI KHOẢN (LICENSE & SLOTS USAGE)
    */
@@ -3542,7 +4170,7 @@ export class CompaniesService {
       companyId,
     );
     const usedSlots = countRes[0]?.count || 0;
-
+ 
     const subRes = await this.prisma.$queryRawUnsafe<any[]>(`
       SELECT s.plan, s.max_slots as "maxSlots", s.expires_at as "expiresAt", s.status, s.is_trial as "isTrial"
       FROM public.vione_community_subscriptions s
@@ -3550,11 +4178,11 @@ export class CompaniesService {
         AND s.status = 'active' AND s.expires_at > now()
       ORDER BY s.expires_at DESC LIMIT 1
     `, companyId);
-
+ 
     const sub = subRes[0] || { plan: 'free_starter', maxSlots: 10, expiresAt: null, status: 'active', isTrial: true };
     const maxSlots = sub.maxSlots || 10;
     const remainingSlots = Math.max(0, maxSlots - usedSlots);
-
+ 
     return {
       ok: true,
       companyId,
@@ -3567,7 +4195,7 @@ export class CompaniesService {
       expiresAt: sub.expiresAt,
     };
   }
-
+ 
   /**
    * 5. DANH SÁCH GÓI CƯỚC NỀN TẢNG (Quản lý Gói ViOne)
    */
@@ -3597,7 +4225,7 @@ export class CompaniesService {
     `, Boolean(includeInactive));
     return rows;
   }
-
+ 
   /**
    * Tạo gói dịch vụ mới (Admin / Staff ViConnect)
    * Setup theo số lượng người (slots) và có mã QR để thanh toán phí
@@ -3618,7 +4246,7 @@ export class CompaniesService {
     const bankAccountName = dto.bankAccountName || 'CONG TY CP CONG NGHE VICONNECT';
     const qrTemplate = dto.qrTemplate || 'compact2';
     const features = JSON.stringify(dto.features || []);
-
+ 
     await this.prisma.$executeRawUnsafe(`
       INSERT INTO public.vione_subscription_packages (
         id, code, name, description, package_type, price, billing_cycle,
@@ -3630,10 +4258,10 @@ export class CompaniesService {
         $13, $14, $15::jsonb, true, now(), now()
       )
     `, id, code, name, description, packageType, price, billingCycle, durationDays, maxSlots, maxDepartments, bankName, bankAccount, bankAccountName, qrTemplate, features);
-
+ 
     return { ok: true, id, message: 'Khởi tạo gói dịch vụ thành công' };
   }
-
+ 
   /**
    * Chỉnh sửa gói dịch vụ (Admin / Staff ViConnect)
    */
@@ -3649,7 +4277,7 @@ export class CompaniesService {
     const bankAccountName = dto.bankAccountName;
     const isActive = dto.isActive !== undefined ? Boolean(dto.isActive) : undefined;
     const features = dto.features ? JSON.stringify(dto.features) : undefined;
-
+ 
     await this.prisma.$executeRawUnsafe(`
       UPDATE public.vione_subscription_packages SET
         name = COALESCE($2, name),
@@ -3666,10 +4294,10 @@ export class CompaniesService {
         updated_at = now()
       WHERE id = $1::uuid
     `, id, name, description, price, billingCycle, durationDays, maxSlots, bankName, bankAccount, bankAccountName, isActive, features);
-
+ 
     return { ok: true, message: 'Cập nhật gói dịch vụ thành công' };
   }
-
+ 
   /**
    * Ẩn / Xóa gói dịch vụ
    */
@@ -3679,7 +4307,7 @@ export class CompaniesService {
     `, id);
     return { ok: true, message: 'Đã ẩn gói dịch vụ thành công' };
   }
-
+ 
   /**
    * Gửi hồ sơ đăng ký gói ViOne Platform từ App ViOne (Người dùng ViOne)
    * Nhập thông tin doanh nghiệp, chọn gói, đẩy dữ liệu về CRM ViConnect
@@ -3687,12 +4315,12 @@ export class CompaniesService {
   async createPackageOrder(userId: string, dto: any) {
     const orderId = crypto.randomUUID();
     const packageCode = dto.packageCode || 'FREE_30D';
-
+ 
     const pkgs = await this.prisma.$queryRawUnsafe<any[]>(`
       SELECT * FROM public.vione_subscription_packages WHERE code = $1 LIMIT 1
     `, packageCode);
     const pkg = pkgs[0];
-
+ 
     const packageName = pkg?.name || dto.packageName || 'Gói Dịch Vụ ViOne';
     const price = pkg?.price !== undefined ? Number(pkg.price) : (Number(dto.price) || 0);
     const maxSlots = pkg?.max_slots || Number(dto.maxSlots) || 30;
@@ -3706,16 +4334,16 @@ export class CompaniesService {
     if (!email || !email.includes('@')) {
       throw new BadRequestException('Email hợp lệ là bắt buộc để nhận thông tin gói');
     }
-
+ 
     const taxId = dto.taxId?.trim() || '';
     const industry = dto.industry?.trim() || '';
     const address = dto.address?.trim() || '';
     const paymentMethod = dto.paymentMethod || (price === 0 ? 'free_trial' : 'vietqr');
     const paymentProofUrl = dto.paymentProofUrl || null;
-
+ 
     const validUserId = userId && userId.length === 36 ? userId : null;
     const validPkgId = pkg?.id || null;
-
+ 
     await this.prisma.$executeRawUnsafe(`
       INSERT INTO public.vione_package_orders (
         id, user_id, package_id, package_code, package_name, price, max_slots,
@@ -3727,7 +4355,7 @@ export class CompaniesService {
         $15, $16, 'pending', now(), now()
       )
     `, orderId, validUserId, validPkgId, packageCode, packageName, price, maxSlots, companyName, taxId, representativeName, phone, email, industry, address, paymentMethod, paymentProofUrl);
-
+ 
     return {
       ok: true,
       orderId,
@@ -3742,7 +4370,7 @@ export class CompaniesService {
       }
     };
   }
-
+ 
   /**
    * Danh sách hồ sơ đăng ký gói (Dành cho Quản trị viên ViConnect)
    */
@@ -3753,7 +4381,7 @@ export class CompaniesService {
       whereClause = 'WHERE status = $1';
       params.push(status);
     }
-
+ 
     const rows = await this.prisma.$queryRawUnsafe<any[]>(`
       SELECT 
         id,
@@ -3782,10 +4410,10 @@ export class CompaniesService {
       ${whereClause}
       ORDER BY created_at DESC
     `, ...params);
-
+ 
     return rows;
   }
-
+ 
   /**
    * Xem chi tiết 1 hồ sơ đăng ký gói (Nhân viên bấm xem hồ sơ)
    */
@@ -3818,14 +4446,14 @@ export class CompaniesService {
       WHERE id = $1::uuid
       LIMIT 1
     `, id);
-
+ 
     if (!rows || rows.length === 0) {
       throw new NotFoundException('Không tìm thấy hồ sơ đăng ký gói');
     }
-
+ 
     return rows[0];
   }
-
+ 
   /**
    * Phê duyệt hồ sơ đăng ký gói (Nhân viên bấm duyệt hoặc đồng ý)
    * Kích hoạt gói cước và BẮN THÔNG TIN GÓI VỀ MAIL CỦA NGƯỜI ĐĂNG KÝ GÓI!
@@ -3835,17 +4463,17 @@ export class CompaniesService {
     if (!order) {
       throw new NotFoundException('Hồ sơ không tồn tại');
     }
-
+ 
     const durationDays = order.price === 0 ? 30 : 365;
     const expiresAt = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
     const maxSlots = order.maxSlots || 30;
-
+ 
     // 1. Tạo hoặc cập nhật doanh nghiệp trong public.companies
     let companyId: string;
     const existingComp = await this.prisma.$queryRawUnsafe<any[]>(`
       SELECT id FROM public.companies WHERE name = $1 OR email = $2 LIMIT 1
     `, order.companyName, order.email);
-
+ 
     if (existingComp && existingComp.length > 0) {
       companyId = existingComp[0].id;
       await this.prisma.$executeRawUnsafe(`
@@ -3864,7 +4492,7 @@ export class CompaniesService {
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]/g, '-')
         .replace(/-+/g, '-') + '-' + Date.now().toString().slice(-4);
-
+ 
       await this.prisma.$executeRawUnsafe(`
         INSERT INTO public.companies (
           id, name, slug, email, phone, industry, address, max_slots, verified, status, created_at, updated_at
@@ -3873,7 +4501,7 @@ export class CompaniesService {
         )
       `, companyId, order.companyName, slug, order.email, order.phone, order.industry, order.address, maxSlots);
     }
-
+ 
     // 2. Tạo hoặc cập nhật subscription trong public.vione_community_subscriptions
     const subId = crypto.randomUUID();
     const userId = order.userId || '00000000-0000-0000-0000-000000000000';
@@ -3884,7 +4512,7 @@ export class CompaniesService {
         $1::uuid, $2::uuid, $3::uuid, $4, 'active', $5, $6, now(), $7, $8, now(), now()
       )
     `, subId, userId, companyId, order.packageCode, order.price === 0, (order.price === 0 ? 30 : 0), expiresAt, maxSlots);
-
+ 
     // 3. Cập nhật trạng thái đơn hàng
     const validApprovedBy = approvedByUserId && approvedByUserId.length === 36 ? approvedByUserId : null;
     await this.prisma.$executeRawUnsafe(`
@@ -3896,7 +4524,7 @@ export class CompaniesService {
         updated_at = now()
       WHERE id = $1::uuid
     `, id, validApprovedBy, companyId);
-
+ 
     // 4. BẮN EMAIL THÔNG TIN GÓI VỀ MAIL CỦA NGƯỜI ĐĂNG KÝ GÓI!
     let emailSent = false;
     try {
@@ -3916,7 +4544,7 @@ export class CompaniesService {
     } catch (mailErr) {
       this.logger.error(`Error sending package approval email to ${order.email}: ${mailErr.message}`);
     }
-
+ 
     return {
       ok: true,
       message: `Đã phê duyệt gói cước ${order.packageName} cho ${order.companyName}! Email thông tin gói đã được gửi tới ${order.email}.`,
@@ -3925,7 +4553,7 @@ export class CompaniesService {
       emailSent,
     };
   }
-
+ 
   /**
    * Từ chối hồ sơ đăng ký gói
    */
@@ -3937,10 +4565,10 @@ export class CompaniesService {
         updated_at = now()
       WHERE id = $1::uuid
     `, id, reason || 'Hồ sơ chưa đáp ứng điều kiện hoặc thông tin thanh toán chưa chính xác.');
-
+ 
     return { ok: true, message: 'Đã từ chối hồ sơ đăng ký' };
   }
-
+ 
   /**
    * 6. SUPER ADMIN: GIÁM SÁT NỀN TẢNG & MỨC ĐỘ HOẠT ĐỘNG DOANH NGHIỆP
    * Thống kê lượng người tham gia mới, theo dõi chi tiết mức độ hoạt động của các công ty có gói ViOne Platform
@@ -3983,40 +4611,40 @@ export class CompaniesService {
         ) s ON true
         ORDER BY c.created_at DESC
       `);
-
+ 
       // 2. Thống kê tăng trưởng người tham gia mới (30 ngày gần nhất)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const newUsersCountRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT COUNT(*)::int as count FROM public.users WHERE created_at >= $1
       `, thirtyDaysAgo).catch(() => [{ count: 18 }]);
       const newUsersThisMonth = newUsersCountRes[0]?.count || 18;
-
+ 
       const newCompaniesCountRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT COUNT(*)::int as count FROM public.companies WHERE created_at >= $1
       `, thirtyDaysAgo).catch(() => [{ count: 5 }]);
       const newCompaniesThisMonth = newCompaniesCountRes[0]?.count || 5;
-
+ 
       const totalUsersRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT COUNT(*)::int as count FROM public.users
       `).catch(() => [{ count: 142 }]);
       const totalUsers = totalUsersRes[0]?.count || 142;
-
+ 
       const totalTasksRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT COUNT(*)::int as count FROM public.company_tasks
       `).catch(() => [{ count: 0 }]);
       const totalTasks = totalTasksRes[0]?.count || 0;
-
+ 
       // 3. Tính toán Health Score & Activity Level chi tiết cho từng công ty
       let totalActive = 0;
       let totalTrial = 0;
       let totalExpired = 0;
-
+ 
       const companiesActivity = companies.map((c) => {
         const now = Date.now();
         const expires = c.expiresAt ? new Date(c.expiresAt).getTime() : 0;
         const isExp = expires > 0 && expires < now;
         const daysLeft = expires > 0 ? Math.max(0, Math.ceil((expires - now) / (1000 * 60 * 60 * 24))) : 0;
-
+ 
         let status = 'active';
         if (!c.plan) {
           status = 'unsubscribed';
@@ -4031,19 +4659,19 @@ export class CompaniesService {
           status = 'active';
           totalActive++;
         }
-
+ 
         // Health Score (0 - 100%) dựa trên số nhân sự, số tasks, tỷ lệ hoàn thành tasks, số documents
         let score = 50;
         if (c.employeeCount > 0) score += Math.min(20, c.employeeCount * 3);
         if (c.taskCount > 0) score += Math.min(15, c.taskCount * 2);
         if (c.completedTaskCount > 0) score += Math.min(15, (c.completedTaskCount / (c.taskCount || 1)) * 15);
         score = Math.min(100, Math.round(score));
-
+ 
         let activityLevel = 'Bình thường';
         if (score >= 80) activityLevel = 'Rất tích cực';
         else if (score >= 60) activityLevel = 'Tích cực';
         else activityLevel = 'Cần hỗ trợ';
-
+ 
         return {
           companyId: c.id,
           companyName: c.name,
@@ -4074,7 +4702,7 @@ export class CompaniesService {
           createdAt: c.createdAt,
         };
       });
-
+ 
       // 4. Biểu đồ tăng trưởng người dùng & doanh nghiệp 6 tháng gần nhất
       const userGrowthTrend = [
         { month: 'T05/2026', newUsers: 14, newCompanies: 2, totalRevenue: 30000000 },
@@ -4084,7 +4712,7 @@ export class CompaniesService {
         { month: 'T09/2026', newUsers: 64, newCompanies: 11, totalRevenue: 185000000 },
         { month: 'T10/2026', newUsers: 85, newCompanies: 16, totalRevenue: 260000000 },
       ];
-
+ 
       return {
         ok: true,
         summary: {
@@ -4106,7 +4734,7 @@ export class CompaniesService {
       throw new BadRequestException('Không thể tải dữ liệu giám sát nền tảng: ' + (err as Error).message);
     }
   }
-
+ 
   /**
    * Cập nhật / Mở khóa / Khóa gói cước doanh nghiệp bởi Super Admin
    */
@@ -4122,11 +4750,11 @@ export class CompaniesService {
         `SELECT id, owner_user_id FROM public.companies WHERE id = $1::uuid LIMIT 1`,
         companyId,
       );
-
+ 
       if (existing.length === 0) {
         throw new NotFoundException('Không tìm thấy doanh nghiệp');
       }
-
+ 
       const ownerId = existing[0].owner_user_id;
       const subRes = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT id, expires_at, max_slots FROM public.vione_community_subscriptions 
@@ -4135,18 +4763,18 @@ export class CompaniesService {
         companyId,
         ownerId,
       );
-
+ 
       let subId = subRes[0]?.id;
       let newExpires = subRes[0]?.expires_at ? new Date(subRes[0].expires_at) : new Date();
-
+ 
       if (data.extendDays && data.extendDays > 0) {
         newExpires = new Date(Math.max(Date.now(), newExpires.getTime()) + data.extendDays * 24 * 60 * 60 * 1000);
       }
-
+ 
       const newPlan = data.plan || 'vione_platform_enterprise';
       const newStatus = data.status || 'active';
       const newSlots = data.maxSlots || subRes[0]?.max_slots || 50;
-
+ 
       if (subId) {
         await this.prisma.$executeRawUnsafe(
           `UPDATE public.vione_community_subscriptions 
@@ -4174,7 +4802,7 @@ export class CompaniesService {
           newSlots,
         );
       }
-
+ 
       return {
         ok: true,
         message: 'Cập nhật trạng thái gói cước doanh nghiệp thành công!',
@@ -4188,7 +4816,7 @@ export class CompaniesService {
       throw new BadRequestException('Không thể cập nhật gói cước: ' + (err as Error).message);
     }
   }
-
+ 
   /**
    * Thống kê báo cáo nền tảng toàn diện (Dashboard, Biểu đồ cột/tròn, Cây đơn vị, Báo cáo tài khoản, Báo cáo tài liệu, Báo cáo dòng tiền)
    */
@@ -4201,17 +4829,17 @@ export class CompaniesService {
           COUNT(*) FILTER (WHERE created_at >= now() - interval '30 days')::int as "newUsers30d"
         FROM public.users
       `).catch(() => [{ totalUsers: 142, newUsers30d: 18 }]);
-
+ 
       const staffStatsRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT COUNT(DISTINCT user_id)::int as count 
         FROM public.platform_user_roles
       `).catch(() => [{ count: 6 }]);
-
+ 
       const employeeStatsRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT COUNT(*)::int as count 
         FROM public.company_employees
       `).catch(() => [{ count: 34 }]);
-
+ 
       // 2. Thống kê tài liệu pháp lý
       const docStatsRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT 
@@ -4222,7 +4850,7 @@ export class CompaniesService {
           COUNT(*) FILTER (WHERE status != 'verified' AND (is_verified IS NULL OR is_verified = false))::int as "pendingDocs"
         FROM public.documents
       `).catch(() => [{ totalDocs: 24, contractsCount: 12, legalCount: 8, verifiedDocs: 20, pendingDocs: 4 }]);
-
+ 
       // 3. Thống kê dòng tiền & gói cước
       const subStatsRes = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT 
@@ -4233,12 +4861,12 @@ export class CompaniesService {
         FROM public.vione_community_subscriptions
         GROUP BY plan, status, is_trial
       `).catch(() => []);
-
+ 
       let enterprisePlanCount = 0;
       let standardPlanCount = 0;
       let trialPlanCount = 0;
       let expiredPlanCount = 0;
-
+ 
       for (const s of subStatsRes) {
         if (s.status === 'expired') {
           expiredPlanCount += s.count;
@@ -4250,7 +4878,7 @@ export class CompaniesService {
           standardPlanCount += s.count;
         }
       }
-
+ 
       // 4. Doanh nghiệp và cây đơn vị
       const companies = await this.prisma.$queryRawUnsafe<any[]>(`
         SELECT 
@@ -4262,10 +4890,10 @@ export class CompaniesService {
         ORDER BY c.created_at ASC
         LIMIT 20
       `).catch(() => []);
-
+ 
       const orgTree = {
         id: 'viconnect-root',
-        name: 'Hệ Sinh Thái ViConnect Platform',
+        name: 'Phần Mềm ViConnect Platform',
         code: 'VICONNECT_ROOT',
         type: 'root',
         leader: 'Ban Quản Trị ViConnect',
@@ -4312,7 +4940,7 @@ export class CompaniesService {
           },
         ],
       };
-
+ 
       // 5. Biểu đồ cột (Tăng trưởng người dùng, doanh nghiệp, doanh thu qua các tháng)
       const barChartGrowth = [
         { month: 'T05/2026', accounts: 24, companies: 3, revenue: 45000000 },
@@ -4322,7 +4950,7 @@ export class CompaniesService {
         { month: 'T09/2026', accounts: 115, companies: 15, revenue: 225000000 },
         { month: 'T10/2026', accounts: userStatsRes[0]?.totalUsers || 142, companies: companies.length || 18, revenue: 310000000 },
       ];
-
+ 
       // 6. Biểu đồ tròn (Phân bổ gói cước doanh nghiệp)
       const pieChartSubscriptions = [
         { name: 'ViOne Enterprise Platform', value: enterprisePlanCount || 12, color: '#D8B282' },
@@ -4330,7 +4958,7 @@ export class CompaniesService {
         { name: 'Dùng Thử 30 Ngày (Free Trial)', value: trialPlanCount || 5, color: '#34D399' },
         { name: 'Gói Cần Gia Hạn / Hết Hạn', value: expiredPlanCount || 2, color: '#F87171' },
       ];
-
+ 
       return {
         ok: true,
         summary: {
@@ -4374,7 +5002,7 @@ export class CompaniesService {
       return { ok: false, message: (err as Error).message };
     }
   }
-
+ 
   /**
    * Tạo cộng đồng mới trên ViConnect Platform và gán cho tài khoản người mua gói
    */
@@ -4391,7 +5019,7 @@ export class CompaniesService {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
     const slug = `${cleanSlug}-${Date.now().toString(36).slice(-4)}`;
-
+ 
     await this.prisma.$executeRawUnsafe(
       `INSERT INTO public.associations (id, name, slug, tagline, about, logo_url, banner_url, creator_id, created_at, updated_at)
        VALUES ($1::uuid, $2, $3, $4, $5, $6, $7, $8::uuid, now(), now())`,
@@ -4404,7 +5032,7 @@ export class CompaniesService {
       data.bannerUrl || null,
       data.ownerUserId || 'a0000000-0000-4000-8000-000000000002',
     );
-
+ 
     if (data.ownerUserId) {
       await this.prisma.$executeRawUnsafe(
         `INSERT INTO public.memberships (id, user_id, association_id, role, is_default, created_at, updated_at)
@@ -4414,7 +5042,7 @@ export class CompaniesService {
         commId,
       ).catch(() => {});
     }
-
+ 
     return {
       ok: true,
       message: 'Tạo cộng đồng thành công!',
@@ -4426,7 +5054,7 @@ export class CompaniesService {
       },
     };
   }
-
+ 
   /**
    * Chỉnh sửa thông tin cộng đồng trên Platform
    */
@@ -4447,13 +5075,13 @@ export class CompaniesService {
       data.bannerUrl || null,
       data.tagline?.trim() || null,
     );
-
+ 
     return {
       ok: true,
       message: 'Cập nhật cộng đồng thành công!',
     };
   }
-
+ 
   /**
    * Xóa cộng đồng trên Platform
    */
@@ -4468,20 +5096,19 @@ export class CompaniesService {
     };
   }
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 9: apps/vione_app_fe/src/context/AuthContext.tsx (Quản trị trạng thái phiên đăng nhập Web Client)
-**Đường dẫn tệp tin:** `apps/vione_app_fe/src/context/AuthContext.tsx`
-================================================================================
+### Tệp 9/18: apps/vione_app_fe/src/context/AuthContext.tsx  (245 dòng)
 
-```typescript
+```tsx
+========================================================================================
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-
+ 
 // ── Types ────────────────────────────────────────────────────────────────────
-
+ 
 export interface VioneUser {
   id: string;
   email?: string;
@@ -4497,7 +5124,7 @@ export interface VioneUser {
   user_metadata?: { full_name?: string; avatar_url?: string; [key: string]: any };
   [key: string]: any;
 }
-
+ 
 export interface VioneSession {
   access_token: string;
   refresh_token: string;
@@ -4505,9 +5132,9 @@ export interface VioneSession {
   token_type?: string;
   user: VioneUser;
 }
-
+ 
 type AuthStatus = 'loading' | 'in' | 'out';
-
+ 
 type AuthContextType = {
   user: VioneUser | null;
   status: AuthStatus;
@@ -4515,11 +5142,11 @@ type AuthContextType = {
   logout: () => void;
   setAuthData: (session: any) => void;
 };
-
+ 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+ 
 // ── JWT Helpers ───────────────────────────────────────────────────────────────
-
+ 
 function decodeJwt(token: string): Record<string, any> | null {
   try {
     const base64Url = token.split('.')[1];
@@ -4536,14 +5163,14 @@ function decodeJwt(token: string): Record<string, any> | null {
     return null;
   }
 }
-
+ 
 function isTokenValid(token: string): boolean {
   const decoded = decodeJwt(token);
   if (!decoded || !decoded.exp) return false;
   // hết hạn trước 30 giây
   return decoded.exp * 1000 > Date.now() + 30_000;
 }
-
+ 
 function tokenToUser(decoded: Record<string, any>): VioneUser {
   return {
     id: decoded.sub,
@@ -4557,7 +5184,7 @@ function tokenToUser(decoded: Record<string, any>): VioneUser {
     },
   };
 }
-
+ 
 function buildSession(accessToken: string, refreshToken: string, user: VioneUser): VioneSession {
   return {
     access_token: accessToken,
@@ -4567,24 +5194,24 @@ function buildSession(accessToken: string, refreshToken: string, user: VioneUser
     user,
   };
 }
-
+ 
 function setSessionCookies(session: VioneSession) {
   const secure =
     typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; secure' : '';
   document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${session.expires_in ?? 3600}; SameSite=Lax${secure}`;
   document.cookie = `sb-refresh-token=${session.refresh_token}; path=/; max-age=604800; SameSite=Lax${secure}`;
 }
-
+ 
 function clearSessionCookies() {
   document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   document.cookie = 'sb-refresh-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 }
-
+ 
 const API_BASE =
   typeof window !== 'undefined'
     ? ''
     : ((import.meta.env.VITE_API_URL as string | undefined) ?? '');
-
+ 
 async function apiRefresh(refreshToken: string): Promise<VioneSession | null> {
   try {
     const res = await fetch(`${API_BASE}/api/auth/refresh`, {
@@ -4601,7 +5228,7 @@ async function apiRefresh(refreshToken: string): Promise<VioneSession | null> {
     return null;
   }
 }
-
+ 
 function mapApiUser(apiUser: any, accessToken: string): VioneUser {
   if (apiUser?.id) {
     return {
@@ -4620,15 +5247,15 @@ function mapApiUser(apiUser: any, accessToken: string): VioneUser {
   const decoded = decodeJwt(accessToken);
   return decoded ? tokenToUser(decoded) : { id: '' };
 }
-
+ 
 // ── Provider ──────────────────────────────────────────────────────────────────
-
+ 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<VioneUser | null>(null);
   const [session, setSession] = useState<VioneSession | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+ 
   // Lên lịch auto-refresh token trước khi hết hạn
   function scheduleRefresh(accessToken: string, refreshToken: string) {
     if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
@@ -4645,7 +5272,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }, msUntilRefresh);
   }
-
+ 
   function applySession(sess: VioneSession) {
     localStorage.setItem('vibe_token', sess.access_token);
     localStorage.setItem('vibe_refresh_token', sess.refresh_token);
@@ -4655,12 +5282,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSessionCookies(sess);
     scheduleRefresh(sess.access_token, sess.refresh_token);
   }
-
+ 
   useEffect(() => {
     // Khởi động: đọc token từ localStorage
     const accessToken = localStorage.getItem('vibe_token');
     const refreshToken = localStorage.getItem('vibe_refresh_token');
-
+ 
     if (accessToken && isTokenValid(accessToken)) {
       // Token còn hạn — dùng ngay
       const decoded = decodeJwt(accessToken)!;
@@ -4681,13 +5308,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setStatus('out');
     }
-
+ 
     return () => {
       if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+ 
   const logout = () => {
     if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
     localStorage.removeItem('vibe_token');
@@ -4697,7 +5324,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(null);
     setStatus('out');
   };
-
+ 
   /** Gọi sau khi login thành công — nhận response từ NestJS /auth/login */
   const setAuthData = (data: any) => {
     if (!data?.access_token) return;
@@ -4709,48 +5336,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     applySession(sess);
   };
-
+ 
   return (
     <AuthContext.Provider value={{ user, status, session, logout, setAuthData }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
+ 
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
   return ctx;
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 10: apps/vione_app_fe/src/components/dashboard/AppShell.tsx (Khung điều hướng trung tâm Web CRM)
-**Đường dẫn tệp tin:** `apps/vione_app_fe/src/components/dashboard/AppShell.tsx`
-================================================================================
+### Tệp 10/18: apps/vione_app_fe/src/components/dashboard/AppShell.tsx  (29 dòng)
 
-```typescript
+```tsx
+========================================================================================
 import { useState, type ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { BottomNav } from "./BottomNav";
 import { MobileMenuDrawer } from "./MobileMenuDrawer";
 import { CommandPaletteProvider } from "./CommandPalette";
-
+ 
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-
+ 
   return (
     <CommandPaletteProvider>
       <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 font-['Inter',sans-serif] text-foreground antialiased">
         {/* Desktop sidebar */}
         <Sidebar />
-
+ 
         {/* Mobile drawer (swipe + tap-outside to close) */}
         <MobileMenuDrawer open={mobileOpen} onOpenChange={setMobileOpen} />
-
+ 
         <div className="flex min-w-0 flex-1 flex-col">
           <Topbar onMenuClick={() => setMobileOpen(true)} />
           <main className="flex-1 p-6 lg:p-8">{children}</main>
@@ -4760,16 +5386,15 @@ export function AppShell({ children }: { children: ReactNode }) {
     </CommandPaletteProvider>
   );
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 11: apps/vione_app_fe/src/routes/platform.permissions.tsx (Giao diện cấu hình ma trận phân quyền RBAC)
-**Đường dẫn tệp tin:** `apps/vione_app_fe/src/routes/platform.permissions.tsx`
-================================================================================
+### Tệp 11/18: apps/vione_app_fe/src/routes/platform.permissions.tsx  (964 dòng)
 
-```typescript
+```tsx
+========================================================================================
 import { useState, useEffect, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -4798,11 +5423,11 @@ import {
 import { PlatformShell } from "@/components/platform/PlatformShell";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
-
+ 
 export const Route = createFileRoute("/platform/permissions")({
   component: PlatformPermissionsPage,
 });
-
+ 
 export interface RoleItem {
   id: string;
   code: string;
@@ -4813,7 +5438,7 @@ export interface RoleItem {
   memberCount: number;
   permissionIds?: string[];
 }
-
+ 
 export interface PermissionItem {
   id: string;
   module: string;
@@ -4821,7 +5446,7 @@ export interface PermissionItem {
   name: string;
   description: string | null;
 }
-
+ 
 export interface ModuleActionGroup {
   module: string;
   moduleName: string;
@@ -4833,7 +5458,7 @@ export interface ModuleActionGroup {
     description: string;
   }[];
 }
-
+ 
 const MODULE_LABELS: Record<string, { label: string; icon: string }> = {
   tasks: { label: "Quản lý Công việc & Tiến độ", icon: "📋" },
   attendance: { label: "Nhân sự & Điểm danh chấm công", icon: "⏰" },
@@ -4850,7 +5475,7 @@ const MODULE_LABELS: Record<string, { label: string; icon: string }> = {
   communities: { label: "Cộng đồng ViOne Platform", icon: "🌐" },
   ai: { label: "Trợ lý AI Doanh nghiệp", icon: "✨" },
 };
-
+ 
 const ACTION_LABELS: Record<string, string> = {
   view: "Xem dữ liệu",
   create: "Tạo mới",
@@ -4860,7 +5485,7 @@ const ACTION_LABELS: Record<string, string> = {
   approve: "Phê duyệt",
   export: "Xuất file",
 };
-
+ 
 export function PlatformPermissionsPage() {
   const [activeTab, setActiveTab] = useState<"matrix" | "groups">("matrix");
   const [roles, setRoles] = useState<RoleItem[]>([]);
@@ -4871,10 +5496,10 @@ export function PlatformPermissionsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-
+ 
   // Danh sách modules và thao tác con cho Popup phân quyền (từ API /roles/modules-actions)
   const [availableModules, setAvailableModules] = useState<ModuleActionGroup[]>([]);
-
+ 
   // Modal Popup Quản lý Nhóm Quyền (Tạo mới & Chỉnh sửa)
   const [roleGroupModalOpen, setRoleGroupModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<RoleItem | null>(null);
@@ -4887,7 +5512,7 @@ export function PlatformPermissionsPage() {
   });
   const [savingGroup, setSavingGroup] = useState(false);
   const [searchModuleQuery, setSearchModuleQuery] = useState("");
-
+ 
   const loadData = async () => {
     setLoading(true);
     try {
@@ -4898,7 +5523,7 @@ export function PlatformPermissionsPage() {
         setModulesMap(matrixRes.modulesMap || {});
         setMatrix(matrixRes.matrix || {});
       }
-
+ 
       // 2. Tải danh sách nhóm quyền kèm permissionIds
       const groupsRes = await fetchNestApi<any>("/roles/groups");
       if (groupsRes && groupsRes.ok) {
@@ -4912,7 +5537,7 @@ export function PlatformPermissionsPage() {
           setSelectedRoleId(matrixRes.roles[0].id);
         }
       }
-
+ 
       // 3. Tải danh sách modules và thao tác con cho Popup
       const modRes = await fetchNestApi<any>("/roles/modules-actions");
       if (modRes && modRes.ok && Array.isArray(modRes.modules)) {
@@ -4926,15 +5551,15 @@ export function PlatformPermissionsPage() {
       setHasChanges(false);
     }
   };
-
+ 
   useEffect(() => {
     loadData();
   }, []);
-
+ 
   const selectedRole = useMemo(() => {
     return roles.find((r) => r.id === selectedRoleId) || roles[0];
   }, [roles, selectedRoleId]);
-
+ 
   const togglePermission = (permId: string) => {
     if (!selectedRoleId) return;
     setMatrix((prev) => {
@@ -4947,36 +5572,36 @@ export function PlatformPermissionsPage() {
     });
     setHasChanges(true);
   };
-
+ 
   const toggleModuleAll = (moduleKey: string) => {
     if (!selectedRoleId || !modulesMap[moduleKey]) return;
     const modulePerms = modulesMap[moduleKey];
     const roleMap = { ...(matrix[selectedRoleId] || {}) };
-
+ 
     const allChecked = modulePerms.every((p) => roleMap[p.id]);
     modulePerms.forEach((p) => {
       roleMap[p.id] = !allChecked;
     });
-
+ 
     setMatrix((prev) => ({
       ...prev,
       [selectedRoleId]: roleMap,
     }));
     setHasChanges(true);
   };
-
+ 
   const handleSavePermissions = async () => {
     if (!selectedRoleId) return;
     setSaving(true);
     try {
       const roleMap = matrix[selectedRoleId] || {};
       const activePermIds = Object.keys(roleMap).filter((id) => roleMap[id]);
-
+ 
       await fetchNestApi(`/roles/${selectedRoleId}/permissions`, {
         method: "PUT",
         body: JSON.stringify({ permissionIds: activePermIds }),
       });
-
+ 
       toast.success(`✓ Đã lưu ma trận phân quyền cho vai trò "${selectedRole?.name}" thành công!`);
       setHasChanges(false);
       await loadData();
@@ -4986,7 +5611,7 @@ export function PlatformPermissionsPage() {
       setSaving(false);
     }
   };
-
+ 
   // Mở Popup Tạo Nhóm Quyền Mới
   const openCreateRoleGroup = () => {
     setEditingRole(null);
@@ -4999,7 +5624,7 @@ export function PlatformPermissionsPage() {
     });
     setRoleGroupModalOpen(true);
   };
-
+ 
   // Mở Popup Chỉnh Sửa Nhóm Quyền
   const openEditRoleGroup = (role: RoleItem) => {
     setEditingRole(role);
@@ -5012,7 +5637,7 @@ export function PlatformPermissionsPage() {
     } else if (Array.isArray(role.permissionIds)) {
       activeIds.push(...role.permissionIds);
     }
-
+ 
     setGroupFormData({
       name: role.name,
       code: role.code,
@@ -5022,7 +5647,7 @@ export function PlatformPermissionsPage() {
     });
     setRoleGroupModalOpen(true);
   };
-
+ 
   // Toggle permission trong Popup
   const togglePopupPerm = (permId: string) => {
     setGroupFormData((prev) => {
@@ -5035,12 +5660,12 @@ export function PlatformPermissionsPage() {
       };
     });
   };
-
+ 
   // Toggle tất cả permissions trong 1 module của Popup
   const togglePopupModule = (mod: ModuleActionGroup) => {
     const modActionIds = mod.actions.map((a) => a.id);
     const allChecked = modActionIds.every((id) => groupFormData.selectedPermIds.includes(id));
-
+ 
     setGroupFormData((prev) => {
       if (allChecked) {
         return {
@@ -5056,7 +5681,7 @@ export function PlatformPermissionsPage() {
       }
     });
   };
-
+ 
   // Lưu Nhóm Quyền từ Popup (Tạo mới hoặc Chỉnh sửa)
   const handleSaveRoleGroup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -5064,7 +5689,7 @@ export function PlatformPermissionsPage() {
       toast.error("Vui lòng nhập tên nhóm quyền");
       return;
     }
-
+ 
     setSavingGroup(true);
     try {
       if (editingRole) {
@@ -5093,7 +5718,7 @@ export function PlatformPermissionsPage() {
         });
         toast.success(`✓ Đã tạo mới nhóm quyền "${groupFormData.name}" thành công!`);
       }
-
+ 
       setRoleGroupModalOpen(false);
       await loadData();
     } catch (err: any) {
@@ -5102,7 +5727,7 @@ export function PlatformPermissionsPage() {
       setSavingGroup(false);
     }
   };
-
+ 
   // Xóa Nhóm Quyền
   const handleDeleteRoleGroup = async (role: RoleItem) => {
     if (role.isSystem) {
@@ -5112,7 +5737,7 @@ export function PlatformPermissionsPage() {
     if (!window.confirm(`Bạn có chắc chắn muốn xóa nhóm quyền "${role.name}" không?`)) {
       return;
     }
-
+ 
     try {
       await fetchNestApi(`/roles/groups/${role.id}`, {
         method: "DELETE",
@@ -5126,12 +5751,12 @@ export function PlatformPermissionsPage() {
       toast.error("Không thể xóa nhóm quyền: " + (err?.message || "Lỗi hệ thống"));
     }
   };
-
+ 
   const activePermsCount = useMemo(() => {
     if (!selectedRoleId || !matrix[selectedRoleId]) return 0;
     return Object.values(matrix[selectedRoleId]).filter(Boolean).length;
   }, [matrix, selectedRoleId]);
-
+ 
   const filteredModulesInPopup = useMemo(() => {
     if (!searchModuleQuery.trim()) return availableModules;
     const q = searchModuleQuery.trim().toLowerCase();
@@ -5145,7 +5770,7 @@ export function PlatformPermissionsPage() {
         ),
     );
   }, [availableModules, searchModuleQuery]);
-
+ 
   return (
     <PlatformShell>
       <div className="space-y-6">
@@ -5164,7 +5789,7 @@ export function PlatformPermissionsPage() {
               Doanh nghiệp Platform. Áp dụng ngay lập tức trên toàn hệ thống.
             </p>
           </div>
-
+ 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             {/* Tab switchers */}
             <div className="flex items-center p-1 rounded-xl bg-background/80 border border-border">
@@ -5191,7 +5816,7 @@ export function PlatformPermissionsPage() {
                 Quản Lý Nhóm Quyền
               </button>
             </div>
-
+ 
             <button
               onClick={openCreateRoleGroup}
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-slate-950 text-xs font-bold hover:opacity-95 shadow transition cursor-pointer"
@@ -5201,7 +5826,7 @@ export function PlatformPermissionsPage() {
             </button>
           </div>
         </div>
-
+ 
         {/* ── TAB 1: MA TRẬN PHÂN QUYỀN (MATRIX VIEW) ────────────────────────── */}
         {activeTab === "matrix" && (
           <div className="space-y-6">
@@ -5242,7 +5867,7 @@ export function PlatformPermissionsPage() {
                 );
               })}
             </div>
-
+ 
             {/* Matrix Table */}
             <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-card)]">
               <div className="p-4 border-b border-border/80 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -5261,7 +5886,7 @@ export function PlatformPermissionsPage() {
                     {permissions.length} quyền
                   </p>
                 </div>
-
+ 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={loadData}
@@ -5270,7 +5895,7 @@ export function PlatformPermissionsPage() {
                     <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
                     <span>Tải lại</span>
                   </button>
-
+ 
                   <button
                     onClick={handleSavePermissions}
                     disabled={saving || !hasChanges}
@@ -5285,7 +5910,7 @@ export function PlatformPermissionsPage() {
                   </button>
                 </div>
               </div>
-
+ 
               {loading ? (
                 <div className="p-12 text-center text-sm text-muted-foreground">
                   Đang tải ma trận phân quyền từ cơ sở dữ liệu...
@@ -5297,7 +5922,7 @@ export function PlatformPermissionsPage() {
                     const meta = MODULE_LABELS[moduleKey] || { label: moduleKey, icon: "📁" };
                     const roleMap = matrix[selectedRoleId] || {};
                     const allChecked = modulePerms.every((p) => roleMap[p.id]);
-
+ 
                     return (
                       <div key={moduleKey} className="p-5 space-y-3">
                         <div className="flex items-center justify-between">
@@ -5308,7 +5933,7 @@ export function PlatformPermissionsPage() {
                               ({moduleKey})
                             </span>
                           </div>
-
+ 
                           <button
                             type="button"
                             onClick={() => toggleModuleAll(moduleKey)}
@@ -5317,12 +5942,12 @@ export function PlatformPermissionsPage() {
                             {allChecked ? "Bỏ chọn tất cả" : "Chọn tất cả phân hệ"}
                           </button>
                         </div>
-
+ 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
                           {modulePerms.map((perm) => {
                             const isChecked = Boolean(roleMap[perm.id]);
                             const actionLabel = ACTION_LABELS[perm.action] || perm.action;
-
+ 
                             return (
                               <div
                                 key={perm.id}
@@ -5369,7 +5994,7 @@ export function PlatformPermissionsPage() {
             </div>
           </div>
         )}
-
+ 
         {/* ── TAB 2: QUẢN LÝ NHÓM QUYỀN (ROLE GROUPS CRUD) ────────────────────── */}
         {activeTab === "groups" && (
           <div className="space-y-4">
@@ -5384,7 +6009,7 @@ export function PlatformPermissionsPage() {
                     khoản nhân viên ViOne & Doanh nghiệp.
                   </p>
                 </div>
-
+ 
                 <button
                   type="button"
                   onClick={openCreateRoleGroup}
@@ -5394,7 +6019,7 @@ export function PlatformPermissionsPage() {
                   <span>+ Tạo Nhóm Quyền Mới</span>
                 </button>
               </div>
-
+ 
               <div className="divide-y divide-border/60">
                 {roles.map((role) => {
                   const permCount = role.permissionIds
@@ -5441,7 +6066,7 @@ export function PlatformPermissionsPage() {
                           </span>
                         </div>
                       </div>
-
+ 
                       {/* Action buttons (Tạo mới, Chỉnh sửa, Xóa - Full CRUD) */}
                       <div className="flex items-center gap-2 shrink-0">
                         <button
@@ -5452,7 +6077,7 @@ export function PlatformPermissionsPage() {
                           <Pencil className="w-3.5 h-3.5 text-[#DFB76C]" />
                           <span>Chỉnh Sửa</span>
                         </button>
-
+ 
                         {!role.isSystem && (
                           <button
                             type="button"
@@ -5472,7 +6097,7 @@ export function PlatformPermissionsPage() {
           </div>
         )}
       </div>
-
+ 
       {/* ── POPUP MODAL TẠO MỚI / CHỈNH SỬA NHÓM QUYỀN KÈM CHECKBOX THAO TÁC CON ─ */}
       {roleGroupModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
@@ -5498,7 +6123,7 @@ export function PlatformPermissionsPage() {
                   </p>
                 </div>
               </div>
-
+ 
               <button
                 type="button"
                 onClick={() => setRoleGroupModalOpen(false)}
@@ -5507,7 +6132,7 @@ export function PlatformPermissionsPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-
+ 
             {/* Modal Body: Form Inputs + Modules Checkboxes */}
             <form onSubmit={handleSaveRoleGroup} className="flex-1 flex flex-col overflow-hidden">
               <div className="p-6 overflow-y-auto space-y-6 flex-1">
@@ -5526,7 +6151,7 @@ export function PlatformPermissionsPage() {
                       className="w-full h-9 px-3 rounded-lg border border-slate-700 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C]"
                     />
                   </div>
-
+ 
                   <div className="sm:col-span-1">
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Mã Nhóm Quyền (Code)
@@ -5540,7 +6165,7 @@ export function PlatformPermissionsPage() {
                       className="w-full h-9 px-3 rounded-lg border border-slate-700 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#DFB76C] disabled:opacity-60 disabled:cursor-not-allowed"
                     />
                   </div>
-
+ 
                   <div className="sm:col-span-1">
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Cấp Bậc (Level)
@@ -5558,7 +6183,7 @@ export function PlatformPermissionsPage() {
                       <option value={5}>Cấp 5 - Đối Tác / Khách Hàng</option>
                     </select>
                   </div>
-
+ 
                   <div className="sm:col-span-3">
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Mô Tả Phạm Vi Quyền Hạn
@@ -5574,7 +6199,7 @@ export function PlatformPermissionsPage() {
                     />
                   </div>
                 </div>
-
+ 
                 {/* Danh sách chức năng & Thao tác con */}
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
@@ -5591,7 +6216,7 @@ export function PlatformPermissionsPage() {
                         thao tác
                       </p>
                     </div>
-
+ 
                     <div className="relative w-full sm:w-64">
                       <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                       <input
@@ -5603,7 +6228,7 @@ export function PlatformPermissionsPage() {
                       />
                     </div>
                   </div>
-
+ 
                   {/* Modules Cards */}
                   <div className="space-y-3">
                     {filteredModulesInPopup.map((mod) => {
@@ -5618,7 +6243,7 @@ export function PlatformPermissionsPage() {
                         label: mod.moduleName,
                         icon: "📁",
                       };
-
+ 
                       return (
                         <div
                           key={mod.module}
@@ -5639,7 +6264,7 @@ export function PlatformPermissionsPage() {
                                 </span>
                               )}
                             </div>
-
+ 
                             <button
                               type="button"
                               onClick={() => togglePopupModule(mod)}
@@ -5648,7 +6273,7 @@ export function PlatformPermissionsPage() {
                               {isAllChecked ? "Bỏ chọn tất cả" : "Chọn tất cả thao tác"}
                             </button>
                           </div>
-
+ 
                           {/* Grid Checkbox Thao Tác Con */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                             {mod.actions.map((action) => {
@@ -5697,14 +6322,14 @@ export function PlatformPermissionsPage() {
                   </div>
                 </div>
               </div>
-
+ 
               {/* Modal Footer */}
               <div className="p-4 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between">
                 <span className="text-xs text-slate-400">
                   Tổng thao tác đã chọn:{" "}
                   <strong className="text-white">{groupFormData.selectedPermIds.length}</strong>
                 </span>
-
+ 
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
@@ -5733,160 +6358,15 @@ export function PlatformPermissionsPage() {
     </PlatformShell>
   );
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 12: apps/vione_app_fe/src/routes/platform.heritage.tsx (Phân hệ Quản trị & Số hóa Di sản Văn hóa)
-**Đường dẫn tệp tin:** `apps/vione_app_fe/src/routes/platform.heritage.tsx`
-================================================================================
+### Tệp 12/18: apps/vione_app_fe/src/routes/opportunities.index.tsx  (1189 dòng)
 
-```typescript
-import React, { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { AppShell } from "@/components/dashboard/AppShell";
-import { PageHeader } from "@/components/dashboard/PageKit";
-import { HeritageAdminManager } from "@/components/platform-app/admin/HeritageAdminManager";
-import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
-import { LayoutGrid, SlidersHorizontal } from "lucide-react";
-
-export const Route = createFileRoute("/platform/heritage")({
-  component: PlatformHeritagePage,
-});
-
-function PlatformHeritagePage() {
-  const [viewMode, setViewMode] = useState<"admin" | "preview">("admin");
-
-  return (
-    <AppShell>
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <PageHeader
-            title="ViOne Heritage — Quản Lý & Số Hóa Di Sản Văn Hóa"
-            subtitle="Số hóa hồ sơ di sản quốc gia và UNESCO, định vị bản đồ GIS khoanh vùng bảo vệ, tham quan thực tế ảo VR360 và thuyết minh di sản tự động theo tọa độ định vị GPS."
-          />
-          <div className="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-[#D8B282]/30 rounded-xl self-start md:self-auto shrink-0 shadow-sm">
-            <button
-              onClick={() => setViewMode("admin")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                viewMode === "admin"
-                  ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
-                  : "text-slate-600 dark:text-[#9EABB8] hover:text-slate-900 dark:hover:text-[#F6E1C3] hover:bg-slate-200 dark:hover:bg-slate-800"
-              }`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Quản Trị CRM (RESTful)
-            </button>
-            <button
-              onClick={() => setViewMode("preview")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                viewMode === "preview"
-                  ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
-                  : "text-slate-600 dark:text-[#9EABB8] hover:text-slate-900 dark:hover:text-[#F6E1C3] hover:bg-slate-200 dark:hover:bg-slate-800"
-              }`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-              Xem Trước App/PWA
-            </button>
-          </div>
-        </div>
-
-        {viewMode === "admin" ? (
-          <HeritageAdminManager />
-        ) : (
-          <PwaDeviceSimulator
-            initialTab="culture"
-            initialSubTab="heritage"
-            moduleName="ViOne Heritage (Di Sản Văn Hóa)"
-          />
-        )}
-      </div>
-    </AppShell>
-  );
-}
-
-```
-
-
-================================================================================
-### Tệp tin 13: apps/vione_app_fe/src/routes/platform.museum.tsx (Phân hệ Quản trị Bảo tàng Số & Hiện vật 3D)
-**Đường dẫn tệp tin:** `apps/vione_app_fe/src/routes/platform.museum.tsx`
-================================================================================
-
-```typescript
-import React, { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { AppShell } from "@/components/dashboard/AppShell";
-import { PageHeader } from "@/components/dashboard/PageKit";
-import { MuseumAdminManager } from "@/components/platform-app/admin/MuseumAdminManager";
-import { PwaDeviceSimulator } from "@/components/platform-app/PwaDeviceSimulator";
-import { LayoutGrid, SlidersHorizontal } from "lucide-react";
-
-export const Route = createFileRoute("/platform/museum")({
-  component: PlatformMuseumPage,
-});
-
-function PlatformMuseumPage() {
-  const [viewMode, setViewMode] = useState<"admin" | "preview">("admin");
-
-  return (
-    <AppShell>
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <PageHeader
-            title="ViOne Museum — Quản Trị Bảo Tàng Số & Hiện Vật 3D"
-            subtitle="Không gian trưng bày ảo chuyên đề, xoay phóng to hiện vật 3D Photogrammetry/AR, gắn thẻ chip NFC tại quầy hiện vật thực tế và điều phối vé tham quan bảo tàng."
-          />
-          <div className="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-[#D8B282]/30 rounded-xl self-start md:self-auto shrink-0 shadow-sm">
-            <button
-              onClick={() => setViewMode("admin")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                viewMode === "admin"
-                  ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
-                  : "text-slate-600 dark:text-[#9EABB8] hover:text-slate-900 dark:hover:text-[#F6E1C3] hover:bg-slate-200 dark:hover:bg-slate-800"
-              }`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Quản Trị CRM (RESTful)
-            </button>
-            <button
-              onClick={() => setViewMode("preview")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                viewMode === "preview"
-                  ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#C29B69] text-[#050C15] shadow-md shadow-[#D8B282]/20"
-                  : "text-slate-600 dark:text-[#9EABB8] hover:text-slate-900 dark:hover:text-[#F6E1C3] hover:bg-slate-200 dark:hover:bg-slate-800"
-              }`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-              Xem Trước App/PWA
-            </button>
-          </div>
-        </div>
-
-        {viewMode === "admin" ? (
-          <MuseumAdminManager />
-        ) : (
-          <PwaDeviceSimulator
-            initialTab="culture"
-            initialSubTab="museum"
-            moduleName="ViOne Museum (Bảo Tàng & Hiện Vật 3D)"
-          />
-        )}
-      </div>
-    </AppShell>
-  );
-}
-
-```
-
-
-================================================================================
-### Tệp tin 14: apps/vione_app_fe/src/routes/opportunities.index.tsx (Phân hệ Quản lý Cơ hội Giao thương & Sàn Marketplace)
-**Đường dẫn tệp tin:** `apps/vione_app_fe/src/routes/opportunities.index.tsx`
-================================================================================
-
-```typescript
+```tsx
+========================================================================================
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { REVIEW_SEARCH_RESET } from "@/lib/review-search";
 import { useMemo, useState, useRef } from "react";
@@ -5941,19 +6421,19 @@ import { useUrlState } from "@/hooks/use-url-state";
 import { Pagination } from "@/components/dashboard/DataTablePagination";
 import { toast } from "sonner";
 import { formatDisplayDate, formatDisplayDateTime } from "@/lib/date-format";
-
+ 
 function formatCurrencyInput(val: string): string {
   const digits = val.replace(/\D/g, "");
   if (!digits) return "";
   return Number(digits).toLocaleString("vi-VN");
 }
-
+ 
 export const Route = createFileRoute("/opportunities/")({
   ssr: false,
   loader: () => listOpportunitiesFn().catch(() => ({ opportunities: [], interests: [], interestCounts: {} })),
   component: OpportunitiesPage,
 });
-
+ 
 const STATUS_COLOR: Record<OpportunityStatus, "success" | "neutral"> = {
   open: "success",
   closed: "neutral",
@@ -5962,7 +6442,7 @@ const STATUS_KEY: Record<OpportunityStatus, TKey> = {
   open: "opp.status.open",
   closed: "opp.status.closed",
 };
-
+ 
 function OpportunityCard({
   opp,
   interestCount,
@@ -5980,14 +6460,14 @@ function OpportunityCard({
   const fmt = useFmt();
   const poster = getPoster(opp.posterId);
   const isOwner = opp.posterId === CURRENT_USER_ID;
-
+ 
   const budget =
     opp.budgetMin && opp.budgetMax
       ? `${fmt.money(opp.budgetMin)} – ${fmt.money(opp.budgetMax)}`
       : opp.budgetMin
         ? `${t("opp.fromLabel")} ${fmt.money(opp.budgetMin)}`
         : t("opp.budgetOpen");
-
+ 
   return (
     <Card className="flex flex-col overflow-hidden transition hover:shadow-lg">
       <Link
@@ -6029,7 +6509,7 @@ function OpportunityCard({
           {opp.title}
         </Link>
         <p className="line-clamp-2 text-xs text-muted-foreground">{opp.description}</p>
-
+ 
         <div className="grid grid-cols-1 gap-1.5 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <MapPin className="h-3 w-3" />
@@ -6044,12 +6524,12 @@ function OpportunityCard({
             </span>
           </div>
         </div>
-
+ 
         <div className="rounded-lg bg-secondary/50 p-2 text-[11px]">
           <div className="text-muted-foreground">{t("opp.budget")}</div>
           <div className="font-semibold text-foreground">{budget}</div>
         </div>
-
+ 
         {(opp.contactName || opp.contactPhone || opp.company) && (
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-2 text-[11px] text-foreground">
             <div className="font-semibold text-primary flex items-center gap-1">
@@ -6064,7 +6544,7 @@ function OpportunityCard({
             )}
           </div>
         )}
-
+ 
         {opp.claimedByName && (
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-[11px] text-emerald-400">
             <div className="flex items-center gap-1 font-semibold text-emerald-300">
@@ -6078,7 +6558,7 @@ function OpportunityCard({
             )}
           </div>
         )}
-
+ 
         <div className="mt-auto flex items-center justify-between border-t border-border pt-3 text-[11px] text-muted-foreground">
           <Link
             to="/members/$memberId"
@@ -6099,7 +6579,7 @@ function OpportunityCard({
             </span>
           </div>
         </div>
-
+ 
         <div className="flex gap-2">
           {isOwner ? (
             <>
@@ -6135,7 +6615,7 @@ function OpportunityCard({
     </Card>
   );
 }
-
+ 
 function NewOpportunityModal({ onClose }: { onClose: () => void }) {
   const t = useT();
   const router = useRouter();
@@ -6160,7 +6640,7 @@ function NewOpportunityModal({ onClose }: { onClose: () => void }) {
   );
   const [contactTitle, setContactTitle] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+ 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -6172,7 +6652,7 @@ function NewOpportunityModal({ onClose }: { onClose: () => void }) {
     };
     reader.readAsDataURL(file);
   };
-
+ 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !desc.trim() || !region.trim() || !industry.trim()) return;
@@ -6199,7 +6679,7 @@ function NewOpportunityModal({ onClose }: { onClose: () => void }) {
     toast.success(t("opp.toast.created"));
     onClose();
   }
-
+ 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4 backdrop-blur-sm">
       <div className="w-full max-w-xl rounded-2xl bg-card shadow-2xl">
@@ -6246,7 +6726,7 @@ function NewOpportunityModal({ onClose }: { onClose: () => void }) {
               </button>
             )}
           </div>
-
+ 
           <div>
             <label className="mb-1.5 block text-xs font-semibold">{t("opp.form.titleField")}</label>
             <input
@@ -6425,7 +6905,7 @@ function NewOpportunityModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
+ 
 function InterestModal({ opp, onClose }: { opp: Opportunity; onClose: () => void }) {
   const t = useT();
   const navigate = useNavigate();
@@ -6433,7 +6913,7 @@ function InterestModal({ opp, onClose }: { opp: Opportunity; onClose: () => void
   const express = useServerFn(expressInterestFn);
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
-
+ 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!message.trim() || !contact.trim()) return;
@@ -6444,7 +6924,7 @@ function InterestModal({ opp, onClose }: { opp: Opportunity; onClose: () => void
     // Open chat with poster
     navigate({ to: "/network", search: { peer: opp.posterId } });
   }
-
+ 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl bg-card shadow-2xl">
@@ -6508,9 +6988,9 @@ function InterestModal({ opp, onClose }: { opp: Opportunity; onClose: () => void
     </div>
   );
 }
-
+ 
 type Tab = "browse" | "mine" | "interests";
-
+ 
 function OpportunitiesPage() {
   const t = useT();
   const fmt = useFmt();
@@ -6529,11 +7009,11 @@ function OpportunitiesPage() {
     initialData: loaderData?.opportunities?.length ? loaderData : undefined,
     refetchInterval: 4000,
   });
-
+ 
   const all: Opportunity[] = serverData?.opportunities ?? loaderData?.opportunities ?? [];
   const interests: OpportunityInterest[] = serverData?.interests ?? loaderData?.interests ?? [];
   const interestCounts: Record<string, number> = serverData?.interestCounts ?? loaderData?.interestCounts ?? {};
-
+ 
   const deleteOpp = useServerFn(deleteOpportunityFn);
   const toggleOpp = useServerFn(toggleOpportunityStatusFn);
   const [tab, setTab] = useState<Tab>("browse");
@@ -6542,9 +7022,9 @@ function OpportunitiesPage() {
   const [typeFilter, setTypeFilter] = useState<OpportunityTypeKey | "all">("all");
   const [showCreate, setShowCreate] = useState(false);
   const [interestOpp, setInterestOpp] = useState<Opportunity | null>(null);
-
+ 
   const countFor = (id: string) => interestCounts[id] ?? 0;
-
+ 
   const filtered = useMemo(() => {
     const ql = q.trim().toLowerCase();
     let base = all;
@@ -6564,7 +7044,7 @@ function OpportunitiesPage() {
     }
     return base;
   }, [all, q, tab, typeFilter]);
-
+ 
   const tc = useTableControls<Opportunity>(
     filtered,
     {
@@ -6576,7 +7056,7 @@ function OpportunitiesPage() {
     },
     { initialSortKey: "createdAt", initialSortDir: "desc", initialPageSize: 9 },
   );
-
+ 
   const myOpps = useMemo(() => all.filter((o) => o.posterId === CURRENT_USER_ID), [all]);
   const myInterests = useMemo(
     () =>
@@ -6588,10 +7068,10 @@ function OpportunitiesPage() {
         .filter((x: any) => x.items.length > 0),
     [myOpps, interests],
   );
-
+ 
   const totalOpen = all.filter((o) => o.status === "open").length;
   const totalInterestsOnMine = myOpps.reduce((s, o) => s + countFor(o.id), 0);
-
+ 
   return (
     <AppShell>
       <PageHeader
@@ -6608,7 +7088,7 @@ function OpportunitiesPage() {
           </button>
         }
       />
-
+ 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label={t("opp.kpi.total")}
@@ -6634,7 +7114,7 @@ function OpportunitiesPage() {
           icon={<MessageSquare className="h-4 w-4" />}
         />
       </div>
-
+ 
       {/* Tabs */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {(["browse", "mine", "interests"] as Tab[]).map((tk) => (
@@ -6651,7 +7131,7 @@ function OpportunitiesPage() {
           </button>
         ))}
       </div>
-
+ 
       {tab !== "interests" && (
         <Card className="mb-6 p-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -6705,7 +7185,7 @@ function OpportunitiesPage() {
           </div>
         </Card>
       )}
-
+ 
       {tab === "interests" ? (
         <div className="space-y-4">
           {myInterests.length === 0 ? (
@@ -6795,7 +7275,7 @@ function OpportunitiesPage() {
                       : opp.budgetMin
                         ? `${t("opp.fromLabel")} ${fmt.money(opp.budgetMin)}`
                         : t("opp.budgetOpen");
-
+ 
                   return (
                     <tr
                       key={opp.id}
@@ -6805,7 +7285,7 @@ function OpportunitiesPage() {
                       <td className="sticky left-0 z-10 w-14 min-w-[56px] bg-card group-hover:bg-muted/70 px-3 py-3 text-center text-xs font-medium text-muted-foreground border-b border-r border-border transition-colors">
                         {(tc.page - 1) * tc.pageSize + idx + 1}
                       </td>
-
+ 
                       {/* Sticky Code */}
                       <td className="sticky left-[56px] z-10 min-w-[100px] bg-card group-hover:bg-muted/70 px-3 py-3 font-mono text-[12px] font-semibold text-primary border-b border-r border-border shadow-[4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors">
                         <div className="flex items-center gap-1.5">
@@ -6832,7 +7312,7 @@ function OpportunitiesPage() {
                           <span>OPP-{opp.id.slice(0, 6).toUpperCase()}</span>
                         </div>
                       </td>
-
+ 
                       {/* Title & Description with Tooltip */}
                       <td className="px-4 py-3 border-b border-border">
                         <Link
@@ -6848,7 +7328,7 @@ function OpportunitiesPage() {
                           className="text-[11px] text-muted-foreground"
                         />
                       </td>
-
+ 
                       {/* Người tạo cơ hội */}
                       <td className="px-4 py-3 border-b border-border">
                         <Link
@@ -6869,7 +7349,7 @@ function OpportunitiesPage() {
                           />
                         </div>
                       </td>
-
+ 
                       {/* Người liên hệ */}
                       <td className="px-4 py-3 border-b border-border">
                         {opp.contactName || opp.contactPhone || opp.company ? (
@@ -6895,7 +7375,7 @@ function OpportunitiesPage() {
                           <span className="text-xs text-muted-foreground/60">—</span>
                         )}
                       </td>
-
+ 
                       {/* Người nhận cơ hội */}
                       <td className="px-4 py-3 border-b border-border">
                         {opp.claimedByName ? (
@@ -6920,12 +7400,12 @@ function OpportunitiesPage() {
                           </span>
                         )}
                       </td>
-
+ 
                       {/* Phân loại */}
                       <td className="px-4 py-3 border-b border-border">
                         <Pill color="primary">{t(opp.type)}</Pill>
                       </td>
-
+ 
                       {/* Ngành & Khu vực */}
                       <td className="px-4 py-3 border-b border-border text-xs">
                         <div className="font-medium text-foreground">
@@ -6935,22 +7415,22 @@ function OpportunitiesPage() {
                           <TruncatedText text={opp.region} maxWidth="max-w-[300px]" />
                         </div>
                       </td>
-
+ 
                       {/* Ngân sách */}
                       <td className="px-4 py-3 border-b border-border font-semibold text-xs text-foreground">
                         {budget}
                       </td>
-
+ 
                       {/* Hạn chót */}
                       <td className="px-4 py-3 border-b border-border text-xs text-muted-foreground">
                         {fmt.date(opp.deadline)}
                       </td>
-
+ 
                       {/* Trạng thái */}
                       <td className="px-4 py-3 border-b border-border">
                         <Pill color={STATUS_COLOR[opp.status]}>{t(STATUS_KEY[opp.status])}</Pill>
                       </td>
-
+ 
                       {/* Sticky Thao tác */}
                       <td className="sticky right-0 z-10 min-w-[150px] bg-card group-hover:bg-muted/70 px-4 py-3 text-right border-b border-l border-border shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)] transition-colors">
                         <div className="inline-flex items-center gap-1.5 justify-end">
@@ -7069,22 +7549,21 @@ function OpportunitiesPage() {
           </div>
         </>
       )}
-
+ 
       {showCreate && <NewOpportunityModal onClose={() => { setShowCreate(false); refetch(); }} />}
       {interestOpp && <InterestModal opp={interestOpp} onClose={() => { setInterestOpp(null); refetch(); }} />}
     </AppShell>
   );
 }
-
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 15: apps/mobile_vione/src/screens/home/HomeScreen.tsx (Màn hình chính Bàn làm việc điều hành di động)
-**Đường dẫn tệp tin:** `apps/mobile_vione/src/screens/home/HomeScreen.tsx`
-================================================================================
+### Tệp 13/18: apps/mobile_vione/src/screens/home/HomeScreen.tsx  (999 dòng)
 
-```typescript
+```tsx
+========================================================================================
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
@@ -7133,7 +7612,7 @@ import { ContactsDiscoveryModal } from "../../components/ContactsDiscoveryModal"
 import { TodayCustomizeSheet, TodayPreferences, DEFAULT_TODAY_PREFERENCES } from "../../components/TodayCustomizeSheet";
 import { ScheduleCalendarModal } from "../../components/ScheduleCalendarModal";
 import { meApi, eventsApi, meetingsApi, networkApi, opportunityApi } from "../../api";
-
+ 
 import {
   AiPartnerItem,
   VoiceMomentItem,
@@ -7148,44 +7627,39 @@ import { EntrepreneurCard } from "./components/EntrepreneurCard";
 import { TodayEditorialSection } from "./components/TodayEditorialSection";
 import { ExecutiveCenterSection } from "./components/ExecutiveCenterSection";
 import { AiPartnersSection } from "./components/AiPartnersSection";
-import { ViOneEcosystemGrid } from "./components/ViOneEcosystemGrid";
-
+ 
 export {
   AiPartnerItem,
   VoiceMomentItem,
   TodayMeetingItem,
   HomeScreenProps,
 };
-
-export const HomeScreen: React.FC<HomeScreenProps> = ({
-  navigation,
-  onOpenV,
-  onOpenPlatformTab,
-}) => {
+ 
+export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, onOpenV }) => {
   const { user, updateUser } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<"today" | "all" | "upcoming" | "reminders" | "voice_moments">("all");
-
+ 
   // Quyền truy cập chấm công & ký duyệt: Chỉ xuất hiện khi có cộng đồng công ty có nhân sự
   const [hasCompanyWithStaff, setHasCompanyWithStaff] = useState<boolean>(false);
-
+ 
   // Quyền gói cộng đồng / Dùng thử 30 ngày: Chỉ khi có gói mới hiện phân hệ giao việc trên trang chủ
   const [hasCommunityPlan, setHasCommunityPlan] = useState<boolean>(false);
   const [createCommunityVisible, setCreateCommunityVisible] = useState<boolean>(false);
-
+ 
   // Thông báo tìm bạn bè từ danh bạ điện thoại (giống Zalo)
   const [contactsBannerDismissed, setContactsBannerDismissed] = useState<boolean>(false);
   const [contactsDiscoveryVisible, setContactsDiscoveryVisible] = useState<boolean>(false);
-
+ 
   // Location permission state
   const [hasLocationPermission, setHasLocationPermission] = useState<boolean>(true);
   const [requestingLocation, setRequestingLocation] = useState<boolean>(false);
-
+ 
   // Today Briefing Preferences (Matching 100% PWA TodayCustomizeSheet)
   const [todayPrefs, setTodayPrefs] = useState<TodayPreferences>(DEFAULT_TODAY_PREFERENCES);
   const [todayCustomizeVisible, setTodayCustomizeVisible] = useState(false);
-
+ 
   // Modals state
   const [calendarModalVisible, setCalendarModalVisible] = useState(false);
   const [myQrVisible, setMyQrVisible] = useState(false);
@@ -7226,11 +7700,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   ).current;
   const [opportunityDetailModalVisible, setOpportunityDetailModalVisible] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<CommunityOpportunityItem | null>(null);
-
+ 
   // Filters for AI suggestions
   const [distanceFilter, setDistanceFilter] = useState<"all" | "near" | "city" | "national">("all");
   const [industryFilter, setIndustryFilter] = useState<string>("all");
-
+ 
   // Dynamic data lists
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [remindersList, setRemindersList] = useState<any[]>([]);
@@ -7238,12 +7712,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [todayPool, setTodayPool] = useState<any[]>([]);
   const [todayOpportunities, setTodayOpportunities] = useState<CommunityOpportunityItem[]>(INITIAL_TODAY_OPPORTUNITIES);
   const [todayMeetings, setTodayMeetings] = useState<any[]>(INITIAL_TODAY_MEETINGS);
-
+ 
   // Voice moments audio player simulation
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const [voiceMomentsList, setVoiceMomentsList] = useState<VoiceMomentItem[]>([]);
   const [selectedOpportunityForAi, setSelectedOpportunityForAi] = useState<any | null>(null);
-
+ 
   const togglePlayVoice = (id: string) => {
     if (playingVoiceId === id) {
       setPlayingVoiceId(null);
@@ -7254,7 +7728,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       }, 5000);
     }
   };
-
+ 
   const handleRequestLocation = () => {
     setRequestingLocation(true);
     setTimeout(() => {
@@ -7266,12 +7740,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       );
     }, 600);
   };
-
+ 
   // Load live data from API
   const loadData = async () => {
     const now = new Date();
     const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-
+ 
     try {
       // 1. Identity & profile cover/avatar from NestJS API
       const identRes = await meApi.getIdentity();
@@ -7288,7 +7762,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         });
       }
     } catch {}
-
+ 
     try {
       // 2. Unread notifications
       const notifRes = await meApi.getUnreadNotificationCount();
@@ -7296,16 +7770,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         setUnreadNotificationsCount(notifRes.data.count);
       }
     } catch {}
-
+ 
     try {
       // 2. Events from NestJS API
       const eventsRes = await eventsApi.getEvents();
       const eventsList = Array.isArray(eventsRes?.data)
         ? eventsRes.data
         : (eventsRes?.data as any)?.items || [];
-
+ 
       if (eventsList.length > 0) {
-
+ 
         const mapped = eventsList.map((ev: any) => {
           const rawDate = ev.date || ev.startDate || ev.startsAt || ev.start_date;
           const dt = rawDate ? new Date(rawDate) : null;
@@ -7320,11 +7794,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             dt,
           };
         });
-
+ 
         // Filter upcoming events (future dates)
         const upcoming = mapped.filter((ev: any) => ev.dt && ev.dt > todayEnd);
         setUpcomingEvents(upcoming);
-
+ 
         // Filter today events
         const todayEvents = mapped.filter((ev: any) => {
           if (!ev.dt) return false;
@@ -7334,14 +7808,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         setTodayPool(todayEvents);
       }
     } catch {}
-
+ 
     try {
       // 3. Meetings from NestJS API
       const meetingsRes = await meetingsApi.getMeetings();
       const meetingsList = Array.isArray(meetingsRes?.data)
         ? meetingsRes.data
         : (meetingsRes?.data as any)?.items || [];
-
+ 
       if (meetingsList.length > 0) {
         const mappedMeets = meetingsList.map((m: any) => {
           const rawDate = m.meetingDate || m.scheduled_start_at || m.date || m.time;
@@ -7350,7 +7824,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             m.locationType === "online" ||
             m.format === "online" ||
             (m.locationName && m.locationName.toLowerCase().includes("meet"));
-
+ 
           return {
             id: String(m.id),
             title: m.title || `Cuộc gặp 1-1: ${m.partnerName || m.counterpart || "Doanh nhân Đối tác"}`,
@@ -7367,9 +7841,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             dt,
           };
         });
-
+ 
         setRemindersList(mappedMeets);
-
+ 
         // Filter today meetings
         const todayMeets = mappedMeets.filter((m: any) => {
           if (!m.dt) return true;
@@ -7384,7 +7858,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     } catch {
       setTodayMeetings([]);
     }
-
+ 
     try {
       // 4. Opportunities from Community API
       const oppRes = await opportunityApi.getOpportunities();
@@ -7410,7 +7884,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     } catch {
       setTodayOpportunities([]);
     }
-
+ 
     try {
       // 5. AI Recommendations from NestJS API
       const recoRes = await networkApi.getTodayRecommendations();
@@ -7435,20 +7909,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         setAiSuggestedPartners([]);
       }
     } catch {}
-
+ 
     try {
       // 6. Kiểm tra quyền hiển thị Chấm công, Ký duyệt & Gói cộng đồng giao việc
       const cachedSub = await AsyncStorage.getItem("vione_community_subscription_active");
       if (cachedSub === "true") {
         setHasCommunityPlan(true);
       }
-
+ 
       const staffStatusRes = await apiRequest<{
         ok?: boolean;
         hasCompanyWithStaff?: boolean;
         hasCommunityPlan?: boolean;
       }>("connect-app/community/company-staff-status");
-
+ 
       if (staffStatusRes?.data) {
         if (typeof staffStatusRes.data.hasCompanyWithStaff === "boolean") {
           setHasCompanyWithStaff(staffStatusRes.data.hasCompanyWithStaff);
@@ -7459,17 +7933,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       }
     } catch {}
   };
-
+ 
   useEffect(() => {
     loadData();
   }, []);
-
+ 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
   };
-
+ 
   // Formatted date in Vietnamese
   const getFormattedDate = () => {
     const days = [
@@ -7487,18 +7961,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     const mm = String(now.getMonth() + 1).padStart(2, "0");
     return `${dayName}, ${dd} Tháng ${mm}`;
   };
-
+ 
   const getInitial = (name?: string | null) => {
     if (!name) return "A";
     const words = name.trim().split(/\s+/);
     if (words.length === 0) return "A";
     return words[words.length - 1][0].toUpperCase();
   };
-
+ 
   const displayName = user?.displayName || user?.name || "Doanh nhân ViOne";
   const userPhone = user?.phone || "";
   const avatarInitial = getInitial(displayName);
-
+ 
   // Filter AI partners by distance and industry
   const filteredAiPartners = useMemo(() => {
     return aiSuggestedPartners.filter((p) => {
@@ -7513,10 +7987,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       return true;
     });
   }, [aiSuggestedPartners, distanceFilter, industryFilter]);
-
+ 
   const todayTotalCount = todayPool.length + todayMeetings.length + todayOpportunities.length;
   const allTotalCount = todayMeetings.length + todayOpportunities.length + upcomingEvents.length;
-
+ 
   return (
     <SafeAreaView
       style={[
@@ -7548,7 +8022,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </TouchableOpacity>
         }
       />
-
+ 
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContainer}
@@ -7572,7 +8046,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           setMemberCardModalVisible={setMemberCardModalVisible}
           setTodayCustomizeVisible={setTodayCustomizeVisible}
         />
-
+ 
         {/* Dải Khoảnh Khắc Doanh Nhân 24h (Stories Strip) — Đồng bộ 100% với PWA */}
         <View style={{ marginTop: 14, marginBottom: 4 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10, paddingHorizontal: 2 }}>
@@ -7586,7 +8060,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <Text style={{ fontSize: 12, fontWeight: "700", color: "#D8B282" }}>+ Đăng tin</Text>
             </TouchableOpacity>
           </View>
-
+ 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingVertical: 2 }}>
             {/* My Story Add Button */}
             <TouchableOpacity
@@ -7642,7 +8116,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 Tin của bạn
               </Text>
             </TouchableOpacity>
-
+ 
             {/* Partner Stories */}
             {HOME_STORIES.map((st) => (
               <TouchableOpacity
@@ -7685,7 +8159,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             ))}
           </ScrollView>
         </View>
-
+ 
         {/* Banner Khám Phá Bạn Bè Từ Danh Bạ (Zalo-style) */}
         {!contactsBannerDismissed && (
           <View
@@ -7738,7 +8212,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </Text>
               </View>
             </View>
-
+ 
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <TouchableOpacity
                 onPress={() => setContactsDiscoveryVisible(true)}
@@ -7763,7 +8237,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </View>
           </View>
         )}
-
+ 
         {/* 2. Phân Hệ HÔM NAY */}
         <TodayEditorialSection
           onOpenV={onOpenV}
@@ -7792,7 +8266,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           setCalendarModalVisible={setCalendarModalVisible}
           setPostMomentVisible={setPostMomentVisible}
         />
-
+ 
         {/* 3 & 4 & 5. Phân Hệ Điều Hành C-Level & Giao Việc: Chỉ hiển thị khi có Gói Cộng Đồng */}
         {hasCommunityPlan ? (
           <ExecutiveCenterSection
@@ -7861,7 +8335,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   <Text style={{ fontSize: 10.5, fontWeight: "800", color: "#10B981" }}>0đ / 30 ngày</Text>
                 </View>
               </View>
-
+ 
               <Text
                 style={{
                   fontSize: 16,
@@ -7872,7 +8346,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               >
                 Mở Khóa Phân Hệ Giao Việc & Điều Hành
               </Text>
-
+ 
               <Text
                 style={{
                   fontSize: 12.5,
@@ -7883,7 +8357,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               >
                 Theo cơ chế bản quyền ViOne, phân hệ giao việc và điều hành chỉ kích hoạt khi tài khoản sở hữu cộng đồng. Đăng ký khởi tạo cộng đồng của bạn ngay hôm nay để nhận 30 ngày trải nghiệm miễn phí trọn bộ: Giao việc & Nhận việc 1-chạm, Giám sát CRM, Cơ hội B2B & Lịch họp!
               </Text>
-
+ 
               <TouchableOpacity
                 onPress={() => setCreateCommunityVisible(true)}
                 activeOpacity={0.85}
@@ -7911,7 +8385,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </LinearGradient>
           </View>
         )}
-
+ 
         {/* 6. Khối Đối Tác Khuyên Dùng (AI) */}
         <AiPartnersSection
           isDark={isDark}
@@ -7924,20 +8398,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           setSelectedPartnerForMeeting={setSelectedPartnerForMeeting}
           setScheduleMeetingVisible={setScheduleMeetingVisible}
         />
-
-        {/* 7. Hệ Sinh Thái ViOne: Con người, cộng đồng & trải nghiệm */}
-        <ViOneEcosystemGrid
-          isDark={isDark}
-          navigation={navigation}
-          onOpenPlatformTab={onOpenPlatformTab}
-          onOpenCommunity={() => navigation?.navigate("Community")}
-          onOpenMyCard={() => navigation?.navigate("Me")}
-          onOpenEventList={() => setEventDetailModalVisible(true)}
-        />
-
+ 
         <View style={{ height: 100 }} />
       </ScrollView>
-
+ 
       {/* Modals hỗ trợ kết nối & nghiệp vụ */}
       <MyQrModal visible={myQrVisible} onClose={() => setMyQrVisible(false)} />
       <ScanQrModal visible={scanQrVisible} onClose={() => setScanQrVisible(false)} />
@@ -8015,8 +8479,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         visible={contactsDiscoveryVisible}
         onClose={() => setContactsDiscoveryVisible(false)}
       />
-
-      {/* Floating AI Assistant Copilot Button (Draggable & Closable) */}
+ 
+      {/* Floating AI Assistant Button (Draggable & Closable) */}
       {showFloatingAi && (
         <Animated.View
           style={[
@@ -8049,7 +8513,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
-
+ 
       {/* Modal Tuỳ chỉnh hiển thị thẻ Hôm Nay (Matching 100% PWA) */}
       <TodayCustomizeSheet
         visible={todayCustomizeVisible}
@@ -8058,7 +8522,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         onChange={setTodayPrefs}
         onReset={() => setTodayPrefs(DEFAULT_TODAY_PREFERENCES)}
       />
-
+ 
       {/* Modal Lịch Hoạt Động & Cuộc Gặp (Matching 100% PWA /connect-app/calendar) */}
       <ScheduleCalendarModal
         visible={calendarModalVisible}
@@ -8084,7 +8548,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           setEventDetailModalVisible(true);
         }}
       />
-
+ 
       {/* Modal Tạo Cộng Đồng Dùng Thử 30 Ngày Free */}
       <CreateCommunityGroupModal
         visible={createCommunityVisible}
@@ -8097,17 +8561,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     </SafeAreaView>
   );
 };
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 16: apps/mobile_vione/src/screens/community/CommunityScreen.tsx (Màn hình Không gian cộng đồng & Nhiệm vụ di động)
-**Đường dẫn tệp tin:** `apps/mobile_vione/src/screens/community/CommunityScreen.tsx`
-================================================================================
+### Tệp 14/18: apps/mobile_vione/src/screens/community/CommunityScreen.tsx  (940 dòng)
 
-```typescript
+```tsx
+========================================================================================
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Alert,
@@ -8138,7 +8601,7 @@ import { BusinessNotificationsModal } from "../../components/BusinessNotificatio
 import { PackageRegistrationModal } from "../../components/PackageRegistrationModal";
 import { communityApi, eventsApi, opportunityApi, meApi } from "../../api";
 import { apiRequest } from "../../api/client";
-
+ 
 import {
   CommunityType,
   CommunityTab,
@@ -8161,7 +8624,7 @@ import {
 import { styles } from "./components/community.styles";
 import { CommunityHomeScreen } from "./components/CommunityHomeScreen";
 import { CommunityDetailView } from "./components/CommunityDetailView";
-
+ 
 export {
   CommunityType,
   CommunityTab,
@@ -8174,11 +8637,11 @@ export {
   getVNTimeGreeting,
   getCommunityVisuals,
 };
-
+ 
 export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigation }) => {
   const { colors, isDark } = useTheme();
   const { user } = useAuth();
-
+ 
   const isViconnectAdmin = useMemo(() => {
     const email = (user?.email || '').toLowerCase();
     const role = (user as any)?.role || '';
@@ -8191,12 +8654,12 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       role === 'platform_admin'
     );
   }, [user]);
-
+ 
   // Navigation State: null = CommunityHome (Level 1); string = CommunityDetail (Level 2)
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(
     route?.params?.communityId || null
   );
-
+ 
   // Home Level 1 States
   const [activeTab, setActiveTab] = useState<CommunityTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -8206,7 +8669,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
-
+ 
   // Subscription & Free 30-Day Trial State
   const [subStatus, setSubStatus] = useState<{
     hasSubscription: boolean;
@@ -8218,22 +8681,22 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     isTrial: false,
     trialDaysLeft: 0,
   });
-
+ 
   // Detail Level 2 States
   const [detailTab, setDetailTab] = useState<DetailTab>(route?.params?.tab || "tasks");
   const [tasks, setTasks] = useState<TaskItem[]>(INITIAL_TASKS);
   const [taskFilter, setTaskFilter] = useState<TaskFilterType>(route?.params?.filter || "all");
   const [acceptingTaskId, setAcceptingTaskId] = useState<string | null>(null);
-
+ 
   // Members state (authentic database members)
   const [members, setMembers] = useState<any[]>([]);
-
+ 
   // Department-based RBAC states
   const [departments, setDepartments] = useState<any[]>([]);
   const [myDeptPermissions, setMyDeptPermissions] = useState<any | null>(null);
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>("all");
   const [deptPermissionsVisible, setDeptPermissionsVisible] = useState(false);
-
+ 
   useEffect(() => {
     if (route?.params?.communityId) {
       setSelectedCommunityId(route.params.communityId);
@@ -8252,7 +8715,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       }
     }
   }, [route?.params, opportunities]);
-
+ 
   // Modals
   const [createCommunityVisible, setCreateCommunityVisible] = useState(false);
   const [packageModalVisible, setPackageModalVisible] = useState(false);
@@ -8266,24 +8729,24 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
   const [oppModalVisible, setOppModalVisible] = useState(false);
   const [proposeMeetingVisible, setProposeMeetingVisible] = useState(false);
   const [selectedOppForMeeting, setSelectedOppForMeeting] = useState<CommunityOpportunityItem | null>(null);
-
+ 
   // Community News & Announcement states
   const [newsList, setNewsList] = useState<NewsPostItem[]>(INITIAL_NEWS);
   const [createNewsVisible, setCreateNewsVisible] = useState(false);
   const [selectedNews, setSelectedNews] = useState<NewsPostItem | null>(null);
   const [newsDetailVisible, setNewsDetailVisible] = useState(false);
-
+ 
   // Invite & Member Card Bottom Sheet states
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [selectedMember, setSelectedMember] = useState<MemberCardData | null>(null);
   const [memberSheetVisible, setMemberSheetVisible] = useState(false);
-
+ 
   // Active community in Detail view
   const currentCommunity = useMemo(() => {
     if (!selectedCommunityId) return null;
     return communities.find((c) => c.id === selectedCommunityId) || communities[0];
   }, [selectedCommunityId, communities]);
-
+ 
   // Load backend data
   const loadData = async () => {
     try {
@@ -8314,7 +8777,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     } catch {
       // Keep initial
     }
-
+ 
     try {
       const eventsRes = await eventsApi.getEvents();
       const eventsList = Array.isArray(eventsRes) ? eventsRes : (eventsRes as any)?.data || [];
@@ -8322,7 +8785,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     } catch {
       setEvents([]);
     }
-
+ 
     try {
       const oppRes = await opportunityApi.getOpportunities();
       const oppList = Array.isArray(oppRes) ? oppRes : (oppRes as any)?.data || [];
@@ -8341,7 +8804,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     } catch {
       setOpportunities([]);
     }
-
+ 
     try {
       const notifRes = await meApi.getUnreadNotificationCount();
       if (notifRes?.data?.count !== undefined) {
@@ -8350,14 +8813,14 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     } catch {
       // ignore
     }
-
+ 
     try {
       const isViConnectStaff = (user as any)?.roles?.some((r: any) =>
         ["super_admin", "platform_admin", "platform_operations", "platform_finance", "admin"].includes(
           typeof r === "string" ? r : r.code
         )
       ) || (user?.email && user.email.endsWith("@viconnect.vn"));
-
+ 
       if (isViConnectStaff) {
         setSubStatus({
           hasSubscription: true,
@@ -8381,7 +8844,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       // ignore
     }
   };
-
+ 
   const handleActivateTrial = async () => {
     try {
       const res: any = await apiRequest<any>("/companies/subscribe-package", {
@@ -8409,7 +8872,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       Alert.alert("Thông báo", e?.message || "Không thể kích hoạt dùng thử lúc này.");
     }
   };
-
+ 
   const loadTasks = async (commId: string) => {
     try {
       const res = await communityApi.getCommunityTasks(commId);
@@ -8440,7 +8903,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       console.warn("Failed to load community tasks:", e);
     }
   };
-
+ 
   const loadDepartments = async (commId: string) => {
     try {
       const res = await communityApi.getCommunityDepartments(commId);
@@ -8452,7 +8915,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       console.warn("Failed to load community departments:", e);
     }
   };
-
+ 
   const loadMyDeptPermissions = async (commId: string) => {
     try {
       const res = await communityApi.getMyDepartmentPermissions(commId);
@@ -8463,7 +8926,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       console.warn("Failed to load my dept permissions:", e);
     }
   };
-
+ 
   const loadMembers = async (commId: string) => {
     try {
       // 1. Fetch real employees with full phone, email, and department
@@ -8476,7 +8939,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             name: m.fullName || m.name || "Hội viên ViOne",
             title: m.role || m.department || "Thành viên",
             department: m.department || "Thành viên",
-            company: "Hệ sinh thái ViOne",
+            company: "Phần mềm Vione Platform",
             phone: m.phone || "",
             email: m.email || "",
             avatarUrl: m.avatarUrl || m.avatar || "",
@@ -8485,7 +8948,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
         );
         return;
       }
-
+ 
       // 2. Fallback to getCommunityMembers
       const memRes = await communityApi.getCommunityMembers(commId);
       const memList = (memRes as any)?.items || (Array.isArray(memRes) ? memRes : (memRes as any)?.data?.items || (memRes as any)?.data || []);
@@ -8496,7 +8959,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             name: m.displayName || m.name || "Hội viên ViOne",
             title: m.jobTitle || m.role || "Thành viên",
             department: m.companyName || "Thành viên",
-            company: m.companyName || "Hệ sinh thái ViOne",
+            company: m.companyName || "Phần mềm Vione Platform",
             phone: m.phone || "",
             email: m.email || "",
             avatarUrl: m.avatarUrl || "",
@@ -8508,7 +8971,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       console.warn("Failed to load community members:", e);
     }
   };
-
+ 
   useEffect(() => {
     if (selectedCommunityId) {
       loadTasks(selectedCommunityId);
@@ -8517,11 +8980,11 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       loadMembers(selectedCommunityId);
     }
   }, [selectedCommunityId]);
-
+ 
   useEffect(() => {
     loadData();
   }, []);
-
+ 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
@@ -8533,7 +8996,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     }
     setRefreshing(false);
   };
-
+ 
   // Event handlers
   const handleRegisterEvent = async (event: B2BEvent) => {
     try {
@@ -8546,7 +9009,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     );
     Alert.alert("Đăng ký thành công", `Bạn đã đăng ký tham gia: ${event.title}. Thẻ vé điện tử QR đã được cấp.`);
   };
-
+ 
   const handleInterestOpp = async (opp: CommunityOpportunityItem) => {
     try {
       await opportunityApi.expressInterest(opp.id, "high");
@@ -8558,7 +9021,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     );
     Alert.alert("Quan tâm cơ hội", `Đã gửi hồ sơ năng lực và thông tin kết nối tới ban quản trị dự án: ${opp.title}`);
   };
-
+ 
   // ==========================================
   // [⚡ TIẾN HÀNH NHẬN VIỆC] Action (PWA Synchronized)
   // ==========================================
@@ -8568,7 +9031,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       if (selectedCommunityId) {
         await communityApi.acceptCommunityTask(selectedCommunityId, task.id);
       }
-
+ 
       const nowStr = new Date().toISOString();
       setTasks((prev) =>
         prev.map((t) =>
@@ -8577,7 +9040,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
             : t
         )
       );
-
+ 
       Alert.alert(
         "✓ Nhận Việc Thành Công",
         `Bạn đã tiến hành nhận việc "${task.title}".\n\nHệ thống đã ghi nhận thời gian bắt đầu và thông báo tới Ban Giám Đốc.`,
@@ -8589,7 +9052,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       setAcceptingTaskId(null);
     }
   };
-
+ 
   const handleCompleteTask = async (task: TaskItem) => {
     try {
       if (selectedCommunityId) {
@@ -8608,7 +9071,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       Alert.alert("Lỗi", "Không thể cập nhật trạng thái nhiệm vụ. Vui lòng thử lại!");
     }
   };
-
+ 
   // Kích hoạt họp tức thì (Instant Meeting) theo phòng ban
   const handleTriggerInstantMeeting = async (deptName: string) => {
     if (!selectedCommunityId) return;
@@ -8640,7 +9103,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       Alert.alert("Lỗi", err?.message || "Không thể khởi tạo cuộc họp. Vui lòng kiểm tra quyền hạn!");
     }
   };
-
+ 
   // Join community
   const handleJoinCommunity = (commId: string) => {
     setCommunities((prev) =>
@@ -8652,13 +9115,13 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     );
     Alert.alert("Thành công", "Bạn đã gia nhập cộng đồng thành công!");
   };
-
+ 
   // Filtered communities for Level 1 Home
   const filteredCommunities = useMemo(() => {
     return communities.filter((c) => {
       if (activeTab === "admin" && c.viewerRole !== "admin") return false;
       if (activeTab === "joined" && !c.isMember) return false;
-
+ 
       const q = searchQuery.trim().toLowerCase();
       if (!q) return true;
       return (
@@ -8667,9 +9130,9 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       );
     });
   }, [communities, activeTab, searchQuery]);
-
+ 
   const hasAdmin = communities.some((c) => c.viewerRole === "admin");
-
+ 
   // Đếm số lượng việc được giao cho chính tài khoản đang đăng nhập
   const myTasksCount = useMemo(() => {
     if (!user) return 0;
@@ -8684,7 +9147,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       );
     }).length;
   }, [tasks, user]);
-
+ 
   // Filtered tasks in Level 2 Detail (Tất cả, ⭐ Việc của tôi, Chờ nhận việc, Đang làm, Đã xong)
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -8703,12 +9166,12 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
       return t.status === taskFilter;
     });
   }, [tasks, taskFilter, user]);
-
+ 
   const totalTasks = tasks.length;
   const assignedTasksCount = tasks.filter((t) => t.status === "assigned").length;
   const inProgressTasksCount = tasks.filter((t) => t.status === "in_progress").length;
   const completedTasksCount = tasks.filter((t) => t.status === "completed").length;
-
+ 
   return (
     <SafeAreaView
       style={[
@@ -8756,7 +9219,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           isViconnectAdmin={isViconnectAdmin}
         />
       )}
-
+ 
       {selectedCommunityId && currentCommunity && (
         <CommunityDetailView
           isDark={isDark}
@@ -8819,11 +9282,11 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           onTriggerInstantMeeting={handleTriggerInstantMeeting}
         />
       )}
-
+ 
       {/* ========================================================================= */}
       {/* ALL MODALS (Aligned 100% with PWA)                                        */}
       {/* ========================================================================= */}
-
+ 
       {/* Modal Tạo cộng đồng mới */}
       <CreateCommunityGroupModal
         visible={createCommunityVisible}
@@ -8845,7 +9308,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           setCommunities((prev) => [mapped, ...prev]);
         }}
       />
-
+ 
       {/* Modal Chỉnh sửa cộng đồng */}
       {currentCommunity && (
         <EditCommunityModal
@@ -8863,7 +9326,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }}
         />
       )}
-
+ 
       {/* Modal Chia sẻ sự kiện */}
       {currentCommunity && (
         <ShareEventModal
@@ -8876,7 +9339,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }}
         />
       )}
-
+ 
       {/* Modal Giao việc nội bộ */}
       {currentCommunity && (
         <AssignTaskModal
@@ -8890,7 +9353,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }}
         />
       )}
-
+ 
       {/* Modal Phân quyền phòng ban nội bộ */}
       {currentCommunity && (
         <DepartmentPermissionsModal
@@ -8906,7 +9369,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }}
         />
       )}
-
+ 
       {/* Modal Tạo cơ hội mới */}
       <CreateOpportunityModal
         visible={createOppVisible}
@@ -8915,7 +9378,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           setOpportunities((prev) => [newOpp, ...prev]);
         }}
       />
-
+ 
       {/* Modal Đề xuất gặp mặt 1-1 */}
       {selectedOppForMeeting && (
         <ProposeOpportunityMeetingModal
@@ -8935,7 +9398,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }}
         />
       )}
-
+ 
       {/* Modal Chi tiết sự kiện */}
       <EventDetailModal
         visible={eventModalVisible}
@@ -8950,7 +9413,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }
         }}
       />
-
+ 
       {/* Modal Chi tiết cơ hội */}
       <OpportunityDetailModal
         visible={oppModalVisible}
@@ -8965,14 +9428,14 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           }
         }}
       />
-
+ 
       {/* Modal Thông báo thời gian thực */}
       <BusinessNotificationsModal
         visible={notificationsVisible}
         onClose={() => setNotificationsVisible(false)}
         navigation={navigation}
       />
-
+ 
       {/* Modal Đăng bài viết / Tin tức */}
       <CreateNewsModal
         visible={createNewsVisible}
@@ -8996,7 +9459,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           ]);
         }}
       />
-
+ 
       {/* Modal Chi tiết tin tức / bài viết */}
       <CommunityNewsDetailModal
         visible={newsDetailVisible}
@@ -9013,7 +9476,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           );
         }}
       />
-
+ 
       {/* Modal Mời thành viên tham gia cộng đồng */}
       <CommunityInviteModal
         visible={inviteModalVisible}
@@ -9022,7 +9485,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
         communityDescription={currentCommunity?.shortDescription}
         onClose={() => setInviteModalVisible(false)}
       />
-
+ 
       {/* BottomSheet Danh thiếp đối tác / thành viên */}
       <MemberCardBottomSheet
         visible={memberSheetVisible}
@@ -9032,7 +9495,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
           setSelectedMember(null);
         }}
       />
-
+ 
       {/* Modal Đăng Ký Gói ViOne Platform */}
       <PackageRegistrationModal
         visible={packageModalVisible}
@@ -9046,17 +9509,16 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({ route, navigat
     </SafeAreaView>
   );
 };
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 17: apps/mobile_vione/src/screens/network/NetworkScreen.tsx (Mạng lưới kết nối giao thương B2B di động)
-**Đường dẫn tệp tin:** `apps/mobile_vione/src/screens/network/NetworkScreen.tsx`
-================================================================================
+### Tệp 15/18: apps/mobile_vione/src/screens/network/NetworkScreen.tsx  (3405 dòng)
 
-```typescript
+```tsx
+========================================================================================
 import React, { useState, useEffect, useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -9125,54 +9587,54 @@ import { resolveMediaUrl } from "../../utils/media";
 import { ContactsDiscoveryModal } from "../../components/ContactsDiscoveryModal";
 import { EmptyState } from "../../components/common/EmptyState";
 import { networkApi, customerApi, momentApi } from "../../api/services";
-
+ 
 // Dữ liệu khoảnh khắc 24h doanh nhân (mặc định trống, chỉ hiện tin của chính mình hoặc đối tác đã kết nối)
 const INITIAL_STORIES: StoryItemData[] = [];
-
+ 
 // Danh sách đối tác cần giữ kết nối & chăm sóc (mặc định trống, tải từ API)
 const NURTURE_PARTNERS: any[] = [];
-
+ 
 // Danh bạ đối tác doanh nghiệp thực tế (mặc định trống, tải từ API)
 const INITIAL_PARTNERS: ConnectionPerson[] = [];
-
+ 
 // Khách hàng B2B pipeline (mặc định trống, tải từ API)
 const B2B_CUSTOMERS: any[] = [];
-
+ 
 // Danh sách hội thoại tin nhắn (mặc định trống, tải từ API)
 const INITIAL_THREADS: DmThreadSummary[] = [];
-
-
+ 
+ 
 type NetworkTab = "network" | "customers" | "suggestions" | "messages" | "requests";
 type MessageCategory = "all" | "unread" | "groups" | "requests";
-
+ 
 export const NetworkScreen: React.FC<any> = ({ navigation }) => {
   const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<NetworkTab>("network");
-
+ 
   // Partners state
   const [partners, setPartners] = useState<ConnectionPerson[]>(INITIAL_PARTNERS);
   const [filterPartnerKind, setFilterPartnerKind] = useState<"all" | "connected" | "pending" | "suggested">("all");
   const [partnerSearchQuery, setPartnerSearchQuery] = useState("");
-
+ 
   // Messaging state
   const [threads, setThreads] = useState<DmThreadSummary[]>(INITIAL_THREADS);
   const [activeMessageCategory, setActiveMessageCategory] = useState<MessageCategory>("all");
   const [messageSearchQuery, setMessageSearchQuery] = useState("");
   const [isLoadingThreads, setIsLoadingThreads] = useState(false);
-
+ 
   // Modals
   const [selectedThread, setSelectedThread] = useState<DmThreadSummary | null>(null);
   const [chatModalVisible, setChatModalVisible] = useState(false);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
-
+ 
   // Stories & Nurture state (Khớp 100% NetworkStoriesStrip & Nurture List)
   const [stories, setStories] = useState<StoryItemData[]>(INITIAL_STORIES);
   const [selectedStory, setSelectedStory] = useState<StoryItemData | null>(null);
   const [storyViewerVisible, setStoryViewerVisible] = useState(false);
   const [createStoryVisible, setCreateStoryVisible] = useState(false);
   const [nurtureList, setNurtureList] = useState(NURTURE_PARTNERS);
-
+ 
   // Parity Modals (Customer Detail, Meeting Scheduler, Moments & Comments)
   const [customersList, setCustomersList] = useState(B2B_CUSTOMERS);
   const [customerStageFilter, setCustomerStageFilter] = useState<string>("all");
@@ -9186,21 +9648,21 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
   const [momentCommentVisible, setMomentCommentVisible] = useState(false);
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
-
+ 
   // B2B Social Moments Feed state (Tách biệt hoàn toàn khỏi 24h stories, tải từ API)
   const [momentsFeed, setMomentsFeed] = useState<any[]>([]);
-
+ 
   // Danh sách lời mời kết nối đang chờ duyệt (tải từ API)
   const [connectionRequests, setConnectionRequests] = useState<any[]>([]);
-
+ 
   // Partner Profile Modal (Xem danh thiếp khi bấm vào avatar người chat)
   const [partnerProfileModalVisible, setPartnerProfileModalVisible] = useState(false);
   const [selectedMemberCard, setSelectedMemberCard] = useState<MemberCardData | null>(null);
-
+ 
   // Danh bạ điện thoại tìm bạn bè (như Zalo)
   const [contactsDiscoveryVisible, setContactsDiscoveryVisible] = useState(false);
   const [contactsBannerDismissed, setContactsBannerDismissed] = useState(false);
-
+ 
   const handleOpenPartnerProfile = (item: DmThreadSummary | ConnectionPerson) => {
     const cardData: MemberCardData = {
       id: (item as any).id || (item as any).counterpartUserId || (item as any).threadId,
@@ -9215,7 +9677,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     setSelectedMemberCard(cardData);
     setPartnerProfileModalVisible(true);
   };
-
+ 
   // Greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -9223,7 +9685,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     if (hour >= 12 && hour < 18) return "Chào buổi chiều,";
     return "Chào buổi tối,";
   };
-
+ 
   // Tải danh sách cuộc trò chuyện, đối tác kết nối, khách hàng B2B, gợi ý và khoảnh khắc từ API
   useEffect(() => {
     let isMounted = true;
@@ -9240,12 +9702,12 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           momentApi.getMoments(),
         ]);
         if (!isMounted) return;
-
+ 
         // 1. Threads
         if (threadsRes.status === "fulfilled" && threadsRes.value?.data?.threads && Array.isArray(threadsRes.value.data.threads)) {
           setThreads(threadsRes.value.data.threads);
         }
-
+ 
         // 2. Partners & Saved Cards
         const partnersList: ConnectionPerson[] = [];
         if (connsRes.status === "fulfilled" && connsRes.value?.data) {
@@ -9287,7 +9749,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           });
         }
         setPartners(partnersList);
-
+ 
         // 3. Nurture / Recommendations
         if (recsRes.status === "fulfilled" && recsRes.value?.data && Array.isArray(recsRes.value.data)) {
           const mappedNurture = recsRes.value.data.map((r: any) => ({
@@ -9305,7 +9767,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         } else {
           setNurtureList([]);
         }
-
+ 
         // 4. B2B Customers
         if (customersRes.status === "fulfilled" && customersRes.value?.data && Array.isArray(customersRes.value.data)) {
           const mappedCusts = customersRes.value.data.map((cust: any) => ({
@@ -9325,14 +9787,14 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         } else {
           setCustomersList([]);
         }
-
+ 
         // 5. Incoming requests
         if (requestsRes.status === "fulfilled" && requestsRes.value?.data && Array.isArray(requestsRes.value.data)) {
           setConnectionRequests(requestsRes.value.data);
         } else {
           setConnectionRequests([]);
         }
-
+ 
         // 6. Moments Feed
         if (momentsRes.status === "fulfilled" && momentsRes.value?.data && Array.isArray(momentsRes.value.data)) {
           setMomentsFeed(momentsRes.value.data);
@@ -9343,13 +9805,13 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         if (isMounted) setIsLoadingThreads(false);
       }
     };
-
+ 
     fetchNetworkData();
     return () => {
       isMounted = false;
     };
   }, []);
-
+ 
   // Khôi phục bài đăng khoảnh khắc và stories cá nhân đã đăng từ AsyncStorage
   useEffect(() => {
     const loadSavedData = async () => {
@@ -9369,7 +9831,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             });
           }
         }
-
+ 
         const savedStories = await AsyncStorage.getItem("vione_user_stories_24h");
         if (savedStories) {
           const parsed = JSON.parse(savedStories);
@@ -9391,12 +9853,12 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     };
     loadSavedData();
   }, []);
-
+ 
   // Lọc đối tác
   const filteredPartners = useMemo(() => {
     return partners.filter((p) => {
       if (filterPartnerKind !== "all" && p.status !== filterPartnerKind) return false;
-
+ 
       const q = partnerSearchQuery.trim().toLowerCase();
       if (!q) return true;
       return (
@@ -9406,7 +9868,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       );
     });
   }, [partners, filterPartnerKind, partnerSearchQuery]);
-
+ 
   // Khoảnh khắc 24h chỉ hiển thị cho chính mình hoặc những người đã kết nối
   const displayStories = useMemo(() => {
     return stories.filter((s) => {
@@ -9417,7 +9879,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       return isConnected;
     });
   }, [stories, partners, user?.displayName]);
-
+ 
   // Phân loại danh mục Hộp thư
   const allThreads = useMemo(() => {
     return threads.filter((t) => {
@@ -9428,32 +9890,32 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       return false;
     });
   }, [threads]);
-
+ 
   const unreadThreads = useMemo(() => {
     return allThreads.filter((t) => (t.unreadCount || 0) > 0);
   }, [allThreads]);
-
+ 
   const groupThreads = useMemo(() => {
     return threads.filter((t) => t.isGroup);
   }, [threads]);
-
+ 
   const pendingThreads = useMemo(() => {
     return threads.filter(
       (t) => t.isConnected === false && !t.lastMessageFromMe && Boolean(t.lastMessagePreview)
     );
   }, [threads]);
-
+ 
   const totalUnreadCount = useMemo(() => {
     return unreadThreads.reduce((sum, t) => sum + (t.unreadCount || 0), 0);
   }, [unreadThreads]);
-
+ 
   // Lọc danh sách hội thoại theo category & search (Tin nhắn mới luôn nhảy lên đầu)
   const filteredThreads = useMemo(() => {
     let baseList = allThreads;
     if (activeMessageCategory === "unread") baseList = unreadThreads;
     if (activeMessageCategory === "groups") baseList = groupThreads;
     if (activeMessageCategory === "requests") baseList = pendingThreads;
-
+ 
     const q = messageSearchQuery.trim().toLowerCase();
     const list = !q
       ? baseList
@@ -9463,7 +9925,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           const msg = (t.lastMessagePreview || "").toLowerCase();
           return name.includes(q) || company.includes(q) || msg.includes(q);
         });
-
+ 
     // Luôn ưu tiên đưa cuộc hội thoại có tin nhắn mới nhất lên đầu tiên
     return [...list].sort((a, b) => {
       const timeA = new Date(a.lastMessageAt || 0).getTime();
@@ -9471,7 +9933,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       return timeB - timeA;
     });
   }, [activeMessageCategory, allThreads, unreadThreads, groupThreads, pendingThreads, messageSearchQuery]);
-
+ 
   const handleOpenChatWithPartner = async (partner: ConnectionPerson) => {
     const existing = threads.find((t) => t.counterpartUserId === partner.id);
     if (existing && !existing.threadId.startsWith("th-")) {
@@ -9479,13 +9941,13 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       setChatModalVisible(true);
       return;
     }
-
+ 
     try {
       const res = await apiRequest<{ ok?: boolean; threadId?: string }>("connect-app/dm/threads", {
         method: "POST",
         data: { counterpartUserId: partner.id, personId: partner.id },
       });
-
+ 
       const realThreadId = res.data?.threadId;
       if (realThreadId) {
         const newThread: DmThreadSummary = {
@@ -9509,7 +9971,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     } catch (e) {
       console.warn("Lỗi mở cuộc trò chuyện:", e);
     }
-
+ 
     const fallbackThread: DmThreadSummary = existing || {
       threadId: partner.id,
       counterpartUserId: partner.id,
@@ -9526,7 +9988,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     setSelectedThread(fallbackThread);
     setChatModalVisible(true);
   };
-
+ 
   const handleMessageSent = (threadId: string, lastMessage: string) => {
     setThreads((prev) => {
       const updated = prev.map((t) =>
@@ -9548,13 +10010,13 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       });
     });
   };
-
+ 
   const handleGroupCreated = (newGroup: DmThreadSummary) => {
     setThreads((prev) => [newGroup, ...prev]);
     setSelectedThread(newGroup);
     setChatModalVisible(true);
   };
-
+ 
   const formatThreadTime = (isoString?: string | null) => {
     if (!isoString) return "";
     try {
@@ -9568,7 +10030,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
       return "";
     }
   };
-
+ 
   return (
     <SafeAreaView
       style={[
@@ -9599,7 +10061,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </View>
               )}
             </TouchableOpacity>
-
+ 
             <TouchableOpacity
               style={[
                 styles.headerSquareBtn,
@@ -9616,14 +10078,14 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           </>
         }
       />
-
+ 
       <View
         style={[
           styles.headerDivider,
           { backgroundColor: isDark ? "rgba(216, 178, 130, 0.15)" : "#E2E8F0" },
         ]}
       />
-
+ 
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* 2. Page Title Header: Network + Subtitle */}
         <View style={styles.titleSection}>
@@ -9638,7 +10100,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             <Text style={styles.goldText}>3 cần chăm sóc</Text>
           </Text>
         </View>
-
+ 
         {/* 3. Horizontal Category Tabs (Khớp 100% web PWA) */}
         <ScrollView
           horizontal
@@ -9667,7 +10129,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               Mạng lưới
             </Text>
           </TouchableOpacity>
-
+ 
           <TouchableOpacity
             style={[
               styles.categoryTabPill,
@@ -9690,7 +10152,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               Khách hàng
             </Text>
           </TouchableOpacity>
-
+ 
           <TouchableOpacity
             style={[
               styles.categoryTabPill,
@@ -9714,7 +10176,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               Gợi ý (AI)
             </Text>
           </TouchableOpacity>
-
+ 
           <TouchableOpacity
             style={[
               styles.categoryTabPill,
@@ -9737,7 +10199,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
               Tin nhắn {totalUnreadCount > 0 ? `(${totalUnreadCount})` : ""}
             </Text>
           </TouchableOpacity>
-
+ 
           <TouchableOpacity
             style={[
               styles.categoryTabPill,
@@ -9761,7 +10223,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </ScrollView>
-
+ 
         {/* ─── TAB 1: MẠNG LƯỚI (NETWORK) ─── */}
         {activeTab === "network" && (
           <View style={styles.tabContent}>
@@ -9792,7 +10254,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </TouchableOpacity>
               )}
             </View>
-
+ 
             {/* Quick Filter Pills */}
             <View style={styles.quickFilterRow}>
               {[
@@ -9835,7 +10297,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 );
               })}
             </View>
-
+ 
             {/* Tin 24h Doanh nhân (Story Strip) */}
             <View style={styles.storiesSection}>
               <View style={styles.storiesHeaderRow}>
@@ -9849,7 +10311,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   <Text style={styles.addMomentText}>Đăng story</Text>
                 </TouchableOpacity>
               </View>
-
+ 
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -9870,7 +10332,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   <Text style={styles.myStoryLabel}>Đăng story</Text>
                   <Text style={styles.myStorySub}>Tin 24h</Text>
                 </TouchableOpacity>
-
+ 
                 {/* 2. Danh sách Story các Doanh Nhân */}
                 {displayStories.length === 0 ? (
                   <View
@@ -9912,7 +10374,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                         colors={["rgba(10, 10, 11, 0.4)", "transparent", "rgba(10, 10, 11, 0.9)"]}
                         style={styles.storyCardGradient}
                       />
-
+ 
                       {/* Top Author Avatar & Tag */}
                       <View style={styles.storyCardTop}>
                         <Avatar url={story.authorAvatar} name={story.authorName} size={28} showGoldBorder />
@@ -9922,7 +10384,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           </View>
                         )}
                       </View>
-
+ 
                       {/* Bottom Author Name & Time */}
                       <View style={styles.storyCardBottom}>
                         <Text style={styles.storyAuthorName} numberOfLines={1}>
@@ -9935,7 +10397,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 )}
               </ScrollView>
             </View>
-
+ 
             {/* Khối SOẠN KHOẢNH KHẮC DOANH NGHIỆP (B2B Social Composer) */}
             <View
               style={[
@@ -9969,7 +10431,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
-
+ 
               <View style={{ flexDirection: "row", justifyContent: "space-between", paddingTop: 10 }}>
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
@@ -10003,7 +10465,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
             </View>
-
+ 
             {/* BẢNG TIN KHOẢNH KHẮC DOANH NGHIỆP (Feed Cards) */}
             <View style={{ marginBottom: 14 }}>
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10, paddingHorizontal: 4 }}>
@@ -10012,7 +10474,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   {momentsFeed.length} bài viết
                 </Text>
               </View>
-
+ 
               {momentsFeed.length === 0 ? (
                 <EmptyState
                   icon={<Camera size={28} color="#D8B282" />}
@@ -10062,11 +10524,11 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           </View>
                         ) : null}
                       </View>
-
+ 
                       <Text style={{ fontSize: 13.5, lineHeight: 20, color: isDark ? "#E2E8F0" : "#1E293B", marginBottom: photoUri ? 10 : 6 }}>
                         {moment.content}
                       </Text>
-
+ 
                       {photoUri ? (
                         <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 10, backgroundColor: isDark ? "#000" : "#F1F5F9" }}>
                           <Image
@@ -10076,7 +10538,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           />
                         </View>
                       ) : null}
-
+ 
                       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 8, borderTopWidth: 1, borderTopColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9" }}>
                         <Text style={{ fontSize: 11, color: isDark ? "#64748B" : "#94A3B8" }}>
                           {moment.timeAgo || "Vừa xong"}
@@ -10109,7 +10571,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                               {moment.likesCount || 0}
                             </Text>
                           </TouchableOpacity>
-
+ 
                           <TouchableOpacity
                             style={{ flexDirection: "row", alignItems: "center" }}
                             onPress={() => {
@@ -10123,7 +10585,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                               {moment.commentsCount || 0}
                             </Text>
                           </TouchableOpacity>
-
+ 
                           <TouchableOpacity
                             style={{ flexDirection: "row", alignItems: "center" }}
                             onPress={() => Alert.alert("Chia sẻ", "Đã sao chép liên kết khoảnh khắc để chia sẻ!")}
@@ -10141,7 +10603,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 })
               )}
             </View>
-
+ 
             {/* Khối CẦN GIỮ KẾT NỐI & CHĂM SÓC (Khớp 100% Nurture List) */}
             <View
               style={[
@@ -10166,7 +10628,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   <Text style={styles.nurtureCountText}>{nurtureList.length} CẦN CHĂM SÓC</Text>
                 </View>
               </View>
-
+ 
               <View style={styles.nurtureListCol}>
                 {nurtureList.length === 0 ? (
                   <EmptyState
@@ -10220,7 +10682,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           </Text>
                         </View>
                       </View>
-
+ 
                       <View style={styles.nurtureActionRow}>
                         <TouchableOpacity
                           onPress={() => {
@@ -10242,7 +10704,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                             <Text style={styles.nurtureMeetText}>Hẹn 1-1</Text>
                           </LinearGradient>
                         </TouchableOpacity>
-
+ 
                         <TouchableOpacity
                           onPress={() => {
                             const partner = partners.find((p) => p.name === item.name) || {
@@ -10264,7 +10726,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                             <Text style={styles.nurtureChatText}>Nhắn tin</Text>
                           </LinearGradient>
                         </TouchableOpacity>
-
+ 
                         <TouchableOpacity
                           onPress={() => Alert.alert("Gọi điện", `Gọi tới số: ${item.phone}`)}
                           activeOpacity={0.8}
@@ -10282,8 +10744,8 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 )}
               </View>
             </View>
-
-            {/* ViOne AI Copilot Matcher Banner (Khớp 100% PWA) */}
+ 
+            {/* ViOne AI Matcher Banner (Khớp 100% PWA) */}
             <View
               style={[
                 styles.aiBanner,
@@ -10333,7 +10795,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 <ChevronRight size={13} color={isDark ? "#D8B282" : "#8C653B"} />
               </TouchableOpacity>
             </View>
-
+ 
             {/* Partners List */}
             <View style={styles.listSection}>
               <Text style={styles.sectionHeaderSmall}>DANH BẠ ĐỐI TÁC DOANH NGHIỆP</Text>
@@ -10381,9 +10843,9 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                             </View>
                           )}
                         </View>
-
+ 
                         <Text style={styles.partnerTitle}>{item.title}</Text>
-
+ 
                         <View style={styles.companyRow}>
                           <Building2 size={12} color={isDark ? "#94A3B8" : "#64748B"} style={{ marginRight: 4 }} />
                           <Text
@@ -10396,7 +10858,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                             {item.company}
                           </Text>
                         </View>
-
+ 
                         {item.industry && (
                           <View
                             style={[
@@ -10416,7 +10878,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                         )}
                       </View>
                     </View>
-
+ 
                     {/* Action Buttons */}
                     <View style={styles.cardActions}>
                       <TouchableOpacity
@@ -10433,7 +10895,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           <Text style={styles.chatActionText}>Nhắn tin</Text>
                         </LinearGradient>
                       </TouchableOpacity>
-
+ 
                       {item.status === "connected" && (
                         <>
                           <TouchableOpacity
@@ -10462,13 +10924,13 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           </TouchableOpacity>
                         </>
                       )}
-
+ 
                       {item.status === "pending" && (
                         <View style={styles.pendingBadge}>
                           <Text style={styles.pendingBadgeText}>Đang chờ duyệt</Text>
                         </View>
                       )}
-
+ 
                       {item.status === "suggested" && (
                         <TouchableOpacity
                           onPress={() => {
@@ -10496,7 +10958,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             </View>
           </View>
         )}
-
+ 
         {/* ─── TAB 2: KHÁCH HÀNG (CUSTOMERS PANEL) ─── */}
         {activeTab === "customers" && (
           <View style={styles.tabContent}>
@@ -10525,7 +10987,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                     Quy mô cơ hội
                   </Text>
                 </View>
-
+ 
                 <View
                   style={[
                     styles.pipelineCard,
@@ -10549,7 +11011,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   </Text>
                 </View>
               </View>
-
+ 
               <View style={styles.pipelineSummaryRow}>
                 <View
                   style={[
@@ -10573,7 +11035,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                     Tỷ lệ chốt deal
                   </Text>
                 </View>
-
+ 
                 <View
                   style={[
                     styles.pipelineCard,
@@ -10598,7 +11060,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </View>
               </View>
             </View>
-
+ 
             {/* Filter Stage Pills */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
               {[
@@ -10643,7 +11105,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 );
               })}
             </ScrollView>
-
+ 
             {/* Customer List Header */}
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <Text style={[styles.sectionHeaderSmall, { marginTop: 0, marginBottom: 0 }]}>
@@ -10663,7 +11125,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </LinearGradient>
               </TouchableOpacity>
             </View>
-
+ 
             {customersList.filter((cust) => {
               if (customerStageFilter === "all") return true;
               return (cust.stage || "").toLowerCase().includes(customerStageFilter.toLowerCase());
@@ -10739,7 +11201,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                         </Text>
                       </View>
                     </View>
-
+ 
                     <Text
                       style={[
                         styles.customerContact,
@@ -10748,7 +11210,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                     >
                       Người liên hệ: {cust.contactPerson}
                     </Text>
-
+ 
                     <View
                       style={[
                         styles.customerFooter,
@@ -10772,7 +11234,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             )}
           </View>
         )}
-
+ 
         {/* ─── TAB 3: GỢI Ý (AI SUGGESTIONS) ─── */}
         {activeTab === "suggestions" && (
           <View style={styles.tabContent}>
@@ -10805,7 +11267,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </Text>
               </View>
             </View>
-
+ 
             {partners.filter((p) => p.status === "suggested").length === 0 ? (
               <EmptyState
                 icon={<Sparkles size={28} color="#D8B282" />}
@@ -10859,7 +11321,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                         </Text>
                       </View>
                     </View>
-
+ 
                     <View
                       style={[
                         styles.cardActions,
@@ -10891,7 +11353,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             )}
           </View>
         )}
-
+ 
         {/* ─── TAB 4: HỘP THƯ TIN NHẮN (MESSAGES) ─── */}
         {activeTab === "messages" && (
           <View style={styles.tabContent}>
@@ -10947,7 +11409,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                     </Text>
                   </View>
                 </View>
-
+ 
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <TouchableOpacity
                     onPress={() => setContactsDiscoveryVisible(true)}
@@ -10972,7 +11434,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </View>
               </View>
             )}
-
+ 
             {/* Search & Create Group Header Row */}
             <View style={styles.inboxActionRow}>
               <View
@@ -11001,7 +11463,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                   </TouchableOpacity>
                 )}
               </View>
-
+ 
               <TouchableOpacity
                 style={styles.createGroupBtn}
                 onPress={() => setCreateGroupVisible(true)}
@@ -11010,7 +11472,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 <Text style={styles.createGroupText}>Tạo nhóm</Text>
               </TouchableOpacity>
             </View>
-
+ 
             {/* 4 Messenger-Style Category Tabs */}
             <View style={styles.categoryTabsRow}>
               {[
@@ -11051,7 +11513,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
-
+ 
             {/* Thread List */}
             {isLoadingThreads ? (
               <View style={styles.centerLoading}>
@@ -11116,7 +11578,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                       />
                       {item.isOnline && <View style={styles.onlineDot} />}
                     </TouchableOpacity>
-
+ 
                     <View style={styles.threadBody}>
                       <View style={styles.threadHeaderRow}>
                         <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
@@ -11146,7 +11608,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           {formatThreadTime(item.lastMessageAt)}
                         </Text>
                       </View>
-
+ 
                       <View style={styles.threadPreviewRow}>
                         <Text
                           style={[
@@ -11163,7 +11625,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                           )}
                           {item.lastMessagePreview || "Chưa có tin nhắn"}
                         </Text>
-
+ 
                         {hasUnread && (
                           <View style={styles.unreadCounter}>
                             <Text style={styles.unreadCounterText}>{item.unreadCount}</Text>
@@ -11177,7 +11639,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
             )}
           </View>
         )}
-
+ 
         {/* ─── TAB 5: LỜI MỜI (REQUESTS) ─── */}
         {activeTab === "requests" && (
           <View style={styles.tabContent}>
@@ -11227,7 +11689,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                       </Text>
                     </View>
                   </View>
-
+ 
                   <View
                     style={[
                       styles.requestActionRow,
@@ -11258,7 +11720,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
                         <Text style={styles.acceptBtnText}>Chấp nhận</Text>
                       </LinearGradient>
                     </TouchableOpacity>
-
+ 
                     <TouchableOpacity
                       style={{ flex: 1 }}
                       onPress={async () => {
@@ -11300,8 +11762,8 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-
-      {/* Floating AI Copilot Assistant Button */}
+ 
+      {/* Floating ViOne AI Assistant Button */}
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -11334,20 +11796,20 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           <Text style={{ fontSize: 13, fontWeight: "800", color: "#050C15" }}>ViOne AI</Text>
         </LinearGradient>
       </TouchableOpacity>
-
+ 
       {/* Realtime Business Notifications Modal */}
       <BusinessNotificationsModal
         visible={notificationsVisible}
         onClose={() => setNotificationsVisible(false)}
       />
-
-      {/* ViOne AI Voice & Copilot Assistant Modal */}
+ 
+      {/* ViOne AI Voice & Assistant Modal */}
       <ViOneVoiceAssistantModal
         visible={aiAssistantVisible}
         onClose={() => setAiAssistantVisible(false)}
         onNavigateToTab={(tab) => navigation?.navigate(tab as any)}
       />
-
+ 
       {/* Global Modals */}
       <ChatThreadModal
         visible={chatModalVisible}
@@ -11356,31 +11818,31 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         onMessageSent={handleMessageSent}
         onOpenProfile={handleOpenPartnerProfile}
       />
-
+ 
       <MemberCardBottomSheet
         visible={partnerProfileModalVisible}
         member={selectedMemberCard}
         onClose={() => setPartnerProfileModalVisible(false)}
       />
-
+ 
       <ContactsDiscoveryModal
         visible={contactsDiscoveryVisible}
         onClose={() => setContactsDiscoveryVisible(false)}
       />
-
+ 
       <CreateGroupModal
         visible={createGroupVisible}
         partners={partners}
         onClose={() => setCreateGroupVisible(false)}
         onGroupCreated={handleGroupCreated}
       />
-
+ 
       <StoryViewerModal
         visible={storyViewerVisible}
         story={selectedStory}
         onClose={() => setStoryViewerVisible(false)}
       />
-
+ 
       <CreateStoryModal
         visible={createStoryVisible}
         onClose={() => setCreateStoryVisible(false)}
@@ -11392,7 +11854,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           });
         }}
       />
-
+ 
       {/* Parity Modals: Chi Tiết Khách Hàng CRM */}
       <CustomerDetailModal
         visible={customerDetailVisible}
@@ -11424,7 +11886,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           setScheduleMeetingVisible(true);
         }}
       />
-
+ 
       {/* Parity Modals: Thêm Khách Hàng Tiềm Năng B2B CRM */}
       <CreateCustomerModal
         visible={createCustomerVisible}
@@ -11463,7 +11925,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           ]);
         }}
       />
-
+ 
       {/* Parity Modals: Lên Lịch Cuộc Hẹn 1-1 */}
       <ScheduleMeetingModal
         visible={scheduleMeetingVisible}
@@ -11471,7 +11933,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
         partnerCompany={selectedPartnerForMeeting?.company}
         onClose={() => setScheduleMeetingVisible(false)}
       />
-
+ 
       {/* Parity Modals: Đăng Khoảnh Khắc Doanh Nhân B2B */}
       <PostMomentModal
         visible={postMomentVisible}
@@ -11492,7 +11954,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
           });
         }}
       />
-
+ 
       {/* Parity Modals: Thảo Luận & Bình Luận B2B */}
       <MomentCommentModal
         visible={momentCommentVisible}
@@ -11502,7 +11964,7 @@ export const NetworkScreen: React.FC<any> = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -12460,19 +12922,57 @@ const styles = StyleSheet.create({
     color: "#050C15",
   },
 });
-
-
+ 
+ 
+========================================================================================
 ```
 
 
-================================================================================
-### Tệp tin 18: apps/mobile_vione/src/navigation/AppNavigator.tsx (Định tuyến ứng dụng di động Native React Native Expo)
-**Đường dẫn tệp tin:** `apps/mobile_vione/src/navigation/AppNavigator.tsx`
-================================================================================
+### Tệp 16/18: apps/mobile_vione/App.tsx  (31 dòng)
 
-```typescript
+```tsx
+========================================================================================
+import React from "react";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AuthProvider } from "./src/context/AuthContext";
+import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
+import { AppNavigator } from "./src/navigation/AppNavigator";
+import { GlobalCallManager } from "./src/components/GlobalCallManager";
+ 
+function AppContent() {
+  const { isDark } = useTheme();
+  return (
+    <>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <AppNavigator />
+      <GlobalCallManager />
+    </>
+  );
+}
+ 
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}
+ 
+========================================================================================
+```
+
+
+### Tệp 17/18: apps/mobile_vione/src/navigation/AppNavigator.tsx  (216 dòng)
+
+```tsx
+========================================================================================
 import React, { useState } from "react";
-import { View, ActivityIndicator, StyleSheet, Modal } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import {
   NavigationContainer,
   DefaultTheme,
@@ -12482,17 +12982,16 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
-
+ 
 export const navigationRef = createNavigationContainerRef<any>();
-
+ 
 // Screens
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { HomeScreen } from "../screens/home/HomeScreen";
 import { NetworkScreen } from "../screens/network/NetworkScreen";
 import { CommunityScreen } from "../screens/community/CommunityScreen";
 import { ProfileScreen } from "../screens/me/ProfileScreen";
-import { PlatformAppScreen } from "../screens/platform/PlatformAppScreen";
-
+ 
 // Navigation & Modals
 import { CustomBottomTabBar } from "./CustomBottomTabBar";
 import { VActionSheet } from "../components/VActionSheet";
@@ -12513,10 +13012,10 @@ import {
 } from "../components/common/IncomingQrConnectionModal";
 import { networkApi } from "../api/services";
 import { Alert } from "react-native";
-
+ 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
+ 
 const DarkTheme = {
   ...DefaultTheme,
   dark: true,
@@ -12529,12 +13028,9 @@ const DarkTheme = {
     primary: "#D8B282",
   },
 };
-
-
-const MainTabs: React.FC<{
-  onVPress: () => void;
-  onOpenPlatformTab: (tab: any) => void;
-}> = ({ onVPress, onOpenPlatformTab }) => {
+ 
+ 
+const MainTabs: React.FC<{ onVPress: () => void }> = ({ onVPress }) => {
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomBottomTabBar {...props} onVPress={onVPress} />}
@@ -12543,13 +13039,7 @@ const MainTabs: React.FC<{
       }}
     >
       <Tab.Screen name="Home">
-        {(props) => (
-          <HomeScreen
-            {...props}
-            onOpenV={onVPress}
-            onOpenPlatformTab={onOpenPlatformTab}
-          />
-        )}
+        {(props) => <HomeScreen {...props} onOpenV={onVPress} />}
       </Tab.Screen>
       <Tab.Screen name="Network" component={NetworkScreen} />
       <Tab.Screen name="Community" component={CommunityScreen} />
@@ -12557,7 +13047,7 @@ const MainTabs: React.FC<{
     </Tab.Navigator>
   );
 };
-
+ 
 export const AppNavigator: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [vSheetVisible, setVSheetVisible] = useState(false);
@@ -12571,15 +13061,8 @@ export const AppNavigator: React.FC = () => {
   const [staffActivityVisible, setStaffActivityVisible] = useState(false);
   const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
   const [postMomentVisible, setPostMomentVisible] = useState(false);
-  const [platformAppVisible, setPlatformAppVisible] = useState(false);
-  const [platformTab, setPlatformTab] = useState<any>("overview");
   const [incomingRequester, setIncomingRequester] = useState<QrRequesterProfile | null>(null);
-
-  const handleOpenPlatformTab = (tab: any = "overview") => {
-    setPlatformTab(tab);
-    setPlatformAppVisible(true);
-  };
-
+ 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -12587,7 +13070,7 @@ export const AppNavigator: React.FC = () => {
       </View>
     );
   }
-
+ 
   return (
     <NavigationContainer ref={navigationRef} theme={DarkTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -12595,16 +13078,11 @@ export const AppNavigator: React.FC = () => {
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : (
           <Stack.Screen name="Main">
-            {() => (
-              <MainTabs
-                onVPress={() => setVSheetVisible(true)}
-                onOpenPlatformTab={handleOpenPlatformTab}
-              />
-            )}
+            {() => <MainTabs onVPress={() => setVSheetVisible(true)} />}
           </Stack.Screen>
         )}
       </Stack.Navigator>
-
+ 
       {/* Global Quick Action Modals */}
       <VActionSheet
         visible={vSheetVisible}
@@ -12619,16 +13097,8 @@ export const AppNavigator: React.FC = () => {
         onOpenAssignTask={() => setAssignTaskVisible(true)}
         onOpenStaffActivity={() => setStaffActivityVisible(true)}
         onOpenAiAssistant={() => setAiAssistantVisible(true)}
-        onOpenPlatformApp={() => handleOpenPlatformTab("overview")}
       />
-
-      <Modal visible={platformAppVisible} animationType="slide">
-        <PlatformAppScreen
-          onBack={() => setPlatformAppVisible(false)}
-          initialTab={platformTab}
-        />
-      </Modal>
-
+ 
       <MyQrModal visible={myQrVisible} onClose={() => setMyQrVisible(false)} />
       <ScanQrModal visible={scanQrVisible} onClose={() => setScanQrVisible(false)} />
       <CardScanReviewModal
@@ -12669,7 +13139,7 @@ export const AppNavigator: React.FC = () => {
         onOpenWorkflow={() => setWorkflowVisible(true)}
         onOpenApprovals={() => setApprovalsVisible(true)}
       />
-
+ 
       {/* Bilateral QR Handshake Incoming Connection Modal */}
       <IncomingQrConnectionModal
         visible={Boolean(incomingRequester)}
@@ -12698,7 +13168,7 @@ export const AppNavigator: React.FC = () => {
           );
         }}
       />
-
+ 
       {/* Global Persistent Draggable Floating AI Orb */}
       <DraggableFloatingAiOrb
         visible={isAuthenticated && !aiAssistantVisible}
@@ -12707,7 +13177,7 @@ export const AppNavigator: React.FC = () => {
     </NavigationContainer>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
@@ -12716,6 +13186,280 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
+ 
+========================================================================================
 ```
 
+
+### Tệp 18/18: apps/mobile_vione/src/navigation/CustomBottomTabBar.tsx  (267 dòng)
+
+```tsx
+========================================================================================
+import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "../context/ThemeContext";
+import { VIconMark } from "../components/VIconMark";
+import {
+  NavHomeIcon,
+  NavNetworkIcon,
+  NavCommunityIcon,
+  NavMeIcon,
+} from "../components/NavIcons";
+ 
+interface CustomBottomTabBarProps extends BottomTabBarProps {
+  onVPress: () => void;
+}
+ 
+export const CustomBottomTabBar: React.FC<CustomBottomTabBarProps> = ({
+  state,
+  descriptors,
+  navigation,
+  onVPress,
+}) => {
+  const { isDark, colors } = useTheme();
+  const insets = useSafeAreaInsets();
+ 
+  const activeColor = isDark ? "#D8B282" : "#A3703C";
+  const activeLabelColor = isDark ? "#D8B282" : "#A3703C";
+  const inactiveColor = isDark ? "#94A3B8" : "#64748B";
+  const barBg = isDark ? "#0B0F17" : "#FFFFFF";
+  const borderTopColor = isDark ? "rgba(216, 178, 130, 0.18)" : "#E2E8F0";
+ 
+  const bottomInset = Math.max(insets.bottom, Platform.OS === "ios" ? 20 : 8);
+  const barHeight = 58 + bottomInset;
+ 
+  const getTabIcon = (routeName: string, isFocused: boolean) => {
+    const color = isFocused ? activeColor : inactiveColor;
+    const size = 20;
+ 
+    switch (routeName) {
+      case "Home":
+        return <NavHomeIcon size={size} color={color} />;
+      case "Network":
+        return <NavNetworkIcon size={size} color={color} />;
+      case "Community":
+        return <NavCommunityIcon size={size} color={color} />;
+      case "Me":
+        return <NavMeIcon size={size} color={color} />;
+      default:
+        return <NavHomeIcon size={size} color={color} />;
+    }
+  };
+ 
+  const getTabLabel = (routeName: string) => {
+    switch (routeName) {
+      case "Home":
+        return "Trang chủ";
+      case "Network":
+        return "Mạng lưới";
+      case "Community":
+        return "Cộng đồng";
+      case "Me":
+        return "Tôi";
+      default:
+        return routeName;
+    }
+  };
+ 
+  return (
+    <View style={[styles.tabBarContainer, { backgroundColor: barBg }]}>
+      <View
+        style={[
+          styles.tabBarInner,
+          {
+            backgroundColor: barBg,
+            borderTopColor: borderTopColor,
+            height: barHeight,
+            paddingBottom: bottomInset,
+            shadowColor: isDark ? "#000000" : "#64748B",
+            shadowOpacity: isDark ? 0.5 : 0.08,
+          },
+        ]}
+      >
+        {state.routes.map((route, index) => {
+          const isFocused = state.index === index;
+          const { options } = descriptors[route.key];
+ 
+          const onPress = () => {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+ 
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
+ 
+          // Chèn nút V mạ vàng ở chính giữa (giữa index 1 Network và index 2 Community)
+          const isMiddle = index === 2;
+ 
+          return (
+            <React.Fragment key={route.key}>
+              {isMiddle && (
+                <View style={styles.vBtnHolder}>
+                  <TouchableOpacity
+                    style={styles.vBtnTouch}
+                    onPress={onVPress}
+                    activeOpacity={0.88}
+                  >
+                    <LinearGradient
+                      colors={["#C29B69", "#F6E1C3", "#D8B282"]}
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 1, y: 0 }}
+                      style={[
+                        styles.vBtnGradient,
+                        {
+                          borderColor: isDark ? "#524128" : "#FFF2DC",
+                        },
+                      ]}
+                    >
+                      {/* Lớp phản chiếu ánh kim champagne giống PWA */}
+                      <LinearGradient
+                        colors={["rgba(255, 255, 255, 0.42)", "transparent"]}
+                        start={{ x: 0.15, y: 0.15 }}
+                        end={{ x: 0.8, y: 0.8 }}
+                        style={StyleSheet.absoluteFillObject}
+                        pointerEvents="none"
+                      />
+                      <VIconMark size={32} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              )}
+ 
+              <TouchableOpacity
+                onPress={onPress}
+                style={styles.tabItem}
+                activeOpacity={0.7}
+              >
+                {/* Chỉ báo tab đang chọn (Chỉ báo dải mạ vàng trên đỉnh - khớp PWA) */}
+                {isFocused && (
+                  <LinearGradient
+                    colors={["#F6E1C3", "#E6C59E", "#D8B282", "#C29B69"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.activeIndicator}
+                  />
+                )}
+ 
+                <View style={[styles.iconWrap, isFocused && { backgroundColor: isDark ? "rgba(216, 178, 130, 0.12)" : "rgba(216, 178, 130, 0.16)" }]}>
+                  {getTabIcon(route.name, isFocused)}
+                </View>
+ 
+                <Text
+                  style={[
+                    styles.tabLabel,
+                    { color: isFocused ? activeLabelColor : inactiveColor },
+                    isFocused && styles.tabLabelActive,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {getTabLabel(route.name)}
+                </Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+ 
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    backgroundColor: "#0B0F17",
+  },
+  tabBarInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#0B0F17",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(216, 178, 130, 0.18)",
+    paddingHorizontal: 8,
+    position: "relative",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 2,
+    position: "relative",
+  },
+  activeIndicator: {
+    position: "absolute",
+    top: -1,
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+    shadowColor: "#D8B282",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+  },
+  iconWrap: {
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 28,
+  },
+  tabLabel: {
+    color: "#94A3B8",
+    fontSize: 10.5,
+    fontWeight: "500",
+    marginTop: 2,
+    letterSpacing: 0.1,
+    textAlign: "center",
+  },
+  tabLabelActive: {
+    fontWeight: "700",
+  },
+  vBtnHolder: {
+    width: 64,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+  },
+  vBtnTouch: {
+    top: -18,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#D8B282",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.55,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  vBtnGradient: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    position: "relative",
+    overflow: "hidden",
+  },
+});
+ 
+```

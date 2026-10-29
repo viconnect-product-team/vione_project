@@ -1,5 +1,100 @@
 # System Memory & Architecture
 
+## 0.0000000000.17. GỠ BỎ KHỐI HỆ SINH THÁI SỐ HỢP NHẤT (VIONE ECOSYSTEM GRID) TRÊN CẢ HAI BẢN APP VIONE (PWA & NATIVE) (29/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+- Yêu cầu người dùng: Gỡ bỏ phần hiển thị theo ảnh chụp trên ứng dụng ViOne.
+- Nội dung khối cần gỡ: Khối **"ViOne Con người, cộng đồng & trải nghiệm"** với tiêu đề phụ *"Hệ điều hành số hợp nhất: Doanh nghiệp, Thể thao và Văn hóa di sản quốc gia"*, gồm 2 cột chức năng:
+  * **Cộng đồng & Doanh nghiệp**: *Business Connect, Association, Event, Sport, Run, Review*.
+  * **Văn hóa & Di sản**: *Heritage, Museum, Archive, Ticket*.
+
+### 2. Chi Tiết Thực Hiện & Tuân Thủ Dual-App Parity
+- **PWA ViOne** (`apps/vione_app_fe`):
+  * Tệp chỉnh sửa: `apps/vione_app_fe/src/components/business-connect/mobile/ExecutiveHome.tsx`
+  * Gỡ bỏ import `ViOneEcosystemGrid` và thẻ JSX `<div id="vione-ecosystem-section"><ViOneEcosystemGrid /></div>`.
+- **Native ViOne** (`apps/mobile_vione`):
+  * Tệp chỉnh sửa: `apps/mobile_vione/src/screens/home/HomeScreen.tsx`
+  * Gỡ bỏ import `ViOneEcosystemGrid` và thẻ JSX `<ViOneEcosystemGrid ... />`.
+
+### 3. Kiểm Tra & Xác Nhận Chất Lượng Mã Nguồn
+- Native ViOne (`apps/mobile_vione`): Chạy `npm run typecheck` (`tsc --noEmit`) đạt **0 errors** (exit code 0).
+- PWA ViOne (`apps/vione_app_fe`): Chạy type check xác nhận không còn lỗi biến chưa khai báo hay cú pháp.
+- Tuyệt đối không tự ý chạy `git push` hay `git commit`.
+
+---
+
+## 0.0000000000.16. HIỆU CHỈNH TOÀN DIỆN TÀI LIỆU [VIONE] 06. TRÌNH BÀY TÁC PHẨM: CHỤP MỚI 36 ẢNH, BỐ TRÍ MOBILE 2 CỘT SONG SONG, THAY THẾ "HỆ SINH THÁI" THÀNH "NỀN TẢNG", KHẮC PHỤC LỖI TỰ ĐỘNG XUỐNG DÒNG VÀ LOẠI BỎ THẺ VẬT LÝ NFC (28/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+1. **Chụp lại toàn bộ ảnh mới cho tài liệu `[VIONE] 06. Trình bày tác phẩm.cop đĩa`**:
+   - Lấy đúng mã nguồn mới nhất trên hệ thống (đã gỡ bỏ notification banner trên CRM, đã tích hợp cây menu đa chức năng con, đã dời nút cài đặt PWA xuống đáy màn "Tôi", đã sửa lỗi giao diện cộng đồng trên iOS, và đã gỡ bỏ hoàn toàn phê duyệt tài chính).
+2. **Thay hết "hệ sinh thái" thành "nền tảng"**:
+   - Quét và thay thế triệt để 100% các từ khóa liên quan đến "hệ sinh thái" sang "nền tảng" trong toàn bộ văn bản tài liệu Word (.docx) và Markdown (.md).
+3. **Sửa lỗi không tự xuống dòng khi có nhiều mục như `a)`, `b)`, `1.`, `2.`, `•`**:
+   - Khắc phục triệt để lỗi định dạng của OpenXML Word khiến các danh sách liệt kê bị dính chùm trên một hàng ngang.
+4. **Không đưa cài đặt & kích hoạt thẻ vật lý NFC vào tài liệu**:
+   - Xóa bỏ hoàn toàn mục `app_13_nfc.png` ("Cài đặt & kích hoạt thẻ vật lý NFC") cùng mọi mô tả, use cases liên quan đến thẻ vật lý NFC. Thay thế bằng danh thiếp điện tử thông minh, mã QR Code động và chuẩn danh bạ quốc tế vCard 4.0.
+5. **Bố trí ảnh Mobile ViOne theo cặp 2 ảnh cạnh nhau (2 cột) và mô tả 2 chức năng liền kề**:
+   - Định dạng toàn bộ 16 màn hình di động thành 8 cặp hình ảnh đặt cạnh nhau trong bảng 2 cột cân xứng (Cell 1: Ảnh A | Cell 2: Ảnh B) kèm phần mô tả tổng hợp cả 2 chức năng liền với nhau.
+
+### 2. Các Thay Đổi & Giải Pháp Kỹ Thuật Đã Hoàn Thành
+
+#### A. Chụp Mới Toàn Bộ 36 Màn Hình Chuẩn Xác Từ Code Mới Nhất
+- **16 Màn hình Ứng dụng Di động Native ViOne (`app_01` đến `app_16`)**:
+  * Tự động khởi chạy local dev server Vite với code mới nhất và xác thực JWT thực tế qua backend.
+  * Đóng gói toàn bộ 16 ảnh trong khung điện thoại iPhone 16 Pro Dynamic Island cao cấp (`rounded-[54px]`, viền đa lớp, status bar 09:41, pin/wifi/sóng di động).
+  * Đã loại bỏ hoàn toàn nút cài đặt PWA trên trang chủ (đã dời xuống đáy màn "Tôi").
+  * Đã sửa hoàn thiện lỗi vỡ giao diện cộng đồng trên iOS Safari.
+  * Đã loại bỏ hoàn toàn thẻ KPI "Ký duyệt chi" và modal phê duyệt tài chính.
+- **20 Màn hình Quản trị Web CRM (`crm_01` đến `crm_20`)**:
+  * Chụp ở độ phân giải tiêu chuẩn 1440x900 @ 2x.
+  * Chuẩn Theme sáng (Light Theme) đồng bộ 100%.
+  * Đã triệt tiêu hoàn toàn banner thông báo di động trên CRM (`NotificationPromptBanner`).
+  * Phản ánh đầy đủ cây menu đa cấp (2-3 chức năng con) tại Sidebar cho các module mới: ViOne Sport, ViOne Run, ViOne Heritage, ViOne Museum, ViOne Archive, ViOne Ticket, ViOne Review, ViOne Event.
+  * Màn hình CRM 14 chuyển đổi từ Phê duyệt chi sang Quản trị Giải đấu Thể thao đa môn ViOne Sport (`crm_14_sport.png` - có sơ đồ thi đấu Knockout Bracket và quản lý CLB).
+
+#### B. Thay Thế Triệt Để 100% "Hệ Sinh Thái" Thành "Nền Tảng"
+- Thực hiện chuyển đổi tự động với bảo toàn chữ hoa / chữ thường:
+  * `HỆ SINH THÁI` -> `NỀN TẢNG`
+  * `Hệ sinh thái` -> `Nền tảng`
+  * `Hệ Sinh Thái` -> `Nền Tảng`
+  * `hệ sinh thái` -> `nền tảng`
+- Kết quả kiểm tra xác thực: **0 occurrences** còn lại trong cả hai tệp `.docx` và `.md`.
+
+#### C. Khắc Phục Triệt Để Lỗi Không Tự Xuống Dòng Của Danh Sách Liệt Kê
+- **Nguyên nhân cốt lõi**: Trong OpenXML Word (`word/document.xml`), ký tự ngắt dòng `\n` nằm trong thẻ văn bản `<w:t>` bị Microsoft Word bỏ qua và hiển thị liên tục trên một dòng; các đoạn văn bản chứa nhiều mục `a)`, `b)` hoặc `1.`, `2.` nếu không có thẻ đoạn `<w:p>` độc lập sẽ bị dính chùm.
+- **Giải pháp**:
+  * Tự động quét và tách tất cả các chuỗi có chứa ký tự xuống dòng `\n` hoặc danh sách liệt kê thành các thẻ đoạn `<w:p>` độc lập có thuộc tính căn đều (`<w:jc w:val="both"/>`) và khoảng cách dòng chuẩn (`<w:spacing w:after="80"/>`).
+  * Kết quả kiểm tra: 100% các mục danh sách `a)`, `b)`, `1.`, `2.`, `•` đều được tách thành các dòng/đoạn riêng biệt rõ ràng, không còn hiện tượng dính chùm.
+
+#### D. Loại Bỏ Hoàn Toàn Mục Thẻ Vật Lý NFC
+- Gỡ bỏ hoàn toàn mục 13 cũ "Cài đặt & Kích hoạt Thẻ Vật lý NFC" khỏi Mục lục, Section 2.3 và Phụ lục III.
+- Thay thế bằng:
+  * Ảnh 13: Quét & Nhận diện Danh thiếp Số hóa OCR (`app_13_ocr.png`).
+  * Ảnh 14: Trung tâm Bảo mật & Cài đặt Tài khoản (`app_14_security.png`).
+  * Ảnh 15: Trung tâm Thông báo Hệ thống (`app_15_notifications.png`).
+  * Ảnh 16: Ví Vé Điện Tử & Check-in QR Realtime (`app_16_tickets.png`).
+- Kết quả: Không còn bất kỳ từ khóa nào về "thẻ vật lý NFC" hay "kích hoạt thẻ NFC" trong tài liệu.
+
+#### E. Bố Trí Mobile ViOne Theo Cặp 2 Ảnh Cạnh Nhau (2 Columns Side-by-Side)
+- **Trong Word (.docx)**:
+  * Xây dựng bảng 2 cột không viền (`<w:tbl>` với `<w:tblBorders>` = `none`), chiều rộng chuẩn 9200 dxa (100% vùng in A4).
+  * Mỗi hàng chứa 2 ô (`<w:tc>` 4600 dxa) đặt 2 ảnh điện thoại khung mockup portrait chuẩn tỉ lệ (`cx="2400000"` ~2.6 inches, `cy="4800000"` ~5.2 inches).
+  * Phía dưới mỗi cặp ảnh là tiêu đề cặp in đậm màu xanh nhận diện (`#1F4E79`) và phần mô tả hợp nhất 2 chức năng liền với nhau cùng các bước thao tác chi tiết.
+- **Trong Markdown (.md)**:
+  * Bố trí bảng Markdown 2 cột (`| Hình A | Hình B |`) kèm các liên kết ảnh và mô tả 2 chức năng liền kề.
+
+### 3. Tệp Tin Xuất Bản & Bàn Giao
+1. **Tệp Word (.docx)**:
+   - `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (10.77 MB)
+   - Bản sao lưu: `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`
+2. **Tệp Markdown (.md)**:
+   - `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (485 KB)
+   - Bản sao lưu: `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+3. **Thư mục ảnh chụp**: `scratch/captured_framed/` (36 tệp PNG chuẩn 2x).
+
+---
+
 ## 0.0000000000.15. XÓA LUỒNG PHÊ DUYỆT TÀI CHÍNH, CHUYỂN NÚT CÀI PWA XUỐNG ĐÁY MÀN TÔI, SỬA LỖI VỠ GIAO DIỆN CỘNG ĐỒNG TRÊN IOS VÀ BỔ SUNG CÂY MENU ĐA CHỨC NĂNG CON CHO CÁC MODULE CRM (28/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Người Dùng
@@ -4495,3 +4590,29 @@ Người dùng phản ánh một loạt tồn đọng trong trải nghiệm th�
 
 | **225** | **Khắc Phục Triệt Để Hiện Tượng Cổng 5446 Bị 'ERR_CONNECTION_REFUSED' Sau Một Thời Gian Chạy Script Deploy (Lưu Trực Tiếp Firewall iptables & DOCKER-USER Vĩnh Viễn, Chuẩn Hóa Cú Pháp error_page 497 =301 Trên Nginx, Xác Thực Trạng Thái 3 Cổng CRM Đang Live)**: 1) **Điều Tra Thực Nghiệm & Nguyên Nhân Gốc (Root Cause Analysis)**: - Sau khi chạy script deploy (`deploy-vione-crm.ps1`), lệnh `iptables -I INPUT` chỉ nạp vào RAM. Khi hệ điều hành Linux (Viettel Cloud VPS) thực hiện các tác vụ nền định kỳ (DHCP lease renew mỗi 30-60 phút, UFW reload, unattended-upgrades hoặc netfilter daemon), bảng iptables bị nạp lại từ `/etc/iptables/rules.v4`, làm biến mất quy tắc cổng 5446 đã mở tạm thời trong RAM; - Mặt khác, Docker published port chuyển tiếp qua bảng `FORWARD` và chuỗi `DOCKER-USER`, nếu chỉ mở `INPUT` mà thiếu `DOCKER-USER` thì các gói tin mới từ bên ngoài sẽ bị kernel từ chối (gửi TCP RST -> sinh mã `ERR_CONNECTION_REFUSED`); - Cú pháp cũ trong `nginx.conf`: `error_page 497 301 = https://$host:$server_port$request_uri;` sai chuẩn cú pháp Nginx (khiến Nginx trả về lỗi `400 Bad Request` thay vì chuyển hướng 301 khi người dùng gõ URL không có tiền tố `https://`); - Kiểm tra thực tế xác nhận các container CRM và proxy vẫn đang hoạt động: Cổng 5006 (`http://14.225.217.232:5006/auth`), Cổng 5443 (`https://14.225.217.232:5443/auth`) và Cổng 5445 (`https://14.225.217.232:5445/?portal=crm`) đều trả về mã HTTP 200 OK; 2) **Biện Pháp Khắc Phục Dứt Điểm**: - Cập nhật `deploy/ssl/setup-ssl.sh`: Mở cổng trên cả chuỗi `INPUT` và `DOCKER-USER`, đồng thời tự động lưu vĩnh viễn qua `netfilter-persistent save` và `iptables-save > /etc/iptables/rules.v4` để không bao giờ bị mất cấu hình khi hệ thống reload mạng; - Chuẩn hóa `deploy/ssl/nginx.conf`: Sửa thành `error_page 497 =301 https://$host:$server_port$request_uri;` trên cả 4 server blocks (5443, 5444, 5445, 5446) giúp tự động chuyển hướng HTTP sang HTTPS mượt mà; sửa WebSocket `/socket.io/` của cổng 5446 trỏ chính xác về `vione-crm-backend-prod:4000`; - Chuẩn hóa line endings LF cho `setup-ssl.sh`; 3) **Kiểm Tra & Xác Minh (Strict Rule 1 & Rule 3)**: Chạy `npx tsc --noEmit` trên `apps/vione_app_fe` đạt 0 errors (Exit code 0); Tuyệt đối không tự ý chạy `git commit` hay `git push`. |
 | **226** | **Chụp Bộ 36 Ảnh Thực Tế Live Server, Cập Nhật & Viết Lại Toàn Diện [VIONE] 06 Thuyết Minh Tác Phẩm, SRS v8.0, BRD v8.0 (Docx/Doc) & HDSD Toàn Diện (HTML, PDF Chuẩn In Ấn 6.1MB, DOCX)**: 1) **Chụp Đầy Đủ 36/36 Ảnh Live Server**: Sử dụng Chrome Headless truy cập Web CRM cổng 5446 và ViOne Connect App (/connect-app), chụp đủ 20 ảnh Web CRM và 16 ảnh Mobile App Native lưu trữ tại `scratch/captured_36/` và `document/images/evidence_v8/`; 2) **Viết Lại Toàn Diện [VIONE] 06. Trình bày tác phẩm.cop đĩa.docx (15MB)**: Thay thế 100% ảnh nhúng media bằng bộ 36 ảnh mới nhất; viết lại Module 16 (Kho Google Drive /documents), Module 18 (Multi-tenant RBAC company_id), Module 20 (Cài đặt hệ thống 100% PostgreSQL), Module 3.9 (Không gian cộng đồng doanh nghiệp riêng biệt), Module 3.10 (Bàn làm việc di động & chấm công GPS), Module 3.15 (Trung tâm bảo mật & Xóa tài khoản chuẩn Apple App Store Guideline 5.1.1(v) & GDPR), thay thế toàn bộ từ khóa Copilot bằng OpenRouter AI Gateway (DeepSeek-V3 LLM & Meta Llama 3.3). File đã lưu tại `document/` và `C:\Users\vumik\Downloads\`; 3) **Cập Nhật & Xuất Bản Bộ SRS Toàn Diện (v8.0 Master Release)**: Hoàn thiện `document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.md` (47KB); xuất bản 2 file Word: `document/SRS_CHI_TIET_VIONE_HE_THONG_TOAN_DIEN.docx` (65KB) và `document/[VIONE] SRS ĐẶC TẢ YÊU CẦU PHẦN MỀM TOÀN DIỆN.docx` (65KB) kèm bản lưu tại Downloads; 4) **Cập Nhật & Xuất Bản Bộ BRD Toàn Diện (v8.0 Master Release)**: Hoàn thiện `document/BRD_VIONE_YEU_CAU_NGHIEP_VU_TOAN_DIEN.md` (60KB); xuất bản 2 file Word: `document/BRD_VIONE_YEU_CAU_NGHIEP_VU_TOAN_DIEN.docx` (19KB) và `document/[VIONE] BRD YÊU CẦU NGHIỆP VỤ TOÀN DIỆN.docx` (19KB) kèm bản lưu tại Downloads; 5) **Cập Nhật & Xuất Bản Bộ Hướng Dẫn Sử Dụng (HDSD) Toàn Diện (v8.0 Master Release)**: Hoàn thiện `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.md` (20KB); tạo trang HTML Executive Luxury `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.html` (37KB) nhúng 36 ảnh chụp live server; dùng Playwright Chrome render file PDF chuẩn in ấn A4 `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.pdf` (6.1MB) kèm bản copy tại Downloads; tạo tệp Word `document/HDSD_HE_THONG_VA_APP_VIONE_TOAN_DIEN.docx` (15KB) kèm bản copy tại Downloads; 6) **Tuân Thủ Tuyệt Đối Quy Chuẩn AGENTS.md**: Strict Rule 1 (Không git commit/push), Rule 2 (Đồng bộ tài liệu, Memory, Cursorrules), Rule 6 (Zero-Clear Text), Rule 7 (Dữ liệu thực 100% PostgreSQL). |
+
+| 29/10/2026 | **Hoàn Thiện Bộ Hồ Sơ Pháp Lý & Thuyết Minh Tác Phẩm VIP "Phần Mềm ViOne Platform" (Chuẩn Hóa 100% Không Dùng Từ "Hệ Sinh Thái", Nâng Cấp Bộ Đặc Tả 36 Tính Năng Chào Hàng C-Level)**:
+1) **Chuẩn Hóa Triệt Để Tên Tác Phẩm & Loại Bỏ "Hệ Sinh Thái"**:
+   - Thống nhất tên gọi pháp lý độc quyền xuyên suốt: `PHẦN MỀM VIONE PLATFORM (VIONE PLATFORM SOFTWARE)` / `Phần mềm Vione Platform`.
+   - Rà soát và thay thế 100% các cụm từ "Hệ sinh thái...", "Hệ Sinh Thái" trong toàn bộ hồ sơ thành "Phần mềm Vione Platform" / "Nền tảng ViOne Platform".
+   - Loại bỏ triệt để các nội dung không liên quan (di sản văn hóa, mộc bản, sắc phong, bảo tàng số).
+2) **Nâng Cấp Toàn Diện File `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` & `.md` (Phục Vụ Chào Hàng Khách Hàng VIP: Chủ Tịch, CEO, Tổng Giám Đốc, Tập Đoàn Lớn)**:
+   - Tái cấu trúc Mục 2.3 thành 4 phân hệ chuẩn mực và đồng bộ 100% với Mục Lục:
+     * `2.3.1 Các chức năng nền tảng chung`: Quản trị danh tính số tập trung & SSO đa kênh (FaceID/Vân tay, JWT RS256, Bcrypt salt 10); Kiến trúc Đa tổ chức Multi-tenant RBAC phân lập dữ liệu tuyệt đối (RLS company_id, 5 cấp vai trò); Cổng thanh toán VietQR Napas 24/7 đối soát tự động 0ms; Cổng Trí tuệ Nhân tạo ViOne AI Gateway (OpenRouter, DeepSeek-V3, Meta Llama 3.3, AI OCR Vision 2s).
+     * `2.3.2 Chức năng chi tiết phân hệ Cổng Quản trị Web CRM (20 phân hệ VIP)`: C-Level Dashboard BI dòng tiền, Quản lý Khách hàng B2B 360°, Phễu Deals Kanban, Sàn B2B Marketplace, Quản trị sự kiện QR check-in 0ms, Quy trình BPMN 2.0 giao việc tự động, Chấm công định vị GPS Geofencing, Phê duyệt tài chính 3 cấp VietQR 24/7, Kho tài liệu phân cấp chuẩn Google Drive (`/documents`), Biểu quyết điện tử E-Voting, Trợ lý ViOne AI 6.0,...
+     * `2.3.3 Chức năng chi tiết phân hệ Ứng dụng Di động Thuần Native ViOne Connect (16 phân hệ VIP)`: Đăng nhập Obsidian Luxury, Trang chủ C-Level Executive Home, Thẻ doanh nhân số vCard 4.0 & NFC 1-chạm mạ vàng, Lịch trình hôm nay 5 tabs & Ghi âm chỉ đạo, Mạng lưới đối tác AI Matcher, Hộp thư Messenger 0ms & Thẻ đề xuất hẹn 1-1, V-Action Sheet nhanh, Không gian cộng đồng riêng Dedicated Workspace, Nhận việc & Chấm công GPS nội bộ, Quét danh thiếp AI OCR Vision, Trung tâm bảo mật & Xóa tài khoản vĩnh viễn chuẩn Apple Guideline 5.1.1(v),...
+     * `2.3.4 Ma trận luồng dữ liệu và thông số kỹ thuật API (10 modules)`: Đặc tả cấu trúc trường dữ liệu, validation kiểm thực, API endpoints và bảng CSDL PostgreSQL.
+   - Nhúng trọn vẹn 36 ảnh Retina chất lượng cao từ `evidence_v8` (20 ảnh Web CRM + 16 ảnh Mobile App đóng khung điện thoại chuẩn).
+   - Kiểm tra mở tự động 100% qua Microsoft Word COM: 13,097 paragraphs, 0 lỗi, không bị corrupt.
+   - Đồng bộ hoàn chỉnh sang tệp Markdown `[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (524KB).
+3) **Chuẩn Hóa Bộ 3 File Pháp Lý Kèm Theo (Theo Ảnh Yêu Cầu Của Người Dùng)**:
+   - `[VIONE] 01. Tờ khai.docx` (153 paragraphs): Tên tác phẩm `PHẦN MỀM VIONE PLATFORM (VIONE PLATFORM SOFTWARE)`.
+   - `[VIONE] 02. Cam đoan.docx` (33 paragraphs): Tác phẩm sáng tạo `PHẦN MỀM VIONE PLATFORM`.
+   - `[VIONE] 03. Quyết định.docx` (49 paragraphs): Tiêu đề, Điều 1, Điều 3 chuẩn `PHẦN MỀM VIONE PLATFORM`.
+4) **Đồng Bộ Hai Thư Mục Đích**:
+   - Lưu trữ đầy đủ bộ 5 file tại `d:\download\VICONNECT\CEO_VIONE_PROJECT\vione_project\document\`.
+   - Sao chép trực tiếp vào `C:\Users\vumik\Downloads\` để người dùng sử dụng ngay.
+5) **Tuân Thủ Tuyệt Đối AGENTS Rules**:
+   - Strict Rule 1: Không tự động chạy `git commit` hay `git push`.
+   - Strict Rule 2: Cập nhật `MEMORY.md` và tài liệu kỹ thuật đầy đủ.
+   - Strict Rule 3: Kiểm thử toàn bộ 8 file docx qua Microsoft Word COM (0 errors). |
