@@ -51,14 +51,14 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --shadow-card: 0 1px 3px 0 rgba(217, 119, 6, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px 0 rgba(216, 178, 130, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
   --shadow-elevated:
-    0 4px 12px -2px rgba(217, 119, 6, 0.1), 0 2px 6px -1px rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 8px 32px -8px rgba(217, 119, 6, 0.35);
+    0 4px 12px -2px rgba(216, 178, 130, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 8px 32px -8px rgba(216, 178, 130, 0.30);
 
-  --gradient-primary: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  --gradient-sidebar: linear-gradient(180deg, #FFFFFF 0%, #FFFBEB 100%);
-  --gradient-card: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  --gradient-primary: linear-gradient(135deg, #F6E1C3 0%, #D8B282 45%, #C29B69 70%, #8C653B 100%);
+  --gradient-sidebar: linear-gradient(180deg, #0B0F17 0%, #05080E 100%);
+  --gradient-card: linear-gradient(135deg, #D8B282 0%, #8C653B 100%);
 }
 
 @keyframes subtle-bounce {
@@ -86,19 +86,19 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.04 265);
 
-  /* ViOne Gold & Amber Identity */
-  --primary: #D97706;
-  --primary-foreground: #FFFFFF;
-  --primary-glow: #F59E0B;
+  /* ViOne Luxury Bright Bronze Gold Identity */
+  --primary: #D8B282;
+  --primary-foreground: #050C15;
+  --primary-glow: #F6E1C3;
 
   --secondary: #F8FAFC;
-  --secondary-foreground: #D97706;
+  --secondary-foreground: #8C653B;
 
   --muted: #F8FAFC;
   --muted-foreground: #64748B;
 
-  --accent: #FEF3C7;
-  --accent-foreground: #B45309;
+  --accent: rgba(216, 178, 130, 0.12);
+  --accent-foreground: #8C653B;
 
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
@@ -114,21 +114,21 @@
 
   --border: #E2E8F0;
   --input: #E2E8F0;
-  --ring: #D97706;
+  --ring: #D8B282;
 
-  /* Sidebar — ViOne Light mode */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #0F172A;
-  --sidebar-primary: #D97706;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FEF3C7;
-  --sidebar-accent-foreground: #78350F;
-  --sidebar-border: #F1F5F9;
-  --sidebar-ring: #D97706;
-  --gradient-sidebar: linear-gradient(180deg, #FFFFFF 0%, #FFFBEB 100%);
+  /* Sidebar — ViOne Standard Obsidian Slate with Bronze Gold */
+  --sidebar: #0B0F17;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #D8B282;
+  --sidebar-primary-foreground: #050C15;
+  --sidebar-accent: rgba(216, 178, 130, 0.15);
+  --sidebar-accent-foreground: #F6E1C3;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #D8B282;
+  --gradient-sidebar: linear-gradient(180deg, #0B0F17 0%, #05080E 100%);
 
-  --chart-1: #D97706;
-  --chart-2: #F59E0B;
+  --chart-1: #D8B282;
+  --chart-2: #F6E1C3;
   --chart-3: oklch(0.65 0.16 155);
   --chart-4: #B45309;
   --chart-5: #6366F1;
@@ -141,18 +141,18 @@
   --card-foreground: #F8FAFC;
   --popover: #111827;
   --popover-foreground: #F8FAFC;
-  --primary: #F59E0B;
-  --primary-foreground: #0F172A;
-  --primary-glow: #FBBF24;
+  --primary: #D8B282;
+  --primary-foreground: #050C15;
+  --primary-glow: #F6E1C3;
   --secondary: #1F2937;
-  --secondary-foreground: #FEF3C7;
+  --secondary-foreground: #F6E1C3;
   --muted: #1F2937;
   --muted-foreground: #94A3B8;
   --accent: #1E293B;
-  --accent-foreground: #FDE68A;
+  --accent-foreground: #F6E1C3;
   --border: rgba(255, 255, 255, 0.12);
   --input: rgba(255, 255, 255, 0.15);
-  --ring: #F59E0B;
+  --ring: #D8B282;
 
   /* State colours tuned for dark surfaces (AA on --card) */
   --destructive: oklch(0.68 0.2 25);
@@ -166,16 +166,16 @@
 
   --sidebar: #0F172A;
   --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #F59E0B;
-  --sidebar-primary-foreground: #0F172A;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #FDE68A;
+  --sidebar-primary: #D8B282;
+  --sidebar-primary-foreground: #050C15;
+  --sidebar-accent: rgba(216, 178, 130, 0.15);
+  --sidebar-accent-foreground: #F6E1C3;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #F59E0B;
-  --gradient-sidebar: linear-gradient(180deg, #0F172A 0%, #020617 100%);
+  --sidebar-ring: #D8B282;
+  --gradient-sidebar: linear-gradient(180deg, #0B0F17 0%, #05080E 100%);
 
-  --chart-1: #FBBF24;
-  --chart-2: #F59E0B;
+  --chart-1: #F6E1C3;
+  --chart-2: #D8B282;
   --chart-3: oklch(0.74 0.16 155);
   --chart-4: #D97706;
   --chart-5: #818CF8;
@@ -370,14 +370,14 @@ html:not(.dark) .vba-app {
   --vba-surface-2: #F1F5F9;
   --vba-border: rgba(0, 59, 149, 0.22);
   --vba-border-soft: rgba(0, 59, 149, 0.12);
-  --vba-border-accent: rgba(217, 119, 6, 0.45);
-  --vba-gold: #D97706;
-  --vba-gold-2: #F59E0B;
-  --vba-gold-soft: rgba(217, 119, 6, 0.12);
-  --vba-gold-glow: 0 4px 14px -3px rgba(217, 119, 6, 0.3);
-  --vba-navy: #2E3192;
+  --vba-border-accent: rgba(216, 178, 130, 0.45);
+  --vba-gold: #8C653B;
+  --vba-gold-2: #D8B282;
+  --vba-gold-soft: rgba(216, 178, 130, 0.15);
+  --vba-gold-glow: 0 4px 14px -3px rgba(216, 178, 130, 0.25);
+  --vba-navy: #003B95;
   --vba-navy-light: #25AAE1;
-  --vba-brand-orange: #F7941D;
+  --vba-brand-orange: #D8B282;
   --vba-text: #0F172A;
   --vba-text-muted: #334155;
   --vba-text-dim: #64748B;
@@ -399,17 +399,17 @@ html:not(.dark) .vba-card {
 }
 
 html:not(.dark) .vba-gold-text {
-  background: linear-gradient(135deg, #B45309 0%, #D97706 50%, #EA580C 100%);
+  background: linear-gradient(135deg, #8C653B 0%, #C29B69 50%, #D8B282 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 html:not(.dark) .vba-gold-grad {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #F6E1C3 0%, #D8B282 45%, #C29B69 70%, #8C653B 100%);
+  color: #050C15 !important;
   font-weight: 700;
-  box-shadow: 0 2px 12px -2px rgba(217, 119, 6, 0.35);
+  box-shadow: 0 2px 12px -2px rgba(216, 178, 130, 0.35);
 }
 
 /* High-contrast mode tokens for .vba-app — Pure Solid Black, Pure White, & Electric Gold */
@@ -927,6 +927,22 @@ html:not(.dark) .bc-app .text-neutral-300 {
   color: #0a0a0a !important; /* Pure Crisp Black */
 }
 
+/* STRICT OVERRIDE FOR LIGHT MODE: Ensure buttons, dark cards, dark surfaces and colored chips maintain their contrast */
+html:not(.dark) .bc-app [data-dark-card] .text-white,
+html:not(.dark) .bc-app .vba-member-card .text-white,
+html:not(.dark) .bc-app [class*="bg-slate-9"] .text-white,
+html:not(.dark) .bc-app [class*="bg-black"] .text-white,
+html:not(.dark) .bc-app [class*="bg-zinc-9"] .text-white,
+html:not(.dark) .bc-app [class*="gradient-destructive"] .text-white,
+html:not(.dark) .bc-app [class*="gradient-success"] .text-white,
+html:not(.dark) .bc-app button.bg-red-600 .text-white,
+html:not(.dark) .bc-app button.bg-emerald-600 .text-white,
+html:not(.dark) .bc-app button[class*="bg-blue"] .text-white,
+html:not(.dark) .bc-app [class*="gradient-destructive"] *,
+html:not(.dark) .bc-app [class*="gradient-success"] * {
+  color: #FFFFFF !important;
+}
+
 html:not(.dark) .bc-app .text-slate-400,
 html:not(.dark) .bc-app .text-slate-500,
 html:not(.dark) .bc-app .text-slate-600,
@@ -938,14 +954,14 @@ html:not(.dark) .bc-app .text-muted-foreground {
   color: #475569 !important; /* Crisp Slate Gray */
 }
 
-/* Gold/amber/yellow in light mode → bright gold & warm amber accents */
+/* Gold/amber/yellow in light mode → luxury bronze gold */
 html:not(.dark) .bc-app .text-amber-100,
 html:not(.dark) .bc-app .text-amber-200,
 html:not(.dark) .bc-app .text-amber-300,
 html:not(.dark) .bc-app .text-yellow-100,
 html:not(.dark) .bc-app .text-yellow-200,
 html:not(.dark) .bc-app .text-yellow-300 {
-  color: #D97706 !important; /* Bright Gold Amber */
+  color: #8C653B !important; /* Deep Bronze Gold for legible contrast */
 }
 
 /* vba-app light mode text */

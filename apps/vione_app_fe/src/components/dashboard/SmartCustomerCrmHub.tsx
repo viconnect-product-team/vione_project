@@ -235,12 +235,12 @@ export function SmartCustomerCrmHub() {
       {/* 1. Header Banner & KPI Dashboard */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* KPI 1: Tổng khách hàng */}
-        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#DFB76C]/50">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#D8B282]/50">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Khách hàng Thông minh
             </span>
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#DFB76C]/15 text-[#8C653B] dark:text-[#DFB76C]">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#D8B282]/15 text-[#8C653B] dark:text-[#D8B282]">
               <Sparkles className="h-5 w-5" />
             </div>
           </div>
@@ -254,7 +254,7 @@ export function SmartCustomerCrmHub() {
         </div>
 
         {/* KPI 2: Cơ hội Hot (Score >= 80) */}
-        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#DFB76C]/50">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#D8B282]/50">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Cơ hội tiềm năng cao (AI)
@@ -267,18 +267,18 @@ export function SmartCustomerCrmHub() {
             <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               {hotLeadsCount}
             </span>
-            <span className="text-xs font-bold text-[#8C653B] dark:text-[#DFB76C]">C-Level & VIP Deal</span>
+            <span className="text-xs font-bold text-[#8C653B] dark:text-[#D8B282]">C-Level & VIP Deal</span>
           </div>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Điểm phân tích tiềm năng AI ≥ 80</p>
         </div>
 
         {/* KPI 3: Cảnh báo Cadence / SLA */}
-        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#DFB76C]/50">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#D8B282]/50">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Cần chăm sóc ngay
             </span>
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#D8B282]/15 text-[#8C653B] dark:text-[#D8B282]">
               <Clock className="h-5 w-5" />
             </div>
           </div>
@@ -292,7 +292,7 @@ export function SmartCustomerCrmHub() {
         </div>
 
         {/* KPI 4: Giá trị Pipeline */}
-        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#DFB76C]/50">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#D8B282]/50">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Giá trị Pipeline dự kiến
@@ -302,7 +302,7 @@ export function SmartCustomerCrmHub() {
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#8C653B] dark:text-[#DFB76C]">
+            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#8C653B] dark:text-[#D8B282]">
               {formatVnd(totalPipelineValue)}
             </span>
           </div>
@@ -320,7 +320,7 @@ export function SmartCustomerCrmHub() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm theo tên khách hàng, doanh nghiệp, số điện thoại hoặc nhu cầu..."
-            className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 pl-10 pr-4 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-[#DFB76C] focus:ring-1 focus:ring-[#DFB76C]"
+            className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 pl-10 pr-4 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:border-[#D8B282] focus:ring-1 focus:ring-[#D8B282]"
           />
         </div>
 
@@ -389,7 +389,7 @@ export function SmartCustomerCrmHub() {
         {filteredCustomers.map((cust) => (
           <div
             key={cust.id}
-            className="relative flex flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#DFB76C]/60 hover:shadow-md"
+            className="relative flex flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-[#D8B282]/60 hover:shadow-md"
           >
             <div>
               {/* Top Row: AI Score, Source Badge, Cadence Alert */}
@@ -400,7 +400,7 @@ export function SmartCustomerCrmHub() {
                       cust.leadScore >= 90
                         ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30"
                         : cust.leadScore >= 80
-                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30"
+                          ? "bg-[#D8B282]/10 text-[#8C653B] dark:text-[#F6E1C3] border border-[#D8B282]/30"
                           : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30"
                     }`}
                   >
@@ -409,7 +409,7 @@ export function SmartCustomerCrmHub() {
                   </span>
 
                   <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                    {cust.source === "nfc" && <CreditCard className="h-3 w-3 text-[#8C653B] dark:text-[#DFB76C]" />}
+                    {cust.source === "nfc" && <CreditCard className="h-3 w-3 text-[#8C653B] dark:text-[#D8B282]" />}
                     {cust.source === "ocr_card" && <QrCode className="h-3 w-3 text-blue-500" />}
                     {cust.source === "b2b_network" && <UserCheck className="h-3 w-3 text-emerald-500" />}
                     {cust.source === "website_lead" && <Send className="h-3 w-3 text-purple-500" />}
@@ -423,7 +423,7 @@ export function SmartCustomerCrmHub() {
                     <span>Quá hạn SLA</span>
                   </span>
                 ) : cust.cadenceStatus === "due_today" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 text-[10.5px] font-bold text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#D8B282]/10 dark:bg-[#D8B282]/15 px-2.5 py-0.5 text-[10.5px] font-bold text-[#8C653B] dark:text-[#F6E1C3] border border-[#D8B282]/30">
                     <Clock className="h-3 w-3" />
                     <span>Cần chăm sóc hôm nay</span>
                   </span>
@@ -437,7 +437,7 @@ export function SmartCustomerCrmHub() {
 
               {/* Main Info: Name, Title, Company */}
               <div className="mt-4 flex items-start gap-3.5">
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-tr from-[#2A2016] to-[#14110E] text-base font-extrabold text-[#DFB76C] border border-[#DFB76C]/30 shadow-xs">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-tr from-[#2A2016] to-[#14110E] text-base font-extrabold text-[#D8B282] border border-[#D8B282]/30 shadow-xs">
                   {cust.name.split(" ").slice(-1)[0][0]}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -445,9 +445,9 @@ export function SmartCustomerCrmHub() {
                     <h3 className="text-base font-extrabold text-slate-900 dark:text-white truncate">
                       {cust.name}
                     </h3>
-                    <ShieldCheck className="h-4 w-4 shrink-0 text-[#8C653B] dark:text-[#DFB76C]" />
+                    <ShieldCheck className="h-4 w-4 shrink-0 text-[#8C653B] dark:text-[#D8B282]" />
                   </div>
-                  <p className="text-xs font-semibold text-[#8C653B] dark:text-[#DFB76C] truncate">{cust.title}</p>
+                  <p className="text-xs font-semibold text-[#8C653B] dark:text-[#D8B282] truncate">{cust.title}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{cust.company}</p>
                 </div>
               </div>
@@ -456,7 +456,7 @@ export function SmartCustomerCrmHub() {
               <div className="mt-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 p-3 border border-slate-100 dark:border-slate-800/80">
                 <div className="flex items-center justify-between text-xs mb-1">
                   <span className="font-semibold text-slate-600 dark:text-slate-400">Nhu cầu kết nối & Hợp tác:</span>
-                  <span className="font-bold text-[#8C653B] dark:text-[#DFB76C]">
+                  <span className="font-bold text-[#8C653B] dark:text-[#D8B282]">
                     Deal dự kiến: {formatVnd(cust.dealValue)}
                   </span>
                 </div>
@@ -472,7 +472,7 @@ export function SmartCustomerCrmHub() {
                     key={tag}
                     className="inline-flex items-center gap-1 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10.5px] font-medium text-slate-600 dark:text-slate-400"
                   >
-                    <Tag className="h-2.5 w-2.5 text-[#8C653B] dark:text-[#DFB76C]" />
+                    <Tag className="h-2.5 w-2.5 text-[#8C653B] dark:text-[#D8B282]" />
                     {tag}
                   </span>
                 ))}
@@ -500,7 +500,7 @@ export function SmartCustomerCrmHub() {
               <div className="flex items-center gap-1.5">
                 <a
                   href={`tel:${cust.phone}`}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#DFB76C] hover:text-[#8C653B] transition"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#D8B282] hover:text-[#8C653B] transition"
                   title={`Gọi ${cust.phone}`}
                 >
                   <Phone className="h-3.5 w-3.5" />
@@ -508,7 +508,7 @@ export function SmartCustomerCrmHub() {
 
                 <a
                   href={`mailto:${cust.email}?subject=ViOne%20Connect%20-%20Hợp%20tác%20kinh%20doanh`}
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#DFB76C] hover:text-[#8C653B] transition"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#D8B282] hover:text-[#8C653B] transition"
                   title={`Gửi email ${cust.email}`}
                 >
                   <Mail className="h-3.5 w-3.5" />
@@ -517,7 +517,7 @@ export function SmartCustomerCrmHub() {
                 <button
                   type="button"
                   onClick={() => setAiPitchModalCustomer(cust)}
-                  className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#DFB76C]/40 bg-[#DFB76C]/10 px-2.5 text-xs font-bold text-[#8C653B] dark:text-[#DFB76C] hover:bg-[#DFB76C]/20 transition cursor-pointer"
+                  className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D8B282]/40 bg-[#D8B282]/10 px-2.5 text-xs font-bold text-[#8C653B] dark:text-[#D8B282] hover:bg-[#D8B282]/20 transition cursor-pointer"
                   title="Gợi ý kịch bản mở rộng hợp tác AI"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
@@ -551,10 +551,10 @@ export function SmartCustomerCrmHub() {
       {/* 4. Modal: AI Pitch / Kịch bản kết nối thông minh */}
       {aiPitchModalCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-[#DFB76C]/40 p-6 shadow-2xl">
+          <div className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-[#D8B282]/40 p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#DFB76C]/15 text-[#8C653B] dark:text-[#DFB76C]">
+                <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#D8B282]/15 text-[#8C653B] dark:text-[#D8B282]">
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
@@ -589,7 +589,7 @@ export function SmartCustomerCrmHub() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Nhu cầu chính:</span>
-                  <span className="font-semibold text-[#8C653B] dark:text-[#DFB76C] text-right max-w-xs">{aiPitchModalCustomer.needSummary}</span>
+                  <span className="font-semibold text-[#8C653B] dark:text-[#D8B282] text-right max-w-xs">{aiPitchModalCustomer.needSummary}</span>
                 </div>
               </div>
 
@@ -645,7 +645,7 @@ export function SmartCustomerCrmHub() {
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
                   placeholder="Ví dụ: Nguyễn Văn Hùng"
-                  className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs sm:text-sm outline-none focus:border-[#DFB76C]"
+                  className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs sm:text-sm outline-none focus:border-[#D8B282]"
                 />
               </div>
 
@@ -658,7 +658,7 @@ export function SmartCustomerCrmHub() {
                   value={newCustCompany}
                   onChange={(e) => setNewCustCompany(e.target.value)}
                   placeholder="Ví dụ: Tập đoàn An Phát"
-                  className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs sm:text-sm outline-none focus:border-[#DFB76C]"
+                  className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs sm:text-sm outline-none focus:border-[#D8B282]"
                 />
               </div>
 
@@ -673,7 +673,7 @@ export function SmartCustomerCrmHub() {
                     value={newCustPhone}
                     onChange={(e) => setNewCustPhone(e.target.value)}
                     placeholder="0988 123 456"
-                    className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs sm:text-sm outline-none focus:border-[#DFB76C]"
+                    className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs sm:text-sm outline-none focus:border-[#D8B282]"
                   />
                 </div>
                 <div>
@@ -702,7 +702,7 @@ export function SmartCustomerCrmHub() {
                   value={newCustNeed}
                   onChange={(e) => setNewCustNeed(e.target.value)}
                   placeholder="Ví dụ: Cần tìm giải pháp ERP và nhà cung cấp vật liệu xây dựng..."
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-xs sm:text-sm outline-none focus:border-[#DFB76C]"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-xs sm:text-sm outline-none focus:border-[#D8B282]"
                 />
               </div>
 

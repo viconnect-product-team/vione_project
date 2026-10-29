@@ -518,7 +518,7 @@ function NavItem({
     collapsed ? "justify-center px-2 py-2.5" : ""
   } ${
     active && !hasChildren
-      ? "bg-blue-600 text-white font-bold outline-blue-500 shadow-md shadow-blue-600/30"
+      ? "bg-slate-900 text-[#F6E1C3] font-bold border-l-4 border-l-[#D8B282] border-y border-r border-[#D8B282]/30 shadow-md outline-transparent"
       : (active || hasActiveChild)
       ? "bg-slate-900/90 text-white font-semibold outline-slate-700/60"
       : "bg-transparent outline-transparent text-slate-300 hover:text-white hover:bg-slate-900 font-medium"
@@ -530,21 +530,21 @@ function NavItem({
       return (
         <span
           className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${
-            badgeVal === "New" ? "bg-amber-500" : "bg-blue-600"
+            badgeVal === "New" ? "bg-[#D8B282]" : "bg-slate-700"
           }`}
         />
       );
     }
     if (badgeVal === "New") {
       return (
-        <div className="px-2 py-0.5 bg-amber-500 rounded-xl flex items-center justify-center shrink-0">
-          <span className="text-white text-[10px] font-bold font-['Inter'] leading-none">New</span>
+        <div className="px-2 py-0.5 bg-gradient-to-r from-[#D8B282] to-[#C29B69] rounded-xl flex items-center justify-center shrink-0">
+          <span className="text-slate-950 text-[10px] font-extrabold font-['Inter'] leading-none">New</span>
         </div>
       );
     }
     return (
-      <div className="px-2 py-0.5 bg-blue-600 rounded-xl flex items-center justify-center shrink-0">
-        <span className="text-white text-[10px] font-bold font-['Inter'] leading-none">{badgeVal}</span>
+      <div className="px-2 py-0.5 bg-slate-800 border border-[#D8B282]/30 rounded-xl flex items-center justify-center shrink-0">
+        <span className="text-[#F6E1C3] text-[10px] font-bold font-['Inter'] leading-none">{badgeVal}</span>
       </div>
     );
   };
@@ -561,7 +561,7 @@ function NavItem({
       <div className="size-4 shrink-0 flex items-center justify-center">
         <Icon
           className={`size-4 transition-colors ${
-            active || hasActiveChild ? "text-[#DFB76C]" : "text-slate-400 group-hover:text-white"
+            active || hasActiveChild ? "text-[#D8B282]" : "text-slate-400 group-hover:text-white"
           }`}
           strokeWidth={active || hasActiveChild ? 2.2 : 1.9}
         />
@@ -581,7 +581,7 @@ function NavItem({
           {hasChildren && (
             <ChevronDown
               className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
-                expanded ? "rotate-180 text-[#DFB76C]" : "rotate-0"
+                expanded ? "rotate-180 text-[#D8B282]" : "rotate-0"
               }`}
             />
           )}
@@ -643,7 +643,7 @@ function NavItem({
 
       {/* Expandable sub-items tree */}
       {hasChildren && !collapsed && expanded && (
-        <div className="ml-5 pl-3 border-l border-[#DFB76C]/30 my-1 space-y-1 py-0.5 animate-in fade-in duration-200">
+        <div className="ml-5 pl-3 border-l border-[#D8B282]/30 my-1 space-y-1 py-0.5 animate-in fade-in duration-200">
           {item.children!.map((child) => {
             const [cPath, cQuery] = child.to.split("?");
             const isCurrentSearch = typeof window !== "undefined" && cQuery
@@ -659,11 +659,11 @@ function NavItem({
                 onClick={onNavigate}
                 className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-all ${
                   isChildActive
-                    ? "bg-[#DFB76C]/20 text-[#F6E1C3] font-bold border border-[#DFB76C]/40 shadow-xs"
+                    ? "bg-[#D8B282]/15 text-[#F6E1C3] font-bold border-l-2 border-l-[#D8B282] border-y border-r border-[#D8B282]/30 shadow-xs"
                     : "text-slate-400 hover:text-white hover:bg-slate-900 font-medium"
                 }`}
               >
-                <ChildIcon className={`size-3.5 shrink-0 ${isChildActive ? "text-[#DFB76C]" : "text-slate-500"}`} />
+                <ChildIcon className={`size-3.5 shrink-0 ${isChildActive ? "text-[#D8B282]" : "text-slate-500"}`} />
                 <span className="truncate flex-1 text-[12px]">{child.label}</span>
                 {child.badge && (
                   <span className="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">
@@ -867,7 +867,7 @@ export function Sidebar({
               className="w-9 h-9 rounded-xl object-contain bg-white p-1 border border-slate-700/60 shadow-md shrink-0"
             />
           ) : (
-            <div className="w-8 h-8 bg-gradient-to-l from-[#C99E55] via-[#DFB76C] to-[#E8C98E] rounded-lg inline-flex flex-col justify-center items-center shrink-0 shadow-md">
+            <div className="w-8 h-8 bg-gradient-to-l from-[#C29B69] via-[#D8B282] to-[#E8C98E] rounded-lg inline-flex flex-col justify-center items-center shrink-0 shadow-md">
               <span className="text-zinc-950 text-lg font-extrabold font-['Inter'] leading-none">V</span>
             </div>
           )}
@@ -876,7 +876,7 @@ export function Sidebar({
               <span className="text-white text-xl font-extrabold font-['Inter'] tracking-tight truncate">
                 {brandName === "Hiệp hội Doanh nghiệp Việt Nam" ? "ViOne" : brandName}
               </span>
-              <span className="rounded bg-[#DFB76C]/20 text-[#DFB76C] text-[10px] font-bold px-1.5 py-0.5 border border-[#DFB76C]/30 shrink-0 font-mono">
+              <span className="rounded bg-[#D8B282]/20 text-[#D8B282] text-[10px] font-bold px-1.5 py-0.5 border border-[#D8B282]/30 shrink-0 font-mono">
                 CRM
               </span>
             </div>
@@ -908,11 +908,11 @@ export function Sidebar({
                 }}
                 className={`flex-1 py-1.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                   effectiveView === "platform"
-                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                    ? "bg-[#D8B282]/20 text-[#F6E1C3] border border-[#D8B282]/40 shadow-sm"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D8B282]" />
                 <span>Nền Tảng</span>
               </button>
               <button
@@ -926,7 +926,7 @@ export function Sidebar({
                 }}
                 className={`flex-1 py-1.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                   effectiveView === "company"
-                    ? "bg-blue-600 text-white shadow-sm"
+                    ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -950,7 +950,7 @@ export function Sidebar({
                 }
               }}
               title={`Chuyển chế độ: ${effectiveView === "platform" ? "Quản trị Nền tảng" : "Doanh nghiệp"}`}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400 hover:text-white transition-all shadow-sm"
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-[#D8B282] hover:text-[#F6E1C3] transition-all shadow-sm"
             >
               {effectiveView === "platform" ? <ShieldCheck className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
             </button>

@@ -134,13 +134,13 @@ export function EnterpriseTreeMenu({
           title={companies.length > 0 ? `Doanh nghiệp (${companies.length})` : "Hệ thống Doanh nghiệp"}
           className={`group relative flex w-full items-center justify-center rounded-xl p-2.5 text-sm transition-all outline outline-1 outline-offset-[-1px] cursor-pointer ${
             pathname?.startsWith("/companies")
-              ? "bg-amber-500 text-slate-950 font-bold outline-amber-400 shadow-md shadow-amber-500/20"
+              ? "bg-slate-900 text-[#F6E1C3] font-bold border-l-4 border-l-[#D8B282] border-y border-r border-[#D8B282]/40 shadow-sm outline-transparent"
               : "bg-transparent outline-transparent text-slate-300 hover:text-white hover:bg-slate-900"
           }`}
         >
-          <Building2 className="size-4 shrink-0 text-amber-400 group-hover:text-amber-300" />
+          <Building2 className="size-4 shrink-0 text-[#D8B282] group-hover:text-[#F6E1C3]" />
           {companies.length > 0 && (
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-amber-400" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#D8B282]" />
           )}
         </Link>
       </div>
@@ -151,12 +151,12 @@ export function EnterpriseTreeMenu({
     <div className="px-3">
       {/* Header section */}
       <div className="mb-2 mt-4 px-3 flex items-center justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-amber-400/90 select-none flex items-center gap-1.5">
-          <Layers className="size-3 text-amber-400" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#D8B282]/90 select-none flex items-center gap-1.5">
+          <Layers className="size-3 text-[#D8B282]" />
           <span>DOANH NGHIỆP CỦA TÔI</span>
         </span>
         {companies.length > 0 && (
-          <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded-full border border-amber-500/30">
+          <span className="text-[10px] font-bold text-[#F6E1C3] bg-[#D8B282]/15 px-1.5 py-0.5 rounded-full border border-[#D8B282]/30">
             {companies.length} DN
           </span>
         )}
@@ -169,7 +169,7 @@ export function EnterpriseTreeMenu({
           className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800/60 hover:text-white transition-colors cursor-pointer select-none"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Building2 className="size-4 text-amber-400 shrink-0" />
+            <Building2 className="size-4 text-[#D8B282] shrink-0" />
             <span className="truncate">Hệ Thống Doanh Nghiệp</span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -193,7 +193,7 @@ export function EnterpriseTreeMenu({
                 <Link
                   to="/companies"
                   onClick={onNavigate}
-                  className="text-amber-400 hover:underline text-[11px] font-bold"
+                  className="text-[#D8B282] hover:underline text-[11px] font-bold"
                 >
                   + Quản lý doanh nghiệp
                 </Link>
@@ -216,12 +216,12 @@ export function EnterpriseTreeMenu({
                     >
                       <div className="flex items-center gap-1.5 min-w-0">
                         {isExpanded ? (
-                          <ChevronDown className="size-3 text-slate-400 group-hover:text-amber-300 shrink-0" />
+                          <ChevronDown className="size-3 text-slate-400 group-hover:text-[#F6E1C3] shrink-0" />
                         ) : (
-                          <ChevronRight className="size-3 text-slate-400 group-hover:text-amber-300 shrink-0" />
+                          <ChevronRight className="size-3 text-slate-400 group-hover:text-[#F6E1C3] shrink-0" />
                         )}
-                        <Building2 className="size-3.5 text-amber-400 shrink-0" />
-                        <span className="font-semibold text-[12px] truncate text-slate-200 group-hover:text-amber-200">
+                        <Building2 className="size-3.5 text-[#D8B282] shrink-0" />
+                        <span className="font-semibold text-[12px] truncate text-slate-200 group-hover:text-[#F6E1C3]">
                           {company.name}
                         </span>
                       </div>
@@ -238,12 +238,12 @@ export function EnterpriseTreeMenu({
                           onClick={onNavigate}
                           className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[11.5px] transition-colors cursor-pointer ${
                             empActive
-                              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+                              ? "bg-[#D8B282]/15 text-[#F6E1C3] font-bold border border-[#D8B282]/30"
                               : "text-slate-300 hover:bg-slate-800 hover:text-white"
                           }`}
                         >
                           <div className="flex items-center gap-2">
-                            <Users className={`size-3.5 ${empActive ? "text-amber-300" : "text-slate-400"}`} />
+                            <Users className={`size-3.5 ${empActive ? "text-[#F6E1C3]" : "text-slate-400"}`} />
                             <span>Quản lý nhân viên</span>
                           </div>
                           {company.employeeCount > 0 && (
@@ -261,15 +261,15 @@ export function EnterpriseTreeMenu({
                           onClick={onNavigate}
                           className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[11.5px] transition-colors cursor-pointer ${
                             permActive
-                              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+                              ? "bg-[#D8B282]/15 text-[#F6E1C3] font-bold border border-[#D8B282]/30"
                               : "text-slate-300 hover:bg-slate-800 hover:text-white"
                           }`}
                         >
                           <div className="flex items-center gap-2">
-                            <ShieldCheck className={`size-3.5 ${permActive ? "text-amber-300" : "text-slate-400"}`} />
+                            <ShieldCheck className={`size-3.5 ${permActive ? "text-[#F6E1C3]" : "text-slate-400"}`} />
                             <span>Phân quyền & Vai trò</span>
                           </div>
-                          <span className="text-[9px] uppercase tracking-wider font-mono px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                          <span className="text-[9px] uppercase tracking-wider font-mono px-1 py-0.5 rounded bg-[#D8B282]/15 text-[#F6E1C3] border border-[#D8B282]/30">
                             RBAC
                           </span>
                         </Link>
@@ -282,12 +282,12 @@ export function EnterpriseTreeMenu({
                           onClick={onNavigate}
                           className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[11.5px] transition-colors cursor-pointer ${
                             taskActive
-                              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+                              ? "bg-[#D8B282]/15 text-[#F6E1C3] font-bold border border-[#D8B282]/30"
                               : "text-slate-300 hover:bg-slate-800 hover:text-white"
                           }`}
                         >
                           <div className="flex items-center gap-2">
-                            <ClipboardList className={`size-3.5 ${taskActive ? "text-amber-300" : "text-slate-400"}`} />
+                            <ClipboardList className={`size-3.5 ${taskActive ? "text-[#F6E1C3]" : "text-slate-400"}`} />
                             <span>Giao việc</span>
                           </div>
                           {company.taskCount > 0 && (
@@ -305,7 +305,7 @@ export function EnterpriseTreeMenu({
                           onClick={onNavigate}
                           className={`flex items-center justify-between rounded-lg px-2.5 py-1 text-[11px] transition-colors cursor-pointer ${
                             detailActive
-                              ? "bg-slate-800 text-amber-300 font-semibold"
+                              ? "bg-slate-800 text-[#F6E1C3] font-semibold"
                               : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
                           }`}
                         >
@@ -323,7 +323,7 @@ export function EnterpriseTreeMenu({
               <Link
                 to="/companies"
                 onClick={onNavigate}
-                className="text-[11px] font-medium text-slate-400 hover:text-amber-300 flex items-center gap-1 transition-colors"
+                className="text-[11px] font-medium text-slate-400 hover:text-[#F6E1C3] flex items-center gap-1 transition-colors"
               >
                 <span>Xem tất cả danh bạ</span>
                 <ChevronRight className="size-3" />

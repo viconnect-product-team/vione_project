@@ -1,5 +1,22 @@
 # Vibe App Monorepo - Cursor Rules
 
+## -0.00. Quy Chuẩn Màu Vàng Đồng Sáng CRM & Đồng Bộ Theme Sáng App/CRM (STRICT BRIGHT BRONZE GOLD & LIGHT THEME PARITY)
+- **CHUẨN HÓA MÀU VÀNG ĐỒNG SÁNG TRÊN TOÀN BỘ CRM (BRIGHT BRONZE GOLD)**:
+  * Toàn bộ mã màu vàng nghệ, vàng chói cũ (`#DFB76C`, `#C99E55`) và các gam màu cam/amber (`bg-amber-*`, `text-amber-*`, `border-amber-*`) trên CRM BẮT BUỘC thay thế bằng hệ màu **Vàng đồng sáng hoàng gia (Bright Bronze Gold)**:
+    - Vàng đồng chủ đạo: `#D8B282`
+    - Vàng đồng ánh kim (Highlight): `#F6E1C3`
+    - Vàng đồng trung tính: `#C29B69`
+    - Vàng đồng trầm (Deep Bronze dùng cho chữ và viền trên theme sáng): `#8C653B`
+- **CẤM TUYỆT ĐỐI HIỂN THỊ TAB HOẶC NÚT ĐANG CHỌN LÀ MÀU VÀNG HOẶC CAM**:
+  * Khi tab trên Sidebar hay nút bấm được kích hoạt (active/selected):
+    - **CẤM DÙNG NỀN VÀNG TRƠN HOẶC CAM TRƠN** (`bg-amber-500`, `bg-yellow-500`, `bg-orange-500`, `bg-[#DFB76C]`, `bg-blue-600`).
+    - **Tab Sidebar active**: Nền Slate-900 đen thạch anh kết hợp viền mạ vàng đồng sáng `border-l-4 border-l-[#D8B282] border-y border-r border-[#D8B282]/30 shadow-md`, icon `#D8B282`, chữ trắng ngà `#F6E1C3` font-bold.
+    - **Sub-item active**: Nền `bg-[#D8B282]/15` viền `border-l-2 border-l-[#D8B282] border-y border-r border-[#D8B282]/30`, chữ `#F6E1C3` font-bold.
+    - **Badge**: Gradient vàng đồng sáng `bg-gradient-to-r from-[#D8B282] to-[#C29B69] text-slate-950 font-extrabold`.
+- **ĐỒNG BỘ THEME SÁNG TRÊN CẢ CRM VÀ APP VIONE**:
+  * Biến gốc `--primary` chuyển từ cam hổ phách `#D97706` sang vàng đồng sáng `#D8B282`.
+  * Trên theme sáng của App (`.bc-app`), bảo vệ tuyệt đối text trắng trên nút gradient (`.bc-cta-gold`, `gradient-destructive`, `gradient-success`) và dark card không bị chuyển nhầm thành chữ đen trên nền tối.
+
 ## -0.01. Quy Chuẩn Khung Mô Phỏng Di Động (PwaDeviceSimulator) & Theme Sáng CRM (STRICT PWA SIMULATOR & CRM LIGHT THEME RULE)
 - **QUY CHUẨN XEM TRƯỚC APP/PWA (STRICT PWA DEVICE SIMULATOR)**:
   * Khi người dùng chọn "Xem Trước App/PWA" trên các trang quản trị nền tảng ViOne (`platform.*.tsx`), **CẤM TUYỆT ĐỐI** render trực tiếp các component web desktop dàn trang toàn màn hình.

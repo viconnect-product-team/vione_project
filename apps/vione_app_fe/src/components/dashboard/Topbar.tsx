@@ -13,7 +13,7 @@ export function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const isDashboard = pathname === "/" || pathname === "";
 
   return (
-    <header className="self-stretch px-4 sm:px-6 lg:px-8 py-4 sm:py-5 bg-white dark:bg-slate-900 border-b border-violet-100 dark:border-slate-800 flex justify-between items-center sticky top-0 z-40 backdrop-blur-md transition-colors duration-200">
+    <header className="self-stretch px-4 sm:px-6 lg:px-8 py-4 sm:py-5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center sticky top-0 z-40 backdrop-blur-md transition-colors duration-200">
       <div className="flex min-w-0 items-center gap-3">
         <button
           onClick={onMenuClick}

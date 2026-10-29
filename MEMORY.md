@@ -1,5 +1,132 @@
 # System Memory & Architecture
 
+## 0.0000000000.20. HOÀN THIỆN ĐỒNG BỘ 3 HỒ SƠ PHÁP LÝ CHUẨN XÁC KHÔNG TRÙNG LẶP & ĐỒNG BỘ MÀU VÀNG ĐỒNG SÁNG CHO CRM CÙNG APP VIONE KHẮC PHỤC TRIỆT ĐỂ LỖI THEME SÁNG (29/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Của Người Dùng
+1. **Làm sạch và chuẩn hóa 3 tệp pháp lý (Tờ khai, Cam đoan, Quyết định)**:
+   - Tên tác phẩm chuẩn xác duy nhất: *`PHẦN MỀM VIONE PLATFORM– NỀN TẢNG ĐỊNH DANH SỐ, KẾT NỐI KINH DOANH, QUẢN TRỊ CỘNG ĐỒNG, SỰ KIỆN VÀ SỐ HÓA DI SẢN VĂN HÓA`*. Triệt tiêu 100% lỗi lặp chuỗi tên tác phẩm.
+   - Chuẩn hóa tách biệt Subdomain: Cổng Web Quản Trị ViOne Platform (`https://crm_vione.viconnect.vn`), Ứng dụng Di động Hội viên (`https://vione.viconnect.vn`), API Backend (`https://crm_vione.viconnect.vn/api` & `https://vione.viconnect.vn/api`).
+   - Phân quyền RBAC chuẩn doanh nghiệp 4 vai trò (Quản trị viên / Admin, Quản lý / Manager, Thành viên / Member, Khách / Guest), loại bỏ cơ cấu phân ban.
+   - Chuyển giao toàn diện thanh toán VNPay và xác nhận qua Zalo OA, loại bỏ hoàn toàn VietQR / Napas.
+2. **Đồng bộ màu sắc CRM & App ViOne**:
+   - Thay thế toàn bộ màu vàng nghệ, vàng chói (`#DFB76C`) và cam/amber trong CRM thành **Màu vàng đồng sáng (Bright Bronze Gold)**: `#D8B282`, `#F6E1C3`, `#C29B69`, `#8C653B`.
+   - **Tuyệt đối KHÔNG hiện tab đang chọn ở sidebar hay nút đang chọn là màu vàng, cam**: Tab active dùng nền Slate-900 đen thạch anh kết hợp viền mạ vàng đồng sáng `border-l-4 border-l-[#D8B282]`, icon `#D8B282`, chữ `#F6E1C3` sang trọng.
+3. **Khắc phục lỗi màu Theme Sáng (Light Theme) ở cả CRM và App**:
+   - Thay thế biến root `--primary` từ cam hổ phách `#D97706` sang vàng đồng sáng `#D8B282`.
+   - Khắc phục lỗi CSS light theme mobile, bảo vệ các nút bấm gradient (`.bc-cta-gold`, `gradient-destructive`, `gradient-success`), dark card, và badge không bị biến thành chữ đen trên nền tối.
+
+### 2. Các Tệp Tin Đã Xử Lý & Hiệu Chỉnh Kỹ Thuật
+1. **Bộ Hồ Sơ Pháp Lý**:
+   - `document/[VIONE] 01. Tờ khai.docx` & `C:\Users\vumik\Downloads\[VIONE] 01. Tờ khai.docx` (153 paragraphs, Word COM verify SUCCESS).
+   - `document/[VIONE] 02. Cam đoan.docx` & `C:\Users\vumik\Downloads\[VIONE] 02. Cam đoan.docx` (33 paragraphs, Word COM verify SUCCESS).
+   - `document/[VIONE] 03. Quyết định.docx` & `C:\Users\vumik\Downloads\[VIONE] 03. Quyết định.docx` (49 paragraphs, Word COM verify SUCCESS).
+2. **Hệ Thống Giao Diện Web CRM & App**:
+   - `apps/vione_app_fe/src/components/dashboard/Sidebar.tsx`: Chuẩn hóa active menu item sang Slate-900 viền vàng đồng sáng `border-l-[#D8B282]`, badge New vàng đồng `#D8B282`, role shield `#D8B282`, loại bỏ hoàn toàn `bg-blue-600` và `amber-500`.
+   - `apps/vione_app_fe/src/components/dashboard/EnterpriseTreeMenu.tsx`: Thay thế `bg-amber-500` active bằng Slate-900 viền mạ vàng đồng sáng `border-l-[#D8B282]`.
+   - `apps/vione_app_fe/src/components/dashboard/SmartCustomerCrmHub.tsx`: Thay toàn bộ 47 mã màu `#DFB76C` và `amber-*` sang `#D8B282` / `#F6E1C3`.
+   - `apps/vione_app_fe/src/components/dashboard/ExecutiveDashboard.tsx`: Chuẩn hóa các action chip và badge từ `amber-*` sang vàng đồng sáng `#D8B282`.
+   - `apps/vione_app_fe/src/components/dashboard/Topbar.tsx`: Sửa border từ tím `border-violet-100` thành `border-slate-200 dark:border-slate-800`.
+   - `apps/vione_app_fe/src/styles.css`: Thay thế hệ thống biến màu `--primary`, `--gradient-primary`, `--vba-gold`, bổ sung cơ chế miễn trừ tương phản light theme cho các nút gradient và dark card.
+
+### 3. Kết Quả Kiểm Tra Chất Lượng Mã Nguồn
+- **AST Syntax & Parse Validation**: 100% các file sửa đổi (`Sidebar.tsx`, `EnterpriseTreeMenu.tsx`, `SmartCustomerCrmHub.tsx`, `ExecutiveDashboard.tsx`, `Topbar.tsx`) đạt **0 errors** (TypeScript AST parser pass).
+- **Word COM Automation**: 100% tài liệu mở thành công không phát sinh bất kỳ cảnh báo XML hay lỗi định dạng nào.
+- Tuân thủ nghiêm ngặt **Strict Rule 1**: Tuyệt đối không tự ý chạy `git push` hay `git commit`.
+
+---
+
+## 0.0000000000.19. CHUYỂN ĐỔI TOÀN DIỆN HẠ TẦNG THANH TOÁN TỪ VIETQR SANG CỔNG THANH TOÁN VNPAY & ZALO OFFICIAL ACCOUNT (ZALO OA / ZNS) TRÊN TOÀN BỘ TÀI LIỆU VIONE (29/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Người Dùng
+- Yêu cầu người dùng: *"sửa tiếp vione tài liệu vừa sửa là không dùng vietQR ta dùng vnpay và zalo oa"*.
+- Phạm vi chuyển đổi: Toàn bộ các tài liệu vừa sửa đổi và hệ tài liệu đặc tả của dự án ViOne Platform:
+  * `[VIONE] 01. Tờ khai.docx`
+  * `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` và `[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+  * `[VIONE] BRD YÊU CẦU NGHIỆP VỤ TOÀN DIỆN.docx`
+  * `[VIONE] SRS ĐẶC TẢ YÊU CẦU PHẦN MỀM TOÀN DIỆN.docx`
+  * Đồng bộ song song tại cả 2 thư mục: `document/` và `C:\Users\vumik\Downloads\`.
+
+### 2. Chi Tiết Thực Hiện & Nội Dung Chuẩn Hóa
+1. **Loại bỏ triệt để 100% từ khóa VietQR và Napas**:
+   - Thay thế toàn bộ cụm từ *"VietQR"*, *"VietQR Napas 24/7"*, *"Mã VietQR"*, *"cấu hình ngân hàng VietQR"* bằng **Cổng thanh toán điện tử VNPay** và **Zalo Official Account (Zalo OA / ZNS)**.
+2. **Cập nhật các phân hệ và quy trình nghiệp vụ**:
+   - **Phân hệ Tài chính & Thanh toán**: Chuyển đổi thành *"Phân hệ Quản trị Tài chính, Thu chi & Cổng Thanh Toán VNPay / Zalo OA (Financial & VNPay / Zalo OA Payment Hub)"*.
+   - **Cổng thanh toán**: Tích hợp cổng thanh toán trực tuyến VNPay (hỗ trợ VNPay-QR, thẻ ATM nội địa, thẻ quốc tế Visa/Mastercard/JCB) và hệ thống gửi thông báo xác nhận giao dịch, hóa đơn điện tử tự động qua Zalo Official Account (Zalo OA / ZNS).
+   - **Đối soát & Gạch nợ tự động**: Tích hợp API VNPay IPN Webhook và Zalo OA ZNS Webhook xử lý đối soát và gạch nợ tức thì trong vòng 1 giây theo chuẩn BR-FIN-06.
+   - **Cài đặt hệ thống (Hình 2.23)**: Tùy biến nhận diện thương hiệu, cấu hình thông số tích hợp cổng thanh toán VNPay và định danh Zalo OA, lưu trữ bền vững vào CSDL PostgreSQL.
+   - **Vé sự kiện ViOne Tickets & Phí dịch vụ**: Luồng mua vé và đóng phí chuyển giao toàn diện qua cổng thanh toán VNPay và tự động trả vé điện tử qua Zalo OA.
+3. **Bảo toàn chuẩn XML OpenXML**:
+   - Đảm bảo toàn bộ ký tự `&` được escape chuẩn thành `&amp;` trong `word/document.xml`, triệt tiêu hoàn toàn nguy cơ lỗi XML parser khi mở bằng Microsoft Word.
+
+### 3. Kết Quả Kiểm Thử Thực Tế Qua Word COM API
+- Quét kiểm tra số lượng từ khóa:
+  * `vietqr` / `napas`: **0 matches** trên toàn bộ 6 tệp tài liệu ở cả 2 thư mục.
+  * `vnpay`: Xuất hiện chuẩn xác tại tất cả các điểm thanh toán (01: 7, 06: 24, BRD: 10, SRS: 47).
+  * `zalo oa`: Xuất hiện đồng bộ cùng luồng thông báo và hóa đơn (01: 6, 06: 18, BRD: 4, SRS: 9).
+- Chạy kiểm tra tự động bằng Microsoft Word COM Object (`$word.Documents.Open`):
+  * `[VIONE] 01. Tờ khai.docx` -> **[SUCCESS]** (153 paragraphs)
+  * `[VIONE] 02. Cam đoan.docx` -> **[SUCCESS]** (33 paragraphs)
+  * `[VIONE] 03. Quyết định.docx` -> **[SUCCESS]** (49 paragraphs)
+  * `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` -> **[SUCCESS]** (13.145 paragraphs)
+  * `[VIONE] BRD YÊU CẦU NGHIỆP VỤ TOÀN DIỆN.docx` -> **[SUCCESS]** (125 paragraphs)
+  * `[VIONE] SRS ĐẶC TẢ YÊU CẦU PHẦN MỀM TOÀN DIỆN.docx` -> **[SUCCESS]** (2.111 paragraphs)
+- Tuân thủ nghiêm ngặt **Strict Rule 1**: Tuyệt đối không tự ý chạy `git push` hay `git commit`.
+
+---
+
+## 0.0000000000.18. HOÀN THIỆN TOÀN BỘ 4 HỒ SƠ PHÁP LÝ & BẢN MASTER [VIONE] 06 CHÀO HÀNG KHÁCH VIP: CHỤP MỚI 43 ẢNH LIVE PRODUCTION, BỌC KHUNG ĐIỆN THOẠI MOCKUP LUXURY, ĐỔI TÊN CHUẨN PHẦN MỀM, CHUYỂN WEB CRM THÀNH CỔNG WEB QUẢN TRỊ, PHÂN QUYỀN RBAC CHUNG VÀ BỔ SUNG 6 PHÂN HỆ MỚI (29/10/2026)
+
+### 1. Bối cảnh & 5 Chỉ Đạo Trọng Yếu Của Người Dùng
+1. **Mô tả chuẩn kỹ thuật & tính năng của ViOne phục vụ chào hàng khách VIP**:
+   - Nâng cấp toàn diện tệp `[VIONE] 06. Trình bày tác phẩm.cop đĩa` thành bản hồ sơ công nghệ cao cấp nhất.
+2. **Chuẩn hóa Tên Tác Phẩm duy nhất trên 100% cả 4 tệp hồ sơ**:
+   - `Phần mềm ViOne Platform– Nền tảng định danh số, kết nối kinh doanh, quản trị cộng đồng, sự kiện và số hóa di sản văn hóa` (Tiêu đề chính: `PHẦN MỀM VIONE PLATFORM– NỀN TẢNG ĐỊNH DANH SỐ, KẾT NỐI KINH DOANH, QUẢN TRỊ CỘNG ĐỒNG, SỰ KIỆN VÀ SỐ HÓA DI SẢN VĂN HÓA`).
+   - Xóa bỏ triệt để từ "hệ sinh thái" và "CRM" trong tên tác phẩm.
+3. **Thay thế triệt để từ "Web CRM" / "CRM" bằng "Cổng Web Quản Trị ViOne Platform"**:
+   - Sử dụng định danh chuẩn mực: "Cổng Web Quản Trị ViOne Platform" / "Hệ thống Web Quản trị ViOne" / "Cổng Web Quản Trị".
+4. **Phân quyền RBAC chuẩn doanh nghiệp, xóa bỏ các ban bệ**:
+   - Mô tả mô hình RBAC đa cấp độ (Quản trị viên / Admin, Quản lý điều hành / Manager, Thành viên / Member, Khách / Guest).
+   - Xóa bỏ triệt để mọi khái niệm ban bệ hành chính (không Ban Chấp hành, Ban Kiểm tra, 6 Ban chuyên môn, họp ban).
+5. **Bổ sung đầy đủ 6 phân hệ nghiệp vụ mới**:
+   - ViOne Sport (thể thao, bóng đá, golf, pickleball, bracket bốc thăm), ViOne Run (marathon, GPS chống gian lận), ViOne Museum (bảo tàng số 3D WebGL/AR, chạm NFC), ViOne Heritage (số hóa di sản, bản đồ số GIS, thuyết minh GPS), ViOne Tickets (vé điện tử QR chống giả <100ms), ViOne Archive (/documents, cây thư mục đa cấp chuẩn Google Drive).
+6. **Chụp mới 43 ảnh live production và bọc khung điện thoại mockup Luxury cho Mobile App**:
+   - Toàn bộ ảnh Mobile chụp từ hệ thống thật được lồng vào khung viền điện thoại thông minh Obsidian Luxury (bo góc tròn, Dynamic Island, status bar 09:41, pin/wifi/sóng, home indicator) giống như bản hướng dẫn sử dụng.
+
+### 2. Chi Tiết Thực Hiện & Kết Quả Đạt Được
+
+#### A. Chụp Mới 100% 43 Ảnh Live Production Tại `document/images/evidence_v9/`
+- **23 Ảnh Cổng Web Quản Trị (Desktop 1440x900 Retina 2x)**:
+  `crm_01_login.png` đến `crm_23_settings.png` phản ánh đầy đủ 23 phân hệ nghiệp vụ thực tế, bao gồm `crm_14_sport.png`, `crm_15_run.png`, `crm_16_museum.png`, `crm_17_heritage.png`, `crm_18_tickets.png`, `crm_19_documents.png`, `crm_20_voting.png`, `crm_21_rbac.png`, `crm_22_ai.png`, `crm_23_settings.png`.
+- **20 Ảnh Di Động Native ViOne Connect Đóng Khung Điện Thoại Mockup**:
+  `app_01_login.png` đến `app_20_heritage.png` với khung viền Titanium/Obsidian cao cấp, Dynamic Island, thời gian 09:41, Home bar. Bao gồm đầy đủ `app_16_tickets.png`, `app_17_sport.png`, `app_18_run.png`, `app_19_museum.png`, `app_20_heritage.png`.
+
+#### B. Nâng Cấp Bổ Sung 6 Module SRS Trong Thân Văn Bản
+- Bổ sung chi tiết vào Section 2.3 Đặc tả yêu cầu chức năng (SRS Specifications):
+  * **2.3.11 Module 11**: Quản Trị Giải Đấu Thể Thao Doanh Nghiệp ViOne Sport.
+  * **2.3.12 Module 12**: Quản Trị Giải Chạy Bộ ViOne Run Marathon & Đồng Bộ Thành Tích GPS.
+  * **2.3.13 Module 13**: Quản Trị Không Gian Trưng Bày Bảo Tàng Số 3D & Hiện Vật Tương Tác ViOne Museum.
+  * **2.3.14 Module 14**: Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage.
+  * **2.3.15 Module 15**: Quản Trị Vé Sự Kiện Điện Tử & Điểm Danh Check-in QR Realtime ViOne Tickets.
+  * **2.3.16 Module 16**: Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive ViOne Archive (/documents).
+
+#### C. Khắc Phục Triệt Để Lỗi OpenXML Drawing & Slicing
+- Sửa lỗi tìm kiếm thẻ mở `<w:p>`: Tạo hàm `findParagraphStart` kiểm tra ký tự sau `<w:p` (`' '` hoặc `'>'`), loại trừ hoàn toàn việc bắt nhầm các thẻ con như `<w:pPr>` và `<w:pStyle>`.
+- Chuẩn hóa cấu trúc DrawingML: Đảm bảo đầy đủ thuộc tính `name="Picture ${docPrId}"`, thẻ con `<a:srcRect/>`, `cstate="none"` và `bwMode="auto"`.
+- Thứ tự thay thế nội dung: Thay thế thân văn bản (Body indices > 100,000) trước, sau đó mới cập nhật Mục lục (TOC indices < 50,000) để tránh xung đột vị trí chuỗi.
+
+#### D. Đồng Bộ Hoàn Hảo 4 Hồ Sơ DOCX & MD Sang Cả 2 Thư Mục
+Đồng bộ song song giữa `document/` và `C:\Users\vumik\Downloads\`:
+1. `[VIONE] 01. Tờ khai.docx` (153 paragraphs, 0 errors)
+2. `[VIONE] 02. Cam đoan.docx` (33 paragraphs, 0 errors)
+3. `[VIONE] 03. Quyết định.docx` (49 paragraphs, 0 errors)
+4. `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (13,145 paragraphs, 0 errors) & `[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+
+### 3. Kiểm Thử Chất Lượng Bắt Buộc (Strict Verification)
+- Chạy kiểm tra thực tế bằng Microsoft Word COM Object (`$word.Documents.Open`) trên toàn bộ 6 file docx tại cả 2 thư mục: 100% trả về `[SUCCESS]` và 0 lỗi.
+- Tuân thủ nghiêm ngặt **Strict Rule 1**: Tuyệt đối không tự ý chạy `git push` hay `git commit`.
+
+---
+
 ## 0.0000000000.17. GỠ BỎ KHỐI HỆ SINH THÁI SỐ HỢP NHẤT (VIONE ECOSYSTEM GRID) TRÊN CẢ HAI BẢN APP VIONE (PWA & NATIVE) (29/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Người Dùng

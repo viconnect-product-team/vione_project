@@ -6,9 +6,9 @@ TÁC PHẨM
 # CHƯƠNG TRÌNH MÁY TÍNH:
 
 
-# PHẦN MỀM VIONE PLATFORM (VIONE PLATFORM SOFTWARE)
+# PHẦN MỀM VIONE PLATFORM– NỀN TẢNG ĐỊNH DANH SỐ, KẾT NỐI KINH DOANH, QUẢN TRỊ CỘNG ĐỒNG, SỰ KIỆN VÀ SỐ HÓA DI SẢN VĂN HÓA
 
-(VIONE CRM & VIONE CONNECT APP)
+(CỔNG WEB QUẢN TRỊ VIONE PLATFORM & ỨNG DỤNG DI ĐỘNG NATIVE VIONE CONNECT)
 Chủ sở hữu quyền tác giả:
 Tên tổ chức / doanh nghiệp: ........................................................................................................................
 Mã số doanh nghiệp: .................................................................................................................................
@@ -60,7 +60,7 @@ Hà Nội, Năm 2026
 ### 2.3.1 Các chức năng nền tảng chung
 
 
-### 2.3.2 Chức năng chi tiết phân hệ Cổng Quản trị Web CRM (20 phân hệ)
+### 2.3.2 Chức năng chi tiết phân hệ Cổng Web Quản Trị ViOne Platform (20 phân hệ)
 
 
 ### 2.3.3 Chức năng chi tiết phân hệ Ứng dụng Di động Native ViOne Connect (16 phân hệ)
@@ -69,7 +69,57 @@ Hà Nội, Năm 2026
 ### 2.3.4 Ma trận luồng dữ liệu và thông số kỹ thuật API (10 modules)
 
 
-### 2.4 Các yêu cầu phi chức năng khác
+#
+
+### 2.3.11 Module 11: Quản Trị Giải Đấu Thể Thao Doanh Nghiệp ViOne Sport
+
+Phân hệ tổ chức, điều phối và số hóa toàn diện các giải đấu thể thao kết nối cộng đồng doanh nghiệp (Bóng đá mini 7 người, Giải Golf Doanh nhân, Tennis, Pickleball):
+- **Cấu hình giải đấu:** Cấu hình đa dạng thể thức thi đấu: Vòng tròn tính điểm (Round-Robin), Đấu loại trực tiếp (Knockout), Chia bảng hỗn hợp có vòng Play-off tranh cúp vô địch.
+- **Sơ đồ bốc thăm tự động:** Hệ thống tự động xếp lịch thi đấu, phân nhánh sơ đồ cây (Tournament Bracket), chia nhóm hạt giống minh bạch, tự động hóa 100% công tác bốc thăm.
+- **Hồ sơ Vận động viên số:** Cấp phát thẻ vận động viên điện tử có ảnh chân dung và mã QR định danh cá nhân; theo dõi lịch sử thi đấu, hồ sơ sức khỏe và bảo hiểm thể thao.
+- **Bảng điểm & Xếp hạng Realtime:** Cập nhật tỷ số trận đấu, bàn thắng, thẻ phạt, điểm số set đấu và tự động tính điểm xếp hạng bảng tổng sắp huy chương tức thì.
+
+### 2.3.12 Module 12: Quản Trị Giải Chạy Bộ ViOne Run Marathon & Đồng Bộ Thành Tích GPS
+
+Giải chạy bộ phong trào rèn luyện sức khỏe và gắn kết mạng lưới doanh nhân số hóa toàn diện:
+- **Đa cự ly thử thách:** Tổ chức linh hoạt theo các cự ly tiêu chuẩn: 5km (Fun Run), 10km (Executive Run), 21km (Half Marathon) với khung thời gian thử thách theo tuần hoặc tháng.
+- **Đồng bộ vệ tinh GPS:** Đo đạc chính xác quãng đường (km), tốc độ trung bình (Pace min/km), số bước chân (Cadence) và tổng năng lượng tiêu thụ (kcal) từ cảm biến định vị di động.
+- **Thuật toán chống gian lận:** Phát hiện gia tốc di chuyển bất thường vượt ngưỡng sinh học con người (phương tiện cơ giới) và lọc bỏ tọa độ giả lập (Mock Location) nhằm đảm bảo tính công bằng tuyệt đối.
+- **Bảng xếp hạng & Chứng nhận:** Vinh danh bảng vàng Top Runners theo ngày/tuần/tháng; tự động cấp chứng nhận hoàn thành điện tử (E-Certificate) kèm mã QR xác thực bảo mật.
+
+### 2.3.13 Module 13: Quản Trị Không Gian Trưng Bày Bảo Tàng Số 3D & Hiện Vật ViOne Museum
+
+Không gian bảo tàng số ảo chuyên đề ứng dụng đồ họa WebGL tương tác không gian ba chiều (3D) và thực tế tăng cường (AR):
+- **Mô hình hiện vật 3D Photogrammetry:** Tái hiện hiện vật lịch sử và sản phẩm tiêu biểu bằng kỹ thuật quét 3D Photogrammetry siêu thực, cho phép xoay 360 độ, thu phóng chi tiết vân bề mặt vật liệu.
+- **Tương tác vật lý 1-chạm NFC:** Mỗi hiện vật vật lý tại quầy trưng bày được gắn thẻ chip NFC và mã QR; khách tham quan chỉ cần chạm điện thoại để tự động phát thuyết minh đa phương tiện.
+- **Quản lý vé tham quan ảo:** Phát hành vé tham quan không gian số trực tuyến, phân luồng khách tham quan theo khung giờ và quản lý lưu lượng người xem đồng thời.
+- **Hướng dẫn viên ảo AI:** Trợ lý ảo AI đóng vai trò hướng dẫn viên số, tự động giải đáp các câu hỏi lịch sử và bối cảnh ra đời của từng hiện vật trưng bày.
+
+### 2.3.14 Module 14: Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage
+
+Nền tảng quản lý hồ sơ số hóa di sản văn hóa vật thể, phi vật thể và danh lam thắng cảnh theo chuẩn quốc gia:
+- **Hồ sơ số hóa di sản:** Quản lý hồ sơ lý lịch di tích, hình ảnh tư liệu, video tư liệu và bản vẽ kiến trúc số hóa theo chuẩn phân loại di sản của UNESCO và Bộ Văn hóa.
+- **Bản đồ số GIS khoanh vùng:** Tích hợp hệ thống thông tin địa lý (GIS) khoanh vùng các khu vực bảo vệ di tích (Khu vực I, Khu vực II) trên nền bản đồ số vệ tinh độ phân giải cao.
+- **Tham quan thực tế ảo VR360:** Tour tham quan không gian thực tế ảo 360 độ đa điểm chạm với ảnh Panoramas 8K, đưa người xem du ngoạn không gian di tích từ xa.
+- **Thuyết minh tự động GPS Geofencing:** Tự động nhận diện du khách di chuyển vào bán kính 20 mét quanh di tích qua GPS Geofencing để kích hoạt bài thuyết minh âm thanh đa ngôn ngữ.
+
+### 2.3.15 Module 15: Quản Trị Vé Sự Kiện Điện Tử & Điểm Danh Check-in QR Realtime ViOne Tickets
+
+Giải pháp quản lý, phân phối vé sự kiện và cổng soát vé điện tử chuyên nghiệp tốc độ cao:
+- **Vé điện tử QR chống giả:** Phát hành vé điện tử có mã QR động mã hóa AES-256 thay đổi theo thời gian thực (Time-based Token), ngăn chặn triệt để hành vi chụp màn hình gian lận vé.
+- **Phân hạng vé & Sơ đồ ghế:** Phân hạng vé chuyên biệt: Khách VIP, Diễn giả (Speaker), Đại biểu thường (General), Ban Tổ chức (Staff) kèm sơ đồ ghế ngồi chuẩn xác.
+- **Cổng soát vé siêu tốc <100ms:** Xác thực mã vé trong thời gian dưới 100ms; tự động kích hoạt chế độ Offline Check-in khi mất kết nối mạng và đồng bộ hai chiều khi có mạng trở lại.
+- **Bảng điều phối sĩ số Realtime:** Theo dõi tỷ lệ đại biểu đã đến hội trường theo thời gian thực, hiển thị trực tiếp lên màn hình LED chào mừng đại biểu VIP.
+
+### 2.3.16 Module 16: Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive ViOne Archive (/documents)
+
+Hệ thống quản trị tài liệu số doanh nghiệp tổ chức theo mô hình cây thư mục phân cấp tương thích tiêu chuẩn lưu trữ đám mây:
+- **Cây thư mục phân cấp đa tầng:** Tổ chức tài liệu theo cây thư mục đa tầng (Nested Folder Tree), hỗ trợ không giới hạn số lượng thư mục con theo phòng ban, dự án và niên độ tài chính.
+- **Hỗ trợ đa định dạng văn bản:** Hỗ trợ xem trực tiếp các tệp Hợp đồng PDF, văn bản Office (Word, Excel, PowerPoint) và hình ảnh độ nét cao ngay trên trình duyệt mà không cần cài phần mềm thứ ba.
+- **Ma trận phân quyền bảo mật:** Thiết lập quyền truy cập chi tiết đến từng thư mục và tệp tin: Chỉ xem (View Only), Tải về (Download), Chỉnh sửa (Edit) và Quản trị toàn quyền (Full Control).
+- **Quản lý phiên bản tệp (Versioning):** Ghi nhận chi tiết lịch sử cập nhật phiên bản tệp (v1.0, v1.1...), hỗ trợ đối soát sai khác (Diff) và khôi phục tệp từ Thùng rác an toàn trong vòng 30 ngày.
+
+## 2.4 Các yêu cầu phi chức năng khác
 
 
 ### 2.4.1 Yêu cầu về hiệu năng (Performance Requirements)
@@ -87,7 +137,7 @@ Hà Nội, Năm 2026
 ## 1. Cấu hình Máy chủ (Server Requirements)
 
 
-## 2. Cấu hình Máy trạm truy cập Web CRM (Desktop / Laptop)
+## 2. Cấu hình Máy trạm truy cập Cổng Web Quản Trị (Desktop / Laptop)
 
 
 ## 3. Cấu hình Thiết bị Di động (Mobile App Requirements)
@@ -96,7 +146,7 @@ Hà Nội, Năm 2026
 # PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG VIONE CRM
 
 
-## 1. Màn hình Đăng nhập Quản trị ViOne CRM
+## 1. Màn hình Đăng nhập Quản trị Cổng Web Quản Trị ViOne Platform
 
 
 ## 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền
@@ -116,7 +166,7 @@ Hà Nội, Năm 2026
 11. Quản Trị Thu Tiền & Phiếu Thu Doanh Thu
 12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp
 13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử
-14. Phê Duyệt Tài Chính Đa Cấp VietQR
+14. Phê Duyệt Tài Chính Đa Cấp VNPay
 15. Lịch Trình Điều Hành & Họp Ban Trực Tuyến
 16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)
 17. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp
@@ -160,10 +210,10 @@ Hà Nội, Năm 2026
 
 ## 1.1 Mục tiêu
 
-Phần mềm Vione Platform (bao gồm Nền tảng Quản trị Doanh nghiệp ViOne Web CRM và Ứng dụng Di động Thuần Native ViOne Connect App cho iOS & Android) được thiết kế và xây dựng như một nền tảng chuyển đổi số toàn diện, hợp nhất hai trụ cột thiết yếu của doanh nghiệp hiện đại: (1) Quản trị điều hành nội bộ chuyên sâu chuẩn Enterprise C-Level và (2) Mạng lưới giao thương kết nối thương mại B2B thời gian thực.
+Phần mềm Vione Platform (bao gồm Nền tảng Quản trị Doanh nghiệp ViOne Cổng Web Quản Trị và Ứng dụng Di động Thuần Native ViOne Connect App cho iOS & Android) được thiết kế và xây dựng như một nền tảng chuyển đổi số toàn diện, hợp nhất hai trụ cột thiết yếu của doanh nghiệp hiện đại: (1) Quản trị điều hành nội bộ chuyên sâu chuẩn Enterprise C-Level và (2) Mạng lưới giao thương kết nối thương mại B2B thời gian thực.
 Mục tiêu cốt lõi của phần mềm bao gồm:
 - Tối ưu hóa năng lực điều hành C-Level: Số hóa toàn diện phễu bán hàng, dòng tiền thu chi, quản trị dự án, quy trình công việc tự động và chuyên cần nhân sự trên một cổng thông tin duy nhất.
-- Mạng xã hội giao thương B2B thời gian thực: Xóa bỏ rào cản kết nối kinh doanh truyền thống thông qua danh thiếp số thông minh NFC 1-chạm, mã QR định danh số, sàn kết nối cung cầu và phòng họp ban trực tuyến WebRTC.
+- Mạng xã hội giao thương B2B thời gian thực: Xóa bỏ rào cản kết nối kinh doanh truyền thống thông qua danh thiếp số thông minh NFC 1-chạm, mã QR định danh số, sàn kết nối cung cầu và phòng họp điều hành trực tuyến WebRTC.
 - Tự động hóa thông minh với Trí tuệ nhân tạo (AI Copilot 6.0): Tích hợp trợ lý ảo điều hành hỗ trợ giao việc qua giọng nói, phân tích cảnh báo công nợ, ghép nối đối tác kinh doanh đa chiều và quét danh thiếp OCR tự động.
 - Bảo mật dữ liệu và phân quyền đa tầng: Kiến trúc Multi-Tenant phân lập dữ liệu độc lập, phân quyền phòng ban Department RBAC và cơ chế bàn giao tài sản số tự động (Auto-Handover Engine).
 
@@ -173,16 +223,16 @@ Mục tiêu cốt lõi của phần mềm bao gồm:
 ### 1.2.1 Phân hệ chức năng
 
 Hệ thống ViOne bao gồm 2 phân hệ nền tảng chính:
-A. Phân hệ Web CRM Quản trị Doanh nghiệp (ViOne Enterprise CRM - 20 Phân hệ):
+A. Phân hệ Cổng Web Quản Trị Quản trị Doanh nghiệp (ViOne Enterprise CRM - 20 Phân hệ):
 - Bảng điều hành C-Level Dashboard: Tổng hợp trực quan các chỉ số tài chính, tiến độ công việc, tải làm việc nhân sự theo thời gian thực.
 - Quản trị quan hệ khách hàng (CRM B2B): Quản lý dữ liệu đối tác, hồ sơ phân loại doanh nghiệp, lịch sử giao dịch và phân khúc khách hàng.
 - Quản trị cơ hội kinh doanh (Deals Pipeline): Phễu bán hàng đa giai đoạn, dự báo doanh thu và phân công nhân viên phụ trách chăm sóc tự động.
 - Quy trình công việc & Kanban tự động hóa (BPMN 2.0): Khởi tạo luồng công việc, giao việc, giám sát hạn chót (Deadline) và cảnh báo quá hạn bằng xung đỏ phát sáng.
 - Quản trị nhân sự & Chấm công GPS: Chấm công qua định vị bán kính văn phòng, tích hợp FaceID và bảng công tự động.
-- Quản trị tài chính & Phê duyệt thu chi 3 cấp: Quy trình phê duyệt phiếu thu/chi đa cấp (Người lập -> Trưởng bộ phận -> Giám đốc), tích hợp sinh mã VietQR động gạch nợ tức thì.
+- Quản trị tài chính & Phê duyệt thu chi 3 cấp: Quy trình phê duyệt phiếu thu/chi đa cấp (Người lập -> Trưởng bộ phận -> Giám đốc), tích hợp cổng thanh toán trực tuyến điện tử VNPay và gửi thông báo xác nhận giao dịch qua Zalo Official Account (Zalo OA / ZNS) gạch nợ tự động tức thì.
 - Sàn giao thương Marketplace B2B: Niêm yết hồ sơ năng lực, sản phẩm, dịch vụ và chào giá đối tác trên nền tảng ViOne Platform.
 - Sự kiện & Hội thảo doanh nghiệp: Tổ chức sự kiện xúc tiến thương mại, phát hành vé điện tử và quét mã QR check-in tại quầy lễ tân.
-- Biểu quyết điện tử & Khảo sát trực tuyến: Lấy ý kiến cổ đông, biểu quyết ban chấp hành với mã hóa phiếu bầu bảo mật.
+- Biểu quyết điện tử & Khảo sát trực tuyến: Lấy ý kiến cổ đông, biểu quyết Hội đồng Quản trị và Ban Lãnh đạo với mã hóa phiếu bầu bảo mật.
 - Ma trận phân quyền phòng ban RBAC 7x6: Kiểm soát truy cập dựa trên 7 nhóm quyền và 6 vai trò, bảo vệ nghiêm ngặt quyền sở hữu dữ liệu.
 - Thư viện tài liệu & Quản lý tri thức: Lưu trữ hợp đồng, biểu mẫu, quy chế công ty trên nền tảng MinIO S3 Object Storage an toàn.
 B. Phân hệ Ứng dụng Di động Thuần Native ViOne Connect App (iOS & Android - 13 Phân hệ):
@@ -193,7 +243,7 @@ B. Phân hệ Ứng dụng Di động Thuần Native ViOne Connect App (iOS & An
 - Hộp thư Messenger 0ms & Thẻ đề xuất hẹn 1-1: Kênh chat mã hóa tức thì, gửi thẻ đề xuất gặp gỡ ghim trực tiếp vào lịch điều hành của đối tác.
 - Nút V Trung tâm 3D & Bảng điều khiển VActionSheet: Truy cập siêu tốc 5 tác vụ cốt lõi: Đưa mã QR, Chạm NFC, Quét QR, Quét OCR danh thiếp và Ghi chú cuộc gặp.
 - Mô hình Cộng đồng Hợp nhất All-in-One: Không gian liên minh doanh nghiệp tích hợp 6 phân hệ (Tasks, Supervision, Opportunities, News, Events, Members).
-- Họp ban trực tuyến 1-chạm WebRTC: Phòng họp video độ nét cao, chia sẻ màn hình và bảo mật phiên họp nội bộ.
+- Họp điều hành trực tuyến 1-chạm WebRTC: Phòng họp video độ nét cao, chia sẻ màn hình và bảo mật phiên họp nội bộ.
 - Cơ chế bàn giao tự động (Auto-Handover): Chuyển giao toàn bộ dữ liệu công việc, khách hàng khi thay đổi nhân sự mà không gián đoạn vận hành.
 - Siêu trợ lý giọng nói AI Copilot 6.0: Giao việc, truy vấn doanh thu, kiểm tra lịch trình bằng giọng nói tiếng Việt tự nhiên.
 
@@ -202,7 +252,7 @@ B. Phân hệ Ứng dụng Di động Thuần Native ViOne Connect App (iOS & An
 - Khách vãng lai / Đối tác tiềm năng: Xem trang giới thiệu công khai, quét danh thiếp số của doanh nhân ViOne, gửi yêu cầu liên hệ hoặc đăng ký dùng thử.
 - Hội viên doanh nhân / Nhân sự doanh nghiệp: Sử dụng ứng dụng di động để tiếp nhận công việc, cập nhật tiến độ %, trao đổi tin nhắn, chấm công GPS và mở rộng giao thương B2B.
 - Trưởng phòng ban / Quản lý chi nhánh: Phân công công việc, giám sát chuyên cần, phê duyệt phiếu thu/chi cấp 1 và duyệt cơ hội kinh doanh của đội ngũ.
-- Lãnh đạo cấp cao (CEO, C-Level, Hội đồng quản trị): Nắm bắt toàn cảnh vận hành doanh nghiệp qua Dashboard KPI, giám sát dòng tiền, họp ban 1-chạm và duyệt chi cấp cao nhất.
+- Lãnh đạo cấp cao (CEO, C-Level, Hội đồng quản trị): Nắm bắt toàn cảnh vận hành doanh nghiệp qua Dashboard KPI, giám sát dòng tiền, họp điều hành 1-chạm và duyệt chi cấp cao nhất.
 - Quản trị viên Hệ thống (Role Quản Trị & Role Admin): Quản trị danh mục tổ chức, cấu hình phân quyền ma trận phòng ban, giám sát nhật ký an ninh và duy trì hạ tầng vận hành.
 
 # 2. Yêu cầu kỹ thuật
@@ -225,13 +275,13 @@ Hệ thống ViOne được thiết kế theo kiến trúc Micro-Services & Modu
 ## 1. Luồng xử lý nghiệp vụ Backend: Mọi yêu cầu HTTP/WebSocket gửi từ máy trạm đều đi qua bộ lọc kiểm tra xác thực JwtAuthGuard và DepartmentRoleGuard. Sau khi xác thực danh tính và vai trò phòng ban, yêu cầu được chuyển tới Controller giải mã DTO, tiếp đó Service thực thi logic nghiệp vụ và ghi nhận bản ghi kiểm toán (Activity Audit Log) trước khi cập nhật CSDL PostgreSQL.
 
 
-## 2. Luồng đồng bộ thời gian thực (Realtime Synchronization): Khi có sự kiện phát sinh (tin nhắn chat mới, phân công task, trạng thái đơn hàng thay đổi, duyệt chi VietQR), máy chủ NestJS phát sự kiện qua Socket.IO Gateway và dịch vụ Push Notification (FCM / APNs). Ứng dụng Web và Mobile lập tức cập nhật giao diện mà không cần người dùng tải lại trang.
+## 2. Luồng đồng bộ thời gian thực (Realtime Synchronization): Khi có sự kiện phát sinh (tin nhắn chat mới, phân công task, trạng thái đơn hàng thay đổi, thanh toán qua cổng VNPay, thông báo qua Zalo OA), máy chủ NestJS phát sự kiện qua Socket.IO Gateway và dịch vụ Push Notification (FCM / APNs). Ứng dụng Web và Mobile lập tức cập nhật giao diện mà không cần người dùng tải lại trang.
 
 
 ### 2.1.3 Kiến trúc triển khai, dự phòng và an toàn
 
 Hệ thống được đóng gói container hóa toàn diện bằng Docker và điều phối qua Docker Compose:
-- Cô lập dịch vụ độc lập: Mỗi phân hệ (Backend API, Cổng Web CRM Doanh nghiệp, Dịch vụ Push Notification, Cơ sở dữ liệu PostgreSQL, Nginx Proxy) chạy trong container riêng biệt, đảm bảo sự cố ở một module không làm ảnh hưởng đến toàn bộ hệ thống.
+- Cô lập dịch vụ độc lập: Mỗi phân hệ (Backend API, Cổng Cổng Web Quản Trị Doanh nghiệp, Dịch vụ Push Notification, Cơ sở dữ liệu PostgreSQL, Nginx Proxy) chạy trong container riêng biệt, đảm bảo sự cố ở một module không làm ảnh hưởng đến toàn bộ hệ thống.
 - Cơ chế sao lưu dự phòng: CSDL PostgreSQL được thiết lập lịch trình sao lưu tự động hàng ngày (Daily Automated Dump) kèm lưu trữ bản ghi Write-Ahead Logging (WAL), cho phép khôi phục dữ liệu về bất kỳ thời điểm nào (Point-in-Time Recovery).
 
 ## 2.2 Công nghệ sử dụng
@@ -250,7 +300,7 @@ Database ORM / Driver
 Prisma ORM & pg client (PostgreSQL 16)
 Quản lý migration, schema an toàn kiểu dữ liệu
 3
-Frontend Web CRM
+Frontend Cổng Web Quản Trị
 React 19, TanStack Router & Start
 Giao diện quản trị doanh nghiệp, SPA hiệu năng cao
 4
@@ -268,14 +318,14 @@ Quản lý cache server-state và đồng bộ realtime
 7
 Realtime Communication
 Socket.IO Gateway, WebRTC
-Tin nhắn chat 0ms, thông báo đẩy và họp ban video
+Tin nhắn chat 0ms, thông báo đẩy và họp điều hành video
 8
 Authentication & Security
 JWT (Argon2id/Bcrypt), 2FA, RBAC Guard
 Bảo mật phiên đăng nhập, phân quyền ma trận 7x6
 9
 Tích hợp Thanh toán
-VietQR Banking API, Webhook
+Cổng Thanh Toán VNPay API, Zalo OA ZNS Webhook
 Sinh mã QR động, tự động gạch nợ tức thì
 10
 Trí tuệ nhân tạo (AI)
@@ -292,19 +342,19 @@ Nginx 1.24+ SSL Reverse Proxy
 
 ## 2.3 Yêu cầu chức năng hệ thống (Enterprise Functional Requirements)
 
-Phần mềm ViOne Platform được thiết kế kiến trúc phân tầng module hóa hoàn chỉnh theo chuẩn Enterprise C-Level, hợp nhất hai phân hệ nền tảng: Cổng Quản trị Doanh nghiệp Web CRM (20 phân hệ nghiệp vụ) và Ứng dụng Di động Thuần Native ViOne Connect cho iOS và Android (16 phân hệ trải nghiệm doanh nhân). Dưới đây là đặc tả chi tiết từng nhóm chức năng nền tảng và phân hệ ứng dụng thực tế:
+Phần mềm ViOne Platform được thiết kế kiến trúc phân tầng module hóa hoàn chỉnh theo chuẩn Enterprise C-Level, hợp nhất hai phân hệ nền tảng: Cổng Quản trị Doanh nghiệp Cổng Web Quản Trị (20 phân hệ nghiệp vụ) và Ứng dụng Di động Thuần Native ViOne Connect cho iOS và Android (16 phân hệ trải nghiệm doanh nhân). Dưới đây là đặc tả chi tiết từng nhóm chức năng nền tảng và phân hệ ứng dụng thực tế:
 
 ### 2.3.1 Các chức năng nền tảng chung (Foundation & Platform Services)
 
 Phần mềm ViOne Platform được thiết kế kiến trúc phân tầng hiện đại, cung cấp bộ dịch vụ nền tảng dùng chung mạnh mẽ, đảm bảo tính bảo mật, khả năng mở rộng không giới hạn và hiệu năng phản hồi tức thì cho toàn bộ tổ chức doanh nghiệp:
 - Quản trị Danh tính số tập trung & Bảo mật đa tầng: Hỗ trợ đăng nhập đa kênh linh hoạt: Email công vụ, Số điện thoại định danh, và Sinh trắc học phần cứng (FaceID / Vân tay) trên thiết bị di động. Cơ chế xác thực sử dụng chuẩn JSON Web Token (JWT) ký số bất đối xứng RS256, thời hạn truy cập ngắn hạn (15 phút) kết hợp Refresh Token xoay vòng tự động bảo mật cao. Mật khẩu người dùng được mã hóa một chiều qua thuật toán Bcrypt với hệ số Salt Rounds = 10, ngăn chặn tuyệt đối các nguy cơ tấn công dò quét hay khai thác dữ liệu.
 - Kiến trúc Đa tổ chức Multi-tenant RBAC phân lập dữ liệu tuyệt đối: Mỗi doanh nghiệp hoặc liên minh tập đoàn hoạt động như một Tenant độc lập với không gian làm việc số và CSDL logic hoàn toàn riêng biệt. Cơ chế Row-Level Security (RLS) gắn chặt mã định danh công ty (company_id) vào mọi truy vấn hệ thống, loại bỏ triệt để nguy cơ rò rỉ chéo dữ liệu giữa các doanh nghiệp. Ma trận phân quyền hạt nhân 5 cấp độ (Master Admin, Tenant Admin, Manager, Member, Guest) cho phép phân định chi tiết quyền hạn xem, tạo, sửa, xóa và phê duyệt trên từng phân hệ.
-- Cổng Thanh toán & Phê duyệt Tài chính Tức thì VietQR Napas 24/7: Tích hợp sâu chuẩn thanh toán liên ngân hàng Napas 247 thông qua mã QR động (VietQR Dynamic Code) sinh tự động theo từng giao dịch. Hệ thống tự động mã hóa chính xác: Tên chủ tài khoản, Số tài khoản, Ngân hàng thụ hưởng, Số tiền thanh toán và Cú pháp nội dung chuyển khoản bảo mật. Cơ chế Webhook tự động đối soát trạng thái giao dịch theo thời gian thực (0ms), hỗ trợ luồng chi tiền và thu tiền đa cấp minh bạch.
+- Cổng Thanh toán & Phê duyệt Tài chính Tức thì VNPay VNPay: Tích hợp sâu chuẩn thanh toán liên ngân hàng VNPay thông qua mã QR động (VNPay Dynamic Code) sinh tự động theo từng giao dịch. Hệ thống tự động mã hóa chính xác: Tên chủ tài khoản, Số tài khoản, Ngân hàng thụ hưởng, Số tiền thanh toán và Cú pháp nội dung chuyển khoản bảo mật. Cơ chế Webhook tự động đối soát trạng thái giao dịch theo thời gian thực (0ms), hỗ trợ luồng chi tiền và thu tiền đa cấp minh bạch.
 - Cổng Trí tuệ Nhân tạo ViOne AI Gateway (Enterprise AI Copilot): Tích hợp cổng AI Gateway kết nối với các mô hình ngôn ngữ lớn (LLM) hàng đầu thế giới qua OpenRouter: DeepSeek-V3 (tối ưu hóa lập luận và xử lý ngôn ngữ tiếng Việt thương mại) và Meta Llama 3.3 (suy luận logic và phân tích số liệu tài chính). Động cơ AI đảm nhiệm các tác vụ cao cấp: Bóc tách danh thiếp giấy vật lý sang dữ liệu số CRM trong 2 giây (AI OCR Vision), tóm tắt báo cáo điều hành C-Level, phân tích sức khỏe phễu bán hàng và gợi ý đối tác giao thương B2B tự động.
 
-### 2.3.2 Chức năng chi tiết phân hệ Cổng Quản trị Web CRM (20 Phân hệ VIP)
+### 2.3.2 Chức năng chi tiết phân hệ Cổng Web Quản Trị ViOne Platform (20 Phân hệ VIP)
 
-Cổng Quản trị ViOne Web CRM là trung tâm chỉ huy điều hành số toàn diện dành cho Ban Giám đốc, Hội đồng quản trị và các cấp quản lý doanh nghiệp, bao gồm 20 phân hệ nghiệp vụ chuyên sâu chuẩn Enterprise:
+Cổng Quản trị ViOne Cổng Web Quản Trị là trung tâm chỉ huy điều hành số toàn diện dành cho Ban Giám đốc, Hội đồng quản trị và các cấp quản lý doanh nghiệp, bao gồm 20 phân hệ nghiệp vụ chuyên sâu chuẩn Enterprise:
 - 1. Cổng Đăng nhập Quản trị & Điều hướng Không gian làm việc: Xác thực tài khoản người dùng, tự động phân giải vai trò quyền hạn và điều hướng trực tiếp vào không gian làm việc của doanh nghiệp sở hữu; tích hợp cơ chế ghi nhớ thiết bị an toàn.
 - 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền Thời Gian Thực: Trực quan hóa tức thì bức tranh toàn cảnh doanh nghiệp với 4 chỉ số tài chính sống còn: Tổng doanh thu lũy kế, Tăng trưởng khách hàng mới, Giá trị phễu cơ hội mở, Tỷ lệ chốt thương vụ. Biểu đồ thu chi thực tế từ CSDL PostgreSQL và bảng cảnh báo việc tồn đọng giúp CEO chỉ đạo điều hành kịp thời.
 - 3. Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp 360°: Cơ sở dữ liệu tập trung quản trị toàn bộ đối tác, khách hàng tổ chức; lưu trữ đầy đủ thông tin pháp lý, mã số thuế, phân cấp khách hàng VIP, lịch sử giao dịch, hợp đồng và người đại diện liên hệ.
@@ -318,13 +368,13 @@ Cổng Quản trị ViOne Web CRM là trung tâm chỉ huy điều hành số to
 - 11. Quản Trị Thu Tiền & Phiếu Thu Doanh Thu Tự Động: Quản lý tập trung mọi nguồn thu từ hoạt động bán hàng, dịch vụ, dự án; tự động lập phiếu thu gắn liền mã hợp đồng, hỗ trợ xuất hóa đơn điện tử và đối soát sổ sách kế toán.
 - 12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp: Thiết lập định mức chi tiêu cho từng phòng ban theo kỳ; hệ thống tự động kiểm soát và phát cảnh báo vượt ngưỡng khi ngân sách thực chi chạm 80% hạn mức phê duyệt.
 - 13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử Đa Kỳ: Theo dõi chu kỳ đóng phí định kỳ của hội viên hiệp hội hoặc khách hàng dịch vụ trả phí định kỳ; tự động gửi email thông báo gia hạn kèm mã QR thanh toán nhanh.
-- 14. Phê Duyệt Tài Chính Đa Cấp & Thanh Toán Tức Thì VietQR 24/7: Quy trình kiểm soát chi tiêu 3 tầng nghiêm ngặt: Nhân sự lập tờ trình -> Kế toán trưởng thẩm tra -> Ban Giám đốc phê duyệt trực tiếp trên Web/App; hệ thống sinh mã VietQR thanh toán ngay lập tức.
+- 14. Phê Duyệt Tài Chính Đa Cấp & Thanh Toán Tức Thì VNPay 24/7: Quy trình kiểm soát chi tiêu 3 tầng nghiêm ngặt: Nhân sự lập tờ trình -> Kế toán trưởng thẩm tra -> Ban Giám đốc phê duyệt trực tiếp trên Web/App; hệ thống sinh mã VNPay thanh toán ngay lập tức.
 - 15. Lịch Trình Điều Hành Lãnh Đạo & Họp Ban Trực Tuyến: Lịch công tác điện tử đồng bộ của Ban Lãnh đạo; điều phối lịch họp thông minh, tích hợp phòng họp trực tuyến độ nét cao (WebRTC) phục vụ họp Hội đồng quản trị và Ban Chấp hành từ xa.
 - 16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents): Hệ thống quản lý tài liệu số chuyên nghiệp tổ chức cây thư mục đa cấp không giới hạn; phân quyền chi tiết (Xem, Tải, Chỉnh sửa) theo cấp bậc, mã hóa lưu trữ an toàn.
 - 17. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp (E-Voting): Tổ chức lấy ý kiến biểu quyết cổ đông hoặc thành viên ban chấp hành; hỗ trợ bỏ phiếu kín, mã hóa phiếu bầu, chống thao túng kết quả và trực quan hóa tỷ lệ biểu quyết theo thời gian thực.
 - 18. Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC): Quản trị các gói dịch vụ thuê bao nền tảng, quản lý số lượng tài khoản cấp phép (User Slots), phân bổ tài nguyên lưu trữ và giám sát sức khỏe vận hành của từng tổ chức thành viên.
 - 19. Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0 (OpenRouter AI Engine): Trợ lý ảo thông minh phục vụ riêng cho C-Level; giải đáp các truy vấn về doanh thu, công nợ, hiệu suất nhân sự, tự động tóm tắt hồ sơ đối tác và hỗ trợ soạn thảo văn bản chỉ đạo điều hành.
-- 20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100%: Tùy biến toàn diện nhận diện thương hiệu doanh nghiệp (Logo, Màu sắc chủ đạo), thiết lập thông tin ngân hàng nhận tiền VietQR, cấu hình cổng gửi email SMTP và quy chế hoạt động nội bộ.
+- 20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100%: Tùy biến toàn diện nhận diện thương hiệu doanh nghiệp (Logo, Màu sắc chủ đạo), thiết lập thông tin ngân hàng nhận tiền VNPay, cấu hình cổng gửi email SMTP và quy chế hoạt động nội bộ.
 
 ### 2.3.3 Chức năng chi tiết phân hệ Ứng dụng Di động Thuần Native ViOne Connect (16 Phân hệ VIP)
 
@@ -352,7 +402,7 @@ Cổng Quản trị ViOne Web CRM là trung tâm chỉ huy điều hành số to
 
 ### 2.3.4.1 Module 1: Đăng nhập & Quản Trị Danh Tính (Authentication & Security)
 
-Chức năng xác thực danh tính đa kênh an toàn, đóng vai trò cửa ngõ định danh cho toàn bộ tài khoản người dùng trên cả Cổng Web CRM Doanh nghiệp và Ứng dụng Di động Thuần Native.
+Chức năng xác thực danh tính đa kênh an toàn, đóng vai trò cửa ngõ định danh cho toàn bộ tài khoản người dùng trên cả Cổng Cổng Web Quản Trị Doanh nghiệp và Ứng dụng Di động Thuần Native.
 A. Bảng đặc tả trường dữ liệu & Luồng xử lý Đăng nhập Đa kênh:
 Trường dữ liệu / Key
 Control / Type
@@ -396,7 +446,7 @@ N/A
 Bắt buộc khi chọn Google Sign-In. Sinh bởi Google Play Services.
 POST /connect-app/auth/google-login
 Bảng: vione_users (cột google_id)
-- Vị trí hiển thị bản ghi sau khi nhập: Với Web CRM: Điều hướng thẳng vào Dashboard Tổng quan (/), góc trên bên phải hiển thị Họ tên, Avatar viền vàng và Badge phân quyền. Với App Native: Điều hướng vào HomeScreen.tsx, Thẻ VIP và trạng thái hiển thị trên Header.
+- Vị trí hiển thị bản ghi sau khi nhập: Với Cổng Web Quản Trị: Điều hướng thẳng vào Dashboard Tổng quan (/), góc trên bên phải hiển thị Họ tên, Avatar viền vàng và Badge phân quyền. Với App Native: Điều hướng vào HomeScreen.tsx, Thẻ VIP và trạng thái hiển thị trên Header.
 - Cơ chế đẩy dữ liệu từ hệ thống về: Hệ thống cấp Access Token JWT và Refresh Token an toàn, nạp danh mục quyền hạn qua GET /api/roles/my-permissions. Kết nối WebSocket được thiết lập để nhận thông báo đẩy tức thời.
 
 ### 2.3.4.2 Module 2: Quản Trị Tổ Chức Doanh Nghiệp Số & Phân Quyền Hạt Nhân (Enterprise CRM)
@@ -506,13 +556,13 @@ Thêm đầu việc con...
 Tùy chọn. Bắt buộc hoàn thành 100% tiêu chí checklist trước khi nghiệm thu Done theo BR-WRK-07.
 POST /companies/:id/tasks
 Bảng: company_tasks (checklist)
-- Vị trí hiển thị bản ghi trên Web CRM: Nhiệm vụ mới xuất hiện ngay tại DÒNG 1 trên Bảng Công Việc Doanh Nghiệp (/companies/:id?tab=tasks) và ĐỈNH CỘT [Cần làm / Todo] trên Bảng Kanban (/workflow). Bộ đếm số lượng việc tăng +1.
+- Vị trí hiển thị bản ghi trên Cổng Web Quản Trị: Nhiệm vụ mới xuất hiện ngay tại DÒNG 1 trên Bảng Công Việc Doanh Nghiệp (/companies/:id?tab=tasks) và ĐỈNH CỘT [Cần làm / Todo] trên Bảng Kanban (/workflow). Bộ đếm số lượng việc tăng +1.
 - Cơ chế đẩy dữ liệu về App Native di động: Máy chủ NestJS phát sự kiện WebSocket và kích hoạt Push Notification FCM/APNs tới điện thoại nhân sự: 'Bạn được giao nhiệm vụ mới: [Tiêu đề công việc]'. Màn hình nhiệm vụ trên App Native tự động trượt hiển thị đầu việc mới.
-- Luồng cập nhật tiến độ trên App Native: Nhân viên tích từng tiêu chí checklist và chọn đổi trạng thái. Client gọi PATCH /companies/:id/tasks/:taskId/status. Trên Web CRM của Giám đốc, thẻ Kanban tự động dịch chuyển cột trong thời gian thực.
+- Luồng cập nhật tiến độ trên App Native: Nhân viên tích từng tiêu chí checklist và chọn đổi trạng thái. Client gọi PATCH /companies/:id/tasks/:taskId/status. Trên Cổng Web Quản Trị của Giám đốc, thẻ Kanban tự động dịch chuyển cột trong thời gian thực.
 
-### 2.3.4.4 Module 4: Quản Trị Tài Chính & Phê Duyệt Chi Tiền 3 Cấp (Finance & VietQR)
+### 2.3.4.4 Module 4: Quản Trị Tài Chính & Phê Duyệt Chi Tiền 3 Cấp (Finance & VNPay)
 
-Số hóa toàn diện quy trình trình duyệt chi tiêu 3 cấp Maker - Checker - Approver, tự động khử trùng hóa đơn chống chi trùng và sinh mã VietQR Napas 24/7 gạch nợ tức thì.
+Số hóa toàn diện quy trình trình duyệt chi tiêu 3 cấp Maker - Checker - Approver, tự động khử trùng hóa đơn chống chi trùng và xử lý thanh toán trực tuyến qua cổng VNPay và gửi tin nhắn xác nhận, hóa đơn số qua Zalo Official Account (Zalo OA / ZNS) gạch nợ tức thì.
 A. Bảng đặc tả trường dữ liệu Đề Xuất Tờ Trình Chi Tiền:
 Trường dữ liệu / Key
 Control / Type
@@ -551,8 +601,8 @@ POST /api/operations/finance/approvals
 Bảng: payment_approvals (beneficiary_account)
 beneficiary_bank
 SelectDropdown
-Chọn ngân hàng Napas
-Bắt buộc. Chọn trong 54 ngân hàng thành viên Napas.
+Cổng thanh toán VNPay / Zalo OA
+Bắt buộc. Tích hợp thanh toán qua VNPay (QR, thẻ nội địa, quốc tế) và Zalo OA ZNS.
 POST /api/operations/finance/approvals
 Bảng: payment_approvals (beneficiary_bank)
 invoice_file
@@ -561,12 +611,12 @@ N/A
 Bắt buộc theo BR-FIN-07. Khử trùng hóa đơn (Số HĐ, ngày, MST).
 POST /api/operations/finance/approvals
 Bảng: payment_approvals (invoice_url)
-- Vị trí hiển thị bản ghi trên Web CRM: Bản ghi xuất hiện ở DÒNG 1 trên Bảng Tờ trình Chi tại /payment-approvals với nhãn màu xanh dương: 'Chờ Kế Toán Soát Xét'.
-- Cơ chế phê duyệt & Gạch nợ VietQR: Sau khi Checker soát xét hợp lệ, Approver bấm 'Ký số & Phê duyệt' (POST /api/operations/finance/approvals/:id/approve). Hệ thống tự động gọi GET /api/operations/finance/approvals/:id/qr sinh mã VietQR Napas 24/7 gạch nợ trong 1 giây theo BR-FIN-06.
+- Vị trí hiển thị bản ghi trên Cổng Web Quản Trị: Bản ghi xuất hiện ở DÒNG 1 trên Bảng Tờ trình Chi tại /payment-approvals với nhãn màu xanh dương: 'Chờ Kế Toán Soát Xét'.
+- Cơ chế thanh toán & Gạch nợ VNPay / Zalo OA: Sau khi Checker soát xét hợp lệ, Approver bấm 'Ký số & Phê duyệt' (POST /api/operations/finance/approvals/:id/approve). Hệ thống tự động kết nối trực tiếp cổng thanh toán điện tử VNPay (POST /api/payments/vnpay/create-url), xử lý đối soát tức thì (IPN Webhook) và tự động kích hoạt thông báo xác nhận giao dịch qua Zalo Official Account (Zalo OA / ZNS) trong 1 giây theo chuẩn BR-FIN-06.
 
 ### 2.3.4.5 Module 5: Quản Trị Chấm Công GPS & Theo Dõi Chuyên Cần (HRM & Attendance)
 
-Điểm danh xác thực vị trí vệ tinh GPS và nhận diện khuôn mặt chống gian lận trên App Native, đồng bộ bảng công thời gian thực về Web CRM của Lãnh đạo.
+Điểm danh xác thực vị trí vệ tinh GPS và nhận diện khuôn mặt chống gian lận trên App Native, đồng bộ bảng công thời gian thực về Cổng Web Quản Trị của Lãnh đạo.
 A. Bảng đặc tả trường dữ liệu Điểm Danh Chấm Công Mobile:
 Trường dữ liệu / Key
 Control / Type
@@ -598,7 +648,7 @@ Tùy chọn. Tối đa 150 ký tự.
 POST /api/operations/attendance/check-in
 Bảng: attendance_records (notes)
 - Vị trí hiển thị trên App Native: Màn hình bung thông báo thành công: 'Điểm danh thành công lúc HH:mm:ss - Trạng thái: Đúng giờ'. Bản ghi mới xuất hiện ở Dòng 1 Lịch sử chấm công.
-- Cơ chế đẩy dữ liệu về Web CRM: Máy chủ phát sự kiện WebSocket về Web CRM (/attendance). Bảng giám sát chuyên cần của Giám đốc lập tức cập nhật nhân sự từ 'Chưa đến' sang 'Có mặt' trong thời gian thực.
+- Cơ chế đẩy dữ liệu về Cổng Web Quản Trị: Máy chủ phát sự kiện WebSocket về Cổng Web Quản Trị (/attendance). Bảng giám sát chuyên cần của Giám đốc lập tức cập nhật nhân sự từ 'Chưa đến' sang 'Có mặt' trong thời gian thực.
 
 ### 2.3.4.6 Module 6: Chăm Sóc Khách Hàng CRM & Bóc Tách Danh Thiếp AI OCR (Leads Pipeline)
 
@@ -645,7 +695,7 @@ VD: 50,000,000
 Tùy chọn. Giá trị thương vụ dự kiến (VND > 0).
 POST /api/customers
 Bảng: crm_leads (deal_value)
-- Vị trí hiển thị bản ghi: Trên App Native: Danh thiếp xuất hiện ở DÒNG 1 Tab 'Thẻ Đã Lưu', khách hàng xuất hiện ở DÒNG 1 Tab 'Khách Hàng CRM'. Trên Web CRM: Bảng Khách hàng CRM (/members) tự động cập nhật bản ghi mới ở dòng đầu tiên kèm nhãn phân hạng.
+- Vị trí hiển thị bản ghi: Trên App Native: Danh thiếp xuất hiện ở DÒNG 1 Tab 'Thẻ Đã Lưu', khách hàng xuất hiện ở DÒNG 1 Tab 'Khách Hàng CRM'. Trên Cổng Web Quản Trị: Bảng Khách hàng CRM (/members) tự động cập nhật bản ghi mới ở dòng đầu tiên kèm nhãn phân hạng.
 
 ### 2.3.4.7 Module 7: Phân Hệ Thống Kê & Báo Cáo Chuyên Sâu Dạng Tree Menu Đa Cấp Tại Sidebar
 
@@ -672,7 +722,7 @@ Không gian giao thương kết nối doanh nhân, hỗ trợ trò chuyện bả
 
 ### 2.3.4.10 Module 10: Khởi Tạo Cộng Đồng, Dùng Thử 30 Ngày & Đăng Ký Gói ViOne Platform
 
-Cơ chế mở rộng mạng lưới doanh nghiệp, kích hoạt dùng thử miễn phí 30 ngày và đăng ký gói giải pháp theo số lượng tài khoản (slots) tích hợp thanh toán VietQR Napas 24/7.
+Cơ chế mở rộng mạng lưới doanh nghiệp, kích hoạt dùng thử miễn phí 30 ngày và đăng ký gói giải pháp theo số lượng tài khoản (slots) tích hợp cổng thanh toán trực tuyến VNPay và gửi thông báo kích hoạt tài khoản qua Zalo OA.
 A. Bảng đặc tả trường dữ liệu Đăng Ký Gói ViOne Platform:
 Trường dữ liệu / Key
 Control / Type
@@ -706,7 +756,7 @@ Bảng: vione_package_orders (phone)
 email
 TextInput (email)
 admin@congty.com
-Bắt buộc. Email nhận thông tin kích hoạt Web CRM.
+Bắt buộc. Email nhận thông tin kích hoạt Cổng Web Quản Trị.
 POST /api/companies/package-orders
 Bảng: vione_package_orders (email)
 package_id
@@ -715,7 +765,7 @@ N/A
 Bắt buộc chọn 1 gói: Free 30D (0đ/30 slots), Gói Chuẩn (1.5tr/30 slots), Gói Tăng Trưởng (2.5tr/50 slots), Gói Doanh Nghiệp (4.5tr/100 slots).
 POST /api/companies/package-orders
 Bảng: vione_package_orders (package_id)
-- Vị trí hiển thị bản ghi & Luồng xét duyệt: Đơn hàng mới xuất hiện ngay tại DÒNG 1 trên Bảng Duyệt Đơn Web CRM ViConnect (/segments). Nhân sự ViConnect bấm 'Duyệt & Bắn Mail Thông Tin Gói', Backend cập nhật max_slots và tự động gửi email thông tin kích hoạt CRM về hòm thư người mua.
+- Vị trí hiển thị bản ghi & Luồng xét duyệt: Đơn hàng mới xuất hiện ngay tại DÒNG 1 trên Bảng Duyệt Đơn Cổng Web Quản Trị ViConnect (/segments). Nhân sự ViConnect bấm 'Duyệt & Bắn Mail Thông Tin Gói', Backend cập nhật max_slots và tự động gửi email thông tin kích hoạt CRM về hòm thư người mua.
 - Xóa tài khoản vĩnh viễn chuẩn Apple App Store Guideline 5.1.1(v): Người dùng vào Tab 'Tôi' -> 'Bảo mật tài khoản' -> bấm nút Gradient Đỏ Ruby 'Xóa Tài Khoản Vĩnh Viễn'. Hộp thoại 2 bước xác nhận. Client gọi DELETE /connect-app/me/account, Backend thực thi purge sạch dữ liệu tài khoản trong CSDL, xóa cache AsyncStorage.clear() và đưa người dùng về màn hình đăng nhập.
 
 ## 2.4 Các yêu cầu phi chức năng khác
@@ -765,7 +815,7 @@ Môi trường thực thi
 Docker 24+, Docker Compose v2.20+
 Docker Swarm / Kubernetes Cluster
 
-## 2. Cấu hình Máy trạm truy cập Web CRM (Desktop / Laptop)
+## 2. Cấu hình Máy trạm truy cập Cổng Web Quản Trị (Desktop / Laptop)
 
 Thông số
 Yêu cầu Tối thiểu
@@ -798,466 +848,580 @@ Cảm biến phần cứng
 Camera tối thiểu 8MP, GPS/A-GPS, NFC
 Camera 12MP+ tự động lấy nét, GPS vệ tinh, NFC Tag Reader
 
-# PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG VIONE CRM
-
-Phần mềm ViOne CRM cung cấp bộ công cụ quản trị doanh nghiệp toàn diện dành cho Ban Giám đốc và các phòng ban vận hành. Dưới đây là hướng dẫn thao tác chi tiết từng màn hình chức năng của hệ thống:
-
-## 1. Màn hình Đăng nhập Quản trị ViOne CRM
-
-Mục đích: Xác thực danh tính người dùng và điều hướng vào không gian làm việc doanh nghiệp tương ứng với vai trò được phân quyền.
-Các bước thực hiện:
-- Bước 1: Truy cập cổng quản trị CRM ViOne trên trình duyệt web.
-- Bước 2: Nhập địa chỉ Email doanh nghiệp (hoặc Số điện thoại đã được cấp phép) vào ô TÀI KHOẢN / EMAIL.
-- Bước 3: Nhập Mật khẩu bảo mật; tích chọn 'Ghi nhớ đăng nhập' nếu sử dụng thiết bị cá nhân an toàn.
-- Bước 4: Nhấn nút 'Đăng nhập Hệ thống CRM' màu vàng hoàng gia. Hệ thống kiểm tra xác thực JWT và chuyển vào Bảng điều hành C-Level.
 
 
-*Hình 2.1 – Màn hình Đăng nhập Quản trị ViOne CRM*
 
 
-## 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền
+# PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)
 
-Mục đích: Cung cấp bức tranh toàn cảnh về hoạt động kinh doanh, dòng tiền, khối lượng công việc và hiệu suất doanh nghiệp theo thời gian thực.
-Các bước thực hiện:
-- Bước 1: Xem 4 thẻ KPI tài chính tổng quát: Tổng doanh thu lũy kế, Khách hàng mới, Cơ hội mở và Tỷ lệ chuyển đổi thành công.
-- Bước 2: Sử dụng bộ lọc chu kỳ thời gian (Tuần này, Tháng này, Quý này, Năm nay) để phân tích biến động.
-- Bước 3: Theo dõi biểu đồ dòng tiền thu chi thực tế từ CSDL PostgreSQL và bảng cảnh báo các đầu việc sắp đến hạn hoặc quá hạn cần xử lý khẩn cấp.
+Cổng Web Quản Trị ViOne Platform cung cấp bộ công cụ quản trị điều hành doanh nghiệp toàn diện dành cho Ban Lãnh đạo, Hội đồng Quản trị và các cấp quản lý điều hành, bao gồm 23 phân hệ nghiệp vụ chuẩn mực:
 
+### 1. Màn hình Đăng nhập Cổng Web Quản trị ViOne Platform
+
+**Mục đích:** Xác thực tài khoản quản trị viên và điều hướng vào không gian làm việc số của doanh nghiệp.
+
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập cổng web quản trị ViOne Platform trên trình duyệt desktop.
+- **Bước 2:** Nhập tài khoản Email công vụ hoặc Số điện thoại quản trị viên.
+- **Bước 3:** Nhập Mật khẩu bảo mật và nhấn nút Gradient Vàng Hoàng Gia để đăng nhập an toàn.
+
+![Hình 2.1 – Màn hình Đăng nhập Cổng Web Quản trị ViOne Platform](../images/evidence_v9/crm_01_login.png)
+
+*Hình 2.1 – Màn hình Đăng nhập Cổng Web Quản trị ViOne Platform*
+
+### 2. Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền
+
+**Mục đích:** Cung cấp bức tranh toàn cảnh về hoạt động kinh doanh, 4 chỉ số KPI cốt lõi và biểu đồ dòng tiền thời gian thực.
+
+**Các bước thực hiện:**
+- **Bước 1:** Xem 4 thẻ KPI tài chính tổng quát: Tổng doanh thu lũy kế, Khách hàng mới, Cơ hội mở và Tỷ lệ chốt.
+- **Bước 2:** Sử dụng bộ lọc chu kỳ thời gian (Tuần này, Tháng này, Quý này, Năm nay) để phân tích tăng trưởng.
+- **Bước 3:** Theo dõi biểu đồ dòng tiền thu chi thực tế và danh sách cảnh báo việc khẩn cấp.
+
+![Hình 2.2 – Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền](../images/evidence_v9/crm_02_dashboard.png)
 
 *Hình 2.2 – Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền*
 
+### 3. Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp
 
-## 3. Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp
+**Mục đích:** Lưu trữ, tra cứu và chăm sóc toàn diện 360 độ hồ sơ khách hàng doanh nghiệp và đối tác liên minh.
 
-Mục đích: Lưu trữ, tra cứu và chăm sóc toàn diện hồ sơ các khách hàng doanh nghiệp, đối tác liên minh kinh doanh.
-Các bước thực hiện:
-- Bước 1: Chọn menu 'Doanh nghiệp' hoặc 'Khách hàng (CRM)' trên thanh điều hướng bên trái.
-- Bước 2: Xem danh sách đối tác kèm các chỉ số phân loại: Đang hoạt động, Chờ duyệt, Ngành nghề, Khu vực và Cấp độ thành viên.
-- Bước 3: Nhấn nút '+ Thêm doanh nghiệp' để khai báo hồ sơ đối tác mới hoặc nhấn 'Xuất Excel' để kết xuất danh bạ phục vụ đối soát.
+**Các bước thực hiện:**
+- **Bước 1:** Vào mục Doanh nghiệp / Khách hàng trên thanh điều hướng bên trái.
+- **Bước 2:** Tra cứu đối tác theo ngành nghề, mã số thuế, quy mô nhân sự và trạng thái kích hoạt.
+- **Bước 3:** Nhấn nút Thêm mới hoặc Xuất báo cáo danh sách đối tác ra file Excel.
 
+![Hình 2.3 – Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp](../images/evidence_v9/crm_03_customers.png)
 
-*Hình 2.3 – Quản Lý Danh Sách Khách Hàng B2B & Doanh Nghiệp*
+*Hình 2.3 – Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nghiệp*
 
+### 4. Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals Kanban
 
-## 4. Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals
+**Mục đích:** Quản trị các thương vụ kinh doanh B2B theo mô hình Kanban kéo thả đa giai đoạn, tối ưu tỷ lệ chốt hợp đồng.
 
-Mục đích: Quản trị các thương vụ kinh doanh B2B theo mô hình Kanban trực quan, tối ưu hóa tỷ lệ chốt hợp đồng.
-Các bước thực hiện:
-- Bước 1: Vào phân hệ 'Cơ hội kinh doanh' trên thanh menu.
-- Bước 2: Quan sát phễu bán hàng phân bổ theo các cột: Mới tiếp cận -> Khảo sát nhu cầu -> Gửi báo giá -> Đàm phán -> Hoàn tất.
-- Bước 3: Kéo thả thẻ cơ hội giữa các cột để cập nhật tiến độ; nhấn nút '+ Đăng cơ hội' màu vàng kim để tạo thương vụ mới.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ Cơ hội kinh doanh trên thanh menu.
+- **Bước 2:** Kéo thả thẻ thương vụ qua các cột: Mới tiếp cận -> Khảo sát nhu cầu -> Gửi báo giá -> Đàm phán -> Chốt deal.
+- **Bước 3:** Nhấn vào từng thương vụ để cập nhật doanh số dự kiến và tỷ lệ xác suất thành công.
 
+![Hình 2.4 – Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals Kanban](../images/evidence_v9/crm_04_deals.png)
 
-*Hình 2.4 – Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals*
+*Hình 2.4 – Quản Lý Cơ Hội Kinh Doanh & Phễu Bán Hàng Deals Kanban*
 
+### 5. Quản Trị Danh Thiếp Doanh Nhân Thông Minh
 
-## 5. Quản Trị Danh Thiếp Doanh Nhân Thông Minh
+**Mục đích:** Thiết lập, cấp phát và quản lý danh thiếp số điện tử (Digital Business Card) cho ban lãnh đạo và nhân sự.
 
-Mục đích: Thiết lập và quản lý danh thiếp số điện tử (Digital Business Card) cho đội ngũ nhân sự và lãnh đạo công ty.
-Các bước thực hiện:
-- Bước 1: Truy cập mục 'Danh thiếp thông minh' trên hệ thống.
-- Bước 2: Cập nhật chức danh, số điện thoại, email, thông tin công ty, liên kết mạng xã hội và sản phẩm tiêu biểu.
-- Bước 3: Hệ thống tự động sinh mã QR động và mã định danh NFC liên kết trực tiếp với trang hồ sơ cá nhân của doanh nhân.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ Danh thiếp thông minh trên hệ thống.
+- **Bước 2:** Cập nhật chức danh, ảnh đại diện, số điện thoại, email, công ty và sản phẩm chủ lực.
+- **Bước 3:** Hệ thống tự động đồng bộ mã QR động và mã định danh NFC liên kết trang profile Obsidian Luxury.
 
+![Hình 2.5 – Quản Trị Danh Thiếp Doanh Nhân Thông Minh](../images/evidence_v9/crm_05_cards.png)
 
 *Hình 2.5 – Quản Trị Danh Thiếp Doanh Nhân Thông Minh*
 
+### 6. Sàn Giao Thương Thương Mại B2B Marketplace
 
-## 6. Sàn Giao Thương Thương Mại B2B Marketplace
+**Mục đích:** Kết nối cung cầu thương mại nội bộ và liên kết doanh nghiệp, xúc tiến mua bán chéo sản phẩm dịch vụ.
 
-Mục đích: Kết nối cung cầu nội bộ giữa các doanh nghiệp trong nền tảng ViOne Platform, xúc tiến mua bán chéo sản phẩm dịch vụ.
-Các bước thực hiện:
-- Bước 1: Truy cập menu 'Marketplace' / 'Sàn giao thương'.
-- Bước 2: Tìm kiếm sản phẩm, dịch vụ theo ngành hàng, mức giá và vị trí địa lý của nhà cung cấp.
-- Bước 3: Nhấn nút 'Gửi yêu cầu báo giá' hoặc 'Kết nối nhà cung ứng' để bắt đầu đàm phán thương mại.
+**Các bước thực hiện:**
+- **Bước 1:** Mở phân hệ Sàn giao thương Marketplace trên Cổng Web Quản trị.
+- **Bước 2:** Duyệt danh mục sản phẩm, dịch vụ, năng lực cung ứng theo từng ngành hàng.
+- **Bước 3:** Gửi yêu cầu chào giá, đàm phán hợp đồng trực tiếp với đối tác cung ứng.
 
+![Hình 2.6 – Sàn Giao Thương Thương Mại B2B Marketplace](../images/evidence_v9/crm_06_marketplace.png)
 
 *Hình 2.6 – Sàn Giao Thương Thương Mại B2B Marketplace*
 
+### 7. Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp
 
-## 7. Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp
+**Mục đích:** Lên kế hoạch, tổ chức, phát hành vé điện tử và điều phối các hội thảo xúc tiến thương mại quy mô lớn.
 
-Mục đích: Lên kế hoạch, tổ chức các buổi kết nối giao thương, hội thảo chuyên đề và điều phối khách mời tham dự.
-Các bước thực hiện:
-- Bước 1: Vào phân hệ 'Sự kiện doanh nghiệp'.
-- Bước 2: Tạo sự kiện mới: Thiết lập tên chương trình, thời gian bắt đầu/kết thúc, địa điểm tổ chức, số lượng vé và diễn giả.
-- Bước 3: Theo dõi danh sách đăng ký tham dự, phê duyệt khách mời và phát hành vé điện tử kèm mã QR định danh.
+**Các bước thực hiện:**
+- **Bước 1:** Vào mục Quản lý sự kiện trên thanh công cụ.
+- **Bước 2:** Khai báo thông tin sự kiện: Tên hội thảo, thời gian, địa điểm, thành phần đại biểu VIP.
+- **Bước 3:** Thiết lập các hạng vé tham dự và kích hoạt cổng đăng ký trực tuyến.
 
+![Hình 2.7 – Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp](../images/evidence_v9/crm_07_events.png)
 
 *Hình 2.7 – Quản Lý Sự Kiện & Hội Thảo Doanh Nghiệp*
 
+### 8. Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime
 
-## 8. Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime
+**Mục đích:** Hệ thống quét mã QR check-in tốc độ cao dưới 100ms, hiển thị trạng thái đón tiếp tức thì trên màn hình lớn.
 
-Mục đích: Kiểm soát an ninh và ghi nhận sự có mặt của đại biểu tại quầy lễ tân thông qua camera quét mã QR.
-Các bước thực hiện:
-- Bước 1: Mở màn hình 'Quét mã Check-in' tại bàn tiếp đón.
-- Bước 2: Đưa camera quét mã vé QR trên điện thoại của khách mời; hệ thống tự động đối soát trong CSDL PostgreSQL.
-- Bước 3: Màn hình hiển thị thông báo check-in thành công kèm họ tên, chức danh và in nhãn đeo đại biểu nếu được cấu hình.
+**Các bước thực hiện:**
+- **Bước 1:** Mở giao diện Check-in sự kiện trên máy tính lễ tân hoặc máy quét cầm tay.
+- **Bước 2:** Hướng camera quét mã QR trên vé điện tử của khách mời.
+- **Bước 3:** Hệ thống xác thực vé hợp lệ trong 0ms, phát âm thanh chào mừng và cập nhật sĩ số đại biểu.
 
+![Hình 2.8 – Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime](../images/evidence_v9/crm_08_checkin.png)
 
 *Hình 2.8 – Điểm Danh & Check-in Sự Kiện Bằng Mã QR Realtime*
 
+### 9. Quản Trị Quy Trình & Phân Công Giao Việc Tự Động (BPMN 2.0)
 
-## 9. Quản Trị Quy Trình & Phân Công Giao Việc Tự Động
+**Mục đích:** Chuẩn hóa quy trình giao việc, phân công nhiệm vụ và giám sát tiến độ công việc liên phòng ban.
 
-Mục đích: Tự động hóa luồng phối hợp liên phòng ban, giao việc theo tiến độ và kiểm soát chất lượng đầu ra.
-Các bước thực hiện:
-- Bước 1: Chọn mục 'Quy trình & Vận hành' -> 'Công việc'.
-- Bước 2: Lãnh đạo hoặc Quản lý phòng ban nhấn '+ Giao việc mới': Nhập tiêu đề, mô tả yêu cầu, người phụ trách, người phối hợp và hạn chót (Deadline).
-- Bước 3: Nhân viên nhận việc qua thông báo, cập nhật tiến độ % và đính kèm biên bản nghiệm thu. Lãnh đạo thực hiện duyệt hoàn thành hoặc yêu cầu bổ sung.
+**Các bước thực hiện:**
+- **Bước 1:** Chọn phân hệ Quy trình công việc trên thanh menu.
+- **Bước 2:** Khởi tạo công việc mới, gán người thực hiện, người duyệt và hạn chót hoàn thành (Deadline).
+- **Bước 3:** Theo dõi tiến độ theo bảng Kanban hoặc danh sách kiểm tra (Checklist %).
 
+![Hình 2.9 – Quản Trị Quy Trình & Phân Công Giao Việc Tự Động (BPMN 2.0)](../images/evidence_v9/crm_09_workflow.png)
 
-*Hình 2.9 – Quản Trị Quy Trình & Phân Công Giao Việc Tự Động*
+*Hình 2.9 – Quản Trị Quy Trình & Phân Công Giao Việc Tự Động (BPMN 2.0)*
 
+### 10. Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự
 
-## 10. Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự
+**Mục đích:** Giám sát chuyên cần nhân viên với công nghệ Geofencing bán kính văn phòng, chống giả mạo tọa độ.
 
-Mục đích: Theo dõi thời gian làm việc thực tế của nhân viên dựa trên vị trí địa lý hợp lệ của văn phòng công ty.
-Các bước thực hiện:
-- Bước 1: Thiết lập tọa độ GPS và bán kính cho phép (bán kính chuẩn <= 50m) của trụ sở/chi nhánh.
-- Bước 2: Nhân viên thực hiện Check-in / Check-out trên thiết bị di động khi đến văn phòng.
-- Bước 3: Bảng điều hành CRM hiển thị tỷ lệ có mặt theo thời gian thực, tổng hợp bảng công tháng và cảnh báo đi muộn/về sớm.
+**Các bước thực hiện:**
+- **Bước 1:** Vào phân hệ Chấm công trên Cổng Web Quản trị.
+- **Bước 2:** Xem bảng tổng hợp dữ liệu chấm công vào/ra theo ngày, tuần, tháng từ ứng dụng di động.
+- **Bước 3:** Xuất bảng công chuẩn xác ra file Excel phục vụ công tác tính lương.
 
+![Hình 2.10 – Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự](../images/evidence_v9/crm_10_attendance.png)
 
 *Hình 2.10 – Quản Lý Chấm Công Định Vị GPS & Chuyên Cần Nhân Sự*
 
+### 11. Quản Trị Thu Tiền & PhiThu Doanh Thu
 
-## 11. Quản Trị Thu Tiền & Phiếu Thu Doanh Thu
+**Mục đích:** Quản lý toàn diện các khoản thu từ bán hàng, phí dịch vụ và hợp đồng kinh tế của doanh nghiệp.
 
-Mục đích: Kiểm soát các khoản thu từ khách hàng, hợp đồng kinh tế và phí hội viên trong kỳ.
-Các bước thực hiện:
-- Bước 1: Truy cập menu 'Tài chính' -> 'Phiếu thu / Doanh thu'.
-- Bước 2: Tạo phiếu thu mới: Ghi nhận số tiền, người nộp, hợp đồng tương ứng và hình thức thanh toán (Tiền mặt / Chuyển khoản VietQR).
-- Bước 3: Trạng thái phiếu thu được cập nhật tự động khi khách hàng quét mã VietQR và tiền vào tài khoản ngân hàng.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ Quản lý thu tiền.
+- **Bước 2:** Lập phiếu thu gắn liền mã hợp đồng kinh tế và thông tin đối tác thanh toán.
+- **Bước 3:** Theo dõi tình trạng thu tiền thực tế qua cổng thanh toán điện tử VNPay và Zalo OA.
 
+![Hình 2.11 – Quản Trị Thu Tiền & PhiThu Doanh Thu](../images/evidence_v9/crm_11_income.png)
 
-*Hình 2.11 – Quản Trị Thu Tiền & Phiếu Thu Doanh Thu*
+*Hình 2.11 – Quản Trị Thu Tiền & PhiThu Doanh Thu*
 
+### 12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp
 
-## 12. Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp
+**Mục đích:** Kiểm soát hạn mức ngân sách chi tiêu từng phòng ban, phát cảnh báo tự động khi chạm ngưỡng bội chi.
 
-Mục đích: Quản lý các khoản chi tiêu vận hành, công tác phí, mua sắm tài sản và định mức ngân sách theo phòng ban.
-Các bước thực hiện:
-- Bước 1: Vào mục 'Quản lý chi phí' trên thanh bên.
-- Bước 2: Tạo đề xuất chi: Nhập lý do chi, hạn mức ngân sách phòng ban, số tiền và đính kèm hóa đơn chứng từ liên quan.
-- Bước 3: Theo dõi luồng phê duyệt từ Trưởng phòng tới Kế toán trưởng và Ban Giám đốc.
+**Các bước thực hiện:**
+- **Bước 1:** Vào mục Quản lý chi phí trên hệ thống.
+- **Bước 2:** Thiết lập định mức ngân sách theo tháng hoặc quý cho từng bộ phận.
+- **Bước 3:** Theo dõi biểu đồ chi phí thực chi và nhận cảnh báo sớm khi chi phí vượt 80% định mức.
 
+![Hình 2.12 – Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp](../images/evidence_v9/crm_12_expenses.png)
 
 *Hình 2.12 – Quản Lý Định Mức Chi Phí & Ngân Sách Doanh Nghiệp*
 
+### 13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử
 
-## 13. Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử
+**Mục đích:** Theo dõi chu kỳ đóng phí định kỳ của hội viên hiệp hội và khách hàng đăng ký dịch vụ theo kỳ hạn.
 
-Mục đích: Theo dõi niên hạn tham gia gói dịch vụ, hạn mức sử dụng và phát hành hóa đơn gia hạn tự động.
-Các bước thực hiện:
-- Bước 1: Vào phân hệ 'Phí & Hóa đơn'.
-- Bước 2: Xem bảng danh sách hóa đơn theo trạng thái: Đã thanh toán, Chờ thanh toán, Quá hạn.
-- Bước 3: Gửi thông báo nhắc nợ tự động qua Email và tin nhắn đẩy trên ứng dụng di động của khách hàng.
+**Các bước thực hiện:**
+- **Bước 1:** Mở phân hệ Quản lý phí hội viên / gói dịch vụ.
+- **Bước 2:** Kiểm tra trạng thái đóng phí, công nợ tồn đọng và ngày hết hạn tài khoản.
+- **Bước 3:** Sinh liên kết thanh toán VNPay và gửi tin nhắn nhắc phí tự động qua Zalo Official Account (Zalo OA / ZNS).
 
+![Hình 2.13 – Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử](../images/evidence_v9/crm_13_fees.png)
 
 *Hình 2.13 – Quản Lý Phí Hội Viên & Hóa Đơn Điện Tử*
 
+### 14. Quản Trị Giải Đấu Thể Thao ViOne Sport
 
-## 14. Phê Duyệt Tài Chính Đa Cấp VietQR
+**Mục đích:** Tổ chức và điều phối toàn diện các giải đấu thể thao doanh nghiệp (Bóng đá, Golf, Tennis, Pickleball).
 
-Mục đích: Ngăn chặn 90% rủi ro chi sai nhờ quy trình duyệt lệnh 3 cấp khép kín, tích hợp sinh lệnh chuyển tiền bảo mật.
-Các bước thực hiện:
-- Bước 1: Người đề xuất lập phiếu chi kèm tài liệu đối soát.
-- Bước 2: Cấp 1 (Trưởng phòng ban) thẩm định tính hợp lý và ký duyệt điện tử.
-- Bước 3: Cấp 2 (Kế toán trưởng) kiểm tra tính hợp pháp của chứng từ và định khoản ngân sách.
-- Bước 4: Cấp 3 (Giám đốc điều hành) nhấn nút 'Phê duyệt & Xuất lệnh VietQR' để thực hiện chi trả qua ngân hàng.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ ViOne Sport trên Cổng Web Quản trị.
+- **Bước 2:** Tạo giải đấu mới, cấu hình thể thức thi đấu, danh sách đội thi và sơ đồ bốc thăm chia bảng.
+- **Bước 3:** Cập nhật kết quả thi đấu, tỷ số trận đấu trực tiếp và tự động xếp hạng bảng tổng sắp.
 
+![Hình 2.14 – Quản Trị Giải Đấu Thể Thao ViOne Sport](../images/evidence_v9/crm_14_sport.png)
 
-*Hình 2.14 – Phê Duyệt Tài Chính Đa Cấp VietQR*
+*Hình 2.14 – Quản Trị Giải Đấu Thể Thao ViOne Sport*
 
+### 15. Quản Trị Giải Chạy Bộ ViOne Run Marathon
 
-## 15. Lịch Trình Điều Hành & Họp Ban Trực Tuyến
+**Mục đích:** Điều phối giải chạy Marathon kết nối cộng đồng doanh nhân, đồng bộ thành tích cự ly GPS thời gian thực.
 
-Mục đích: Quản lý lịch họp nội bộ, gặp gỡ đối tác và tích hợp phòng họp trực tuyến WebRTC độ nét cao.
-Các bước thực hiện:
-- Bước 1: Mở mục 'Lịch & Cuộc họp' trên CRM.
-- Bước 2: Lên lịch cuộc họp: Nhập chủ đề, thời gian, thành phần tham gia và tài liệu chuẩn bị.
-- Bước 3: Nhấn nút 'Tham gia phòng họp' để mở phiên họp trực tuyến với tính năng chia sẻ màn hình, biểu quyết và ghi âm biên bản họp.
+**Các bước thực hiện:**
+- **Bước 1:** Mở phân hệ ViOne Run trên hệ thống quản trị.
+- **Bước 2:** Thiết lập cự ly giải chạy (5km, 10km, 21km), thời gian phát động và cơ cấu giải thưởng.
+- **Bước 3:** Giám sát bảng tổng sắp vận động viên (Leaderboard) theo cự ly và bước chân thực tế.
 
+![Hình 2.15 – Quản Trị Giải Chạy Bộ ViOne Run Marathon](../images/evidence_v9/crm_15_run.png)
 
-*Hình 2.15 – Lịch Trình Điều Hành & Họp Ban Trực Tuyến*
+*Hình 2.15 – Quản Trị Giải Chạy Bộ ViOne Run Marathon*
 
+### 16. Quản Trị Bảo Tàng Số 3D & Hiện Vật ViOne Museum
 
-## 16. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)
+**Mục đích:** Không gian trưng bày bảo tàng số ảo chuyên đề, tương tác hiện vật 3D Photogrammetry/AR xoay phóng đa chiều.
 
-Mục đích: Quản trị tập trung toàn bộ hồ sơ, hợp đồng, chứng từ và quy chế doanh nghiệp theo cấu trúc thư mục đa cấp (Nested Folders) và phân loại danh mục nghiệp vụ chuyên sâu chuẩn Google Drive, hỗ trợ tải tệp tin, xem tài liệu, ghim dấu sao và điều hướng breadcrumbs tức thời.
-Các bước thực hiện:
-- Bước 1: Truy cập menu 'Kho tài liệu'.
-- Bước 2: Duyệt cây thư mục phân cấp theo phòng ban (Kinh doanh, Kỹ thuật, Kế toán, Nhân sự).
-- Bước 3: Tải lên tệp mới hoặc cấp quyền chia sẻ liên kết nội bộ an toàn.
+**Các bước thực hiện:**
+- **Bước 1:** Vào phân hệ ViOne Museum trên menu quản trị.
+- **Bước 2:** Đăng tải mô hình hiện vật 3D, thông tin lý lịch tư liệu và gắn mã chip NFC quầy trưng bày.
+- **Bước 3:** Điều phối bán vé tham quan ảo qua cổng VNPay và theo dõi lượt khách tham quan không gian số.
 
+![Hình 2.16 – Quản Trị Bảo Tàng Số 3D & Hiện Vật ViOne Museum](../images/evidence_v9/crm_16_museum.png)
 
-*Hình 2.16 – Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)*
+*Hình 2.16 – Quản Trị Bảo Tàng Số 3D & Hiện Vật ViOne Museum*
 
+### 17. Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage
 
-## 17. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp
+**Mục đích:** Hồ sơ số hóa di sản văn hóa vật thể, phi vật thể, bản đồ GIS khoanh vùng bảo vệ và thuyết minh GPS.
 
-Mục đích: Lấy ý kiến biểu quyết minh bạch cho các quyết định của Hội đồng quản trị, Ban giám đốc hoặc thăm dò ý kiến cán bộ nhân viên.
-Các bước thực hiện:
-- Bước 1: Vào phân hệ 'Biểu quyết & Khảo sát'.
-- Bước 2: Tạo phiên biểu quyết mới: Nhập câu hỏi, danh sách phương án lựa chọn, thời hạn đóng hòm phiếu và phạm vi đối tượng được bỏ phiếu.
-- Bước 3: Hệ thống tự động kiểm phiếu và kết xuất biểu đồ kết quả trực quan theo thời gian thực.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ ViOne Heritage trên hệ thống.
+- **Bước 2:** Quản lý kho dữ liệu di sản quốc gia và UNESCO, gắn tọa độ GPS khoanh vùng bảo vệ trên bản đồ số GIS.
+- **Bước 3:** Cấu hình bài thuyết minh đa ngôn ngữ tự động kích hoạt khi du khách di chuyển tới điểm di tích.
 
+![Hình 2.17 – Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage](../images/evidence_v9/crm_17_heritage.png)
 
-*Hình 2.17 – Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp*
+*Hình 2.17 – Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage*
 
+### 18. Quản Trị Vé Điện Tử & Check-in ViOne Tickets
 
-## 18. Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC Data Isolation)
+**Mục đích:** Phát hành vé sự kiện điện tử bảo mật cao, mã hóa QR chống làm giả và phân hạng vé đại biểu VIP.
 
-Mục đích: Thiết lập ma trận quyền hạn chi tiết trên 7 nhóm quyền và 6 vai trò, bảo vệ tuyệt đối quyền sở hữu dữ liệu doanh nghiệp.
-Các bước thực hiện:
-- Bước 1: Vào menu 'Quản trị hệ thống' -> 'Phân quyền ma trận'.
-- Bước 2: Xem bảng ma trận đối chiếu giữa các Vai trò (Role Quản Trị, Role Admin, Quản lý chi nhánh, Trưởng phòng, Nhân viên, Hội viên) và các Nhóm quyền (Xem, Thêm, Sửa, Xóa, Phê duyệt, Bàn giao, Quản trị).
-- Bước 3: Tích chọn hoặc hủy chọn từng quyền hạn; nhấn 'Lưu ma trận' để cập nhật realtime toàn hệ thống.
+**Các bước thực hiện:**
+- **Bước 1:** Vào phân hệ ViOne Tickets trên hệ thống.
+- **Bước 2:** Thiết lập sơ đồ chỗ ngồi, số lượng vé và chính sách ưu đãi cho hội viên.
+- **Bước 3:** Giám sát luồng bán vé qua cổng VNPay, đối soát doanh thu vé và phân quyền nhân viên soát vé tại cửa.
 
+![Hình 2.18 – Quản Trị Vé Điện Tử & Check-in ViOne Tickets](../images/evidence_v9/crm_18_tickets.png)
 
-*Hình 2.18 – Phân Hệ Phân Quyền Biệt Lập Doanh Nghiệp (Multi-tenant RBAC Data Isolation)*
+*Hình 2.18 – Quản Trị Vé Điện Tử & Check-in ViOne Tickets*
 
+### 19. Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)
 
-## 19. Trợ Lý Điều Hành ViOne AI 6.0 (OpenRouter AI Engine)
+**Mục đích:** Hệ thống tài liệu số tổ chức cây thư mục đa cấp không giới hạn, phân quyền chi tiết (Xem, Tải, Sửa) an toàn.
 
-Mục đích: Khai thác sức mạnh trí tuệ nhân tạo để tra cứu số liệu kinh doanh, tóm tắt báo cáo tài chính và soạn thảo văn bản tự động.
-Các bước thực hiện:
-- Bước 1: Nhấn vào biểu tượng Trợ lý ViOne AI ở thanh công cụ hoặc truy cập menu 'Trợ lý AI' (tích hợp động cơ OpenRouter AI Gateway với DeepSeek-V3 LLM & Meta Llama 3.3).
-- Bước 2: Nhập câu hỏi bằng tiếng Việt tự nhiên (ví dụ: 'Tổng hợp doanh thu tháng này', 'Liệt kê các cơ hội bán hàng trên 500 triệu đồng').
-- Bước 3: Trợ lý AI phân tích dữ liệu thực tế từ PostgreSQL và trả về câu trả lời chính xác kèm biểu đồ minh họa.
+**Các bước thực hiện:**
+- **Bước 1:** Chọn phân hệ Tài liệu trên thanh điều hướng.
+- **Bước 2:** Tạo cấu trúc thư mục phân cấp theo phòng ban, dự án hoặc năm tài chính.
+- **Bước 3:** Tải tệp hợp đồng, tài liệu nội bộ và phân quyền truy cập cho từng cấp bậc nhân sự.
 
+![Hình 2.19 – Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)](../images/evidence_v9/crm_19_documents.png)
 
-*Hình 2.19 – Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0 (OpenRouter AI Engine)*
+*Hình 2.19 – Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Chuẩn Google Drive (/documents)*
 
+### 20. Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp
 
-## 20. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% (Real Data Persistence)
+**Mục đích:** Lấy ý kiến biểu quyết Đại hội đồng cổ đông hoặc Ban Lãnh đạo với cơ chế bỏ phiếu kín mã hóa minh bạch.
 
-Mục đích: Tùy chỉnh thông tin pháp nhân, logo doanh nghiệp, cài đặt thông báo và quản lý cấu hình kết nối.
-Các bước thực hiện:
-- Bước 1: Vào menu 'Cài đặt tài khoản & Doanh nghiệp'.
-- Bước 2: Cập nhật tên công ty, mã số thuế, địa chỉ trụ sở, tài khoản ngân hàng thụ hưởng VietQR.
-- Bước 3: Chọn ngôn ngữ mặc định, cấu hình kênh nhận thông báo và nhấn 'Lưu cài đặt'.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ Biểu quyết điện tử (E-Voting).
+- **Bước 2:** Soạn thảo câu hỏi biểu quyết, cấu hình thời hạn mở/đóng hòm phiếu và danh sách cử tri hợp lệ.
+- **Bước 3:** Hệ thống tự động kiểm phiếu và trực quan hóa tỷ lệ tán thành theo thời gian thực.
 
+![Hình 2.20 – Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp](../images/evidence_v9/crm_20_voting.png)
 
-*Hình 2.20 – Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100% (Real Data Persistence)*
+*Hình 2.20 – Biểu Quyết Điện Tử & Khảo Sát Doanh Nghiệp*
 
+### 21. Phân Hệ Phân Quyền RBAC Phân Lập Dữ Liệu Doanh Nghiệp
 
-# PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG NATIVE VIONE CONNECT (IOS & ANDROID)
+**Mục đích:** Kiểm soát truy cập dựa trên mô hình vai trò RBAC chuẩn, phân lập dữ liệu biệt lập giữa các tổ chức.
 
-Ứng dụng di động thuần Native ViOne Connect (xây dựng bằng React Native / Expo Native Engine đạt chuẩn kiểm duyệt khắt khe của Apple App Store cho iOS và Google Play Store cho Android) mang lại trải nghiệm điều hành và kết nối giao thương thượng lưu dành cho doanh nhân hiện đại.
+**Các bước thực hiện:**
+- **Bước 1:** Vào phân hệ Phân quyền RBAC trên Cổng Web Quản trị.
+- **Bước 2:** Thiết lập vai trò: Quản trị viên (Admin), Quản lý (Manager), Thành viên (Member), Khách (Guest).
+- **Bước 3:** Tích chọn ma trận quyền hạn hạt nhân (Xem, Thêm, Sửa, Xóa, Phê duyệt) trên từng phân hệ.
 
-Hệ thống phân định rõ ràng thành 2 vai trò và góc nhìn giao diện trải nghiệm:
-(a) Góc Nhìn Công Ty Thuộc Sở Hữu / Chủ Quản Nền Tảng (Platform Host / System Owner - ViConnect):
-- Đóng vai trò Điều Phối Toàn Nền Tảng ViOne Platform: Quản lý danh mục các liên minh doanh nghiệp, duyệt các đơn mua gói ViOne Platform, giám sát chỉ số sức khỏe hệ thống (Health Score), điều phối lưu lượng kết nối AI Gateway và phát hành thông cáo toàn mạng lưới.
-- Giao diện trên App: Hiển thị huy hiệu Lãnh Đạo Nền Tảng VIP Host Master, bảng tin điều hành vĩ mô, danh bạ toàn bộ doanh nhân thành viên trên nền tảng ViOne Platform và trung tâm duyệt yêu cầu kết nối B2B liên doanh nghiệp.
+![Hình 2.21 – Phân Hệ Phân Quyền RBAC Phân Lập Dữ Liệu Doanh Nghiệp](../images/evidence_v9/crm_21_rbac.png)
 
-(b) Góc Nhìn Khách Hàng / Doanh Nghiệp Mua Gói ViOne Platform (Tenant Client - Minh họa: VIASIA TECH JSC):
-- Đóng vai trò Doanh Nghiệp Thụ Hưởng Dịch Vụ: Sau khi đăng ký Gói Doanh Nghiệp 100 tài khoản (VIONE_ENTERPRISE_100), CEO Trần Hoàng Long và đội ngũ nhân sự VIASIA sở hữu không gian làm việc số hóa toàn diện:
-  + Giao diện Không Gian Cộng Đồng Riêng (Private Corporate Workspace): Tab Cộng Đồng hiển thị không gian riêng của VIASIA TECH JSC với logo nhận diện công ty, bảng tin nội bộ, sự kiện đào tạo và thông báo nội bộ của riêng công ty.
-  + Giao diện Bàn Làm Việc Điều Hành & Giao Việc Di Động: Nhân viên nhận việc từ cấp trên, cập nhật tiến độ công việc checklist % và gửi báo cáo giải trình kèm biên bản đính kèm trực tiếp trên di động.
-  + Giao diện Điểm Danh & Chấm Công GPS: Nhân sự chấm công vào/ra tại vị trí GPS văn phòng VIASIA, chống gian lận vị trí.
-  + Giao diện Danh Thiếp Doanh Nhân Số & Thẻ NFC: Cấp danh thiếp số chuẩn Obsidian Luxury mang thương hiệu VIASIA TECH JSC, tích hợp mã QR vCard và thẻ chip NFC 1-chạm mạ vàng để ngoại giao đối tác.
-  + Giao diện Giao Thương B2B & Trí Tuệ Nhân Tạo AI Matcher: Vẫn kết nối thông suốt với toàn bộ cộng đồng hàng nghìn doanh nghiệp khác trên nền tảng ViOne Platform để chào hàng trên B2B Marketplace và kết nối 1-on-1 qua Trợ lý AI.
+*Hình 2.21 – Phân Hệ Phân Quyền RBAC Phân Lập Dữ Liệu Doanh Nghiệp*
 
-Dưới đây là hướng dẫn chi tiết toàn bộ các màn hình ứng dụng:
+### 22. Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0
 
-## 1. Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury
+**Mục đích:** Trợ lý trí tuệ nhân tạo chuyên biệt kết nối OpenRouter (DeepSeek-V3 & Llama 3.3) phục vụ lãnh đạo C-Level.
 
-Mục đích: Cung cấp trải nghiệm đăng nhập bảo mật, sang trọng trên thiết bị cầm tay với tông màu Đen thạch anh và Vàng hoàng gia Champagne Gold.
-Các bước thực hiện:
-- Bước 1: Mở ứng dụng ViOne Connect Native trên điện thoại (tải trực tiếp từ Apple App Store hoặc Google Play Store).
-- Bước 2: Lựa chọn đăng nhập siêu tốc qua Google, Apple Sign-In native hoặc nhập Email / Số điện thoại kèm Mật khẩu.
-- Bước 3: Bấm nút 'Đăng nhập' màu vàng hoàng gia; nếu là đối tác mới có thể bấm 'Quét danh thiếp' để xem nhanh hồ sơ doanh nhân.
+**Các bước thực hiện:**
+- **Bước 1:** Mở giao diện Trợ lý ViOne AI trên hệ thống.
+- **Bước 2:** Nhập câu hỏi truy vấn về phân tích số liệu tài chính, phễu bán hàng hoặc hiệu suất nhân sự.
+- **Bước 3:** Trợ lý AI tổng hợp dữ liệu thời gian thực từ CSDL và đưa ra đề xuất giải pháp tối ưu.
 
+![Hình 2.22 – Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0](../images/evidence_v9/crm_22_ai.png)
+
+*Hình 2.22 – Trợ Lý Điều Hành Doanh Nghiệp ViOne AI 6.0*
+
+### 23. Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100%
+
+**Mục đích:** Tùy biến toàn diện bộ nhận diện thương hiệu doanh nghiệp, cấu hình cổng thanh toán trực tuyến VNPay, kết nối Zalo Official Account (Zalo OA / ZNS) và cổng gửi email SMTP.
+
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập mục Cài đặt hệ thống trên thanh công cụ.
+- **Bước 2:** Tải lên Logo doanh nghiệp, chọn màu sắc nhận diện chủ đạo và khai báo thông tin pháp lý.
+- **Bước 3:** Cấu hình thông số tích hợp cổng thanh toán VNPay và định danh Zalo OA, lưu cấu hình dữ liệu thực vào PostgreSQL.
+
+![Hình 2.23 – Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100%](../images/evidence_v9/crm_23_settings.png)
+
+*Hình 2.23 – Cài Đặt Hệ Thống & Cấu Hình Doanh Nghiệp Thực Tế 100%*
+
+# PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG NATIVE VIONE CONNECT (20 PHÂN HỆ MOCKUP)
+
+Ứng dụng di động thuần Native ViOne Connect (xây dựng bằng React Native / Expo Native Engine đạt chuẩn kiểm duyệt của Apple App Store cho iOS và Google Play Store cho Android) mang lại trải nghiệm điều hành và kết nối giao thương thượng lưu dành riêng cho doanh nhân hiện đại. Toàn bộ giao diện dưới đây được trình bày chuẩn mực trong khung điện thoại thông minh Obsidian Luxury:
+
+### 1. Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury
+
+**Mục đích:** Giao diện tông màu Vàng Champagne Gold trên nền Đen Thạch Anh sang trọng, mở khóa sinh trắc học FaceID/Vân tay.
+
+**Các bước thực hiện:**
+- **Bước 1:** Mở ứng dụng ViOne Connect trên thiết bị di động.
+- **Bước 2:** Nhập số điện thoại định danh hoặc chạm sinh trắc học FaceID / Vân tay.
+- **Bước 3:** Đăng nhập thành công và truy cập bàn làm việc di động tức thì.
+
+![Hình 3.1 – Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury](../images/evidence_v9/app_01_login.png)
 
 *Hình 3.1 – Màn hình Đăng Nhập Di Động Chuẩn Obsidian Luxury*
 
+### 2. Trang Chủ Điều Hành C-Level Executive Home
 
-## 2. Trang Chủ Điều Hành C-Level Executive Home
+**Mục đích:** Bàn làm việc di động cô đọng dành cho lãnh đạo, hiển thị nhanh KPI then chốt trong ngày và thông điệp điều hành.
 
-Mục đích: Cung cấp không gian làm việc số di động cho CEO và lãnh đạo, tích hợp Thẻ doanh nhân, định vị GPS và danh bạ thông minh.
-Các bước thực hiện:
-- Bước 1: Sau khi đăng nhập thành công, người dùng được đưa trực tiếp vào Tab 1 - Trang chủ.
-- Bước 2: Quan sát Thẻ doanh nhân hiển thị Họ tên, ảnh chân dung lãnh đạo, huy hiệu 'DOANH NHÂN VIONE' và số điện thoại định danh.
-- Bước 3: Kiểm tra trạng thái Định vị AI: Nhấn 'Bật vị trí' để hệ thống hỗ trợ quét đối tác kinh doanh quanh đây.
+**Các bước thực hiện:**
+- **Bước 1:** Quan sát các chỉ số nhanh tại đỉnh màn hình: Cuộc hẹn hôm nay, Đầu việc deadline, Doanh thu mới.
+- **Bước 2:** Xem lịch trình công việc và thông báo khẩn cấp cần phê duyệt ngay.
+- **Bước 3:** Chạm vào các thẻ công việc để xử lý trực tiếp trên ứng dụng.
 
+![Hình 3.2 – Trang Chủ Điều Hành C-Level Executive Home](../images/evidence_v9/app_02_home.png)
 
 *Hình 3.2 – Trang Chủ Điều Hành C-Level Executive Home*
 
+### 3. Thẻ Doanh Nhân ViOne & Bảng Điều Khiển Bottom Sheet
 
-## 3. Thẻ Doanh Nhân ViOne & Trạng Thái Định Vị AI GPS
+**Mục đích:** Danh thiếp số động tương tác nhanh qua thao tác vuốt Bottom Sheet, chia sẻ đa kênh trong tích tắc.
 
-Mục đích: Cho phép người dùng chạm vào thẻ để kích hoạt bảng điều khiển vuốt tay (Bottom Sheet) hiển thị mã QR định danh và chia sẻ NFC.
-Các bước thực hiện:
-- Bước 1: Chạm trực tiếp vào Thẻ doanh nhân trên màn hình chính.
-- Bước 2: Bảng điều khiển vuốt từ dưới lên với góc bo tròn sang trọng, hiển thị mã QR cá nhân và các phím tắt kết nối.
-- Bước 3: Người dùng có thể vuốt tay nhẹ xuống dưới để đóng bảng điều khiển mượt mà.
+**Các bước thực hiện:**
+- **Bước 1:** Chạm vào thẻ danh thiếp doanh nhân tại trang chủ.
+- **Bước 2:** Bảng điều khiển Bottom Sheet trượt lên mượt mà với đầy đủ liên kết ngoại giao.
+- **Bước 3:** Chọn gửi thông tin qua tin nhắn, mạng xã hội hoặc lưu danh bạ điện thoại.
 
+![Hình 3.3 – Thẻ Doanh Nhân ViOne & Bảng Điều Khiển Bottom Sheet](../images/evidence_v9/app_03_card_sheet.png)
 
 *Hình 3.3 – Thẻ Doanh Nhân ViOne & Bảng Điều Khiển Bottom Sheet*
 
+### 4. Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs
 
-## 4. Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs
+**Mục đích:** Quản lý lịch trình công tác khoa học 5 tab: Tất cả, Cuộc họp, Công việc, Sự kiện, Lịch hẹn 1-1 kèm ghi âm lệnh.
 
-Mục đích: Quản trị toàn bộ lịch trình gặp gỡ đối tác, cuộc họp nội bộ và ghi âm nhật ký điều hành trong ngày.
-Các bước thực hiện:
-- Bước 1: Tại khối 'Tất cả lịch trình & cơ hội', chuyển đổi linh hoạt giữa 5 tabs: [Tất cả], [Hôm nay], [Sắp tới], [Nhắc lịch], [Ghi âm].
-- Bước 2: Tab Ghi âm cho phép lãnh đạo lưu lại tức thì các chỉ đạo hoặc ý tưởng kinh doanh bằng micro điện thoại.
-- Bước 3: Bấm vào từng cuộc hẹn để xem địa điểm, thành phần tham dự và lộ trình di chuyển.
+**Các bước thực hiện:**
+- **Bước 1:** Vào tab Lịch trình trên thanh điều hướng dưới đáy ứng dụng.
+- **Bước 2:** Chuyển đổi qua lại giữa 5 tab để quản lý chi tiết từng loại sự kiện trong ngày.
+- **Bước 3:** Nhấn giữ nút micrô để ghi âm chỉ đạo bằng giọng nói gửi cho cán bộ thực hiện.
 
+![Hình 3.4 – Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs](../images/evidence_v9/app_04_calendar.png)
 
 *Hình 3.4 – Bàn Làm Việc Điều Hành & Lịch Trình Hôm Nay 5 Tabs*
 
+### 5. Mạng Lưới Đối Tác Doanh Nghiệp B2B
 
-## 5. Mạng Lưới Đối Tác Doanh Nghiệp B2B
+**Mục đích:** Danh bạ kết nối hàng ngàn Chủ tịch, CEO và Doanh nhân uy tín; tìm kiếm đối tác chiến lược theo ngành nghề.
 
-Mục đích: Mở rộng mạng lưới quan hệ kinh doanh với cộng đồng hàng ngàn lãnh đạo doanh nghiệp đã được xác thực danh tính.
-Các bước thực hiện:
-- Bước 1: Chuyển sang Tab 2 - 'Mạng lưới' trên thanh điều hướng dưới cùng.
-- Bước 2: Sử dụng các bộ lọc chuyên sâu: [Mạng lưới], [Khách hàng], [Gợi ý (AI)], [Lời mời].
-- Bước 3: Nhập từ khóa tìm kiếm theo tên doanh nhân, công ty, ngành nghề hoặc chức danh chuyên môn.
+**Các bước thực hiện:**
+- **Bước 1:** Mở tab Mạng lưới trên thanh điều hướng.
+- **Bước 2:** Tìm kiếm doanh nhân theo lĩnh vực hoạt động, khu vực địa lý hoặc quy mô công ty.
+- **Bước 3:** Nhấn Kết nối hoặc Đề xuất lịch hẹn 1-on-1 trực tiếp với đối tác.
 
+![Hình 3.5 – Mạng Lưới Đối Tác Doanh Nghiệp B2B](../images/evidence_v9/app_05_network.png)
 
 *Hình 3.5 – Mạng Lưới Đối Tác Doanh Nghiệp B2B*
 
+### 6. Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác
 
-## 6. Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác
+**Mục đích:** Chia sẻ câu chuyện kinh doanh 24 giờ và thuật toán học máy AI Matcher tự động gợi ý cơ hội giao thương phù hợp.
 
-Mục đích: Cập nhật tin nhanh hoạt động doanh nghiệp trong 24 giờ và nhận đề xuất đối tác từ thuật toán học máy AI Matcher.
-Các bước thực hiện:
-- Bước 1: Nhấn '+ Tạo tin 24h' để đăng tải hình ảnh hoạt động, ký kết hợp đồng hoặc nhu cầu mua sắm tức thời.
-- Bước 2: Xem khối 'VIONE AI MATCHER (DEEPSEEK & LLAMA 3.3)' với điểm số tương thích (Match Score) được tính toán tự động dựa trên hồ sơ cung cầu.
-- Bước 3: Bấm 'Khám phá AI' để xem danh sách đối tác vàng được AI gợi ý kết nối 1-on-1 trong ngày.
+**Các bước thực hiện:**
+- **Bước 1:** Xem các bài đăng khoảnh khắc kinh doanh 24 giờ của cộng đồng doanh nhân.
+- **Bước 2:** Nhấn Đăng khoảnh khắc để chia sẻ tin tức, hình ảnh hoạt động của doanh nghiệp.
+- **Bước 3:** Khối AI Matcher phân tích nhu cầu và đề xuất các đối tác cung ứng phù hợp nhất.
 
+![Hình 3.6 – Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác](../images/evidence_v9/app_06_moments.png)
 
 *Hình 3.6 – Khoảnh Khắc 24h & Khối Gợi Ý AI Matcher Đối Tác*
 
+### 7. Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1
 
-## 7. Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1 Ghim Lịch
+**Mục đích:** Nhắn tin tức thì bảo mật cao trên Socket.IO, gửi thẻ mời gặp gỡ 1-on-1 tự động ghim lịch khi được đồng thuận.
 
-Mục đích: Kênh liên lạc trực tiếp bảo mật giữa các doanh nhân, tích hợp tính năng gửi thiệp hẹn gặp ghim lịch tự động.
-Các bước thực hiện:
-- Bước 1: Mở Hộp thư Messenger từ biểu tượng tin nhắn hoặc trang mạng lưới.
-- Bước 2: Gửi tin nhắn văn bản, hình ảnh, tài liệu đính kèm với độ trễ 0ms qua Socket.IO.
-- Bước 3: Nhấn biểu tượng 'Lên lịch hẹn': Chọn thời gian, địa điểm gặp gỡ; khi đối tác chấp nhận, lịch hẹn tự động được ghim vào Lịch điều hành của cả hai bên.
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập hộp thư nhắn tin trên thanh công cụ.
+- **Bước 2:** Chọn cuộc trò chuyện với đối tác doanh nhân.
+- **Bước 3:** Nhấn nút Hẹn 1-1 để gửi thẻ mời gặp mặt; lịch hẹn tự động đồng bộ vào lịch trình của hai bên.
 
+![Hình 3.7 – Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1](../images/evidence_v9/app_07_inbox.png)
 
 *Hình 3.7 – Hộp Thư Messenger 0ms & Thẻ Đề Xuất Hẹn 1-1*
 
+### 8. Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet
 
-## 8. Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet 5 Hành Động
+**Mục đích:** Nút biểu tượng chữ V nổi 3D mạ vàng, mở menu 5 tác vụ siêu tốc: Đưa mã QR, Quét QR, Quét OCR, Chấm công, Gọi AI.
 
-Mục đích: Nút biểu tượng chữ V mạ vàng nổi khối 3D tại vị trí trung tâm thanh điều hướng, giúp thực thi nhanh 5 tác vụ ngoại giao cốt lõi.
-Các bước thực hiện:
-- Bước 1: Chạm vào Nút V 3D nổi bật ở giữa thanh điều hướng dưới cùng.
-- Bước 2: Bảng VActionSheet mở ra với 5 hành động: (1) Đưa mã QR của tôi, (2) Chạm thẻ NFC, (3) Quét mã QR, (4) Quét danh thiếp OCR, (5) Ghi chú cuộc gặp.
-- Bước 3: Chọn nhanh hành động mong muốn để hoàn tất tương tác ngoại giao chỉ trong 1 thao tác chạm.
+**Các bước thực hiện:**
+- **Bước 1:** Chạm vào nút chữ V mạ vàng nổi 3D ở chính giữa thanh điều hướng dưới đáy.
+- **Bước 2:** Menu VActionSheet mở ra với hiệu ứng đồ họa sang trọng.
+- **Bước 3:** Chọn nhanh 1 trong 5 hành động: Mở mã QR, Bật máy quét, Chấm công GPS, Quét card hoặc Trợ lý AI.
 
+![Hình 3.8 – Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet](../images/evidence_v9/app_08_vaction.png)
 
 *Hình 3.8 – Nút V Trung Tâm 3D & Bảng Điều Khiển VActionSheet*
 
+### 9. Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Workspace)
 
-## 9. Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace)
+**Mục đích:** Không gian làm việc riêng biệt cho từng doanh nghiệp thành viên với nhận diện thương hiệu độc quyền.
 
-Mục đích: Không gian liên minh hội tụ các cộng đồng hiệp hội, liên minh doanh nghiệp và câu lạc bộ doanh nhân trên nền tảng ViOne Platform.
-Các bước thực hiện:
-- Bước 1: Chuyển sang Tab 3 - 'Cộng đồng'.
-- Bước 2: Duyệt danh sách các cộng đồng đang quản trị hoặc đã tham gia (ví dụ: Cộng Đồng Doanh Nhân ViOne...).
-- Bước 3: Xem thống kê nhanh về số lượng thành viên, sự kiện sắp tới và tổng số cơ hội giao thương đang mở trong cộng đồng.
+**Các bước thực hiện:**
+- **Bước 1:** Mở tab Cộng đồng trên ứng dụng.
+- **Bước 2:** Hiển thị không gian riêng của công ty với logo, bảng tin nội bộ và văn bản điều hành độc quyền.
+- **Bước 3:** Nhân viên cập nhật thông báo và tham gia các hoạt động nội bộ công ty.
 
+![Hình 3.9 – Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Workspace)](../images/evidence_v9/app_09_community.png)
 
-*Hình 3.9 – Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Corporate Workspace)*
+*Hình 3.9 – Không Gian Cộng Đồng Doanh Nghiệp Riêng Biệt (Dedicated Workspace)*
 
+### 10. Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ
 
-## 10. Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ
+**Mục đích:** Tiếp nhận công việc phân công từ cấp trên, cập nhật tiến độ % checklist và điểm danh GPS chống gian lận.
 
-Mục đích: Quản trị chi tiết 6 phân hệ (Tasks, Supervision, Opportunities, News, Events, Members) bên trong từng liên minh doanh nghiệp.
-Các bước thực hiện:
-- Bước 1: Bấm vào một cộng đồng cụ thể để mở trung tâm điều hành liên minh.
-- Bước 2: Lãnh đạo theo dõi biểu đồ chuyên cần nhân viên; nhân viên bấm '[⚡ TIẾN HÀNH NHẬN VIỆC]' để bắt đầu xử lý công việc.
-- Bước 3: Cập nhật thanh tiến độ % (0-100%) và gửi báo cáo giải trình kèm biên bản đính kèm.
+**Các bước thực hiện:**
+- **Bước 1:** Chuyển sang phân hệ Công việc tại không gian cộng đồng.
+- **Bước 2:** Xem danh sách đầu việc được giao kèm thời hạn hoàn thành và mức độ ưu tiên.
+- **Bước 3:** Cập nhật tiến độ hoàn thành, đính kèm ảnh báo cáo và thực hiện chấm công tại tọa độ GPS.
 
+![Hình 3.10 – Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ](../images/evidence_v9/app_10_tasks.png)
 
 *Hình 3.10 – Bàn Làm Việc Di Động, Giao Việc & Chấm Công GPS Nội Bộ*
 
+### 11. Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium
 
-## 11. Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium & Showcase
+**Mục đích:** Hồ sơ năng lực cá nhân số hóa chuyên nghiệp; thể hiện đầy đủ chức vụ, doanh nghiệp đại diện và thành tựu.
 
-Mục đích: Quản trị hồ sơ danh tính số cá nhân, giới thiệu sản phẩm tiêu biểu và các kênh kết nối nhanh đa nền tảng.
-Các bước thực hiện:
-- Bước 1: Chuyển sang Tab 4 - 'Tôi' trên thanh điều hướng dưới cùng.
-- Bước 2: Quan sát thẻ danh tính số hiển thị chức danh (ví dụ: 'Quản trị viên Hệ thống - ViOne Platform'), ảnh đại diện và hai nút chạm 'QR của tôi' / 'Chạm NFC'.
-- Bước 3: Khối 'LIÊN HỆ NHANH' hỗ trợ đối tác kết nối ngay qua Gọi điện thoại, Email, Viber, WhatsApp hoặc Telegram.
+**Các bước thực hiện:**
+- **Bước 1:** Chạm vào tab Tôi ở góc phải thanh điều hướng.
+- **Bước 2:** Xem và cập nhật thông tin tiểu sử doanh nhân, doanh nghiệp đại diện và các kênh liên hệ.
+- **Bước 3:** Quản lý các chứng chỉ, thành tựu và thiết lập bảo mật tài khoản.
 
+![Hình 3.11 – Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium](../images/evidence_v9/app_11_me.png)
 
 *Hình 3.11 – Trang Cá Nhân 'Tôi' - Danh Tính Số Titanium*
 
+### 12. Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard 4.0
 
-## 12. Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard
+**Mục đích:** Mã QR động chuẩn quốc tế vCard 4.0; quét bằng camera điện thoại thông thường lưu thẳng danh bạ không cần cài app.
 
-Mục đích: Cung cấp trang danh thiếp số chuyên sâu, hỗ trợ lưu nhanh số điện thoại vào danh bạ (Add to Contacts) và chia sẻ liên kết mạng xã hội.
-Các bước thực hiện:
-- Bước 1: Nhấn nút 'QR của tôi' hoặc 'Xem hồ sơ' trên màn hình cá nhân.
-- Bước 2: Hệ thống hiển thị mã QR định danh sắc nét liên kết trực tiếp với đường dẫn hồ sơ công khai (Canonical URL).
-- Bước 3: Đối tác quét mã bằng camera điện thoại thông thường sẽ tự động nhận được tệp danh thiếp vCard đầy đủ thông tin để lưu vào danh bạ máy tính bảng/điện thoại.
+**Các bước thực hiện:**
+- **Bước 1:** Mở màn hình Danh thiếp số từ trang cá nhân.
+- **Bước 2:** Đưa mã QR động cho đối tác quét trực tiếp bằng camera điện thoại thông thường.
+- **Bước 3:** Đối tác lập tức xem được profile web hoặc lưu toàn bộ liên hệ vào danh bạ điện thoại trong 1 giây.
 
+![Hình 3.12 – Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard 4.0](../images/evidence_v9/app_12_vcard_qr.png)
 
-*Hình 3.12 – Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard*
+*Hình 3.12 – Danh Thiếp Số Toàn Diện & Mã QR Chia Sẻ VCard 4.0*
 
+### 13. Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR
 
-## 13. Kích Hoạt & Cài Đặt Thẻ Doanh Nhân NFC 1-Chạm
+**Mục đích:** Ống kính quét thông minh tự động bóc tách Họ tên, Chức vụ, SĐT, Email trên danh thiếp giấy và lưu vào CRM trong 2 giây.
 
-Mục đích: Liên kết thẻ vật lý NFC (thẻ kim loại Titanium hoặc PVC mạ vàng) với tài khoản doanh nhân trên hệ thống ViOne.
-Các bước thực hiện:
-- Bước 1: Mở chức năng 'Kích hoạt thẻ NFC' từ menu cài đặt hoặc VActionSheet.
-- Bước 2: Áp thẻ NFC vật lý vào mặt lưng điện thoại (vị trí gần cụm camera chứa chip đọc NFC).
-- Bước 3: Hệ thống phát âm thanh xác nhận và ghi nhận UID của chip NFC vào hồ sơ doanh nhân trong CSDL PostgreSQL.
+**Các bước thực hiện:**
+- **Bước 1:** Bật tính năng Quét danh thiếp từ menu VActionSheet.
+- **Bước 2:** Hướng camera vào tấm danh thiếp giấy của đối tác.
+- **Bước 3:** Trí tuệ nhân tạo AI Vision tự động bóc tách các trường dữ liệu và lưu vào danh bạ khách hàng.
 
+![Hình 3.13 – Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR](../images/evidence_v9/app_13_ocr.png)
 
-*Hình 3.13 – Kích Hoạt & Cài Đặt Thẻ Doanh Nhân NFC 1-Chạm*
+*Hình 3.13 – Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR*
 
+### 14. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple
 
-## 14. Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR
+**Mục đích:** Quản trị an toàn thông tin với xác thực 2 lớp; tích hợp chức năng xóa tài khoản vĩnh viễn theo Apple Guideline 5.1.1(v).
 
-Mục đích: Tự động trích xuất thông tin từ danh thiếp giấy truyền thống (Họ tên, SĐT, Email, Tên công ty, Chức vụ) và nhập liệu vào CRM trong 3 giây.
-Các bước thực hiện:
-- Bước 1: Chọn tác vụ 'Quét danh thiếp' trên ứng dụng.
-- Bước 2: Đưa camera hướng vào tấm danh thiếp giấy của đối tác và nhấn nút chụp ảnh.
-- Bước 3: Mô hình thị giác máy tính OCR Vision tự động nhận dạng các trường dữ liệu; người dùng rà soát nhanh và nhấn 'Lưu vào danh bạ CRM'.
+**Các bước thực hiện:**
+- **Bước 1:** Vào mục Bảo mật tài khoản tại trang cá nhân.
+- **Bước 2:** Kích hoạt xác thực sinh trắc học FaceID / Vân tay để tăng cường bảo vệ.
+- **Bước 3:** Cung cấp tính năng Xóa tài khoản vĩnh viễn với quy trình xác thực 2 bước tuân thủ chuẩn Apple.
 
+![Hình 3.14 – Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple](../images/evidence_v9/app_14_security.png)
 
-*Hình 3.14 – Máy Quét Danh Thiếp Bằng Trí Tuệ Nhân Tạo AI OCR*
+*Hình 3.14 – Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn Chuẩn Apple*
 
+### 15. Trung Tâm Thông Báo & Cảnh Báo Điều Hành
 
-## 15. Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn (Apple Compliant)
+**Mục đích:** Hệ thống thông báo đẩy tức thì (Push Notification) phân loại màu sắc: Cảnh báo duyệt chi, việc khẩn, tin nhắn mới.
 
-Mục đích: Quản trị các lớp bảo vệ tài khoản, đổi mật khẩu định kỳ, kích hoạt xác thực 2 bước (2FA) và quản lý phiên đăng nhập thiết bị.
-Các bước thực hiện:
-- Bước 1: Vào mục 'Bảo mật tài khoản' trong trang cá nhân.
-- Bước 2: Nhập mật khẩu hiện tại, nhập mật khẩu mới và xác nhận (bắt buộc tối thiểu 6 ký tự gồm chữ và số).
-- Bước 3: Xem danh sách các thiết bị đang đăng nhập; nhấn 'Đăng xuất khỏi thiết bị khác' nếu phát hiện đăng nhập lạ.
+**Các bước thực hiện:**
+- **Bước 1:** Chạm vào biểu tượng quả chuông trên góc phải màn hình.
+- **Bước 2:** Xem danh sách thông báo được phân loại trực quan theo mức độ ưu tiên.
+- **Bước 3:** Chạm vào thông báo để mở thẳng màn hình xử lý công việc liên quan.
 
+![Hình 3.15 – Trung Tâm Thông Báo & Cảnh Báo Điều Hành](../images/evidence_v9/app_15_notifications.png)
 
-*Hình 3.15 – Trung Tâm Bảo Mật, Sinh Trắc Học & Xóa Tài Khoản Vĩnh Viễn (Apple Compliant)*
+*Hình 3.15 – Trung Tâm Thông Báo & Cảnh Báo Điều Hành*
 
+### 16. Vé Sự Kiện Điện Tử & Thẻ Check-in VIP
 
-## 16. Trung Tâm Thông Báo & Cảnh Báo Điều Hành
+**Mục đích:** Quản lý vé tham dự hội thảo, sự kiện xúc tiến thương mại có mã QR định danh cá nhân độc quyền.
 
-Mục đích: Tập trung toàn bộ thông báo nghiệp vụ, nhắc hẹn cuộc gặp, phê duyệt chi tiền và cơ hội giao thương mới theo thời gian thực.
-Các bước thực hiện:
-- Bước 1: Nhấn biểu tượng chuông thông báo ở góc trên màn hình.
-- Bước 2: Lọc thông báo theo phân loại: [Tất cả], [Chưa đọc], [Công việc], [Giao thương].
-- Bước 3: Chạm vào từng thông báo để mở trực tiếp tài liệu hoặc thương vụ tương ứng.
+**Các bước thực hiện:**
+- **Bước 1:** Mở mục Vé sự kiện của tôi trên ứng dụng.
+- **Bước 2:** Xem chi tiết sự kiện đã đăng ký kèm sơ đồ chỗ ngồi và quyền lợi đại biểu VIP.
+- **Bước 3:** Đưa mã QR trên vé cho ban tổ chức quét check-in khi tới sự kiện.
 
+![Hình 3.16 – Vé Sự Kiện Điện Tử & Thẻ Check-in VIP](../images/evidence_v9/app_16_tickets.png)
 
-*Hình 3.16 – Trung Tâm Thông Báo & Cảnh Báo Điều Hành*
+*Hình 3.16 – Vé Sự Kiện Điện Tử & Thẻ Check-in VIP*
 
+### 17. Giao Diện Di Động Giải Đấu Thể Thao ViOne Sport
+
+**Mục đích:** Theo dõi lịch thi đấu, tỷ số trực tiếp và bảng xếp hạng giải đấu thể thao doanh nghiệp ngay trên điện thoại.
+
+**Các bước thực hiện:**
+- **Bước 1:** Mở phân hệ Thể thao ViOne Sport trên ứng dụng.
+- **Bước 2:** Xem lịch thi đấu các bộ môn: Bóng đá, Golf, Tennis, Pickleball.
+- **Bước 3:** Cập nhật tỷ số trận đấu theo thời gian thực và xem bảng tổng sắp huy chương.
+
+![Hình 3.17 – Giao Diện Di Động Giải Đấu Thể Thao ViOne Sport](../images/evidence_v9/app_17_sport.png)
+
+*Hình 3.17 – Giao Diện Di Động Giải Đấu Thể Thao ViOne Sport*
+
+### 18. Giao Diện Di Động Giải Chạy ViOne Run Marathon
+
+**Mục đích:** Đồng bộ dữ liệu chạy bộ, đếm bước chân và quãng đường qua GPS điện thoại, vinh danh Top Runners cộng đồng.
+
+**Các bước thực hiện:**
+- **Bước 1:** Truy cập phân hệ ViOne Run trên ứng dụng di động.
+- **Bước 2:** Bật chế độ ghi nhận cự ly chạy bộ hoặc đồng bộ dữ liệu từ cảm biến sức khỏe điện thoại.
+- **Bước 3:** Xem bảng vinh danh thành tích Top Runners toàn mạng lưới doanh nhân.
+
+![Hình 3.18 – Giao Diện Di Động Giải Chạy ViOne Run Marathon](../images/evidence_v9/app_18_run.png)
+
+*Hình 3.18 – Giao Diện Di Động Giải Chạy ViOne Run Marathon*
+
+### 19. Giao Diện Di Động Bảo Tàng Số 3D ViOne Museum
+
+**Mục đích:** Trải nghiệm không gian trưng bày hiện vật 3D, xoay phóng tương tác đa chiều và chạm NFC nhận thuyết minh.
+
+**Các bước thực hiện:**
+- **Bước 1:** Vào phân hệ Bảo tàng số ViOne Museum trên di động.
+- **Bước 2:** Chọn hiện vật lịch sử để mở chế độ tương tác 3D đa chiều trên màn hình cảm ứng.
+- **Bước 3:** Chạm lưng điện thoại vào quầy hiện vật vật lý tại bảo tàng để nghe thuyết minh tự động.
+
+![Hình 3.19 – Giao Diện Di Động Bảo Tàng Số 3D ViOne Museum](../images/evidence_v9/app_19_museum.png)
+
+*Hình 3.19 – Giao Diện Di Động Bảo Tàng Số 3D ViOne Museum*
+
+### 20. Giao Diện Di Động Số Hóa Di Sản Văn Hóa ViOne Heritage
+
+**Mục đích:** Khám phá bản đồ số GIS di sản văn hóa, tham quan thực tế ảo VR360 và tự động kích hoạt thuyết minh theo tọa độ GPS.
+
+**Các bước thực hiện:**
+- **Bước 1:** Mở phân hệ Di sản ViOne Heritage trên ứng dụng.
+- **Bước 2:** Xem bản đồ số định vị các điểm di tích lịch sử và danh thắng văn hóa.
+- **Bước 3:** Di chuyển tới gần di tích để ứng dụng tự động phát bài thuyết minh lịch sử chuẩn xác.
+
+![Hình 3.20 – Giao Diện Di Động Số Hóa Di Sản Văn Hóa ViOne Heritage](../images/evidence_v9/app_20_heritage.png)
+
+*Hình 3.20 – Giao Diện Di Động Số Hóa Di Sản Văn Hóa ViOne Heritage*
 
 # PHỤ LỤC IV - Mã nguồn phần mềm
 
-Dưới đây là mã nguồn của 18 tệp kiến trúc cốt lõi cấu thành Phần mềm Vione Platform (tương đương 150 trang in mã nguồn tiêu chuẩn theo quy định của Cục Bản quyền tác giả), bao gồm các phân hệ xử lý nghiệp vụ Backend NestJS, Cổng quản trị Web CRM TanStack React và Ứng dụng Di động Thuần Native ViOne Connect (iOS & Android):
+Dưới đây là mã nguồn của 18 tệp kiến trúc cốt lõi cấu thành Phần mềm Vione Platform (tương đương 150 trang in mã nguồn tiêu chuẩn theo quy định của Cục Bản quyền tác giả), bao gồm các phân hệ xử lý nghiệp vụ Backend NestJS, Cổng quản trị Cổng Web Quản Trị TanStack React và Ứng dụng Di động Thuần Native ViOne Connect (iOS & Android):
 ========================================================================================
 
 ### Tệp 1/18: apps/vione_app_be/src/main.ts  (123 dòng)
@@ -3351,7 +3515,7 @@ export class CompaniesService {
         await this.seedEmployeesAndTasks(companyId);
       }
  
-      // 3. Tự động gửi Email thông tin lợi ích của gói và link đi đến ViOne CRM quản trị
+      // 3. Tự động gửi Email thông tin lợi ích của gói và link đi đến Cổng Web Quản Trị ViOne Platform quản trị
       let userEmail = (body as any)?.email?.trim() || '';
       let userName = (body as any)?.fullName?.trim() || '';
       try {
@@ -4107,7 +4271,7 @@ export class CompaniesService {
         VALUES 
           ('${t1}', '${companyId}', 'Triển khai tích hợp Danh thiếp số Titanium NFC cho 50 lãnh đạo', 'Cài đặt mã QR chuẩn vCard 4.0 và phân quyền điều hành CRM trên hệ thống ViOne Platform 5.0', '${emp1Id}', 'Nguyễn Hải Đăng', 'Tổng Giám Đốc', 'high', 'in_progress', 'Thứ Sáu tuần này', 'Tập đoàn An Phát Holdings', 'Yêu cầu kiểm thử NFC 1-chạm mượt mà không lỗi.', now(), now()),
           ('${t2}', '${companyId}', 'Gặp gỡ và tư vấn gói giải pháp Doanh nghiệp cho đối tác B2B', 'Thuyết trình giải pháp Quản trị Nhân sự & Giao việc tự động hóa ViOne Platform.', '${emp2Id}', 'Trần Minh Quân', 'Tổng Giám Đốc', 'urgent', 'assigned', 'Ngày mai, 14:00', 'Công ty F-Solutions Cloud', 'Chuẩn bị hồ sơ năng lực và bảng báo giá chi tiết.', now(), now()),
-          ('${t3}', '${companyId}', 'Đối soát báo cáo thu chi và phát hành hóa đơn điện tử quý', 'Kiểm tra chứng từ thanh toán ngân hàng qua Napas VietQR và lập tờ trình duyệt chi.', '${emp3Id}', 'Lê Thị Thu Thảo', 'Tổng Giám Đốc', 'normal', 'in_progress', 'Cuối tháng', 'Nội bộ ViOne', 'Khử trùng hóa đơn đầy đủ theo chuẩn BR-FIN-07.', now(), now())
+          ('${t3}', '${companyId}', 'Đối soát báo cáo thu chi và phát hành hóa đơn điện tử quý', 'Kiểm tra chứng từ thanh toán trực tuyến qua cổng VNPay, đối soát thông báo Zalo OA và lập tờ trình thanh toán.', '${emp3Id}', 'Lê Thị Thu Thảo', 'Tổng Giám Đốc', 'normal', 'in_progress', 'Cuối tháng', 'Nội bộ ViOne', 'Khử trùng hóa đơn đầy đủ theo chuẩn BR-FIN-07.', now(), now())
       `);
     } catch (err) {
       this.logger.warn('Seed company employees/tasks warning:', err);
@@ -4338,7 +4502,7 @@ export class CompaniesService {
     const taxId = dto.taxId?.trim() || '';
     const industry = dto.industry?.trim() || '';
     const address = dto.address?.trim() || '';
-    const paymentMethod = dto.paymentMethod || (price === 0 ? 'free_trial' : 'vietqr');
+    const paymentMethod = dto.paymentMethod || (price === 0 ? 'free_trial' : 'vnpay');
     const paymentProofUrl = dto.paymentProofUrl || null;
  
     const validUserId = userId && userId.length === 36 ? userId : null;
