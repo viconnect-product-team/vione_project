@@ -20,6 +20,10 @@ import {
   Smartphone,
   X,
   CheckCircle2,
+  Rotate3d,
+  Languages,
+  Play,
+  Pause,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
@@ -79,8 +83,8 @@ const MUSEUM_ARTICLES: MuseumArticle[] = [
     content: [
       "Trống đồng Ngọc Lũ (niên đại thế kỷ III - II TCN) được xếp hạng Bảo vật quốc gia đợt 1 năm 2012. Hoa văn chính giữa mặt trống là hình ngôi sao 14 tia tượng trưng cho mặt trời - nguồn cội của sự sống.",
       "Xen kẽ giữa các tia là họa tiết lông công và lá dừa cách điệu. Vành 6 và vành 8 thể hiện hình ảnh chim Lạc bay ngược chiều kim đồng hồ, biểu tượng cho chu kỳ vận hành của mùa vụ nông nghiệp lúa nước.",
-      "Công nghệ 3D Photogrammetry trên ViOne Museum tái hiện từng rãnh đúc siêu nhỏ, giúp người xem xoay 360 độ và phóng to chi tiết với độ phân giải siêu nét mà không làm tổn hại đến bề mặt hiện vật gốc.",
-      "Khi chạm điện thoại có tính năng NFC vào thẻ chip gắn tại bệ trưng bày bảo tàng, ứng dụng ViOne sẽ tự động kích hoạt bài thuyết minh âm thanh độ nét cao bằng nhiều ngôn ngữ.",
+      "Công nghệ 3D Photogrammetry trên ViOne Museum tái hiện từng rãnh đúc siêu nhỏ, giúp người xem xoay 360 độ và phóng to chi tiết với độ phân giải siêu nét.",
+      "Khi chạm điện thoại có tính năng NFC vào thẻ chip gắn tại bệ trưng bày bảo tàng, ứng dụng ViOne sẽ tự động kích hoạt bài thuyết minh âm thanh độ nét cao.",
     ],
   },
   {
@@ -92,26 +96,10 @@ const MUSEUM_ARTICLES: MuseumArticle[] = [
     views: "2.890",
     publishedAt: "26/10/2026",
     thumbnail: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=600&q=80",
-    summary: "Biểu tượng quyền lực tối cao của 13 vị vua triều Nguyễn với kỹ thuật thếp vàng độc bản và nghệ thuật chạm khắc gỗ sơn son thếp vàng tinh xảo.",
+    summary: "Ngai vàng triều Nguyễn tại điện Thái Hòa - biểu tượng quyền lực tối cao của 13 vị hoàng đế triều Nguyễn với nghệ thuật sơn thếp vàng đỉnh cao thế kỷ XIX.",
     content: [
-      "Ngai vàng triều Nguyễn đặt tại điện Thái Hòa - Hoàng thành Huế là bảo vật quốc gia duy nhất còn nguyên vẹn trong hệ thống cung đình phong kiến Việt Nam.",
-      "Ngai được làm từ gỗ quý, sơn son thếp vàng, chạm khắc tinh xảo hình tượng cửu long (chín con rồng) chầu nhật nguyệt. Mỗi chi tiết rồng uốn lượn thể hiện uy quyền vương triều và ước vọng mưa thuận gió hòa, quốc thái dân an.",
-      "Trên nền tảng ViOne Museum, hiện vật được mô hình hóa kỹ thuật số 3D AR, cho phép đặt mô hình ngai vàng vào không gian thực qua camera điện thoại.",
-    ],
-  },
-  {
-    id: "art-photogrammetry",
-    title: "Ứng Dụng Công Nghệ 3D Digital Twin & NFC Trong Bảo Tồn Cổ Vật Khỏi Tác Động Khí Hậu",
-    category: "Công Nghệ Di Sản",
-    author: "Kỹ sư ViOne Lab • Trung Tâm R&D ViConnect",
-    readTime: "6 phút đọc",
-    views: "1.950",
-    publishedAt: "24/10/2026",
-    thumbnail: "https://images.unsplash.com/photo-1569420078551-3b4991443657?auto=format&fit=crop&w=600&q=80",
-    summary: "Giải pháp quét đa chiều không gian 3D kết hợp cảm biến vi khí hậu và gắn chip NFC định danh độc bản tại tủ trưng bày bảo tàng số.",
-    content: [
-      "Khí hậu nhiệt đới ẩm tại Việt Nam tạo thách thức lớn cho việc bảo tồn hiện vật hữu cơ và đồng cổ. Nền tảng ViOne Museum tiên phong số hóa Digital Twin với độ chính xác dưới 0.1mm.",
-      "Khi khách tham quan chạm điện thoại NFC vào tủ kính, hệ thống lập tức mở mô hình 3D tương tác mà không cần chạm tay trực tiếp vào cổ vật quý hiếm, giúp bảo tồn di sản lâu dài.",
+      "Ngai vàng được làm bằng gỗ quý sơn thếp vàng, chạm khắc tinh xảo họa tiết cửu long (chín con rồng) ẩn hiện trong mây ngũ sắc.",
+      "Phía trên ngai có bửu tán bằng gỗ thếp vàng rực rỡ. Toàn bộ hiện vật được số hóa 3D không gian thực tế ảo, du khách có thể xoay ngắm chi tiết hoa văn mạ vàng từ mọi góc độ.",
     ],
   },
 ];
@@ -119,14 +107,19 @@ const MUSEUM_ARTICLES: MuseumArticle[] = [
 export const MuseumExplorer: React.FC = () => {
   const [museums, setMuseums] = useState<Museum[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null);
   const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<MuseumArticle | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
   const [scanningNfc, setScanningNfc] = useState(false);
   const [bookingTicket, setBookingTicket] = useState(false);
-  const [rotationDegree, setRotationDegree] = useState(0);
+  const [activeSubTab, setActiveSubTab] = useState<"gallery" | "artifacts" | "audio" | "timeline">("gallery");
+
+  // Audio Guide State
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<"vi" | "en" | "fr" | "ja">("vi");
+  const [modelRotation, setModelRotation] = useState(45);
 
   const loadMuseums = async () => {
     setLoading(true);
@@ -135,19 +128,17 @@ export const MuseumExplorer: React.FC = () => {
       if (Array.isArray(res) && res.length > 0) {
         setMuseums(res);
       } else {
-        // Fallback realistic museum data
         setMuseums([
           {
             id: "mus-1",
-            code: "BT-LSQG-HN",
+            code: "BT-LSQG",
             name: "Bảo Tàng Lịch Sử Quốc Gia Việt Nam",
-            address: "Số 1 Tràng Tiền & 216 Trần Quang Khải, Hoàn Kiếm, Hà Nội",
+            address: "Số 1 Tràng Tiền & 216 Trần Quang Khải, Hoàn Kiếm",
             province: "Hà Nội",
             ticket_price: 40000,
-            opening_hours: "08:00 - 17:00 (Thứ Ba - Chủ Nhật)",
-            description: "Nơi lưu giữ và trưng bày hơn 200.000 tài liệu, hiện vật lịch sử văn hóa Việt Nam từ thời tiền sử đến hiện đại.",
-            thumbnail_url: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80",
-            artifacts_count: 12,
+            opening_hours: "08:00 - 17:00 (Thứ 3 - Chủ nhật)",
+            artifacts_count: 200000,
+            thumbnail_url: "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80",
             artifacts: [
               {
                 id: "art-1",
@@ -161,37 +152,36 @@ export const MuseumExplorer: React.FC = () => {
               },
               {
                 id: "art-2",
-                artifact_code: "BVQG-04",
+                artifact_code: "BVQG-02",
                 name: "Thạp đồng Đào Thịnh",
                 period: "Thế kỷ V TCN (Văn hóa Đông Sơn)",
-                nfc_uid: "04:C3:44:1F:D9:30:82",
+                nfc_uid: "04:B2:33:8D:C9:20:90",
                 is_national_treasure: true,
-                image_url: "https://images.unsplash.com/photo-1569420078551-3b4991443657?auto=format&fit=crop&w=600&q=80",
-                description: "Thạp đồng có kích thước lớn nhất được tìm thấy thuộc văn hóa Đông Sơn, khắc họa sống động thuyền chiến và chim thần.",
+                image_url: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=600&q=80",
+                description: "Chiếc thạp đồng lớn nhất Việt Nam được trang trí cảnh giao hoan phồn thực, cầu mong sự sinh sôi nảy nở của con người và mùa màng.",
               },
             ],
           },
           {
             id: "mus-2",
-            code: "BT-CTC-HUE",
+            code: "BT-CDH",
             name: "Bảo Tàng Cổ Vật Cung Đình Huế",
-            address: "Điện Long An, Số 3 Lê Trực, Phường Đông Ba, TP. Huế",
+            address: "Số 03 Lê Trực, Phường Thuận Thành",
             province: "Thừa Thiên Huế",
             ticket_price: 50000,
-            opening_hours: "07:30 - 17:30 Hàng ngày",
-            description: "Trưng bày cổ vật quý hiếm triều Nguyễn: long bào, ngai vàng, ngọc tỷ, đồ sứ ký kiểu và đồ ngự dụng cung đình.",
-            thumbnail_url: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80",
-            artifacts_count: 8,
+            opening_hours: "07:30 - 17:30 (Hàng ngày)",
+            artifacts_count: 10000,
+            thumbnail_url: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80",
             artifacts: [
               {
                 id: "art-3",
-                artifact_code: "BVQG-02",
+                artifact_code: "BVQG-03",
                 name: "Ngai Vàng Triều Nguyễn (Điện Thái Hòa)",
-                period: "Triều Nguyễn (1802 - 1945)",
-                nfc_uid: "04:B2:33:4D:E5:20:81",
+                period: "Năm 1802 (Triều vua Gia Long)",
+                nfc_uid: "04:C3:44:7E:DA:30:00",
                 is_national_treasure: true,
                 image_url: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=600&q=80",
-                description: "Ngai vàng biểu tượng vương quyền triều Nguyễn, chạm trổ rồng mạ vàng tinh xảo cùng hệ thống bệ đỡ cửu long uy nghiêm.",
+                description: "Ngai vàng gỗ thếp vàng lộng lẫy, biểu tượng quyền lực của 13 đời vua Nguyễn với nghệ thuật sơn son thếp vàng đỉnh cao.",
               },
             ],
           },
@@ -209,28 +199,15 @@ export const MuseumExplorer: React.FC = () => {
     loadMuseums();
   }, []);
 
-  const handleOpenMuseum = async (mus: Museum) => {
-    setSelectedMuseum(mus);
-    try {
-      const full = await fetchNestApi<Museum>(`/platform-hub/museums/${mus.id}`);
-      if (full && full.id) {
-        setSelectedMuseum(full);
-      }
-    } catch (err) {
-      console.warn("Could not load full museum detail:", err);
-    }
-  };
-
   const handleSimulateNfcTap = async (uid?: string) => {
     const targetUid = uid || "04:A1:22:9C:B8:10:80";
     setScanningNfc(true);
     try {
       const artifact = await fetchNestApi<Artifact>(`/platform-hub/artifacts/nfc/${targetUid}`);
       if (artifact && artifact.id) {
-        toast.success(`Chạm NFC thành công! Mở hiện vật: ${artifact.name}`);
+        toast.success(`Chạm 1-Tap NFC thành công! Mở hiện vật: ${artifact.name}`);
         setSelectedArtifact(artifact);
       } else {
-        // Fallback artifact
         setSelectedArtifact({
           id: "art-1",
           artifact_code: "BVQG-01",
@@ -241,7 +218,7 @@ export const MuseumExplorer: React.FC = () => {
           image_url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
           description: "Kiệt tác đúc đồng đỉnh cao của văn hóa Đông Sơn. Mặt trống trang trí ngôi sao 14 cánh, hình chim Lạc bay và cảnh sinh hoạt lễ hội giã gạo của người Việt cổ.",
         });
-        toast.success("Chạm NFC thành công! Mở mô hình 3D Trống đồng Ngọc Lũ.");
+        toast.success("Chạm 1-Tap NFC thành công! Mở mô hình 3D Trống đồng Ngọc Lũ.");
       }
     } catch (err: any) {
       toast.error("Không nhận diện được thẻ NFC này trên hệ thống.");
@@ -250,309 +227,420 @@ export const MuseumExplorer: React.FC = () => {
     }
   };
 
-  const handleBookTicket = async (museum: Museum) => {
-    setBookingTicket(true);
-    try {
-      const res = await fetchNestApi<any>("/platform-hub/tickets/purchase", {
-        method: "POST",
-        body: JSON.stringify({
-          ticketType: "museum",
-          itemName: `Vé tham quan: ${museum.name}`,
-          totalAmount: Number(museum.ticket_price) || 50000,
-          quantity: 1,
-        }),
-      });
-      if (res && res.success) {
-        toast.success(`Đặt vé điện tử thành công! Mã vé: ${res.ticketCode}`);
-      } else {
-        toast.success(`Đặt vé thành công qua cổng thanh toán VNPay! Mã vé: TK-VNE-${Date.now().toString().slice(-6)}`);
-      }
-    } catch (err: any) {
-      toast.success(`Đặt vé điện tử VNPay thành công! Mã vé: TK-VNE-${Date.now().toString().slice(-6)}`);
-    } finally {
-      setBookingTicket(false);
-    }
-  };
-
-  const featuredArtifacts = museums.flatMap((m) => m.artifacts || []).slice(0, 4);
-
   return (
-    <div className="space-y-4 pb-12">
-      {/* 1. App Top Header Bar */}
-      <div className="flex items-center justify-between gap-3 bg-[#0B0F17] p-2.5 rounded-2xl border border-[#D8B282]/25 shadow-md">
+    <div className="space-y-4 pb-12 text-slate-900 animate-fadeIn">
+      {/* 1. THANH TÌM KIẾM & NÚT CHẠM NFC */}
+      <div className="flex items-center justify-between gap-2.5 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm bảo vật, bảo tàng, cổ vật 3D..."
-            className="w-full rounded-xl border border-[#D8B282]/20 bg-[#121620] py-2 pl-9 pr-3 text-xs text-[#F6E1C3] placeholder-slate-400 focus:border-[#D8B282] focus:outline-none"
+            placeholder="Tìm bảo vật quốc gia, cổ vật 3D, niên đại..."
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs text-slate-900 placeholder-slate-400 focus:border-amber-500 focus:outline-none"
           />
         </div>
         <button
           type="button"
           onClick={() => handleSimulateNfcTap("04:A1:22:9C:B8:10:80")}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] text-xs font-bold shadow hover:brightness-110 active:scale-95 transition-all shrink-0"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] text-xs font-bold shadow hover:brightness-105 active:scale-95 transition-all shrink-0"
         >
           <Radio className="h-3.5 w-3.5 animate-pulse" />
-          <span>Quét NFC</span>
+          <span>Chạm NFC</span>
         </button>
       </div>
 
-      {/* 2. Category Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
-        {[
-          { key: "all", label: "Tất Cả" },
-          { key: "treasure", label: "Bảo Vật Quốc Gia" },
-          { key: "3d", label: "Cổ Vật 3D AR" },
-          { key: "audio", label: "Audio Thuyết Minh" },
-          { key: "unesco", label: "Di Tích UNESCO" },
-          { key: "dongson", label: "Văn Hóa Đông Sơn" },
-        ].map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            onClick={() => setActiveCategory(item.key)}
-            className={`rounded-xl px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
-              activeCategory === item.key
-                ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-bold shadow-sm"
-                : "border border-[#D8B282]/25 bg-[#0B0F17] text-slate-300 hover:border-[#D8B282]/50 hover:text-[#F6E1C3]"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
+      {/* 2. CHỌN PHÂN HỆ CON (SUB-FEATURES TABS) */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-100 border border-slate-200 rounded-xl">
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("gallery")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "gallery"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Phòng Trưng Bày 3D
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("artifacts")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "artifacts"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Xoay Lật 360°
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("audio")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "audio"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Audio Guide Đa Ngữ
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("timeline")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "timeline"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Niên Biểu & QR
+        </button>
       </div>
 
-      {/* 3. LỐI TẮT TÍNH NĂNG NHANH (QUICK ACTIONS GRID) */}
-      <div className="rounded-2xl border border-[#D8B282]/25 bg-[#0B0F17] p-3 shadow-lg">
+      {/* 3. LỐI TẮT TÍNH NĂNG NHANH (QUICK ACTIONS GRID - LIGHT THEME) */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
         <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Sparkles className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Tính Năng Nhanh Bảo Tàng Số</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+            <span>Tính Năng Nổi Bật Bảo Tàng Số 3D</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]/80 font-medium">ViOne Museum Hub</span>
+          <span className="text-[10px] text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            WebGL 3D & NFC
+          </span>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
-          {/* Quick Action 1: 1-Tap NFC */}
+          {/* Quick Action 1: Chạm NFC */}
           <button
             type="button"
             onClick={() => handleSimulateNfcTap("04:A1:22:9C:B8:10:80")}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#F6E1C3] via-[#D8B282] to-[#8C653B] flex items-center justify-center text-[#050C15] shadow-sm mb-1 group-hover:scale-105 transition-transform">
               <Radio className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Chạm NFC</span>
-            <span className="text-[8px] text-slate-400">1-Tap mở cổ vật</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Chạm NFC</span>
+            <span className="text-[8px] text-slate-500">1-Tap hiện vật</span>
           </button>
 
-          {/* Quick Action 2: 3D AR */}
+          {/* Quick Action 2: Xoay lật 360 */}
           <button
             type="button"
-            onClick={() => {
-              if (featuredArtifacts[0]) setSelectedArtifact(featuredArtifacts[0]);
-              else handleSimulateNfcTap();
-            }}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubTab("artifacts")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Box className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Rotate3d className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Xoay 3D AR</span>
-            <span className="text-[8px] text-slate-400">360° Photogrammetry</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Xoay 360°</span>
+            <span className="text-[8px] text-slate-500">Photogrammetry</span>
           </button>
 
           {/* Quick Action 3: Audio Guide */}
           <button
             type="button"
-            onClick={() => toast.info("Đang phát thuyết minh âm thanh tự động cho hiện vật gần bạn...")}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubTab("audio")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Volume2 className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Volume2 className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Audio Guide</span>
-            <span className="text-[8px] text-slate-400">Thuyết minh AI</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Audio Guide</span>
+            <span className="text-[8px] text-slate-500">4 Ngôn ngữ</span>
           </button>
 
-          {/* Quick Action 4: Vé tham quan */}
+          {/* Quick Action 4: Tra cứu QR */}
           <button
             type="button"
-            onClick={() => {
-              if (museums[0]) handleBookTicket(museums[0]);
-              else toast.info("Chọn bảo tàng để đặt vé điện tử.");
-            }}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubTab("timeline")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Ticket className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <QrCode className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Vé VNPay</span>
-            <span className="text-[8px] text-slate-400">QR Check-in nhanh</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Quét QR</span>
+            <span className="text-[8px] text-slate-500">Hồ sơ bảo vật</span>
           </button>
         </div>
       </div>
 
-      {/* 4. HIỆN VẬT 3D & BẢO VẬT NỔI BẬT (VISUAL CARD SHOWCASE) */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Box className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Cổ Vật 3D AR Trưng Bày Tiêu Biểu</span>
+      {/* SUB-VIEW 1: PHÒNG TRƯNG BÀY 3D (VIRTUAL EXHIBITION GALLERY) */}
+      {activeSubTab === "gallery" && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <Landmark className="h-4 w-4 text-amber-600" />
+              <span>Bảo Tàng & Không Gian Trưng Bày Tiêu Biểu ({museums.length})</span>
+            </h3>
+            <span className="text-[10px] text-slate-500">Tham quan số hóa</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Vuốt ngang xem thêm</span>
-        </div>
 
-        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
-          {(featuredArtifacts.length > 0 ? featuredArtifacts : [
-            {
-              id: "art-demo-1",
-              name: "Trống đồng Ngọc Lũ",
-              period: "Thế kỷ III TCN • Đông Sơn",
-              is_national_treasure: true,
-              image_url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80",
-            },
-            {
-              id: "art-demo-2",
-              name: "Ngai Vàng Triều Nguyễn",
-              period: "Thế kỷ XIX • Cố Đô Huế",
-              is_national_treasure: true,
-              image_url: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=400&q=80",
-            },
-            {
-              id: "art-demo-3",
-              name: "Thạp đồng Đào Thịnh",
-              period: "Thế kỷ V TCN • Yên Bái",
-              is_national_treasure: true,
-              image_url: "https://images.unsplash.com/photo-1569420078551-3b4991443657?auto=format&fit=crop&w=400&q=80",
-            },
-          ]).map((art: any) => (
-            <div
-              key={art.id}
-              onClick={() => setSelectedArtifact(art)}
-              className="w-56 shrink-0 rounded-2xl border border-[#D8B282]/30 bg-[#0B0F17] p-3 shadow-lg hover:border-[#D8B282] transition-all cursor-pointer flex flex-col justify-between"
-            >
-              <div>
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-[#121620] mb-2.5">
-                  <img
-                    src={art.image_url || "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80"}
-                    alt={art.name}
-                    className="h-full w-full object-cover hover:scale-105 transition-transform"
-                  />
-                  <div className="absolute top-2 left-2 rounded-full bg-[#050C15]/85 border border-[#D8B282]/40 px-2 py-0.5 text-[9px] font-bold text-[#F6E1C3]">
-                    3D Digital Twin
-                  </div>
-                  {art.is_national_treasure && (
-                    <div className="absolute top-2 right-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-bold text-[#050C15]">
-                      Bảo Vật QG
-                    </div>
-                  )}
-                </div>
-                <h4 className="text-xs font-bold text-[#F6E1C3] line-clamp-1">{art.name}</h4>
-                <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{art.period}</p>
-              </div>
-
-              <div className="mt-3 pt-2 border-t border-[#D8B282]/15 flex items-center justify-between">
-                <span className="text-[10px] font-semibold text-[#D8B282] flex items-center gap-1">
-                  <Eye className="h-3 w-3" />
-                  Xoay 360°
-                </span>
-                <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
-                  <Volume2 className="h-3 w-3 text-[#D8B282]" />
-                  Audio
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 5. DANH SÁCH BẢO TÀNG LIÊN KẾT */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Landmark className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Hệ Thống Bảo Tàng Số Liên Kết ({museums.length})</span>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="flex min-h-[120px] items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#D8B282] border-t-transparent" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-2.5">
+          <div className="grid grid-cols-1 gap-3">
             {museums.map((mus) => (
               <div
                 key={mus.id}
-                className="rounded-2xl border border-[#D8B282]/20 bg-[#0B0F17] p-3 shadow-md hover:border-[#D8B282]/50 transition-all flex flex-col justify-between"
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:border-[#D8B282] transition-all space-y-3"
               >
-                <div className="flex items-start gap-3">
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-100">
                   <img
-                    src={mus.thumbnail_url || "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=400&q=80"}
+                    src={mus.thumbnail_url || "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80"}
                     alt={mus.name}
-                    className="h-18 w-20 rounded-xl object-cover border border-[#D8B282]/25 shrink-0"
+                    className="h-full w-full object-cover"
                   />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[9px] font-bold text-[#D8B282] uppercase tracking-wider">
-                      {mus.province} • {mus.code}
-                    </span>
-                    <h3 className="text-xs font-bold text-[#F6E1C3] line-clamp-1 mt-0.5">{mus.name}</h3>
-                    <div className="mt-1 flex items-center gap-1 text-[10px] text-slate-400">
-                      <MapPin className="h-3 w-3 text-[#D8B282] shrink-0" />
-                      <span className="line-clamp-1">{mus.address}</span>
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-1 text-[10px] text-slate-400">
-                      <Clock className="h-3 w-3 text-[#D8B282] shrink-0" />
-                      <span>{mus.opening_hours}</span>
-                    </div>
+                  <div className="absolute top-2 left-2 rounded-full bg-white/95 border border-slate-200 px-2.5 py-0.5 text-[9px] font-bold text-slate-800 shadow-sm">
+                    {mus.province}
+                  </div>
+                  <div className="absolute top-2 right-2 rounded-full bg-amber-600 px-2.5 py-0.5 text-[9px] font-bold text-white shadow">
+                    Giá vé: {mus.ticket_price.toLocaleString("vi-VN")} đ
                   </div>
                 </div>
 
-                <div className="mt-2.5 pt-2 border-t border-[#D8B282]/15 flex items-center justify-between">
-                  <div>
-                    <span className="text-[9px] text-slate-400 block">Vé vào cửa:</span>
-                    <span className="text-xs font-bold text-[#D8B282]">
-                      {Number(mus.ticket_price) > 0 ? `${Number(mus.ticket_price).toLocaleString()} đ` : "Miễn phí"}
-                    </span>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">{mus.name}</h4>
+                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <MapPin className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                    <span>{mus.address}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenMuseum(mus)}
-                      className="rounded-xl border border-[#D8B282]/40 bg-[#121620] px-3 py-1.5 text-[11px] font-semibold text-[#F6E1C3] hover:bg-[#D8B282]/20 transition-all flex items-center gap-1"
-                    >
-                      <Box className="h-3 w-3 text-[#D8B282]" />
-                      <span>Xem Cổ Vật</span>
-                    </button>
-                    <button
-                      type="button"
-                      disabled={bookingTicket}
-                      onClick={() => handleBookTicket(mus)}
-                      className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-3 py-1.5 text-[11px] font-bold text-[#050C15] shadow hover:brightness-110 active:scale-95 transition-all flex items-center gap-1"
-                    >
-                      <Ticket className="h-3 w-3" />
-                      <span>Đặt Vé</span>
-                    </button>
+                  <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <Clock className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                    <span>{mus.opening_hours}</span>
                   </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <span className="text-xs text-slate-600 font-medium">
+                    {mus.artifacts?.length || 2} Bảo vật quốc gia số hóa 3D
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (mus.artifacts && mus.artifacts[0]) {
+                        setSelectedArtifact(mus.artifacts[0]);
+                      } else {
+                        toast.info("Đang nạp không gian 3D bảo tàng...");
+                      }
+                    }}
+                    className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-3.5 py-1.5 text-xs font-bold text-[#050C15] shadow hover:brightness-105 active:scale-95 transition-all flex items-center gap-1"
+                  >
+                    <Box className="h-3.5 w-3.5" />
+                    <span>Vào Xem 3D</span>
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* 6. CHUYÊN MỤC BÀI VIẾT & THUYẾT MINH DI SẢN (EDITORIAL / NEWS FEED) */}
+      {/* SUB-VIEW 2: XOAY LẬT MÔ HÌNH HIỆN VẬT 3D 360 ĐỘ */}
+      {activeSubTab === "artifacts" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Rotate3d className="h-4 w-4 text-blue-600" />
+                <span>Mô Hình 3D Photogrammetry Tương Tác 360°</span>
+              </h3>
+              <p className="text-[10px] text-slate-500">Trống đồng Ngọc Lũ (Thời Đông Sơn - Thế kỷ III TCN)</p>
+            </div>
+            <span className="text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 font-bold">
+              Bảo Vật Quốc Gia #01
+            </span>
+          </div>
+
+          {/* 3D Canvas Mockup Container */}
+          <div className="relative aspect-square w-full rounded-2xl bg-gradient-to-b from-slate-100 to-slate-200 overflow-hidden border border-slate-300 flex items-center justify-center p-4">
+            <img
+              src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=700&q=80"
+              alt="Trống đồng 3D"
+              className="max-h-full max-w-full object-contain drop-shadow-2xl transition-transform duration-300"
+              style={{ transform: `rotate(${modelRotation}deg) scale(1.05)` }}
+            />
+            <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-xl text-[10px] font-bold text-slate-800 shadow-sm flex items-center gap-1.5">
+              <Box className="h-3 w-3 text-amber-600" />
+              <span>WebGL / Three.js 60fps</span>
+            </div>
+            <div className="absolute bottom-3 inset-x-3 flex items-center justify-between bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl shadow-sm text-xs">
+              <span className="text-[11px] font-bold text-slate-700">Góc xoay: {modelRotation}°</span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setModelRotation((r) => (r - 45 + 360) % 360)}
+                  className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-bold hover:bg-slate-200"
+                >
+                  Xoay Trái
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModelRotation((r) => (r + 45) % 360)}
+                  className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-bold hover:bg-slate-200"
+                >
+                  Xoay Phải
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1.5 text-xs text-slate-700">
+            <h4 className="font-bold text-slate-900">Chi Tiết Cổ Vật:</h4>
+            <p className="text-[11px] leading-relaxed text-slate-600">
+              Trống đồng Ngọc Lũ có dáng cân đối, trang trí hoa văn chìm nổi tinh tế. Chính giữa mặt trống có hình ngôi sao 14 cánh, xen giữa các cánh là họa tiết lông công. Xung quanh có 16 vành hoa văn hình học, động vật và hình ảnh con người nhảy múa trong lễ hội.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-VIEW 3: AUDIO GUIDE ĐA NGỮ */}
+      {activeSubTab === "audio" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Volume2 className="h-4 w-4 text-emerald-600" />
+                <span>Thuyết Minh Âm Thanh Audio Guide Đa Ngữ</span>
+              </h3>
+              <p className="text-[10px] text-slate-500">Trí tuệ nhân tạo AI Voice tái hiện lịch sử hào hùng</p>
+            </div>
+            <div className="flex items-center gap-1">
+              {[
+                { code: "vi", label: "Tiếng Việt" },
+                { code: "en", label: "English" },
+                { code: "fr", label: "Français" },
+                { code: "ja", label: "日本語" },
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => {
+                    setSelectedLanguage(lang.code as any);
+                    toast.info(`Đã đổi ngôn ngữ Audio Guide sang: ${lang.label}`);
+                  }}
+                  className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
+                    selectedLanguage === lang.code
+                      ? "bg-amber-100 text-amber-900 border border-amber-300"
+                      : "bg-slate-50 text-slate-600 border border-slate-200"
+                  }`}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Audio Player Card */}
+          <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+                className="h-12 w-12 rounded-full bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] flex items-center justify-center text-[#050C15] shadow-md hover:scale-105 active:scale-95 transition-all shrink-0"
+              >
+                {isPlayingAudio ? <Pause className="h-5 w-5 fill-current" /> : <Play className="h-5 w-5 fill-current ml-0.5" />}
+              </button>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs font-bold text-slate-900 truncate">
+                  Bài thuyết minh: Trống đồng Ngọc Lũ & Lịch sử Văn hóa Đông Sơn
+                </h4>
+                <p className="text-[10px] text-slate-500">Giọng đọc: AI Voice truyền cảm • Thời lượng: 03:45</p>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="space-y-1">
+              <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div className={`h-full bg-amber-600 rounded-full ${isPlayingAudio ? "w-2/5 animate-pulse" : "w-1/12"}`} />
+              </div>
+              <div className="flex justify-between text-[9px] text-slate-500 font-mono">
+                <span>{isPlayingAudio ? "01:28" : "00:15"}</span>
+                <span>03:45</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold text-slate-900">Danh Sách Bài Thuyết Minh Sẵn Có:</h4>
+            {[
+              { id: 1, title: "1. Khái quát nghệ thuật đúc đồng đỉnh cao thời Đông Sơn", dur: "04:12" },
+              { id: 2, title: "2. Giải mã biểu tượng chim Lạc và tín ngưỡng mặt trời", dur: "03:30" },
+              { id: 3, title: "3. Ngai vàng Điện Thái Hòa - Biểu tượng vương quyền triều Nguyễn", dur: "05:18" },
+              { id: 4, title: "4. Gốm hoa lam Chu Đậu - Dòng gốm đạo thế kỷ XV", dur: "04:45" },
+            ].map((item) => (
+              <div key={item.id} className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between hover:bg-slate-100 transition-all cursor-pointer">
+                <span className="text-xs font-medium text-slate-800">{item.title}</span>
+                <span className="text-[10px] font-mono text-slate-500">{item.dur}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SUB-VIEW 4: NIÊN BIỂU LỊCH SỬ & QUÉT QR */}
+      {activeSubTab === "timeline" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Clock className="h-4 w-4 text-amber-600" />
+                <span>Niên Biểu Lịch Sử & Tra Cứu Mã QR Hiện Vật</span>
+              </h3>
+              <p className="text-[10px] text-slate-500">Tra cứu nhanh hồ sơ di sản được số hóa</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => toast.success("Đã mở camera quét mã QR hiện vật bảo tàng!")}
+              className="px-3 py-1 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 text-xs font-bold flex items-center gap-1"
+            >
+              <QrCode className="h-3.5 w-3.5" />
+              <span>Quét QR</span>
+            </button>
+          </div>
+
+          <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-amber-300">
+            {[
+              {
+                period: "Thế kỷ V - II TCN",
+                name: "Thời Đại Đông Sơn - Nhà Nước Văn Lang & Âu Lạc",
+                desc: "Kiệt tác Trống đồng Ngọc Lũ, Thạp đồng Đào Thịnh, Dao găm chuôi hình người.",
+              },
+              {
+                period: "Thế kỷ X - XIV",
+                name: "Thời Đại Lý - Trần (Thăng Long Kinh Kỳ)",
+                desc: "Rồng thời Lý chạm khắc đá chùa Phật Tích, Chuông đồng chùa Một Cột.",
+              },
+              {
+                period: "Thế kỷ XV - XVIII",
+                name: "Thời Lê Sơ & Mạc (Văn Hóa Gốm Sứ Đại Việt)",
+                desc: "Bình gốm hoa lam Chu Đậu, Bia tiến sĩ Văn Miếu Quốc Tử Giám.",
+              },
+              {
+                period: "Thế kỷ XIX - XX",
+                name: "Triều Đại Nhà Nguyễn (Kinh Đô Huế)",
+                desc: "Ngai vàng điện Thái Hòa, Cửu Đỉnh đúc đồng trước Thế Miếu, Áo hoàng bào thêu chỉ vàng.",
+              },
+            ].map((t, idx) => (
+              <div key={idx} className="relative">
+                <span className="absolute -left-6 top-1 h-3 w-3 rounded-full border-2 border-amber-600 bg-white" />
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-100/60 px-2 py-0.5 rounded">
+                  {t.period}
+                </span>
+                <h4 className="text-xs font-bold text-slate-900 mt-1">{t.name}</h4>
+                <p className="text-[11px] text-slate-600 mt-0.5">{t.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. CHUYÊN MỤC BÀI VIẾT BẢO TÀNG */}
       <div className="space-y-2 pt-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <BookOpen className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Bài Viết & Chuyên Đề Bảo Vật Lịch Sử</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <BookOpen className="h-3.5 w-3.5 text-amber-600" />
+            <span>Chuyên Đề Bảo Vật Quốc Gia & Khảo Cổ Học</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Chuyên mục nghiên cứu</span>
+          <span className="text-[10px] text-slate-500">Nghiên cứu văn hóa</span>
         </div>
 
         <div className="space-y-2.5">
@@ -560,23 +648,23 @@ export const MuseumExplorer: React.FC = () => {
             <div
               key={article.id}
               onClick={() => setSelectedArticle(article)}
-              className="rounded-2xl border border-[#D8B282]/20 bg-[#0B0F17] p-3 shadow-md hover:border-[#D8B282]/60 transition-all cursor-pointer group"
+              className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:border-[#D8B282] transition-all cursor-pointer group"
             >
               <div className="flex gap-3">
                 <img
                   src={article.thumbnail}
                   alt={article.title}
-                  className="h-20 w-24 rounded-xl object-cover border border-[#D8B282]/25 shrink-0 group-hover:scale-105 transition-transform"
+                  className="h-20 w-24 rounded-xl object-cover border border-slate-200 shrink-0 group-hover:scale-105 transition-transform"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="rounded bg-[#D8B282]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#F6E1C3]">
+                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800">
                         {article.category}
                       </span>
                       <span className="text-[9px] text-slate-400">{article.readTime}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-[#F6E1C3] line-clamp-2 mt-1 group-hover:text-white transition-colors">
+                    <h4 className="text-xs font-bold text-slate-900 line-clamp-2 mt-1 group-hover:text-amber-700 transition-colors">
                       {article.title}
                     </h4>
                   </div>
@@ -591,113 +679,78 @@ export const MuseumExplorer: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL 1: HIỆN VẬT 3D AR SIMULATOR */}
+      {/* MODAL: HIỆN VẬT CHI TIẾT */}
       {selectedArtifact && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-[#D8B282]/20 border border-[#D8B282]/40 px-2 py-0.5 text-[10px] font-bold text-[#F6E1C3]">
-                    {selectedArtifact.is_national_treasure ? "Bảo Vật Quốc Gia" : "Hiện Vật Quý"}
-                  </span>
-                  <span className="text-xs text-slate-400">{selectedArtifact.period}</span>
-                </div>
-                <h2 className="text-base font-bold font-serif mt-1 text-[#F6E1C3]">
+                <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                  {selectedArtifact.artifact_code} • {selectedArtifact.period}
+                </span>
+                <h2 className="text-base font-bold font-serif mt-1 text-slate-900">
                   {selectedArtifact.name}
                 </h2>
-                <p className="text-[11px] text-[#D8B282]">Mã NFC: {selectedArtifact.nfc_uid || "04:A1:22:9C:B8:10:80"}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedArtifact(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white"
+                className="rounded-full border border-slate-200 bg-slate-100 p-1.5 text-slate-600 hover:text-slate-900"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            {/* 3D Model Rotation Canvas */}
-            <div className="relative aspect-square max-h-[260px] w-full mx-auto overflow-hidden rounded-2xl border border-[#D8B282]/30 bg-gradient-to-b from-[#121620] to-[#050C15] flex flex-col items-center justify-center p-3">
-              <div
-                className="relative transition-transform duration-300 ease-out flex items-center justify-center"
-                style={{ transform: `rotateY(${rotationDegree}deg)` }}
-              >
-                <img
-                  src={selectedArtifact.image_url || "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80"}
-                  alt={selectedArtifact.name}
-                  className="max-h-[170px] max-w-[170px] object-contain drop-shadow-[0_15px_25px_rgba(216,178,130,0.35)]"
-                />
-              </div>
+            <img
+              src={selectedArtifact.image_url}
+              alt={selectedArtifact.name}
+              className="w-full h-48 rounded-2xl object-cover border border-slate-200"
+            />
 
-              {/* Slider xoay 360 */}
-              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between gap-2 bg-[#0B0F17]/90 backdrop-blur-md rounded-xl p-2 border border-[#D8B282]/25">
-                <span className="text-[9px] text-slate-400">Xoay 360°:</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="360"
-                  value={rotationDegree}
-                  onChange={(e) => setRotationDegree(parseInt(e.target.value, 10))}
-                  className="flex-1 accent-[#D8B282] h-1.5 rounded-lg cursor-pointer"
-                />
-                <span className="text-[10px] font-bold text-[#F6E1C3]">{rotationDegree}°</span>
-              </div>
+            <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/60 text-xs text-slate-700 leading-relaxed">
+              {selectedArtifact.description}
             </div>
 
-            {/* Audio Thuyết Minh */}
-            <div className="rounded-xl border border-[#D8B282]/30 bg-[#121620] p-3 flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-bold shadow-md shrink-0">
-                <Volume2 className="h-4 w-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-xs font-bold text-[#F6E1C3]">Thuyết Minh Lịch Sử AI</h4>
-                <p className="text-[10px] text-slate-400 line-clamp-1">Phát tự động khi quét chip NFC tại bảo tàng</p>
-              </div>
+            <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => toast.info("Đang phát thuyết minh âm thanh cổ vật...")}
-                className="rounded-lg bg-[#D8B282]/15 border border-[#D8B282]/40 px-2.5 py-1 text-[11px] font-semibold text-[#F6E1C3] hover:bg-[#D8B282]/25 shrink-0"
+                onClick={() => {
+                  toast.success("Đang kích hoạt Audio Guide thuyết minh hiện vật...");
+                  setActiveSubTab("audio");
+                  setSelectedArtifact(null);
+                }}
+                className="flex-1 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2 text-xs font-bold text-[#050C15] shadow flex items-center justify-center gap-1.5"
               >
-                Nghe Ngay
+                <Volume2 className="h-4 w-4" />
+                <span>Nghe Thuyết Minh Audio</span>
               </button>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-1.5 text-xs">
-              <h4 className="font-bold text-[#F6E1C3]">Ý Nghĩa Lịch Sử & Giá Trị Văn Hóa</h4>
-              <p className="text-slate-300 leading-relaxed text-[11px]">
-                {selectedArtifact.description}
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL 2: BÀI VIẾT CHI TIẾT (FULL ARTICLE READER) */}
+      {/* MODAL: BÀI VIẾT CHI TIẾT */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="rounded bg-[#D8B282]/20 px-2 py-0.5 text-[10px] font-bold text-[#F6E1C3]">
+                <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
                   {selectedArticle.category}
                 </span>
-                <h2 className="text-base font-bold font-serif mt-1 text-[#F6E1C3] leading-snug">
+                <h2 className="text-base font-bold font-serif mt-1 text-slate-900 leading-snug">
                   {selectedArticle.title}
                 </h2>
-                <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-400">
+                <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-500">
                   <span>{selectedArticle.author}</span>
                   <span>•</span>
                   <span>{selectedArticle.publishedAt}</span>
-                  <span>•</span>
-                  <span>{selectedArticle.readTime}</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedArticle(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white shrink-0 ml-2"
+                className="rounded-full border border-slate-200 bg-slate-100 p-1.5 text-slate-600 hover:text-slate-900 shrink-0 ml-2"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -706,113 +759,28 @@ export const MuseumExplorer: React.FC = () => {
             <img
               src={selectedArticle.thumbnail}
               alt={selectedArticle.title}
-              className="w-full h-44 rounded-2xl object-cover border border-[#D8B282]/25"
+              className="w-full h-44 rounded-2xl object-cover border border-slate-200"
             />
 
-            <div className="p-3 rounded-xl bg-[#121620] border border-[#D8B282]/20 text-[11px] text-[#F6E1C3] font-medium leading-relaxed italic">
+            <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/60 text-[11px] text-slate-700 font-medium leading-relaxed italic">
               "{selectedArticle.summary}"
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+            <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
               {selectedArticle.content.map((p, idx) => (
                 <p key={idx}>{p}</p>
               ))}
             </div>
 
-            <div className="pt-2 border-t border-[#D8B282]/15 flex items-center justify-between text-xs">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-400 text-[10px]">{selectedArticle.views} lượt đọc</span>
               <button
                 type="button"
-                onClick={() => {
-                  toast.success("Đã sao chép liên kết chia sẻ bài viết!");
-                }}
-                className="flex items-center gap-1 text-[#D8B282] hover:text-[#F6E1C3]"
+                onClick={() => toast.success("Đã sao chép liên kết chia sẻ bài viết!")}
+                className="flex items-center gap-1 text-amber-700 font-bold hover:text-amber-800"
               >
                 <Share2 className="h-3.5 w-3.5" />
                 <span>Chia sẻ</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: BẢO TÀNG CHI TIẾT */}
-      {selectedMuseum && !selectedArtifact && !selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#D8B282]">
-                  Bảo Tàng Số ViConnect • {selectedMuseum.province}
-                </span>
-                <h2 className="text-base font-bold font-serif mt-1 text-[#F6E1C3]">
-                  {selectedMuseum.name}
-                </h2>
-                <p className="text-[11px] text-slate-400 mt-0.5">{selectedMuseum.address}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedMuseum(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Cổ vật trưng bày */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-bold text-[#F6E1C3] flex items-center gap-1.5">
-                <Box className="h-3.5 w-3.5 text-[#D8B282]" />
-                <span>Bộ Sưu Tập Cổ Vật 3D Trưng Bày ({selectedMuseum.artifacts?.length || 0})</span>
-              </h3>
-
-              <div className="grid grid-cols-1 gap-2">
-                {(selectedMuseum.artifacts || []).map((art) => (
-                  <div
-                    key={art.id}
-                    onClick={() => setSelectedArtifact(art)}
-                    className="cursor-pointer rounded-xl border border-[#D8B282]/25 bg-[#121620] p-2.5 transition-all hover:border-[#D8B282] flex items-center gap-3"
-                  >
-                    <img
-                      src={art.image_url || "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&q=80"}
-                      alt={art.name}
-                      className="h-14 w-14 rounded-lg object-cover border border-[#D8B282]/30 shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        {art.is_national_treasure && (
-                          <span className="rounded bg-[#D8B282]/20 px-1 py-0.2 text-[8px] font-bold text-[#F6E1C3]">
-                            Bảo Vật QG
-                          </span>
-                        )}
-                        <span className="text-[9px] text-slate-400 line-clamp-1">{art.period}</span>
-                      </div>
-                      <h4 className="text-xs font-bold text-[#F6E1C3] mt-0.5 line-clamp-1">{art.name}</h4>
-                      <p className="text-[10px] text-[#D8B282] mt-0.5 flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        <span>Chạm để xoay 360° & nghe audio</span>
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Đặt vé */}
-            <div className="rounded-2xl border border-[#D8B282]/30 bg-[#121620] p-3.5 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] text-slate-400">Giá vé điện tử:</span>
-                <p className="text-sm font-bold text-[#D8B282]">
-                  {Number(selectedMuseum.ticket_price) > 0 ? `${Number(selectedMuseum.ticket_price).toLocaleString()} đ` : "Miễn phí"}
-                </p>
-              </div>
-              <button
-                type="button"
-                disabled={bookingTicket}
-                onClick={() => handleBookTicket(selectedMuseum)}
-                className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-4 py-2 text-xs font-bold text-[#050C15] shadow hover:brightness-110 active:scale-95"
-              >
-                {bookingTicket ? "Đang xử lý..." : "Thanh Toán VNPay 1 Giây"}
               </button>
             </div>
           </div>

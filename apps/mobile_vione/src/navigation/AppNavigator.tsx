@@ -87,7 +87,7 @@ const MainTabs: React.FC<{
 };
 
 export const AppNavigator: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [vSheetVisible, setVSheetVisible] = useState(false);
   const [myQrVisible, setMyQrVisible] = useState(false);
   const [scanQrVisible, setScanQrVisible] = useState(false);
@@ -159,11 +159,11 @@ export const AppNavigator: React.FC = () => {
           name: user.displayName || user.name || "Doanh nhân ViOne",
           title: user.title || "Tổng Giám Đốc",
           company: user.company || "ViOne Business Network",
-          phone: user.phone,
-          email: user.email,
-          code: user.code,
-          avatarUrl: user.avatarUrl,
-          website: user.website,
+          phone: user.phone || undefined,
+          email: user.email || undefined,
+          code: user.code || undefined,
+          avatarUrl: user.avatarUrl || undefined,
+          website: user.website || undefined,
         } : null}
         onOpenMyQr={() => {
           setMemberCardVisible(false);

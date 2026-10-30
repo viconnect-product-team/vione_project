@@ -48,8 +48,10 @@ import {
   Search,
   Users,
   Activity,
+  Bell,
 } from "lucide-react-native";
 import QRCode from "react-native-qrcode-svg";
+import { ViOneLogo } from "../../components/ViOneLogo";
 import { apiRequest } from "../../api/client";
 import { Colors } from "../../theme/colors";
 
@@ -388,40 +390,24 @@ export const PlatformAppScreen: React.FC<{
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      {/* Platform Header */}
+      {/* Platform Header - CHỈ LOGO VIONE VÀ ICON THÔNG BÁO THEO YÊU CẦU */}
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
           {onBack && (
             <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-              <X size={20} color="#F6E1C3" />
+              <X size={20} color="#334155" />
             </TouchableOpacity>
           )}
-          <View style={styles.logoBadge}>
-            <Sparkles size={16} color="#050C15" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <Text style={styles.headerTitle}>VICONNECT PLATFORM</Text>
-              <View style={styles.badgePill}>
-                <Text style={styles.badgeText}>Bản Di Sản & Thể Thao</Text>
-              </View>
-            </View>
-            <Text style={styles.headerSub}>Bảo tồn di sản số • Thể thao đa môn</Text>
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+            <ViOneLogo width={74} height={28} />
           </View>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => setCitizenPassOpen(true)}
-            style={{ borderRadius: 10, overflow: "hidden" }}
+            onPress={() => Alert.alert("Thông Báo", "Bạn có 3 thông báo mới từ hệ thống ViOne")}
+            style={styles.notifBtn}
           >
-            <LinearGradient
-              colors={["#F6E1C3", "#D8B282", "#C29B69", "#8C653B"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.passBtnGradient}
-            >
-              <Award size={14} color="#050C15" />
-              <Text style={styles.passBtnText}>Hộ Chiếu ({stampsCount})</Text>
-            </LinearGradient>
+            <Bell size={20} color="#334155" />
+            <View style={styles.notifDot} />
           </TouchableOpacity>
         </View>
 
@@ -1481,12 +1467,12 @@ export const PlatformAppScreen: React.FC<{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#050C15",
+    backgroundColor: "#F8FAFC",
   },
   header: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(216, 178, 130, 0.25)",
-    backgroundColor: "#050C15",
+    borderBottomColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
     paddingBottom: 8,
   },
   headerTitleRow: {
@@ -1496,6 +1482,23 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 8,
     gap: 8,
+  },
+  notifBtn: {
+    position: "relative",
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notifDot: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#EF4444",
   },
   backBtn: {
     padding: 6,

@@ -17,6 +17,9 @@ import {
   X,
   Radio,
   FileCheck2,
+  Navigation,
+  Heart,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
@@ -41,6 +44,8 @@ export interface RaceBib {
   chip_time?: string;
   status: string;
   rank?: number;
+  pace?: string;
+  cadence?: number;
 }
 
 export interface RunArticle {
@@ -58,45 +63,30 @@ export interface RunArticle {
 
 const RUN_ARTICLES: RunArticle[] = [
   {
-    id: "art-marathon-pacing",
-    title: "Chiến Thuật Phân Phối Thể Lực Sub-3:30 Trong Cung Đường Di Sản Huế Marathon",
-    category: "Cẩm Nang Marathon",
-    author: "HLV. Nguyễn Quốc Anh • Chuyên gia Điền kinh",
-    readTime: "6 phút đọc",
-    views: "4.150",
-    publishedAt: "28/10/2026",
-    thumbnail: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=600&q=80",
-    summary: "Kế hoạch dinh dưỡng, kiểm soát nhịp tim Zone 3 và kỹ thuật vượt dốc cầu Trường Tiền để đạt kỷ lục cá nhân PR.",
-    content: [
-      "Cung đường di sản ViOne Heritage Marathon đi qua các địa danh lịch sử như Đại Nội, chùa Thiên Mụ và đồi Vọng Cảnh có độ dốc biến thiên nhẹ nhưng gió sông Hương có thể ảnh hưởng đến nhịp thở.",
-      "Chiến thuật tối ưu là chạy Negative Split (nửa sau nhanh hơn nửa đầu 1-2 phút). Từ km 0 đến km 21, runner nên giữ nhịp tim ở vùng Zone 3, nạp gel năng lượng mỗi 45 phút và bổ sung điện giải tại trạm 5K.",
-      "Vượt qua km 35 'bức tường marathon', duy trì nhịp guồng chân (cadence) 180 spm sẽ giúp bảo vệ khớp gối và bứt phá về đích trong tầm sub-3:30.",
-    ],
-  },
-  {
-    id: "art-rfid-timing",
-    title: "Hệ Thống Thảm Chip RFID Đa Tần Số & Thuật Toán Ghi Nhận BIB Tốc Độ Cao",
-    category: "Công Nghệ Thể Thao",
-    author: "Ban Công Nghệ ViConnect Platform",
+    id: "art-carb-loading",
+    title: "Chiến Lược Nạp Carb Tối Ưu Cho Runner Chinh Phục Cự Ly 42KM Full Marathon",
+    category: "Dinh Dưỡng Thể Thao",
+    author: "BS. Lê Thị Bích Trâm • Chuyên gia Dinh dưỡng Thể thao",
     readTime: "5 phút đọc",
-    views: "1.740",
-    publishedAt: "25/10/2026",
-    thumbnail: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=600&q=80",
-    summary: "Nguyên lý hoạt động của chip UHF RFID gắn mặt sau số BIB và cơ chế chống nhiễu khi hàng ngàn VĐV cùng qua vạch xuất phát.",
+    views: "4.150",
+    publishedAt: "27/10/2026",
+    thumbnail: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=600&q=80",
+    summary: "Hướng dẫn nạp Glycogen dự trữ 3 ngày trước Race Day và quy tắc sử dụng Gel năng lượng kết hợp viên điện giải mỗi 45 phút.",
     content: [
-      "Để đảm bảo tính công bằng và chính xác đến 1/1000 giây, ViOne Run tích hợp chip UHF tần số 860-960 MHz gắn trực tiếp trên số BIB của từng vận động viên.",
-      "Khi qua thảm thu phát sóng tại vạch Start, Split 10K, 21K và Finish, tín hiệu mã hóa được gửi realtime về server trung tâm, tự động phân tích checkpoint và cập nhật bảng xếp hạng tức thì.",
+      "Quá trình nạp Carbohydrate (Carb Loading) là yếu tố sống còn giúp vận động viên marathon tránh hiện tượng 'đâm vào tường' (hitting the wall) tại km thứ 30.",
+      "Trong 72 giờ trước giờ xuất phát, lượng carb cần chiếm khoảng 70-75% tổng calo nạp vào hàng ngày, ưu tiên cơm gạo trắng, yến mạch, khoai lang và chuối chín.",
+      "Hệ thống ViOne Run hỗ trợ lập kế hoạch tiếp nước và cảnh báo dinh dưỡng theo từng trạm Checkpoint trên bản đồ số GPS trực tiếp.",
     ],
   },
   {
-    id: "art-injury-prevention",
-    title: "Phòng Tránh Chấn Thương Dải Chậu Chày (IT Band) Khi Tăng Cường Độ Tập Luyện",
+    id: "art-itbs-prevention",
+    title: "Phòng Tránh Hội Chứng Dải Chậu Chày (ITBS) Khi Tăng Khối Lượng Chạy Tuần",
     category: "Y Học Thể Thao",
-    author: "BS. Trần Thảo Vy • Trung tâm Trị liệu Thể thao",
-    readTime: "4 phút đọc",
-    views: "2.310",
-    publishedAt: "22/10/2026",
-    thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80",
+    author: "HLV. Đỗ Quốc Luật • HLV Điền kinh Quốc Gia",
+    readTime: "6 phút đọc",
+    views: "3.890",
+    publishedAt: "24/10/2026",
+    thumbnail: "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?auto=format&fit=crop&w=600&q=80",
     summary: "Các bài tập giãn cơ Gluteus Medius, bọt lăn Foam Roller và cách chọn giày chạy phù hợp với kiểu đáp chân tiếp đất.",
     content: [
       "Hội chứng dải chậu chày là nỗi ám ảnh phổ biến nhất của các chân chạy đường dài. Nguyên nhân chủ yếu do nhóm cơ hông và cơ mông nhỡ bị yếu khi khối lượng kilomet tăng đột ngột.",
@@ -113,18 +103,19 @@ export const RunRaceHub: React.FC = () => {
   const [filterDistance, setFilterDistance] = useState<number | null>(null);
   const [searchBib, setSearchBib] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<RunArticle | null>(null);
+  const [activeSubTab, setActiveSubTab] = useState<"races" | "rfid" | "gps" | "leaderboard">("races");
 
   // Register BIB Modal
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [regName, setRegName] = useState("Nguyễn Văn An");
+  const [regName, setRegName] = useState("Nguyễn Hải Đăng");
   const [regDistance, setRegDistance] = useState(42.195);
   const [regGender, setRegGender] = useState("male");
-  const [regAge, setRegAge] = useState(29);
+  const [regAge, setRegAge] = useState(32);
   const [submittingBib, setSubmittingBib] = useState(false);
 
   // RFID Simulator State
   const [simulatingRfid, setSimulatingRfid] = useState(false);
-  const [simCheckpoint, setSimCheckpoint] = useState<"start" | "split_10k" | "split_21k" | "finish">("split_10k");
+  const [simCheckpoint, setSimCheckpoint] = useState<"start" | "split_10k" | "split_21k" | "finish">("split_21k");
   const [simBibInput, setSimBibInput] = useState("VNE-42-001");
 
   // Certificate Modal
@@ -138,7 +129,6 @@ export const RunRaceHub: React.FC = () => {
         setRaces(res);
         handleSelectRace(res[0]);
       } else {
-        // Fallback realistic races
         const defaultRace: Race = {
           id: "race-hue-2026",
           code: "RACE-HUE-2026",
@@ -171,18 +161,17 @@ export const RunRaceHub: React.FC = () => {
       if (Array.isArray(lb) && lb.length > 0) {
         setLeaderboard(lb);
       } else {
-        // Fallback realistic leaderboard
         setLeaderboard([
-          { id: "b-1", rank: 1, bib_number: "VNE-42-001", runner_name: "Trần Đình Khang", distance_km: 42.195, chip_time: "02:48:12", status: "finished" },
-          { id: "b-2", rank: 2, bib_number: "VNE-42-005", runner_name: "Lê Minh Tuấn", distance_km: 42.195, chip_time: "02:54:30", status: "finished" },
-          { id: "b-3", rank: 3, bib_number: "VNE-42-012", runner_name: "Nguyễn Hải Đăng", distance_km: 42.195, chip_time: "03:02:18", status: "finished" },
-          { id: "b-4", rank: 4, bib_number: "VNE-21-008", runner_name: "Hoàng Nhật Minh", distance_km: 21, chip_time: "01:19:45", status: "finished" },
+          { id: "b-1", rank: 1, bib_number: "VNE-42-001", runner_name: "Trần Đình Khang", distance_km: 42.195, chip_time: "02:48:12", pace: "3:59", cadence: 184, status: "finished" },
+          { id: "b-2", rank: 2, bib_number: "VNE-42-005", runner_name: "Lê Minh Tuấn", distance_km: 42.195, chip_time: "02:54:30", pace: "4:08", cadence: 180, status: "finished" },
+          { id: "b-3", rank: 3, bib_number: "VNE-42-012", runner_name: "Nguyễn Hải Đăng", distance_km: 42.195, chip_time: "03:02:18", pace: "4:19", cadence: 178, status: "finished" },
+          { id: "b-4", rank: 4, bib_number: "VNE-21-008", runner_name: "Hoàng Nhật Minh", distance_km: 21, chip_time: "01:19:45", pace: "3:46", cadence: 186, status: "finished" },
         ]);
       }
     } catch (err) {
       setLeaderboard([
-        { id: "b-1", rank: 1, bib_number: "VNE-42-001", runner_name: "Trần Đình Khang", distance_km: 42.195, chip_time: "02:48:12", status: "finished" },
-        { id: "b-2", rank: 2, bib_number: "VNE-42-005", runner_name: "Lê Minh Tuấn", distance_km: 42.195, chip_time: "02:54:30", status: "finished" },
+        { id: "b-1", rank: 1, bib_number: "VNE-42-001", runner_name: "Trần Đình Khang", distance_km: 42.195, chip_time: "02:48:12", pace: "3:59", cadence: 184, status: "finished" },
+        { id: "b-2", rank: 2, bib_number: "VNE-42-005", runner_name: "Lê Minh Tuấn", distance_km: 42.195, chip_time: "02:54:30", pace: "4:08", cadence: 180, status: "finished" },
       ]);
     }
   };
@@ -199,10 +188,10 @@ export const RunRaceHub: React.FC = () => {
           checkpoint: simCheckpoint,
         }),
       });
-      toast.success(`Thảm RFID quét thành công BIB ${simBibInput} qua trạm [${simCheckpoint.toUpperCase()}]!`);
+      toast.success(`Thảm RFID quét thành công BIB ${simBibInput} qua trạm [${simCheckpoint.toUpperCase()}]! Độ trễ 6ms.`);
       handleSelectRace(selectedRace);
     } catch (err: any) {
-      toast.success(`Thảm RFID quét thành công BIB ${simBibInput} qua trạm [${simCheckpoint.toUpperCase()}]!`);
+      toast.success(`Thảm RFID quét thành công BIB ${simBibInput} qua trạm [${simCheckpoint.toUpperCase()}]! Độ trễ 6ms.`);
     } finally {
       setSimulatingRfid(false);
     }
@@ -226,25 +215,20 @@ export const RunRaceHub: React.FC = () => {
         }),
       });
       const bibNum = res?.bibNumber || `VNE-${regDistance === 42.195 ? "42" : regDistance}-${Math.floor(100 + Math.random() * 900)}`;
-      toast.success(`Đăng ký BIB thành công! Số BIB điện tử của bạn: ${bibNum}`);
+      toast.success(`Đăng ký BIB thành công! Số BIB điện tử của bạn: ${bibNum} kèm mã Chip RFID UHF.`);
       setShowRegisterModal(false);
       handleSelectRace(selectedRace);
     } catch (err: any) {
       const bibNum = `VNE-${regDistance === 42.195 ? "42" : regDistance}-${Math.floor(100 + Math.random() * 900)}`;
-      toast.success(`Đăng ký BIB thành công! Số BIB điện tử của bạn: ${bibNum}`);
+      toast.success(`Đăng ký BIB thành công! Số BIB điện tử của bạn: ${bibNum} kèm mã Chip RFID UHF.`);
       setShowRegisterModal(false);
     } finally {
       setSubmittingBib(false);
     }
   };
 
-  const filteredLeaderboard = (Array.isArray(leaderboard) && leaderboard.length > 0 ? leaderboard : [
-    { id: "b-1", rank: 1, bib_number: "VNE-42-001", runner_name: "Trần Đình Khang", distance_km: 42.195, chip_time: "02:48:12", status: "finished" },
-    { id: "b-2", rank: 2, bib_number: "VNE-42-005", runner_name: "Lê Minh Tuấn", distance_km: 42.195, chip_time: "02:54:30", status: "finished" },
-    { id: "b-3", rank: 3, bib_number: "VNE-42-012", runner_name: "Nguyễn Hải Đăng", distance_km: 42.195, chip_time: "03:02:18", status: "finished" },
-    { id: "b-4", rank: 4, bib_number: "VNE-21-008", runner_name: "Hoàng Nhật Minh", distance_km: 21, chip_time: "01:19:45", status: "finished" },
-  ]).filter((item) => {
-    if (filterDistance && Number(item.distance_km) !== filterDistance) return false;
+  const filteredLeaderboard = leaderboard.filter((item) => {
+    if (filterDistance && Math.floor(Number(item.distance_km)) !== Math.floor(filterDistance)) return false;
     if (searchBib) {
       const q = searchBib.toLowerCase();
       return (item.bib_number || "").toLowerCase().includes(q) || (item.runner_name || "").toLowerCase().includes(q);
@@ -253,46 +237,24 @@ export const RunRaceHub: React.FC = () => {
   });
 
   return (
-    <div className="space-y-4 pb-12">
-      {/* 1. App Top Header Bar */}
-      <div className="flex items-center justify-between gap-3 bg-[#0B0F17] p-2.5 rounded-2xl border border-[#D8B282]/25 shadow-md">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchBib}
-            onChange={(e) => setSearchBib(e.target.value)}
-            placeholder="Tra cứu số BIB (VNE-42-001) hoặc tên..."
-            className="w-full rounded-xl border border-[#D8B282]/20 bg-[#121620] py-2 pl-9 pr-3 text-xs text-[#F6E1C3] placeholder-slate-400 focus:border-[#D8B282] focus:outline-none"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowRegisterModal(true)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] text-xs font-bold shadow hover:brightness-110 active:scale-95 transition-all shrink-0"
-        >
-          <Flame className="h-3.5 w-3.5" />
-          <span>Nhận BIB</span>
-        </button>
-      </div>
-
-      {/* 2. Filter Cự Ly */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+    <div className="space-y-4 text-slate-900 animate-fadeIn">
+      {/* 1. THANH LỌC CỰ LY CHẠY (DISTANCE SELECTOR) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
         {[
-          { key: null, label: "Tất Cả Cự Ly" },
-          { key: 42.195, label: "Full Marathon (42.195 KM)" },
-          { key: 21, label: "Half Marathon (21 KM)" },
-          { key: 10, label: "10 KM Chinh Phục" },
-          { key: 5, label: "5 KM Trải Nghiệm" },
-        ].map((item) => (
+          { label: "Tất Cả Cự Ly", val: null },
+          { label: "5 KM (Fun Run)", val: 5 },
+          { label: "10 KM (Challenge)", val: 10 },
+          { label: "21 KM (Half Marathon)", val: 21 },
+          { label: "42.195 KM (Full Marathon)", val: 42 },
+        ].map((item, idx) => (
           <button
-            key={String(item.key)}
+            key={idx}
             type="button"
-            onClick={() => setFilterDistance(item.key)}
-            className={`rounded-xl px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
-              filterDistance === item.key
+            onClick={() => setFilterDistance(item.val)}
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
+              filterDistance === item.val
                 ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-bold shadow-sm"
-                : "border border-[#D8B282]/25 bg-[#0B0F17] text-slate-300 hover:border-[#D8B282]/50 hover:text-[#F6E1C3]"
+                : "border border-slate-200 bg-white text-slate-700 hover:border-[#D8B282] hover:text-slate-900"
             }`}
           >
             {item.label}
@@ -300,14 +262,64 @@ export const RunRaceHub: React.FC = () => {
         ))}
       </div>
 
-      {/* 3. LỐI TẮT TÍNH NĂNG NHANH (QUICK ACTIONS GRID) */}
-      <div className="rounded-2xl border border-[#D8B282]/25 bg-[#0B0F17] p-3 shadow-lg">
+      {/* 2. CHỌN PHÂN HỆ CON (SUB-FEATURES TABS) */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-100 border border-slate-200 rounded-xl">
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("races")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "races"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Giải Chạy Di Sản
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("rfid")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "rfid"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Thảm RFID Timing
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("gps")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "gps"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Lộ Trình GPS Track
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab("leaderboard")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubTab === "leaderboard"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          BXH Finisher & e-Cert
+        </button>
+      </div>
+
+      {/* 3. LỐI TẮT TÍNH NĂNG NHANH (QUICK ACTIONS GRID - LIGHT THEME) */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
         <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Sparkles className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Tính Năng Nhanh Giải Chạy & RFID</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+            <span>Hệ Thống Chip Timing & Số Hóa VĐV ViOne</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]/80 font-medium">ViOne Run Timing</span>
+          <span className="text-[10px] text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            RFID UHF 860-960MHz
+          </span>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
@@ -315,106 +327,103 @@ export const RunRaceHub: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowRegisterModal(true)}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#F6E1C3] via-[#D8B282] to-[#8C653B] flex items-center justify-center text-[#050C15] shadow-sm mb-1 group-hover:scale-105 transition-transform">
               <Flame className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Đăng Ký BIB</span>
-            <span className="text-[8px] text-slate-400">Cấp mã tự động</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Cấp Số BIB</span>
+            <span className="text-[8px] text-slate-500">Mã QR & RFID</span>
           </button>
 
           {/* Quick Action 2: Thảm RFID */}
           <button
             type="button"
-            onClick={handleSimulateSplit}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubTab("rfid")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Radio className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Radio className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Quét RFID</span>
-            <span className="text-[8px] text-slate-400">Mô phỏng thảm chip</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Thảm Quét Chip</span>
+            <span className="text-[8px] text-slate-500">Độ trễ &lt;10ms</span>
           </button>
 
-          {/* Quick Action 3: Bảng xếp hạng */}
+          {/* Quick Action 3: Lộ trình GPS */}
           <button
             type="button"
-            onClick={() => toast.info("Xem bảng xếp hạng Top Finisher theo thời gian thực bên dưới.")}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubTab("gps")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Trophy className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Navigation className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Leaderboard</span>
-            <span className="text-[8px] text-slate-400">Top VĐV</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Sơ Đồ Đường Chạy</span>
+            <span className="text-[8px] text-slate-500">Trạm nước & Y tế</span>
           </button>
 
-          {/* Quick Action 4: Chứng nhận Finisher */}
+          {/* Quick Action 4: Chứng nhận e-Cert */}
           <button
             type="button"
             onClick={() => {
-              if (leaderboard[0]) {
-                setCertificateBib(leaderboard[0]);
-              } else {
-                toast.info("Chưa có chứng nhận cho lượt chạy này.");
-              }
+              if (leaderboard[0]) setCertificateBib(leaderboard[0]);
+              else toast.info("Chọn runner để xem chứng nhận thành tích");
             }}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Award className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Award className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Chứng Nhận</span>
-            <span className="text-[8px] text-slate-400">E-Certificate</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Chứng Nhận Số</span>
+            <span className="text-[8px] text-slate-500">e-Certificate</span>
           </button>
         </div>
       </div>
 
-      {/* 4. GIẢI CHẠY DI SẢN TIÊU BIỂU (FEATURED RACE CARD) */}
-      {selectedRace && (
-        <div className="rounded-2xl border border-[#D8B282]/30 bg-[#0B0F17] p-3.5 shadow-lg space-y-3">
-          <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#121620]">
+      {/* SUB-VIEW 1: GIẢI CHẠY TIÊU BIỂU */}
+      {activeSubTab === "races" && selectedRace && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-100">
             <img
               src={selectedRace.banner_url || "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80"}
               alt={selectedRace.name}
               className="h-full w-full object-cover"
             />
-            <div className="absolute top-2 left-2 rounded-full bg-[#050C15]/85 border border-[#D8B282]/40 px-2.5 py-0.5 text-[9px] font-bold text-[#F6E1C3]">
+            <div className="absolute top-2 left-2 rounded-full bg-white/95 border border-slate-200 px-2.5 py-0.5 text-[9px] font-bold text-slate-800 shadow-sm">
               Hệ Thống Timing RFID 1/1000s
             </div>
-            <div className="absolute top-2 right-2 rounded-full bg-emerald-500/90 px-2.5 py-0.5 text-[9px] font-bold text-white shadow">
-              {selectedRace.registered_count ?? (selectedRace as any).runners_count ?? 4250} Runner Đã Đăng Ký
+            <div className="absolute top-2 right-2 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[9px] font-bold text-white shadow">
+              {selectedRace.registered_count} Runner Đã Đăng Ký
             </div>
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-[#F6E1C3]">{selectedRace.name}</h3>
-            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-400">
-              <MapPin className="h-3 w-3 text-[#D8B282] shrink-0" />
+            <h3 className="text-sm font-bold text-slate-900">{selectedRace.name}</h3>
+            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500">
+              <MapPin className="h-3.5 w-3.5 text-amber-600 shrink-0" />
               <span>{selectedRace.location}</span>
             </div>
-            <div className="mt-0.5 flex items-center gap-1.5 text-[10px] text-slate-400">
-              <Calendar className="h-3 w-3 text-[#D8B282] shrink-0" />
-              <span>Khởi tranh: {new Date(selectedRace.start_date || (selectedRace as any).race_date || Date.now()).toLocaleDateString("vi-VN")}</span>
+            <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-500">
+              <Calendar className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+              <span>Khởi tranh: {new Date(selectedRace.start_date).toLocaleDateString("vi-VN")}</span>
             </div>
           </div>
 
           {/* Cự ly selector */}
-          <div className="flex items-center gap-2 pt-1 border-t border-[#D8B282]/15">
-            <span className="text-[10px] text-slate-400">Chọn cự ly:</span>
-            {(Array.isArray(selectedRace.distances) && selectedRace.distances.length > 0 ? selectedRace.distances : [5, 10, 21, 42.195]).map((d) => (
+          <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+            <span className="text-xs text-slate-500">Chọn cự ly:</span>
+            {[5, 10, 21, 42.195].map((d) => (
               <button
                 key={d}
                 type="button"
                 onClick={() => setRegDistance(d)}
-                className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition-all ${
+                className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
                   regDistance === d
-                    ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15]"
-                    : "border border-[#D8B282]/25 bg-[#121620] text-slate-300"
+                    ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+                    : "border border-slate-200 bg-white text-slate-700"
                 }`}
               >
-                {d} KM
+                {d === 42.195 ? "42 KM" : `${d} KM`}
               </button>
             ))}
           </div>
@@ -422,99 +431,190 @@ export const RunRaceHub: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowRegisterModal(true)}
-            className="w-full rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2 text-xs font-bold text-[#050C15] shadow hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+            className="w-full rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2.5 text-xs font-bold text-[#050C15] shadow hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
           >
-            <Flame className="h-3.5 w-3.5" />
+            <Flame className="h-4 w-4" />
             <span>Đăng Ký Tham Gia & Cấp Số BIB Tức Thì</span>
           </button>
         </div>
       )}
 
-      {/* 5. MÔ PHỎNG THẢM CHIP RFID & BẢNG XẾP HẠNG FINISHER */}
-      <div className="rounded-2xl border border-[#D8B282]/25 bg-[#0B0F17] p-3 shadow-lg space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Radio className="h-3.5 w-3.5 text-[#D8B282] animate-pulse" />
-            <span>Mô Phỏng Cổng Đo Timing RFID</span>
+      {/* SUB-VIEW 2: MÔ PHỎNG THẢM CHIP RFID & CHECKPOINTS */}
+      {activeSubTab === "rfid" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Radio className="h-4 w-4 text-rose-600 animate-pulse" />
+                <span>Mô Phỏng Cổng Đo Timing RFID Tự Động</span>
+              </h3>
+              <p className="text-[10px] text-slate-500">Tích hợp cảm biến sóng UHF và thảm quét vạch đích</p>
+            </div>
+            <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
+              Độ trễ &lt;10ms
+            </span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Độ trễ &lt;10ms</span>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={simBibInput}
-            onChange={(e) => setSimBibInput(e.target.value)}
-            placeholder="Số BIB (VNE-42-001)"
-            className="flex-1 rounded-xl border border-[#D8B282]/25 bg-[#121620] px-3 py-1.5 text-xs text-[#F6E1C3]"
-          />
-          <select
-            value={simCheckpoint}
-            onChange={(e) => setSimCheckpoint(e.target.value as any)}
-            className="rounded-xl border border-[#D8B282]/25 bg-[#121620] px-2 py-1.5 text-[11px] text-[#F6E1C3]"
-          >
-            <option value="start">Vạch Start</option>
-            <option value="split_10k">Trạm 10K</option>
-            <option value="split_21k">Trạm 21K</option>
-            <option value="finish">Đích (Finish)</option>
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-[10px] font-bold text-slate-600 mb-1">Mã Số BIB Runner</label>
+              <input
+                type="text"
+                value={simBibInput}
+                onChange={(e) => setSimBibInput(e.target.value)}
+                placeholder="VD: VNE-42-001"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-900 font-mono font-bold"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-600 mb-1">Vị Trí Thảm Cảm Biến</label>
+              <select
+                value={simCheckpoint}
+                onChange={(e) => setSimCheckpoint(e.target.value as any)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-900 font-bold"
+              >
+                <option value="start">Vạch Xuất Phát (Gun Time)</option>
+                <option value="split_10k">Thảm Trạm 10KM</option>
+                <option value="split_21k">Thảm Trạm 21KM (Halfway)</option>
+                <option value="finish">Vạch Đích (Finisher Gate)</option>
+              </select>
+            </div>
+          </div>
+
           <button
             type="button"
-            disabled={simulatingRfid}
             onClick={handleSimulateSplit}
-            className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-3 py-1.5 text-xs font-bold text-[#050C15] shrink-0"
+            disabled={simulatingRfid}
+            className="w-full rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2 text-xs font-bold text-[#050C15] shadow hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
           >
-            {simulatingRfid ? "Quét..." : "Ghi Nhận"}
+            <Radio className="h-3.5 w-3.5" />
+            <span>{simulatingRfid ? "Đang xử lý tín hiệu cảm biến..." : "Kích Hoạt Quét Chip RFID"}</span>
           </button>
         </div>
+      )}
 
-        {/* Leaderboard rows */}
-        <div className="space-y-1.5 pt-2 border-t border-[#D8B282]/15">
-          <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold px-1">
-            <span>Hạng & Runner</span>
-            <span>Cự Ly / Thành Tích</span>
+      {/* SUB-VIEW 3: LỘ TRÌNH GPS TRACK & CAO ĐỘ (ELEVATION PROFILE) */}
+      {activeSubTab === "gps" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Navigation className="h-4 w-4 text-blue-600" />
+                <span>Bản Đồ Lộ Trình & Cao Độ Thực Tế (GPS Track)</span>
+              </h3>
+              <p className="text-[10px] text-slate-500">Cung đường di sản: Ngọ Môn - Cầu Tràng Tiền - Chùa Thiên Mụ</p>
+            </div>
+            <span className="text-[10px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200 font-bold">
+              GPS Haversine
+            </span>
           </div>
 
-          {filteredLeaderboard.map((item, idx) => (
-            <div
-              key={item.id || idx}
-              onClick={() => setCertificateBib(item)}
-              className="flex items-center justify-between p-2 rounded-xl bg-[#121620] border border-[#D8B282]/15 hover:border-[#D8B282]/40 transition-all cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5">
-                <span className={`h-6 w-6 rounded-lg flex items-center justify-center text-[10px] font-bold ${
-                  idx === 0
-                    ? "bg-amber-400 text-black"
-                    : idx === 1
-                    ? "bg-slate-300 text-black"
-                    : idx === 2
-                    ? "bg-amber-700 text-white"
-                    : "bg-[#0B0F17] text-slate-400 border border-[#D8B282]/20"
-                }`}>
-                  #{item.rank || idx + 1}
-                </span>
-                <div>
-                  <h4 className="text-xs font-bold text-[#F6E1C3] leading-tight">{item.runner_name}</h4>
-                  <span className="text-[9px] text-[#D8B282]">BIB: {item.bib_number}</span>
+          {/* Sơ đồ mô phỏng trạm nước & y tế */}
+          <div className="space-y-2">
+            {[
+              { km: "KM 5", name: "Trạm Nước N1 - Ngã Tư Lê Lợi", water: true, med: false, cheer: true },
+              { km: "KM 10", name: "Trạm Nước N2 & Y Tế Y1 - Cầu Dã Viên", water: true, med: true, cheer: true },
+              { km: "KM 21", name: "Trạm Nước N3 & Điện Giải - Chùa Thiên Mụ", water: true, med: true, cheer: true },
+              { km: "KM 32", name: "Trạm Y Tế Chuyên Sâu Y2 - Đồi Vọng Cảnh", water: true, med: true, cheer: false },
+              { km: "KM 42.195", name: "Vạch Đích Finisher - Quảng Trường Ngọ Môn", water: true, med: true, cheer: true },
+            ].map((st, idx) => (
+              <div key={idx} className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-bold text-xs text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                    {st.km}
+                  </span>
+                  <span className="text-xs font-bold text-slate-800">{st.name}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[9px] font-bold">
+                  {st.water && <span className="text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">Nước</span>}
+                  {st.med && <span className="text-rose-600 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">Y Tế</span>}
+                  {st.cheer && <span className="text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">Cổ Vũ</span>}
                 </div>
               </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-amber-400 block">{item.chip_time || "Đang chạy"}</span>
-                <span className="text-[9px] text-slate-400">{item.distance_km} KM</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
 
-      {/* 6. CHUYÊN MỤC BÀI VIẾT & CẨM NANG CHẠY BỘ (EDITORIAL FEED) */}
+          {/* Metric Stats Banner */}
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              <span className="text-[10px] text-slate-500">Độ Cao Tối Đa</span>
+              <div className="text-sm font-bold text-slate-900">+48m</div>
+            </div>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              <span className="text-[10px] text-slate-500">Pace Trung Bình</span>
+              <div className="text-sm font-bold text-amber-700">4:25 min/km</div>
+            </div>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              <span className="text-[10px] text-slate-500">Nhiệt Độ Race Day</span>
+              <div className="text-sm font-bold text-emerald-700">22°C Mát Mẻ</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-VIEW 4: BẢNG XẾP HẠNG FINISHER & XUẤT CHỨNG NHẬN */}
+      {activeSubTab === "leaderboard" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <Trophy className="h-4 w-4 text-amber-600" />
+              <span>Bảng Tổng Sắp Top Finisher Realtime</span>
+            </h3>
+            <span className="text-[10px] text-slate-500">Xếp hạng theo Net Time</span>
+          </div>
+
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              value={searchBib}
+              onChange={(e) => setSearchBib(e.target.value)}
+              placeholder="Tìm theo số BIB hoặc tên VĐV..."
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 focus:outline-none focus:border-amber-500"
+            />
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {filteredLeaderboard.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => setCertificateBib(item)}
+                className="flex items-center justify-between py-2.5 hover:bg-slate-50/80 px-2 rounded-xl cursor-pointer transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-[11px] font-bold text-amber-900">
+                    {item.rank}
+                  </span>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">{item.runner_name}</h4>
+                    <span className="font-mono text-[10px] text-slate-500">
+                      BIB: {item.bib_number} • Cự ly: {item.distance_km} KM
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="font-mono text-xs font-bold text-amber-800">{item.chip_time}</div>
+                  <div className="flex items-center justify-end gap-1 text-[9px] text-slate-400">
+                    <span>Pace {item.pace || "4:15"}</span>
+                    <span>•</span>
+                    <span className="text-amber-700 font-bold underline">Xem e-Cert</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. CHUYÊN MỤC BÀI VIẾT VỀ GIẢI CHẠY */}
       <div className="space-y-2 pt-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <BookOpen className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Bài Viết & Cẩm Nang Marathon Di Sản</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <BookOpen className="h-3.5 w-3.5 text-amber-600" />
+            <span>Cẩm Nang Huấn Luyện & Y Học Chạy Bộ</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Kiến thức chạy bộ</span>
+          <span className="text-[10px] text-slate-500">Kho kiến thức</span>
         </div>
 
         <div className="space-y-2.5">
@@ -522,23 +622,23 @@ export const RunRaceHub: React.FC = () => {
             <div
               key={article.id}
               onClick={() => setSelectedArticle(article)}
-              className="rounded-2xl border border-[#D8B282]/20 bg-[#0B0F17] p-3 shadow-md hover:border-[#D8B282]/60 transition-all cursor-pointer group"
+              className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:border-[#D8B282] transition-all cursor-pointer group"
             >
               <div className="flex gap-3">
                 <img
                   src={article.thumbnail}
                   alt={article.title}
-                  className="h-20 w-24 rounded-xl object-cover border border-[#D8B282]/25 shrink-0 group-hover:scale-105 transition-transform"
+                  className="h-20 w-24 rounded-xl object-cover border border-slate-200 shrink-0 group-hover:scale-105 transition-transform"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="rounded bg-[#D8B282]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#F6E1C3]">
+                      <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[9px] font-bold text-rose-800">
                         {article.category}
                       </span>
                       <span className="text-[9px] text-slate-400">{article.readTime}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-[#F6E1C3] line-clamp-2 mt-1 group-hover:text-white transition-colors">
+                    <h4 className="text-xs font-bold text-slate-900 line-clamp-2 mt-1 group-hover:text-amber-700 transition-colors">
                       {article.title}
                     </h4>
                   </div>
@@ -553,117 +653,179 @@ export const RunRaceHub: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL 1: ĐĂNG KÝ BIB MỚI */}
+      {/* MODAL 1: ĐĂNG KÝ SỐ BIB */}
       {showRegisterModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
-              <div>
-                <span className="text-[10px] font-bold text-[#D8B282] uppercase">Cấp Số Định Danh Runner</span>
-                <h3 className="text-base font-bold font-serif text-[#F6E1C3] mt-0.5">
-                  Đăng Ký BIB Điện Tử & Chip Timing
-                </h3>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Flame className="h-4 w-4 text-rose-600" />
+                <span>Đăng Ký Giải Chạy & Cấp Số BIB</span>
+              </h3>
               <button
                 type="button"
                 onClick={() => setShowRegisterModal(false)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white"
+                className="rounded-full bg-slate-100 p-1 text-slate-500 hover:text-slate-800"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 text-xs">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Họ & Tên Vận Động Viên:</label>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Họ và tên VĐV *</label>
                 <input
                   type="text"
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
-                  className="w-full rounded-xl border border-[#D8B282]/30 bg-[#121620] px-3 py-2 text-xs text-[#F6E1C3]"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-amber-500"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Cự Ly Thi Đấu:</label>
-                <div className="grid grid-cols-4 gap-2">
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Cự ly thi đấu</label>
+                <div className="grid grid-cols-2 gap-2">
                   {[5, 10, 21, 42.195].map((d) => (
                     <button
                       key={d}
                       type="button"
                       onClick={() => setRegDistance(d)}
-                      className={`rounded-xl py-1.5 text-xs font-bold transition-all ${
+                      className={`p-2 rounded-xl text-center font-bold text-xs transition-all ${
                         regDistance === d
                           ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15]"
-                          : "border border-[#D8B282]/25 bg-[#121620] text-slate-300"
+                          : "border border-slate-200 bg-slate-50 text-slate-700"
                       }`}
                     >
-                      {d} KM
+                      {d === 42.195 ? "42 KM Marathon" : `${d} KM`}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Giới Tính:</label>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">Giới tính</label>
                   <select
                     value={regGender}
                     onChange={(e) => setRegGender(e.target.value)}
-                    className="w-full rounded-xl border border-[#D8B282]/30 bg-[#121620] px-3 py-2 text-xs text-[#F6E1C3]"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-900 font-bold"
                   >
                     <option value="male">Nam</option>
                     <option value="female">Nữ</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Tuổi:</label>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">Tuổi</label>
                   <input
                     type="number"
                     value={regAge}
-                    onChange={(e) => setRegAge(parseInt(e.target.value, 10) || 25)}
-                    className="w-full rounded-xl border border-[#D8B282]/30 bg-[#121620] px-3 py-2 text-xs text-[#F6E1C3]"
+                    onChange={(e) => setRegAge(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-900 font-bold"
                   />
                 </div>
               </div>
             </div>
 
-            <button
-              type="button"
-              disabled={submittingBib}
-              onClick={handleRegisterBib}
-              className="w-full rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2.5 text-xs font-bold text-[#050C15] shadow hover:brightness-110 active:scale-95 transition-all"
-            >
-              {submittingBib ? "Đang xử lý..." : "Xác Nhận Nhận Số BIB Ngay"}
-            </button>
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowRegisterModal(false)}
+                className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleRegisterBib}
+                disabled={submittingBib}
+                className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-4 py-2 text-xs font-bold text-[#050C15] shadow"
+              >
+                {submittingBib ? "Đang xử lý..." : "Xác Nhận & Cấp BIB"}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* MODAL 2: BÀI VIẾT CHI TIẾT */}
-      {selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
+      {/* MODAL 2: CHỨNG NHẬN FINISHER (E-CERTIFICATE) */}
+      {certificateBib && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm rounded-3xl border-2 border-amber-300 bg-white p-5 shadow-2xl space-y-4 text-center text-slate-900 relative">
+            <button
+              type="button"
+              onClick={() => setCertificateBib(null)}
+              className="absolute top-4 right-4 rounded-full bg-slate-100 p-1 text-slate-500 hover:text-slate-800"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="pt-2">
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#F6E1C3] via-[#D8B282] to-[#8C653B] p-1 shadow-md mx-auto mb-2">
+                <Trophy className="h-7 w-7 text-[#050C15]" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">
+                CHỨNG NHẬN HOÀN THÀNH (FINISHER e-CERTIFICATE)
+              </span>
+              <h3 className="text-base font-bold font-serif text-slate-900 mt-1">
+                {certificateBib.runner_name}
+              </h3>
+              <p className="text-xs font-mono font-bold text-amber-700">BIB: {certificateBib.bib_number}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-amber-50/50 border border-amber-200 text-xs">
               <div>
-                <span className="rounded bg-[#D8B282]/20 px-2 py-0.5 text-[10px] font-bold text-[#F6E1C3]">
+                <span className="text-[10px] text-slate-500">Cự Ly Hoàn Thành</span>
+                <div className="font-bold text-slate-900">{certificateBib.distance_km} KM</div>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500">Net Time (Thời Gian Chip)</span>
+                <div className="font-mono font-bold text-amber-800">{certificateBib.chip_time}</div>
+              </div>
+              <div className="pt-1 border-t border-amber-200/60">
+                <span className="text-[10px] text-slate-500">Pace Trung Bình</span>
+                <div className="font-bold text-slate-900">{certificateBib.pace || "4:05 min/km"}</div>
+              </div>
+              <div className="pt-1 border-t border-amber-200/60">
+                <span className="text-[10px] text-slate-500">Xếp Hạng Chung Cuộc</span>
+                <div className="font-bold text-emerald-700">Top {certificateBib.rank}</div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => toast.success("Đã tải hình ảnh Chứng nhận e-Certificate về thiết bị!")}
+                className="flex-1 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2 text-xs font-bold text-[#050C15] shadow"
+              >
+                Tải Chứng Nhận (PNG/PDF)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: BÀI VIẾT CHI TIẾT */}
+      {selectedArticle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="rounded bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800">
                   {selectedArticle.category}
                 </span>
-                <h2 className="text-base font-bold font-serif mt-1 text-[#F6E1C3] leading-snug">
+                <h2 className="text-base font-bold font-serif mt-1 text-slate-900 leading-snug">
                   {selectedArticle.title}
                 </h2>
-                <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-400">
+                <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-500">
                   <span>{selectedArticle.author}</span>
                   <span>•</span>
                   <span>{selectedArticle.publishedAt}</span>
-                  <span>•</span>
-                  <span>{selectedArticle.readTime}</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedArticle(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white shrink-0 ml-2"
+                className="rounded-full border border-slate-200 bg-slate-100 p-1.5 text-slate-600 hover:text-slate-900 shrink-0 ml-2"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -672,82 +834,30 @@ export const RunRaceHub: React.FC = () => {
             <img
               src={selectedArticle.thumbnail}
               alt={selectedArticle.title}
-              className="w-full h-44 rounded-2xl object-cover border border-[#D8B282]/25"
+              className="w-full h-44 rounded-2xl object-cover border border-slate-200"
             />
 
-            <div className="p-3 rounded-xl bg-[#121620] border border-[#D8B282]/20 text-[11px] text-[#F6E1C3] font-medium leading-relaxed italic">
+            <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-200/60 text-[11px] text-slate-700 font-medium leading-relaxed italic">
               "{selectedArticle.summary}"
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+            <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
               {selectedArticle.content.map((p, idx) => (
                 <p key={idx}>{p}</p>
               ))}
             </div>
 
-            <div className="pt-2 border-t border-[#D8B282]/15 flex items-center justify-between text-xs">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-400 text-[10px]">{selectedArticle.views} lượt đọc</span>
               <button
                 type="button"
                 onClick={() => toast.success("Đã sao chép liên kết chia sẻ bài viết!")}
-                className="flex items-center gap-1 text-[#D8B282] hover:text-[#F6E1C3]"
+                className="flex items-center gap-1 text-rose-700 font-bold hover:text-rose-800"
               >
                 <Share2 className="h-3.5 w-3.5" />
                 <span>Chia sẻ</span>
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: CHỨNG NHẬN FINISHER E-CERTIFICATE */}
-      {certificateBib && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border-2 border-[#D8B282] bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3] text-center">
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setCertificateBib(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="space-y-1">
-              <Award className="h-10 w-10 text-amber-400 mx-auto" />
-              <h3 className="text-sm font-bold uppercase tracking-wider text-[#D8B282]">
-                CHỨNG NHẬN FINISHER ĐIỆN TỬ
-              </h3>
-              <p className="text-xs text-slate-400">ViOne Heritage Marathon Cố Đô 2026</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-[#121620] border border-[#D8B282]/30 space-y-2">
-              <span className="text-[10px] text-slate-400">Chứng nhận vận động viên:</span>
-              <h2 className="text-lg font-bold text-[#F6E1C3] font-serif">{certificateBib.runner_name}</h2>
-              <div className="flex items-center justify-center gap-4 text-xs pt-1">
-                <div>
-                  <span className="text-[10px] text-slate-400 block">Số BIB</span>
-                  <span className="font-bold text-amber-400">{certificateBib.bib_number}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block">Cự Ly</span>
-                  <span className="font-bold text-[#F6E1C3]">{certificateBib.distance_km} KM</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block">Thành Tích</span>
-                  <span className="font-bold text-amber-400">{certificateBib.chip_time || "02:48:12"}</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => toast.success("Đã tải chứng nhận Finisher E-Certificate dạng PDF!")}
-              className="w-full rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] py-2 text-xs font-bold text-[#050C15] shadow hover:brightness-110 active:scale-95 transition-all"
-            >
-              Tải Chứng Nhận Về Máy (PDF)
-            </button>
           </div>
         </div>
       )}

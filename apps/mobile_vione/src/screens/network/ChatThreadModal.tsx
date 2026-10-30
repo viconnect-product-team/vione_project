@@ -404,7 +404,7 @@ export const ChatThreadModal: React.FC<ChatThreadModalProps> = ({
                         </View>
                       )}
                       <View style={{ flex: 1, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(216,178,130,0.4)", backgroundColor: isDark ? "#0D131F" : "#FFFFFF" }}>
-                        <LinearGradient colors={["#D8B282", "#C29B69", "#8C653B"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", justifyContent: "between" }}>
+                        <LinearGradient colors={["#D8B282", "#C29B69", "#8C653B"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                             <Ticket size={14} color="#050C15" />
                             <Text style={{ fontSize: 11, fontWeight: "900", color: "#050C15", letterSpacing: 1 }}>VÉ ĐIỆN TỬ VIP</Text>

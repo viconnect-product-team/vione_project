@@ -8,6 +8,430 @@ const fs = require('fs');
 const path = require('path');
 const JSZip = require('jszip');
 
+
+const TOC_ITEMS = [
+  {
+    "id": "sec1",
+    "title": "1. Giới thiệu",
+    "page": 4,
+    "level": 1
+  },
+  {
+    "id": "sec1_1",
+    "title": "  1.1 Mục tiêu",
+    "page": 4,
+    "level": 2
+  },
+  {
+    "id": "sec1_2",
+    "title": "  1.2 Phạm vi của dự án",
+    "page": 4,
+    "level": 2
+  },
+  {
+    "id": "sec1_2_1",
+    "title": "    1.2.1. Phạm vi",
+    "page": 4,
+    "level": 3
+  },
+  {
+    "id": "sec1_2_2",
+    "title": "    1.2.2. Đối tượng sử dụng",
+    "page": 4,
+    "level": 3
+  },
+  {
+    "id": "sec2",
+    "title": "2. Yêu cầu kỹ thuật",
+    "page": 6,
+    "level": 1
+  },
+  {
+    "id": "sec2_1",
+    "title": "  2.1 Kiến trúc hạ tầng",
+    "page": 6,
+    "level": 2
+  },
+  {
+    "id": "sec2_1_1",
+    "title": "    2.1.1 Kiến trúc tổng thể",
+    "page": 6,
+    "level": 3
+  },
+  {
+    "id": "sec2_1_2",
+    "title": "    2.1.2 Kiến trúc chi tiết",
+    "page": 9,
+    "level": 3
+  },
+  {
+    "id": "sec2_1_3",
+    "title": "    2.1.3 Kiến trúc triển khai, dự phòng và an toàn",
+    "page": 14,
+    "level": 3
+  },
+  {
+    "id": "sec2_2",
+    "title": "  2.2 Công nghệ sử dụng",
+    "page": 17,
+    "level": 2
+  },
+  {
+    "id": "sec2_3",
+    "title": "  2.3 Yêu cầu chức năng",
+    "page": 18,
+    "level": 2
+  },
+  {
+    "id": "sec2_3_1",
+    "title": "    2.3.1 Các chức năng chung",
+    "page": 18,
+    "level": 3
+  },
+  {
+    "id": "sec2_3_2",
+    "title": "    2.3.2 Chức năng chi tiết Cổng Web Quản Trị ViOne Platform (23 Phân hệ)",
+    "page": 19,
+    "level": 3
+  },
+  {
+    "id": "sec2_3_3",
+    "title": "    2.3.3 Chức năng chi tiết Phân hệ Ứng dụng Di động ViOne (20 Phân hệ)",
+    "page": 31,
+    "level": 3
+  },
+  {
+    "id": "sec2_4",
+    "title": "  2.4 Các yêu cầu phi chức năng khác",
+    "page": 41,
+    "level": 2
+  },
+  {
+    "id": "sec2_4_1",
+    "title": "    2.4.1 Yêu cầu về hiệu năng (Performance Requirements)",
+    "page": 41,
+    "level": 3
+  },
+  {
+    "id": "sec2_4_2",
+    "title": "    2.4.2 Yêu cầu về bảo mật (Security Requirements)",
+    "page": 41,
+    "level": 3
+  },
+  {
+    "id": "sec2_4_3",
+    "title": "    2.4.3 Yêu cầu tuân thủ (Compliance Requirements)",
+    "page": 41,
+    "level": 3
+  },
+  {
+    "id": "app1",
+    "title": "PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm (Đặc tả CSDL, API, Socket.IO)",
+    "page": 42,
+    "level": 1
+  },
+  {
+    "id": "app2",
+    "title": "PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)",
+    "page": 46,
+    "level": 1
+  },
+  {
+    "id": "app2_crm_1",
+    "title": "  1. Phân hệ Đăng nhập Quản trị & Xác thực Đa tầng",
+    "page": 46,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_2",
+    "title": "  2. Phân hệ Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền Realtime",
+    "page": 46,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_3",
+    "title": "  3. Phân hệ Quản Trị Danh Sách Doanh Nghiệp & Hồ Sơ Doanh Nhân 360",
+    "page": 47,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_4",
+    "title": "  4. Phân hệ Quản Trị Cơ Hội Kinh Doanh & Phễu Bán Hàng B2B Deals",
+    "page": 48,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_5",
+    "title": "  5. Phân hệ Quản Trị Danh Thiếp Thông Minh VIP vCard & Mã QR Động",
+    "page": 49,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_6",
+    "title": "  6. Phân hệ Quản Trị Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp",
+    "page": 50,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_7",
+    "title": "  7. Phân hệ Quản Trị Sự Kiện Doanh Nhân & Phân Hạng Vé Bán Qua VNPay",
+    "page": 51,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_8",
+    "title": "  8. Phân hệ Quản Trị Cổng Soát Vé Điện Tử & Check-in QR Siêu Tốc <100ms",
+    "page": 52,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_9",
+    "title": "  9. Phân hệ Quản Trị Quy Trình Vận Hành BPMN 2.0 & Bảng Việc Kanban",
+    "page": 53,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_10",
+    "title": "  10. Phân hệ Quản Trị Chấm Công Định Vị AI GPS & Chuyên Cần Doanh Nghiệp",
+    "page": 54,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_11",
+    "title": "  11. Phân hệ Quản Trị Dòng Tiền Thu & Báo Cáo Doanh Thu Bán Vé VNPay",
+    "page": 55,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_12",
+    "title": "  12. Phân hệ Quản Trị Phê Duyệt Chi Tiền 3 Cấp & Ngân Sách Dự Án",
+    "page": 56,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_13",
+    "title": "  13. Phân hệ Quản Trị Phí Thường Niên Định Kỳ & Công Nợ Doanh Nghiệp",
+    "page": 57,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_14",
+    "title": "  14. Phân hệ Quản Trị Giải Đấu Thể Thao Doanh Nghiệp ViOne Sport",
+    "page": 58,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_15",
+    "title": "  15. Phân hệ Quản Trị Giải Chạy Bộ ViOne Run Marathon & Chip Timing RFID UHF",
+    "page": 59,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_16",
+    "title": "  16. Phân hệ Quản Trị Không Gian Trưng Bày Bảo Tàng Số 3D & Hiện Vật NFC ViOne Museum",
+    "page": 60,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_17",
+    "title": "  17. Phân hệ Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage",
+    "page": 61,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_18",
+    "title": "  18. Phân hệ Quản Trị Vé Sự Kiện Điện Tử & Mã Hóa Chống Giả ViOne Tickets",
+    "page": 62,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_19",
+    "title": "  19. Phân hệ Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Đa Tầng ViOne Archive (/documents)",
+    "page": 63,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_20",
+    "title": "  20. Phân hệ Quản Trị Biểu Quyết, Khảo Sát & Bỏ Phiếu Tín Nhiệm Số",
+    "page": 64,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_21",
+    "title": "  21. Phân hệ Cấu Hình Phân Quyền RBAC Ma Trận Vai Trò & Nhật Ký Kiểm Toán Audit Log",
+    "page": 65,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_22",
+    "title": "  22. Phân hệ Trợ Lý Trí Tuệ Nhân Tạo & Bóc Tách Dữ Liệu AI OCR ViOne AI",
+    "page": 66,
+    "level": 2
+  },
+  {
+    "id": "app2_crm_23",
+    "title": "  23. Phân hệ Cấu Hình Nền Tảng, Tích Hợp Zalo OA & Cổng Thanh Toán VNPay",
+    "page": 67,
+    "level": 2
+  },
+  {
+    "id": "app3",
+    "title": "PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG VIONE (20 PHÂN HỆ MOCKUP)",
+    "page": 69,
+    "level": 1
+  },
+  {
+    "id": "app3_mob_1",
+    "title": "  1. Phân hệ Màn hình Đăng nhập Di động Chuẩn Obsidian Luxury & Sinh trắc học Biometrics",
+    "page": 69,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_2",
+    "title": "  2. Phân hệ Trang chủ Điều hành C-Level Executive Home & Widget Chỉ số Realtime",
+    "page": 70,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_3",
+    "title": "  3. Phân hệ Danh thiếp Số vCard & Chạm 1-Tap NFC Vật lý Độc quyền",
+    "page": 71,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_4",
+    "title": "  4. Phân hệ Menu Điều phối Nổi Độc Quyền VActionSheet 3D Dập Nổi Vàng Hoàng Gia",
+    "page": 72,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_5",
+    "title": "  5. Phân hệ Quét Thẻ Thông Minh & Bóc Tách Danh Thiếp Tự Động AI OCR",
+    "page": 73,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_6",
+    "title": "  6. Phân hệ Mạng Lưới Giao Thương & Thư Viện Doanh Nhân GPS Geolocation",
+    "page": 74,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_7",
+    "title": "  7. Phân hệ Khoảnh Khắc Doanh Nhân & Bảng Tin Tương Tác Doanh Nghiệp",
+    "page": 75,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_8",
+    "title": "  8. Phân hệ Hộp Thư Tin Nhắn Trực Tiếp & Phòng Trò Chuyện Nhóm Socket.IO",
+    "page": 76,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_9",
+    "title": "  9. Phân hệ Không Gian Cộng Đồng & Diễn Đàn Kết Nối Thương Mại",
+    "page": 77,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_10",
+    "title": "  10. Phân hệ Bàn Làm Việc Cá Nhân, Nhiệm Vụ Hôm Nay & Tiến Độ Kanban Mobile",
+    "page": 78,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_11",
+    "title": "  11. Phân hệ Hồ Sơ Cá Nhân VIP, Quản Trị Danh Mục Yêu Thích & Cài Đặt Ứng Dụng",
+    "page": 79,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_12",
+    "title": "  12. Phân hệ Quản Trị & Xuất Bản Danh Thiếp Số Cá Nhân Hóa (Custom vCard QR)",
+    "page": 80,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_13",
+    "title": "  13. Phân hệ Máy Quét Thông Minh Toàn Năng (Smart Scanner: QR / Barcode / NFC / OCR)",
+    "page": 81,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_14",
+    "title": "  14. Phân hệ Trung Tâm Bảo Mật Cá Nhân, Đổi Mật Khẩu & Xác Thực Hai Lớp (2FA)",
+    "page": 82,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_15",
+    "title": "  15. Phân hệ Trung Tâm Thông Báo Đa Kênh & Đồng Bộ Lịch Sự Kiện Cá Nhân",
+    "page": 83,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_16",
+    "title": "  16. Phân hệ Ví Vé Sự Kiện Điện Tử Thông Minh & Check-in Offline Mã QR",
+    "page": 84,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_17",
+    "title": "  17. Phân hệ Giải Đấu Thể Thao Doanh Nghiệp ViOne Sport Trên Di Động",
+    "page": 85,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_18",
+    "title": "  18. Phân hệ Giải Chạy Bộ ViOne Run Marathon & Chip Timing RFID Di Động",
+    "page": 86,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_19",
+    "title": "  19. Phân hệ Khám Phá Bảo Tàng Số 3D & Thuyết Minh 1-Chạm NFC ViOne Museum",
+    "page": 87,
+    "level": 2
+  },
+  {
+    "id": "app3_mob_20",
+    "title": "  20. Phân hệ Khám Phá Di Sản Văn Hóa & Bản Đồ Số Di Tích Lịch Sử ViOne Heritage",
+    "page": 88,
+    "level": 2
+  },
+  {
+    "id": "app4",
+    "title": "PHỤ LỤC IV - Mã nguồn phần mềm (18 Mô-đun Hệ thống Cốt lõi)",
+    "page": 90,
+    "level": 1
+  },
+  {
+    "id": "app4_file_1",
+    "title": "  1. Mã Nguồn Cổng Web Quản Trị ViOne Platform (CRM)",
+    "page": 91,
+    "level": 2
+  },
+  {
+    "id": "app4_file_7",
+    "title": "  2. Mã Nguồn Máy Chủ Xử Lý Nghiệp Vụ Trung Tâm (Backend Core)",
+    "page": 150,
+    "level": 2
+  },
+  {
+    "id": "app4_file_11",
+    "title": "  3. Mã Nguồn Giao Diện Điều Hành & Dashboard ViOne",
+    "page": 256,
+    "level": 2
+  },
+  {
+    "id": "app4_file_18",
+    "title": "  4. Mã Nguồn Ứng Dụng Di Động ViOne Native Mobile App",
+    "page": 409,
+    "level": 2
+  }
+];
+
 const { EXACT_TITLE_UPPER, EXACT_TITLE, META_INFO, ACTORS } = require('./content_vione_meta');
 const { SECTION_1, SECTION_2_TECH } = require('./content_vione_section1_2');
 const { ARCH_TABLE_01, ARCH_TABLE_02, ARCH_TABLE_03, ARCH_TABLE_04 } = require('./content_vione_arch_tables');
@@ -50,12 +474,14 @@ function makeP(text, opts = {}) {
     after = 100,
     line = 240,
     pageBreak = false,
+    keepNext = false,
     pStyle = null
   } = opts;
 
   let pPr = '<w:pPr>';
   if (pStyle) pPr += `<w:pStyle w:val="${pStyle}"/>`;
   if (pageBreak) pPr += '<w:pageBreakBefore/>';
+  if (keepNext) pPr += '<w:keepNext w:val="1"/>';
   if (align) pPr += `<w:jc w:val="${align}"/>`;
   pPr += `<w:spacing w:before="${before}" w:after="${after}" w:line="${line}" w:lineRule="auto"/>`;
   pPr += '</w:pPr>';
@@ -81,6 +507,7 @@ function makeHeading(text, level = 1, pageBreak = false) {
     before: cfg.before,
     after: cfg.after,
     align: 'left',
+    keepNext: true,
     pageBreak
   });
 }
@@ -207,14 +634,25 @@ function makeTable(headers, rows, colWidths = []) {
   return xml;
 }
 
+
+function makeTocLine(title, pageNum, level = 1) {
+  const indent = level === 1 ? 0 : (level === 2 ? 280 : 560);
+  const bold = level === 1;
+  const color = bold ? VIONE_COLORS.goldRoyalDark : VIONE_COLORS.obsidianText;
+  const size = 24;
+  return `<w:p><w:pPr><w:tabs><w:tab w:val="right" w:leader="dot" w:pos="9061"/></w:tabs><w:spacing w:before="24" w:after="24" w:line="240" w:lineRule="auto"/><w:ind w:left="${indent}" w:right="0" w:firstLine="0"/><w:jc w:val="left"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/>${bold ? '<w:b/><w:bCs/>' : ''}<w:color w:val="${color}"/></w:rPr><w:t xml:space="preserve">${escapeXml(title)}</w:t><w:tab/><w:t xml:space="preserve">${pageNum}</w:t></w:r></w:p>`;
+}
+
 function makeImageDrawing(rId, docPrId, type = 'desktop') {
   let cx, cy;
   if (type === 'mobile') {
     cx = 3017520; // 3.3 in
     cy = 5943600; // 6.5 in
-  } else if (type === 'diagram') {
-    cx = 6480000; // 7.08 in (Mở rộng tối đa toàn chiều ngang trang giấy theo yêu cầu)
-    cy = 4000000; // 4.37 in (Chuẩn tỷ lệ 2300 x 1420, cực kỳ to rõ ràng, dễ đọc)
+  } else if (type === 'diagram' || type === 'diagram_landscape') {
+    // Kích thước chuẩn tài liệu Uniwork trên trang nằm ngang (Landscape):
+    // Rộng 8.9 inch (8166666 EMU), Cao 5.35 inch (4900000 EMU), cực kỳ to rõ ràng, không bị che khuất
+    cx = 8166666;
+    cy = 4900000;
   } else {
     // desktop
     cx = 5669280; // 6.2 in
@@ -222,6 +660,12 @@ function makeImageDrawing(rId, docPrId, type = 'desktop') {
   }
   return `<w:p><w:pPr><w:spacing w:before="120" w:after="80"/><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="${docPrId}" name="Picture ${docPrId}"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${docPrId}" name="Picture ${docPrId}"/><pic:cNvPicPr><a:picLocks noChangeAspect="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rId}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
 }
+
+
+// CÁC ĐỊNH NGHĨA SECTION BREAK PORTRAIT / LANDSCAPE CHUẨN UNIWORK
+const sectPrPortrait = (rIdHdr, rIdFtr) => `<w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:sectPr><w:type w:val="nextPage"/><w:headerReference w:type="default" r:id="${rIdHdr}"/><w:footerReference w:type="default" r:id="${rIdFtr}"/><w:pgSz w:w="11906" w:h="16838" w:orient="portrait"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1701" w:header="720" w:footer="720" w:gutter="0"/><w:docGrid w:linePitch="360"/></w:sectPr></w:pPr></w:p>`;
+
+const sectPrLandscape = (rIdHdr, rIdFtr) => `<w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:sectPr><w:type w:val="nextPage"/><w:headerReference w:type="default" r:id="${rIdHdr}"/><w:footerReference w:type="default" r:id="${rIdFtr}"/><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="850" w:right="850" w:bottom="850" w:left="850" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:pPr></w:p>`;
 
 function makeFigureCaption(captionText) {
   return `<w:p><w:pPr><w:spacing w:before="40" w:after="160"/><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:i/><w:iCs/><w:sz w:val="21"/><w:szCs w:val="21"/><w:color w:val="${VIONE_COLORS.goldRoyalDark}"/></w:rPr><w:t xml:space="preserve">${escapeXml(captionText)}</w:t></w:r></w:p>`;
@@ -364,44 +808,22 @@ async function buildMasterDocxAndMd() {
   bodyXml += makeP('- Số điện thoại: ............................................................ Email: ......................................................', { size: 24, align: 'left', after: 60 });
   bodyXml += makeP('- Tác giả: .........................................................................................................................................', { bold: true, size: 24, align: 'left', after: 120 });
 
-  bodyXml += makeP(META_INFO.locationDate, { italic: true, size: 24, align: 'center', before: 200, after: 200 });
+  bodyXml += makeP(META_INFO.locationDate, { italic: true, size: 24, align: 'center', before: 160, after: 200 });
 
-  // MỤC LỤC TỔNG THỂ
-  bodyXml += makeHeading('MỤC LỤC TỔNG THỂ', 1, true);
-  bodyXml += '<w:p><w:pPr><w:spacing w:before="60" w:after="120"/></w:pPr><w:fldSimple w:instr="TOC \\o &quot;1-3&quot; \\h \\z \\u"/></w:p>';
+  // Page break để bắt đầu Mục lục từ trang 2 riêng biệt
+  bodyXml += '<w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>';
 
-  // Static TOC for non-Word viewers
-  const tocStaticList = [
-    { title: '1. Giới thiệu', level: 1 },
-    { title: '  1.1 Mục tiêu', level: 2 },
-    { title: '  1.2 Phạm vi của dự án', level: 2 },
-    { title: '    1.2.1. Phạm vi', level: 3 },
-    { title: '    1.2.2. Đối tượng sử dụng', level: 3 },
-    { title: '2. Yêu cầu kỹ thuật', level: 1 },
-    { title: '  2.1 Kiến trúc hạ tầng', level: 2 },
-    { title: '    2.1.1 Kiến trúc tổng thể', level: 3 },
-    { title: '    2.1.2 Kiến trúc chi tiết', level: 3 },
-    { title: '    2.1.3 Kiến trúc triển khai, dự phòng và an toàn', level: 3 },
-    { title: '  2.2 Công nghệ sử dụng', level: 2 },
-    { title: '  2.3 Yêu cầu chức năng', level: 2 },
-    { title: '    2.3.1 Các chức năng chung', level: 3 },
-    { title: '    2.3.2 Chức năng chi tiết Cổng Web Quản Trị ViOne Platform (23 Phân hệ)', level: 3 },
-    { title: '    2.3.3 Chức năng chi tiết Phân hệ Ứng dụng Di động ViOne (20 Phân hệ)', level: 3 },
-    { title: '  2.4 Các yêu cầu phi chức năng khác', level: 2 },
-    { title: '    2.4.1 Yêu cầu về hiệu năng (Performance Requirements)', level: 3 },
-    { title: '    2.4.2 Yêu cầu về bảo mật (Security Requirements)', level: 3 },
-    { title: '    2.4.3 Yêu cầu tuân thủ (Compliance Requirements)', level: 3 },
-    { title: 'PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm (Đặc tả CSDL, API, Socket.IO)', level: 1 },
-    { title: 'PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)', level: 1 },
-    { title: 'PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG VIONE (20 PHÂN HỆ MOCKUP)', level: 1 },
-    { title: 'PHỤ LỤC IV - Mã nguồn phần mềm (18 Mô-đun Hệ thống Cốt lõi)', level: 1 }
-  ];
+  // MỤC LỤC TỔNG THỂ (CÓ ĐÁNH SỐ THỨ TỰ, DẤU CHẤM DẪN ĐƯỜNG VÀ SỐ TRANG CHUẨN XÁC)
+  bodyXml += makeHeading('MỤC LỤC TỔNG THỂ', 1);
+  bodyXml += '<w:p><w:pPr><w:spacing w:before="40" w:after="100"/></w:pPr><w:fldSimple w:instr="TOC \\o &quot;1-3&quot; \\h \\z \\u"/></w:p>';
 
-  tocStaticList.forEach(item => {
-    const bold = item.level === 1;
-    const color = item.level === 1 ? VIONE_COLORS.goldRoyalDark : VIONE_COLORS.obsidianText;
-    bodyXml += makeP(item.title, { bold, color, size: 22, after: 40 });
+  // Render danh sách mục lục tĩnh chuẩn Word với tab leader dot
+  TOC_ITEMS.forEach(item => {
+    bodyXml += makeTocLine(item.title, item.page, item.level);
   });
+
+  // Page break để bắt đầu Chương 1 từ trang mới
+  bodyXml += '<w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>';
 
   // CHƯƠNG 1: GIỚI THIỆU
   bodyXml += makeHeading('1. Giới thiệu', 1, true);
@@ -428,38 +850,58 @@ async function buildMasterDocxAndMd() {
   bodyXml += makeHeading('2. Yêu cầu kỹ thuật', 1, true);
   bodyXml += makeHeading('2.1 Kiến trúc hạ tầng', 2);
 
-  // 2.1.1 Kiến trúc tổng thể + SƠ ĐỒ HÌNH 2.1
+  // 2.1.1 Kiến trúc tổng thể + SƠ ĐỒ HÌNH 2.1 (LANDSCAPE)
   bodyXml += makeHeading('2.1.1 Kiến trúc tổng thể', 3);
   bodyXml += renderFormattedTextBlock(SECTION_2_TECH.kientrucTongThe);
-  bodyXml += makeImageDrawing(DIAGRAM_FILES[0].rId, DIAGRAM_FILES[0].docPrId, 'diagram');
+
+  // TRANSITION SANG TRANG NẰM NGANG (LANDSCAPE) CHO SƠ ĐỒ HÌNH 2.1
+  bodyXml += sectPrPortrait('rId6', 'rId7');
+  bodyXml += makeImageDrawing(DIAGRAM_FILES[0].rId, DIAGRAM_FILES[0].docPrId, 'diagram_landscape');
   bodyXml += makeFigureCaption(DIAGRAM_FILES[0].title);
+
+  // TRANSITION TRỞ LẠI TRANG ĐỨNG (PORTRAIT) CHO BẢNG ARCH_TABLE_01
+  bodyXml += sectPrLandscape('rId6', 'rId7');
   bodyXml += makeP('Để làm rõ các luồng trao đổi dữ liệu và tương tác kỹ thuật giữa các tầng phân lớp trong Hình 2.1, bảng kiến trúc tổng thể dưới đây trình bày chi tiết các khối chức năng cốt lõi của nền tảng ViOne Platform:', { after: 80 });
   bodyXml += makeTable(ARCH_TABLE_01.headers, ARCH_TABLE_01.rows, ARCH_TABLE_01.widths);
 
-  // 2.1.2 Kiến trúc chi tiết + SƠ ĐỒ HÌNH 2.2 & HÌNH 2.3
+  // 2.1.2 Kiến trúc chi tiết + SƠ ĐỒ HÌNH 2.2 & HÌNH 2.3 (LANDSCAPE)
   bodyXml += makeHeading('2.1.2 Kiến trúc chi tiết', 3, true);
   bodyXml += renderFormattedTextBlock(SECTION_2_TECH.kientrucChiTiet);
-  bodyXml += makeImageDrawing(DIAGRAM_FILES[1].rId, DIAGRAM_FILES[1].docPrId, 'diagram');
+
+  // TRANSITION SANG TRANG NẰM NGANG (LANDSCAPE) CHO SƠ ĐỒ HÌNH 2.2 & 2.3
+  bodyXml += sectPrPortrait('rId6', 'rId7');
+  bodyXml += makeImageDrawing(DIAGRAM_FILES[1].rId, DIAGRAM_FILES[1].docPrId, 'diagram_landscape');
   bodyXml += makeFigureCaption(DIAGRAM_FILES[1].title);
+
+  bodyXml += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+  bodyXml += makeImageDrawing(DIAGRAM_FILES[2].rId, DIAGRAM_FILES[2].docPrId, 'diagram_landscape');
+  bodyXml += makeFigureCaption(DIAGRAM_FILES[2].title);
+
+  // TRANSITION TRỞ LẠI TRANG ĐỨNG (PORTRAIT) CHO BẢNG ARCH_TABLE_02 & 03
+  bodyXml += sectPrLandscape('rId6', 'rId7');
   bodyXml += makeP('Quy trình điều phối và luồng luân chuyển dữ liệu nghiệp vụ trọng yếu của Cổng Web Quản Trị ViOne CRM được chuẩn hóa theo bảng sau:', { after: 80 });
   bodyXml += makeTable(ARCH_TABLE_02.headers, ARCH_TABLE_02.rows, ARCH_TABLE_02.widths);
 
-  bodyXml += makeImageDrawing(DIAGRAM_FILES[2].rId, DIAGRAM_FILES[2].docPrId, 'diagram');
-  bodyXml += makeFigureCaption(DIAGRAM_FILES[2].title);
-  bodyXml += makeP('Kiến trúc phân rã các mô-đun phần cứng và trải nghiệm tương tác trên Ứng dụng Di động ViOne (ViOne Connect) được mô tả chi tiết tại bảng sau:', { after: 80 });
+  bodyXml += makeP('Kiến trúc phân rã các mô-đun phần cứng và trải nghiệm tương tác trên Ứng dụng Di động ViOne (ViOne Connect) được mô tả chi tiết tại bảng sau:', { before: 100, after: 80 });
   bodyXml += makeTable(ARCH_TABLE_03.headers, ARCH_TABLE_03.rows, ARCH_TABLE_03.widths);
 
-  // 2.1.3 Kiến trúc triển khai, dự phòng và an toàn + SƠ ĐỒ HÌNH 2.4
+  // 2.1.3 Kiến trúc triển khai, dự phòng và an toàn + SƠ ĐỒ HÌNH 2.4 (LANDSCAPE)
   bodyXml += makeHeading('2.1.3 Kiến trúc triển khai, dự phòng và an toàn', 3, true);
   bodyXml += renderFormattedTextBlock(SECTION_2_TECH.kientrucTrienKhai);
-  bodyXml += makeImageDrawing(DIAGRAM_FILES[3].rId, DIAGRAM_FILES[3].docPrId, 'diagram');
+
+  // TRANSITION SANG TRANG NẰM NGANG (LANDSCAPE) CHO SƠ ĐỒ HÌNH 2.4
+  bodyXml += sectPrPortrait('rId6', 'rId7');
+  bodyXml += makeImageDrawing(DIAGRAM_FILES[3].rId, DIAGRAM_FILES[3].docPrId, 'diagram_landscape');
   bodyXml += makeFigureCaption(DIAGRAM_FILES[3].title);
+
+  // TRANSITION TRỞ LẠI TRANG ĐỨNG (PORTRAIT) CHO BẢNG ARCH_TABLE_04 VÀ TOÀN BỘ PHẦN CÒN LẠI
+  bodyXml += sectPrLandscape('rId6', 'rId7');
   bodyXml += makeP('Thông số cấu hình môi trường, cụm proxy độc lập và cơ chế an ninh, sao lưu dự phòng của hệ thống ViOne Platform được tổng hợp chi tiết theo bảng sau:', { after: 80 });
   bodyXml += makeTable(ARCH_TABLE_04.headers, ARCH_TABLE_04.rows, ARCH_TABLE_04.widths);
 
   // 2.2 Công nghệ sử dụng
   bodyXml += makeHeading('2.2 Công nghệ sử dụng', 2, true);
-  bodyXml += makeP('Bảng tổng hợp các công nghệ nền tảng, framework và thư viện được sử dụng trong toàn bộ hệ sinh thái ViOne Platform:', { after: 80 });
+  bodyXml += makeP('Bảng tổng hợp các công nghệ nền tảng, framework và thư viện được sử dụng trong toàn bộ nền tảng ViOne Platform:', { after: 80 });
 
   const techHeaders = ['STT', 'Lĩnh Vực Công Nghệ', 'Nền Tảng / Thư Viện Sử Dụng & Chuẩn Kỹ Thuật'];
   const techRows = SECTION_2_TECH.congNghe.map(t => [
@@ -489,7 +931,7 @@ async function buildMasterDocxAndMd() {
 
   // 2.3.3 Mobile Modules
   bodyXml += makeHeading('2.3.3 Chức năng chi tiết Phân hệ Ứng dụng Di động ViOne (20 Phân hệ)', 3, true);
-  bodyXml += makeP('Ứng dụng Di động ViOne (ViOne Connect) bao gồm 20 phân hệ màn hình chức năng chuyên sâu phục vụ hội viên doanh nghiệp, vận động viên và khách tham quan:', { after: 100 });
+  bodyXml += makeP('Ứng dụng Di động ViOne (ViOne Connect) bao gồm 20 phân hệ màn hình chức năng chuyên sâu phục vụ doanh nhân doanh nghiệp, vận động viên và khách tham quan:', { after: 100 });
 
   MOBILE_MODULES.forEach(mod => {
     bodyXml += makeHeading(`${mod.subCode}. ${mod.name}`, 4);
@@ -662,37 +1104,21 @@ async function buildMasterDocxAndMd() {
   md += `- **Tác giả:** .........................................................................................................................................\n\n`;
   md += `*${META_INFO.locationDate}*\n\n---\n\n`;
 
-  // TOC MD
+  // TOC MD (ĐỒNG BỘ 100% VỚI BẢN WORD: CÓ SỐ THỨ TỰ, DẤU CHẤM VÀ SỐ TRANG CHUẨN XÁC)
   md += `## MỤC LỤC TỔNG THỂ\n\n`;
-  md += `1. [1. Giới thiệu](#1-giới-thiệu)\n`;
-  md += `   - 1.1 [Mục tiêu](#11-mục-tiêu)\n`;
-  md += `   - 1.2 [Phạm vi của dự án](#12-phạm-vi-của-dự-án)\n`;
-  md += `     - 1.2.1 [Phạm vi](#121-phạm-vi)\n`;
-  md += `     - 1.2.2 [Đối tượng sử dụng](#122-đối-tượng-sử-dụng)\n`;
-  md += `2. [2. Yêu cầu kỹ thuật](#2-yêu-cầu-kỹ-thuật)\n`;
-  md += `   - 2.1 [Kiến trúc hạ tầng](#21-kiến-trúc-hạ-tầng)\n`;
-  md += `     - 2.1.1 [Kiến trúc tổng thể 4 tầng](#211-kiến-trúc-tổng-thể)\n`;
-  md += `     - 2.1.2 [Kiến trúc chi tiết các luồng xử lý](#212-kiến-trúc-chi-tiết)\n`;
-  md += `     - 2.1.3 [Kiến trúc triển khai, dự phòng và an toàn](#213-kiến-trúc-triển-khai-dự-phòng-và-an-toàn)\n`;
-  md += `   - 2.2 [Công nghệ sử dụng](#22-công-nghệ-sử-dụng)\n`;
-  md += `   - 2.3 [Yêu cầu chức năng hệ thống](#23-yêu-cầu-chức-năng)\n`;
-  md += `     - 2.3.1 [Các chức năng nền tảng chung](#231-các-chức-năng-chung)\n`;
-  md += `     - 2.3.2 [Chức năng chi tiết Cổng Web Quản Trị ViOne Platform (23 Phân hệ)](#232-chức-năng-chi-tiết-cổng-web-quản-trị-vione-platform-23-phân-hệ)\n`;
-  CRM_MODULES.forEach(mod => {
-    md += `       - ${mod.subCode} [${mod.name}](#${mod.subCode.replace(/\./g, '')}-${encodeURIComponent(mod.shortTitle.toLowerCase().replace(/\s+/g, '-'))})\n`;
+  TOC_ITEMS.forEach(item => {
+    const rawTitle = item.title.trim();
+    const dotsCount = Math.max(8, 86 - rawTitle.length);
+    const dots = '.'.repeat(dotsCount);
+    if (item.level === 1) {
+      md += `- **${rawTitle}** ${dots} **Trang ${item.page}**\n`;
+    } else if (item.level === 2) {
+      md += `  - **${rawTitle}** ${dots} Trang ${item.page}\n`;
+    } else {
+      md += `    - ${rawTitle} ${dots} Trang ${item.page}\n`;
+    }
   });
-  md += `     - 2.3.3 [Chức năng chi tiết Phân hệ Ứng dụng Di động ViOne (20 Phân hệ)](#233-chức-năng-chi-tiết-phân-hệ-ứng-dụng-di-động-vione-20-phân-hệ)\n`;
-  MOBILE_MODULES.forEach(mod => {
-    md += `       - ${mod.subCode} [${mod.name}](#${mod.subCode.replace(/\./g, '')}-${encodeURIComponent(mod.shortTitle.toLowerCase().replace(/\s+/g, '-'))})\n`;
-  });
-  md += `   - 2.4 [Các yêu cầu phi chức năng khác](#24-các-yêu-cầu-phi-chức-năng-khác)\n`;
-  md += `     - 2.4.1 [Yêu cầu về hiệu năng](#241-yêu-cầu-về-hiệu-năng-performance-requirements)\n`;
-  md += `     - 2.4.2 [Yêu cầu về bảo mật](#242-yêu-cầu-về-bảo-mật-security-requirements)\n`;
-  md += `     - 2.4.3 [Yêu cầu tuân thủ](#243-yêu-cầu-tuân-thủ-compliance-requirements)\n`;
-  md += `3. [PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm](#phụ-lục-i---yêu-cầu-kỹ-thuật-của-phần-mềm)\n`;
-  md += `4. [PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)](#phụ-lục-ii--hướng-dẫn-sử-dụng-phần-mềm---cổng-web-quản-trị-vione-platform-23-phân-hệ)\n`;
-  md += `5. [PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG VIONE (20 PHÂN HỆ MOCKUP)](#phụ-lục-iii--hướng-dẫn-sử-dụng-phần-mềm---ứng-dụng-di-động-vione-20-phân-hệ-mockup)\n`;
-  md += `6. [PHỤ LỤC IV - Mã nguồn phần mềm](#phụ-lục-iv---mã-nguồn-phần-mềm)\n\n---\n\n`;
+  md += `\n---\n\n`;
 
   // CHƯƠNG 1
   md += `# 1. Giới thiệu\n\n## 1.1 Mục tiêu\n\n${SECTION_1.mucTieu}\n\n`;

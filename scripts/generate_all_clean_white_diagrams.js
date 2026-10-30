@@ -35,14 +35,14 @@ const htmlDiagram01 = `<!DOCTYPE html>
     margin-bottom: 20px;
   }
   .header-title {
-    font-size: 34px;
+    font-size: 40px;
     font-weight: 900;
     color: #0F172A;
     text-transform: uppercase;
     letter-spacing: 0.8px;
   }
   .header-sub {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
     color: #8C653B;
     margin-top: 4px;
@@ -76,7 +76,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
   }
   .side-title {
     padding: 12px 16px;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -102,7 +102,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
   }
   .item-card {
     border-radius: 10px;
-    padding: 12px 14px;
+    padding: 8px 14px;
     background: #FFFFFF;
   }
   .side-box.amber .item-card {
@@ -114,7 +114,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
     background: #F0FDFA;
   }
   .item-name {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
     margin-bottom: 4px;
   }
@@ -127,7 +127,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
   }
   .side-note {
     text-align: center;
-    font-size: 15px;
+    font-size: 18.5px;
     font-style: italic;
     color: #64748B;
     padding: 8px 12px 10px;
@@ -204,13 +204,13 @@ const htmlDiagram01 = `<!DOCTYPE html>
     text-align: center;
   }
   .ingress-title {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 800;
     color: #1D4ED8;
     margin-bottom: 4px;
   }
   .ingress-desc {
-    font-size: 16px;
+    font-size: 24px;
     color: #1E3A8A;
     font-weight: 500;
   }
@@ -229,7 +229,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
   }
   .service-card {
     border-radius: 10px;
-    padding: 12px 14px;
+    padding: 8px 14px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -273,7 +273,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
     margin-bottom: 3px;
   }
   .shared-core-desc {
-    font-size: 15px;
+    font-size: 18.5px;
     color: #475569;
   }
 
@@ -303,7 +303,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
     background: #FFFFFF;
     border: 1.5px solid #DDD6FE;
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 6px 12px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -347,13 +347,13 @@ const htmlDiagram01 = `<!DOCTYPE html>
     text-align: center;
   }
   .ext-title {
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 800;
     color: #1E293B;
     margin-bottom: 2px;
   }
   .ext-desc {
-    font-size: 14px;
+    font-size: 17.5px;
     color: #64748B;
   }
 
@@ -362,7 +362,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
     justify-content: center;
     align-items: center;
     gap: 8px;
-    font-size: 15px;
+    font-size: 18.5px;
     font-weight: 700;
     color: #64748B;
     margin: -4px 0;
@@ -384,7 +384,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
   <div class="main-grid">
     <!-- CỘT TRÁI -->
     <div class="left-col">
-      <div class="side-box amber" style="height: 560px;">
+      <div class="side-box amber" style="height: 595px;">
         <div class="side-title">THIẾT BỊ NGOẠI VI & HIỆN TRƯỜNG THỰC TẾ</div>
         <div class="side-body">
           <div class="item-card">
@@ -401,13 +401,13 @@ const htmlDiagram01 = `<!DOCTYPE html>
           </div>
           <div class="item-card">
             <div class="item-name">Thiết Bị Di Động Thông Minh</div>
-            <div class="item-desc">Điện thoại thông minh iOS/Android của hội viên, đại biểu và vận động viên tham gia</div>
+            <div class="item-desc">Điện thoại thông minh iOS/Android của doanh nhân, đại biểu và vận động viên tham gia</div>
           </div>
         </div>
-        <div class="side-note">Hội viên, đại biểu & VĐV mang thiết bị di động tương tác trực tiếp tại hiện trường</div>
+        <div class="side-note">Doanh nhân, đại biểu & VĐV mang thiết bị di động tương tác trực tiếp tại hiện trường</div>
       </div>
 
-      <div class="side-box teal" style="height: 640px;">
+      <div class="side-box teal" style="height: 605px;">
         <div class="side-title">BÊN TRONG ỨNG DỤNG DI ĐỘNG VIONE</div>
         <div class="side-body">
           <div class="item-card">
@@ -443,7 +443,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
           </div>
           <div class="channel-card">
             <div class="channel-title">Cổng Web Quản trị ViOne Platform (CRM)</div>
-            <div class="channel-desc">React 18 · TypeScript · Tailwind CSS · TanStack Table<br>Quản trị C-Level · Hồ sơ hội viên 360 · Phễu B2B · Tài chính</div>
+            <div class="channel-desc">React 18 · TypeScript · Tailwind CSS · TanStack Table<br>Quản trị C-Level · Hồ sơ doanh nhân 360 · Phễu B2B · Tài chính</div>
           </div>
           <div class="channel-card">
             <div class="channel-title">Quầy Bán Vé & Điểm Check-in POS</div>
@@ -483,7 +483,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
             <div class="srv-desc">Phễu bán hàng Deals, báo giá, hợp đồng điện tử, quản trị đơn hàng & xuất hóa đơn</div>
           </div>
           <div class="service-card green">
-            <div class="srv-title">Quản trị Hội viên & Thẻ</div>
+            <div class="srv-title">Quản trị Doanh nhân & Thẻ</div>
             <div class="srv-desc">Hồ sơ 360, định danh số vCard, gắn thẻ phân nhóm, ma trận kết nối giao thương</div>
           </div>
           <div class="service-card teal">
@@ -526,7 +526,7 @@ const htmlDiagram01 = `<!DOCTYPE html>
           <div class="data-grid">
             <div class="data-card">
               <div class="data-title">PostgreSQL 15 (vione_app)</div>
-              <div class="data-desc">Hội viên, doanh nghiệp, đơn hàng, vé, giải chạy, audit log · Prisma Migration</div>
+              <div class="data-desc">Doanh nhân, doanh nghiệp, đơn hàng, vé, giải chạy, audit log · Prisma Migration</div>
             </div>
             <div class="data-card">
               <div class="data-title">Kho tệp MinIO / S3 Storage</div>
@@ -589,14 +589,14 @@ const htmlDiagram02 = `<!DOCTYPE html>
     margin-bottom: 24px;
   }
   .header-title {
-    font-size: 34px;
+    font-size: 40px;
     font-weight: 900;
     color: #0F172A;
     text-transform: uppercase;
     letter-spacing: 0.8px;
   }
   .header-sub {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
     color: #8C653B;
     margin-top: 4px;
@@ -670,7 +670,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
   .stage-row.purple .wf-card { border-color: #DDD6FE; }
 
   .wf-step-num {
-    font-size: 15px;
+    font-size: 18.5px;
     font-weight: 900;
     padding: 2px 8px;
     border-radius: 4px;
@@ -682,7 +682,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
   .num-purple { background: #F5F3FF; color: #6D28D9; }
 
   .wf-title {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
     color: #0F172A;
   }
@@ -697,7 +697,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
     justify-content: center;
     align-items: center;
     gap: 10px;
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 800;
     color: #64748B;
   }
@@ -720,7 +720,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
     <!-- GIAI ĐOẠN 1 -->
     <div class="stage-row blue">
       <div class="stage-header">
-        <span class="stage-badge badge-blue">GIAI ĐOẠN 1: XÁC THỰC, PHÂN QUYỀN RBAC & QUẢN TRỊ DANH BẠ HỘI VIÊN 360</span>
+        <span class="stage-badge badge-blue">GIAI ĐOẠN 1: XÁC THỰC, PHÂN QUYỀN RBAC & QUẢN TRỊ DANH BẠ DOANH NHÂN 360</span>
         <span class="stage-desc">Thiết lập danh tính số doanh nghiệp, kiểm soát truy cập và xây dựng mạng lưới đối tác</span>
       </div>
       <div class="cards-grid">
@@ -736,8 +736,8 @@ const htmlDiagram02 = `<!DOCTYPE html>
         </div>
         <div class="wf-card">
           <span class="wf-step-num num-blue">BƯỚC 03</span>
-          <div class="wf-title">Hồ Sơ Hội Viên 360 Độ</div>
-          <div class="wf-desc">Quản lý trọn vẹn thông tin doanh nghiệp, người đại diện pháp luật, lĩnh vực hoạt động, phân hạng hội viên VIP và lịch sử tham gia cộng đồng.</div>
+          <div class="wf-title">Hồ Sơ Doanh Nhân 360 Độ</div>
+          <div class="wf-desc">Quản lý trọn vẹn thông tin doanh nghiệp, người đại diện pháp luật, lĩnh vực hoạt động, phân hạng doanh nhân VIP và lịch sử tham gia cộng đồng.</div>
         </div>
         <div class="wf-card">
           <span class="wf-step-num num-blue">BƯỚC 04</span>
@@ -749,7 +749,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
 
     <div class="flow-arrow-row">
       <svg viewBox="0 0 24 24"><path d="M11 4v12.17l-5.59-5.59L4 12l8 8 8-8-1.41-1.41L13 16.17V4h-2z"/></svg>
-      <span>Luân chuyển dữ liệu hội viên sang Phễu Bán hàng & Quản lý Tài chính Doanh nghiệp</span>
+      <span>Luân chuyển dữ liệu doanh nhân sang Phễu Bán hàng & Quản lý Tài chính Doanh nghiệp</span>
     </div>
 
     <!-- GIAI ĐOẠN 2 -->
@@ -772,7 +772,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
         <div class="wf-card">
           <span class="wf-step-num num-green">BƯỚC 07</span>
           <div class="wf-title">Thu Chi & Kế Toán Quỹ Hội</div>
-          <div class="wf-desc">Ghi nhận phiếu thu, ủy nhiệm chi, phân loại danh mục ngân quỹ minh bạch, kiểm soát dòng tiền đóng hội phí định kỳ của hội viên.</div>
+          <div class="wf-desc">Ghi nhận phiếu thu, ủy nhiệm chi, phân loại danh mục ngân quỹ minh bạch, kiểm soát dòng tiền đóng phí thường niên định kỳ của doanh nhân.</div>
         </div>
         <div class="wf-card">
           <span class="wf-step-num num-green">BƯỚC 08</span>
@@ -832,7 +832,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
         <div class="wf-card">
           <span class="wf-step-num num-purple">BƯỚC 13</span>
           <div class="wf-title">Bảng Điều Hành C-Level Dashboard</div>
-          <div class="wf-desc">Biểu đồ trực quan hóa doanh thu, tốc độ tăng trưởng hội viên, tỷ lệ chuyển đổi Deals và số dư ngân quỹ realtime.</div>
+          <div class="wf-desc">Biểu đồ trực quan hóa doanh thu, tốc độ tăng trưởng doanh nhân, tỷ lệ chuyển đổi Deals và số dư ngân quỹ realtime.</div>
         </div>
         <div class="wf-card">
           <span class="wf-step-num num-purple">BƯỚC 14</span>
@@ -842,7 +842,7 @@ const htmlDiagram02 = `<!DOCTYPE html>
         <div class="wf-card">
           <span class="wf-step-num num-purple">BƯỚC 15</span>
           <div class="wf-title">Gửi Thông Báo Tự Động Zalo ZNS</div>
-          <div class="wf-desc">Tự động phát lệnh qua Zalo OpenAPI gửi xác nhận vé điện tử, nhắc lịch sự kiện và hóa đơn đóng phí về tài khoản cá nhân hội viên.</div>
+          <div class="wf-desc">Tự động phát lệnh qua Zalo OpenAPI gửi xác nhận vé điện tử, nhắc lịch sự kiện và hóa đơn đóng phí về tài khoản cá nhân doanh nhân.</div>
         </div>
         <div class="wf-card">
           <span class="wf-step-num num-purple">BƯỚC 16</span>
@@ -882,14 +882,14 @@ const htmlDiagram03 = `<!DOCTYPE html>
     margin-bottom: 24px;
   }
   .header-title {
-    font-size: 34px;
+    font-size: 40px;
     font-weight: 900;
     color: #0F172A;
     text-transform: uppercase;
     letter-spacing: 0.8px;
   }
   .header-sub {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
     color: #0D9488;
     margin-top: 4px;
@@ -915,7 +915,7 @@ const htmlDiagram03 = `<!DOCTYPE html>
 
   .col-header {
     padding: 14px 18px;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.6px;
@@ -959,7 +959,7 @@ const htmlDiagram03 = `<!DOCTYPE html>
   .col-3 .card-badge { background: #DBEAFE; color: #1D4ED8; }
 
   .card-heading {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
     color: #0F172A;
   }
@@ -971,7 +971,7 @@ const htmlDiagram03 = `<!DOCTYPE html>
 
   .col-footer-tag {
     text-align: center;
-    font-size: 15px;
+    font-size: 18.5px;
     font-style: italic;
     color: #64748B;
     padding: 10px 14px;
@@ -1036,7 +1036,7 @@ const htmlDiagram03 = `<!DOCTYPE html>
         <div class="app-module-card">
           <span class="card-badge">CSDL THIẾT BỊ</span>
           <div class="card-heading">6. Kho Dữ Liệu Ngoại Tuyến SQLite / IndexedDB</div>
-          <div class="card-detail">Lưu trữ cục bộ toàn bộ danh bạ hội viên, thông tin vé điện tử đã mua và tệp audio thuyết minh, cho phép xem vé và check-in ngay cả khi mất sóng hoàn toàn.</div>
+          <div class="card-detail">Lưu trữ cục bộ toàn bộ danh bạ doanh nhân, thông tin vé điện tử đã mua và tệp audio thuyết minh, cho phép xem vé và check-in ngay cả khi mất sóng hoàn toàn.</div>
         </div>
 
         <div class="app-module-card">
@@ -1118,14 +1118,14 @@ const htmlDiagram04 = `<!DOCTYPE html>
     margin-bottom: 24px;
   }
   .header-title {
-    font-size: 34px;
+    font-size: 40px;
     font-weight: 900;
     color: #0F172A;
     text-transform: uppercase;
     letter-spacing: 0.8px;
   }
   .header-sub {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
     color: #1E40AF;
     margin-top: 4px;
@@ -1181,7 +1181,7 @@ const htmlDiagram04 = `<!DOCTYPE html>
   .env-prod .deploy-card { border: 1.5px solid #A7F3D0; background: #F0FDF4; }
 
   .deploy-badge {
-    font-size: 15px;
+    font-size: 18.5px;
     font-weight: 800;
     padding: 3px 8px;
     border-radius: 4px;
@@ -1191,18 +1191,18 @@ const htmlDiagram04 = `<!DOCTYPE html>
   .env-prod .deploy-badge { background: #D1FAE5; color: #047857; }
 
   .deploy-name {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 800;
     color: #0F172A;
   }
   .deploy-desc {
-    font-size: 16px;
+    font-size: 24px;
     line-height: 1.5;
     color: #334155;
   }
   .deploy-url {
     font-family: Consolas, monospace;
-    font-size: 15px;
+    font-size: 18.5px;
     font-weight: 700;
     color: #0284C7;
     margin-top: 2px;
@@ -1273,7 +1273,7 @@ const htmlDiagram04 = `<!DOCTYPE html>
         <div class="deploy-card">
           <span class="deploy-badge">SUBDOMAIN CHÍNH THỨC</span>
           <div class="deploy-name">1. Ứng Dụng Di Động ViOne App Prod</div>
-          <div class="deploy-desc">Cổng ứng dụng PWA & Mobile chính thức phục vụ hội viên kết nối giao thương, quản lý danh thiếp vCard, chạm thẻ NFC và check-in sự kiện.</div>
+          <div class="deploy-desc">Cổng ứng dụng PWA & Mobile chính thức phục vụ doanh nhân kết nối giao thương, quản lý danh thiếp vCard, chạm thẻ NFC và check-in sự kiện.</div>
           <div class="deploy-url">URL Chính Thức: https://vione.viconnect.vn/ (Cổng chuẩn 443 SSL)</div>
         </div>
 

@@ -1,5 +1,198 @@
 # System Memory & Architecture
 
+## 0.0000000000.32. CHUYỂN ĐỔI THEME SÁNG TOÀN DIỆN CHO VIONE PLATFORM APP, QUY CHUẨN HEADER TỐI GIẢN (LOGO + CHUÔNG), NÂNG CẤP HỆ THỐNG CHỨC NĂNG CON (SPORT, RUN, MUSEUM, HERITAGE, TICKETS) & XUẤT MASTER TÀI LIỆU BẢN QUYỀN 453 TRANG (30/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
+- **Người dùng yêu cầu**:
+  1. *"sửa bản vione app có sport, museum, heritage... cũng phải là theme sáng và có header, header chỉ có logo vione và icon thông báo."*
+  2. *"thêm các chức năng con ứng với từng module sport, heiritage, museum, run, để đưa vào"*
+- **Quy chuẩn bắt buộc**:
+  - Giao diện nền tảng App ViOne (`/platform-app`: Tickets, Sport, Run, Museum, Heritage) phải chuyển đổi triệt để sang **Theme Sáng (Light Theme)**: nền trắng sáng tinh khôi (`#FFFFFF`, `#F8FAFC`), viền Slate (`#E2E8F0`), chữ tối tương phản cao (`#0F172A`, `#334155`) và điểm xuyết ánh Vàng Champagne Gold (`#D8B282`, `#8C653B`).
+  - **Header chuẩn mực**: Header cố định phía trên chỉ chứa đúng 2 thành phần duy nhất: Logo thương hiệu ViOne (`ViOneLogo`) ở bên trái và biểu tượng Chuông thông báo (`Bell` có chấm đỏ chưa đọc) ở bên phải. Loại bỏ hoàn toàn các huy hiệu rườm rà, nhãn tài khoản, chữ "Hệ Sinh Thái Nền Tảng" và nền tối đen.
+  - **Triệt tiêu thông báo che header**: Tuyệt đối không để bất kỳ banner cấp quyền, popup thông báo đẩy hay toast Sonner che khuất thanh tiêu đề và khu vực Dynamic Island.
+  - **Bổ sung các chức năng con chuyên sâu**: Từng module nền tảng phải có các tab chức năng con, tiện ích tương tác và mô phỏng thực tế phong phú.
+  - **Chụp lại bộ 5 ảnh nền tảng**: `app_16_tickets.png`, `app_17_sport.png`, `app_18_run.png`, `app_19_museum.png`, `app_20_heritage.png` đóng khung mockup iPhone 15/16 Pro sắc nét.
+  - **Cập nhật tài liệu kỹ thuật & mã nguồn**: Biên dịch lại tệp hồ sơ `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` và `.md`, đồng bộ Phụ lục IV đạt quy mô đồ sộ >450 trang.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Chuẩn Hóa Header Tối Giản & Theme Sáng Trên Cả Hai Bản App (Dual-App Parity)**:
+   - `apps/vione_app_fe/src/components/platform-app/PlatformAppHeader.tsx`:
+     * Loại bỏ toàn bộ giao diện dark, nút chuyển đổi tài khoản, nhãn hệ sinh thái.
+     * Cố định bố cục: `ViOneLogo` ở góc trái, `Bell` (kèm unread dot) ở góc phải. Nền trắng `#FFFFFF`, viền dưới `border-amber-200/50`.
+   - `apps/vione_app_fe/src/components/platform-app/PlatformPwaApp.tsx`:
+     * Chuyển đổi toàn bộ bộ khung nền tảng, thanh chuyển danh mục (Sport, Run, Museum, Heritage, Tickets), bottom navigation bar 5 tab sang Light Theme đồng bộ.
+   - `apps/mobile_vione/src/screens/platform/PlatformAppScreen.tsx`:
+     * Đồng bộ mã nguồn Native: tích hợp `ViOneLogo` và icon `Bell`, gỡ bỏ "VICONNECT PLATFORM", thiết lập theme sáng tương ứng.
+2. **Nâng Cấp Hệ Thống Chức Năng Con Toàn Diện Cho Từng Module**:
+   - **ViOne Sport (`SportTournamentHub.tsx`)**:
+     * *Phân hạng môn thi*: Pickleball, Tennis Doanh Nhân, Bóng Đá Mini 7 người.
+     * *4 Sub-views tương tác*: "Giải Đấu Tiêu Biểu", "Sơ Đồ Phân Nhánh" (Tournament Bracket Tree: Tứ kết, Bán kết, Chung kết), "Lịch Đấu & Sân Bãi / Trọng Tài", "Bảng Xếp Hạng ELO & Huy Chương Fair-play".
+     * *Tiện ích*: Live WebSocket score ticker (1s), modal đăng ký đội và phân hạt giống tự động.
+   - **ViOne Run (`RunRaceHub.tsx`)**:
+     * *4 Phân hạng cự ly*: 5KM (Fun Run), 10KM (Challenge), 21KM (Half Marathon), 42KM (Full Marathon).
+     * *4 Sub-views tương tác*: "Giải Chạy Di Sản", "Thảm RFID Timing" (mô phỏng thảm đo Start, 10km, 21km, Finish với độ trễ <10ms), "Lộ Trình GPS Track" (bản đồ vệ tinh, trạm nước, trạm y tế, trạm cổ vũ), "BXH Finisher & e-Cert".
+     * *Tiện ích*: Cấp số BIB điện tử & mã Chip RFID UHF 860-960MHz, phát hành chứng nhận hoàn thành e-Certificate số hóa.
+   - **ViOne Museum (`MuseumExplorer.tsx`)**:
+     * *4 Sub-views tương tác*: "Phòng Trưng Bày 3D" (không gian thực tế ảo WebGL), "Xoay Lật 360°" (mô hình Photogrammetry Trống đồng Ngọc Lũ, Thạp đồng Đào Thịnh, Ngai vàng triều Nguyễn), "Audio Guide Đa Ngữ" (4 ngôn ngữ: Tiếng Việt, English, Français, 日本語), "Niên Biểu & QR" (tra cứu hồ sơ bảo vật quốc gia).
+     * *Tiện ích*: Chạm 1-Tap thẻ NFC NTAG213/215 tại quầy hiện vật bảo tàng, bài viết khảo cổ chuyên sâu.
+   - **ViOne Heritage (`HeritageExplorer.tsx`)**:
+     * *4 Sub-views tương tác*: "Di Tích Quốc Gia" (Quần thể Cố đô Huế, Hoàng Thành Thăng Long, Phố cổ Hội An), "GPS Geofencing 20m" (mô phỏng định vị vị trí người dùng qua thuật toán Haversine tự động phát thuyết minh), "Sắc Phong Deep Zoom" (soi chi tiết bản sắc phong vua ban và bản dịch Hán - Nôm sang Quốc ngữ), "Tuyến Tham Quan Chuyên Đề".
+     * *Tiện ích*: Hộ chiếu số di sản (Digital Heritage Passport) đóng dấu check-in điện tử.
+   - **ViOne Tickets (`TicketWallet.tsx`)**:
+     * *2 Sub-views*: "Ví Vé Người Dùng" (vé bảo tàng, vé giải chạy BIB hợp lệ kèm mã QR động), "Cổng Soát Vé Nhân Viên" (POS Validator kiểm soát vé 1-chạm thời gian thực).
+     * *Tiện ích*: Cập nhật font chữ chuẩn sans thanh thoát, hiển thị trực quan các thẻ vé VIP.
+3. **Triệt Tiêu Hoàn Toàn Popup & Banner Thông Báo Khi Chụp Ảnh**:
+   - `scripts/capture_platform_app_screens_v13.js`:
+     * Khởi chạy trình duyệt Chromium sử dụng kênh Google Chrome hệ thống.
+     * Tiêm CSS cưỡng chế ẩn triệt để toàn bộ `[data-sonner-toaster]`, `[data-sonner-toast]`, `.toaster`, `.sonner-toast`, `aside[aria-label*="thông báo"]`, `.vione-notif-prompt`.
+     * Cung cấp dữ liệu mặc định phong phú (`DEFAULT_MUSEUMS`, `DEFAULT_HERITAGE_SITES`, `DEFAULT_TICKETS`) ngăn chặn thông báo lỗi mạng khi chạy độc lập.
+   - Chụp mới 5 ảnh màn hình sắc nét, bao bọc trong khung viền iPhone 15/16 Pro với Dynamic Island và status bar chuẩn:
+     * `document/images/evidence_v9/app_16_tickets.png` (411 KB)
+     * `document/images/evidence_v9/app_17_sport.png` (601 KB)
+     * `document/images/evidence_v9/app_18_run.png` (441 KB)
+     * `document/images/evidence_v9/app_19_museum.png` (559 KB)
+     * `document/images/evidence_v9/app_20_heritage.png` (579 KB)
+4. **Biên Dịch & Cập Nhật Master Tài Liệu Bản Quyền Tác Giả**:
+   - Chạy kịch bản `scripts/build_vione_super_master_uniwork.js`:
+     * Nhúng toàn bộ 47 hình ảnh minh chứng (4 sơ đồ kiến trúc nền trắng + 43 ảnh giao diện live màn hình lớn).
+     * Cập nhật 18 tệp mã nguồn mới nhất vào Phụ lục IV với 22.079 dòng mã nguồn.
+     * Đảm bảo cấu trúc mục lục có đánh số và dấu chấm dẫn dòng (`...`) tới từng số trang chuẩn mực.
+     * Tạo đồng thời tệp DOCX (36.2 MB) và tệp Markdown (1.09 MB) tại `document/` và `C:/Users/vumik/Downloads/`.
+   - Kết quả đo lường bằng Microsoft Word COM Automation (`Word.Application`):
+     * **Tổng số trang**: **453 TRANG**.
+     * **Tổng số từ**: **114.390 TỪ**.
+5. **Kiểm Tra Chất Lượng Mã Nguồn Bắt Buộc (Rule 3 & Rule 4)**:
+   - Sửa dứt điểm lỗi thiếu import `ChevronRight` từ `lucide-react` trong `apps/vione_app_fe/src/components/platform-app/HeritageExplorer.tsx` (loại bỏ hoàn toàn gạch chân đỏ và chấm báo lỗi `1, M` trong IDE).
+   - Chạy Prettier định dạng chuẩn hóa code và ESLint kiểm tra cú pháp trên `HeritageExplorer.tsx` (0 errors, 0 warnings).
+   - Sửa lỗi cú pháp `justifyContent: "between"` thành `"space-between"` trong `ChatThreadModal.tsx`.
+   - Sửa kiểu dữ liệu `phone`, `code`, `avatarUrl`, `website` trong `AppNavigator.tsx`.
+   - `apps/vione_app_fe`: chạy `npx tsc --noEmit` -> **Exit code 0 (0 errors)**.
+   - `apps/mobile_vione`: chạy `npm run typecheck` (`tsc --noEmit`) -> **Exit code 0 (0 errors)**.
+
+---
+
+## 0.0000000000.31. CHUẨN HÓA TOÀN DIỆN 3 TỆP PHÁP LÝ (TỜ KHAI, CAM ĐOAN, QUYẾT ĐỊNH): TRIỆT TIÊU DÃN DÒNG DÃN CHỮ, XÓA SẠCH LẶP TIÊU ĐỀ, ĐỒNG BỘ 100% TÊN VIONE, ZERO "HỆ SINH THÁI", ZERO "HỘI VIÊN" (30/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
+- **Người dùng yêu cầu**: *"sửa lại cả 3 file Lời khai, cam đoan, quyết định giúp tôi hiện tại nó bị lỗi format dãn dòng dãn chữ. Và cũng không dùng tên hệ sinh thái gì cả, tên phải đồng bộ với tên ở trình bày tác phẩm. Cũng không dùng từ hội viên, dùng tên doanh nhân nhé. Sửa đi"* (kèm 2 ảnh chụp màn hình minh chứng lỗi: `media_1793341787044_df92eabf.png`, `media_1793341795888_481b8c40.jpg`).
+- **Các lỗi cụ thể được phân tích & xử lý**:
+  1. **Lỗi dãn chữ nghiêm trọng (Word Stretching)**: Các tiêu đề phân hệ chứa URL (như `1. Cổng Web Quản Trị ViOne Platform (Triển khai tại Subdomain: https://crm_vione.viconnect.vn)`, `2. Ứng dụng Di động Doanh nhân...`, `3. Máy chủ Xử lý...`) bị áp đặt căn đều hai bên (`<w:jc w:val="both"/>`). Khi URL dài bị ép xuống dòng tiếp theo, Word tự động dãn toàn bộ khoảng trắng trên dòng đầu tiên kéo dài chạm hai mép trang giấy tạo nên khoảng hở khổng lồ giữa các từ.
+  2. **Lỗi mồ côi tiêu đề (Orphaned Heading)**: Tiêu đề mục `1. Cổng Web...` nằm lẻ loi ở đáy Trang 3, trong khi nội dung mô tả chi tiết lại nằm ở đầu Trang 4.
+  3. **Lỗi dãn dòng (Line/Paragraph Spacing)**: Các dòng form điền chấm thông tin cá nhân và tổ chức có khoảng cách đoạn quá lớn (`w:before="120" w:after="120" w:line="288"`), tạo ra các khoảng trống dọc bất hợp lý.
+  4. **Lỗi lặp lại tiêu đề kép (Compound Title Duplication)**: Do quá trình regex chuỗi trước đó bị lồng nhau trên File 02 (`Cam đoan.docx`) và File 03 (`Quyết định.docx`), chuỗi tiêu đề phần mềm bị nhân bản lặp lại liên tiếp 5 lần (`PHẦN MỀM VIONE PLATFORM– NỀN TẢNG...– NỀN TẢNG...– NỀN TẢNG...`).
+  5. **Lỗi ngắt chữ và gạch chân xanh ở thông tin cá nhân**: Dòng `Quốc tịch: Việt Nam` bị ngắt chữ "Nam" xuống dòng mới do quá nhiều thẻ tab; dòng `Cấp ngày:` bị đẩy xuống dòng do dòng chấm CCCD quá dài; dòng `Email:` bị bọc thẻ hyperlink sinh ra gạch chân màu xanh.
+  6. **Rớt chữ ký sang trang 2**: File Cam đoan và Quyết định chỉ vì 5-6 đoạn trống (empty paragraphs) thừa ở phần ký tên mà bị rớt lẻ loi 1-2 dòng chữ ký sang Trang 2 trên một trang giấy gần như bỏ trắng.
+  7. **Yêu cầu thuật ngữ**: Tuyệt đối không dùng "hệ sinh thái", không dùng "hội viên" (chuyển 100% sang "doanh nhân"). Tên tác phẩm phải đồng bộ tuyệt đối với tệp `[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Xử Lý Dứt Điểm Lỗi Dãn Chữ & Ngắt Trang Mồ Côi**:
+   - Chuyển 100% các tiêu đề phân hệ, mục con đánh số (`1.`, `2.`, `3.`, ... `10.`), các đầu mục chức năng/thành phần/cấu tạo (`Về chức năng:`, `Về thành phần:`, `Về cấu tạo:`), các dòng form điền chấm, các dòng checkbox và tất cả đoạn văn có chứa URL (`http://`, `https://`) sang căn lề trái chuẩn xác: `<w:jc w:val="left"/>`.
+   - Bổ sung thuộc tính `<w:keepNext/>` cho toàn bộ các tiêu đề để gắn liền tiêu đề với đoạn văn mô tả ngay sau nó, triệt tiêu vĩnh viễn tình trạng tiêu đề nằm lẻ loi ở cuối trang.
+2. **Chuẩn Hóa Tiêu Đề Tác Phẩm Chính Xác Tuyệt Đối (Không Lặp Lại)**:
+   - Quét sạch toàn bộ các thẻ `<w:t>` chứa chuỗi tiêu đề cũ và thay thế bằng tiêu đề chuẩn hóa duy nhất:
+     * Chữ hoa: `PHẦN MỀM VIONE PLATFORM– NỀN TẢNG ĐỊNH DANH SỐ, KẾT NỐI KINH DOANH, QUẢN TRỊ CỘNG ĐỒNG, SỰ KIỆN VÀ SỐ HÓA DI SẢN VĂN HÓA`
+     * Chữ thường / Title case: `Phần mềm ViOne Platform– Nền tảng định danh số, kết nối kinh doanh, quản trị cộng đồng, sự kiện và số hóa di sản văn hóa`
+   - Kiểm tra xác nhận: File 02 xuất hiện tiêu đề đúng 1 lần; File 03 xuất hiện tiêu đề đúng 3 lần (Trích yếu V/v, Điều 1, Điều 3), không còn bất kỳ chuỗi lặp kép nào.
+3. **Triệt Tiêu 100% Thuật Ngữ "Hệ Sinh Thái" & "Hội Viên"**:
+   - Thay thế toàn bộ "hội viên" thành "doanh nhân" (doanh nhân thành viên, cộng đồng doanh nhân, danh bạ doanh nhân, thẻ danh thiếp doanh nhân, ứng dụng di động doanh nhân, CSDL doanh nhân).
+   - Thay thế toàn bộ "hệ sinh thái" thành "nền tảng".
+   - Quét kiểm tra tự động trên cả 3 file: **0 kết quả "hội viên", 0 kết quả "hệ sinh thái"**.
+4. **Chuẩn Hóa Thông Tin Cá Nhân & Gỡ Bỏ Hyperlink Xanh**:
+   - Gỡ bỏ toàn bộ các thẻ `<w:hyperlink>` và định dạng `rStyle="Hyperlink"` tại trường Email, thay bằng dòng chấm văn bản thuần túy không có gạch chân xanh.
+   - Gỡ bỏ các thẻ đánh dấu bullet `<w:numPr>` tại File 02 để trả về danh sách kê khai hành chính chuẩn mực.
+   - Tinh chỉnh số lượng chấm và khoảng cách tab giữa `Sinh ngày` và `Quốc tịch: Việt Nam`, `CCCD` và `Cấp ngày`, `Điện thoại` và `Email` đảm bảo vừa vặn trên 1 dòng duy nhất, không bị ngắt chữ.
+5. **Tối Ưu Hóa Độ Dài Để File Cam Đoan & Quyết Định Vừa Khít 1 Trang A4 Hoàn Hảo**:
+   - Tinh chỉnh lề trang (`w:pgMar`): top 1.27cm, bottom 1.27cm, left 2.0cm, right 1.5cm.
+   - Dọn dẹp toàn bộ 5-12 đoạn trống thừa ở đuôi văn bản, chỉ để lại 1 khoảng trống vừa vặn (khoảng 300-360 twips) cho lãnh đạo ký tên và đóng dấu.
+   - Kết quả đo lường thực tế:
+     * `[VIONE] 02. Cam đoan.docx`: Co gọn vừa vặn đúng **1 TRANG A4 DUY NHẤT**.
+     * `[VIONE] 03. Quyết định.docx`: Co gọn vừa vặn đúng **1 TRANG A4 DUY NHẤT**.
+     * `[VIONE] 01. Tờ khai.docx`: Trình bày chuẩn 7 trang, tiêu đề gắn liền với nội dung, căn trái sắc nét.
+6. **Đồng Bộ Hai Thư Mục**:
+   - Toàn bộ 3 tệp sau khi biên soạn hoàn hảo đã được cập nhật đồng thời tại:
+     * `document/`
+     * `C:/Users/vumik/Downloads/`
+
+### 3. Kiểm Tra Đo Lường Thực Tế Bằng Word COM Automation
+- Chạy kịch bản kiểm tra `scripts/final_verify.js` qua Microsoft Word COM Automation (`Word.Application`):
+  * `document/[VIONE] 01. Tờ khai.docx`: Sections: 1, Pages: 7, Errors: 0.
+  * `document/[VIONE] 02. Cam đoan.docx`: Sections: 1, Pages: 1, Errors: 0.
+  * `document/[VIONE] 03. Quyết định.docx`: Sections: 1, Pages: 1, Errors: 0.
+  * `C:/Users/vumik/Downloads/[VIONE] 01. Tờ khai.docx`: Sections: 1, Pages: 7, Errors: 0.
+  * `C:/Users/vumik/Downloads/[VIONE] 02. Cam đoan.docx`: Sections: 1, Pages: 1, Errors: 0.
+  * `C:/Users/vumik/Downloads/[VIONE] 03. Quyết định.docx`: Sections: 1, Pages: 1, Errors: 0.
+- Kết xuất PDF và chụp ảnh màn hình bằng Playwright: Xác nhận bằng hình ảnh toàn bộ 3 tài liệu đều đẹp mắt, sạch sẽ, không còn lỗi dãn dòng hay dãn chữ.
+
+### 4. Cam Kết Nghiêm Ngặt
+- Tuân thủ Rule 1: Tuyệt đối không tự động chạy `git commit` hay `git push`. Toàn bộ thay đổi được lưu trữ cục bộ để người dùng chủ động kiểm tra.
+
+---
+
+## 0.0000000000.30. TRIỆT TIÊU 100% BANNER THÔNG BÁO CHE HEADER, CHỤP LẠI TOÀN BỘ 20 ẢNH APP VIONE SẠCH ĐẸP & ĐỒNG BỘ MASTER DOCX (30/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
+- **Người dùng phản ánh**: *"ảnh khi trình bày app vione vẫn bị nhiều ảnh hiện thông báo che đi header. chụp lại bộ ảnh không được đẻ thông báo che đi header"* (kèm ảnh minh chứng `media_1793336248978_fe8d5c58.jpg`).
+- **Phân tích nguyên nhân**:
+  1. Hợp phần `NotificationPromptBanner.tsx` (`apps/vione_app_fe/src/components/common/NotificationPromptBanner.tsx`) được nhúng toàn cục tại `src/routes/__root.tsx`.
+  2. Khi người dùng duyệt các tuyến đường `/connect-app/*`, sau khoảng trễ 2500ms (`setTimeout(() => setDismissed(false), 2500)`), banner `aside[aria-label="Cấp quyền thông báo hệ thống"]` với tiêu đề *"Bật thông báo trên màn hình"* và nút *"Bật thông báo ngay" / "Để sau"* sẽ tự động nổi lên ở vị trí `fixed top-3 inset-x-3 z-50`.
+  3. Kịch bản chụp trước đó chờ 2.5 giây (`waitForTimeout(2500)`), vô tình kích hoạt đúng thời điểm banner bật lên, che khuất thanh tìm kiếm, tiêu đề header và avatar trên nhiều màn hình (điển hình như `app_07_inbox.png`).
+  4. Đồng thời, chế độ hiển thị chưa được ép cứng sang Dark mode nên một số màn hình bị nền trắng khiến chữ màu trắng của status bar (09:41, pin) khó nhìn.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Xây Dựng Kịch Bản Chụp Mới `scripts/capture_clean_app_screens_v11.js` Chặn Triệt Để 100% Popup / Banner**:
+   - **Chặn ngay từ tầng Context (`addInitScript`)**:
+     * Thiết lập `sessionStorage` và `localStorage` với các khóa: `vione_notif_prompt_dismissed: 'true'`, `vione_pwa_dismissed: 'true'`, `vba_pwa_installed: 'true'`, `vba.theme: 'dark'`.
+     * Cưỡng chế `Notification.permission = 'granted'` trong context để component `NotificationPromptBanner` kiểm tra điều kiện `permission !== "default"` và trả về `null` ngay lập tức.
+   - **Xóa vĩnh viễn các selector popup và quét sạch DOM**:
+     * Gỡ bỏ các thẻ: `aside[aria-label*="thông báo"]`, `aside[aria-label*="Cấp quyền"]`, `.vione-notif-prompt`, `.vione-notif-banner`, `#pwa-install-prompt`, `.pwa-install-banner`, `.toaster`, `[data-sonner-toaster]`, `[data-sonner-toast]`.
+     * Quét nội dung văn bản nếu chứa *"Bật thông báo trên màn hình"*, *"Nhận cuộc gọi đến, tin nhắn đối tác"*, *"Bật thông báo tin nhắn & cuộc gọi"* thì gỡ bỏ triệt để.
+   - **Tiêm CSS cưỡng chế**:
+     * Gán `display: none !important; visibility: hidden !important; height: 0 !important;` cho tất cả các banner thông báo và cài đặt PWA.
+     * Thiết lập `--bc-mobile-safe-top: 52px !important;` và `--bc-mobile-safe-top-compact: 52px !important;` để toàn bộ Header lùi xuống dưới 52px, tạo khoảng cách an toàn hoàn hảo, không bị Dynamic Island (11px - 44px) hay thời gian 09:41 chạm vào avatar/tiêu đề.
+   - **Ép chuẩn ngôn ngữ thiết kế Đen Thạch Anh Obsidian & Vàng Champagne Gold**:
+     * Kích hoạt `document.documentElement.classList.add('dark')` và `dataset.theme = 'dark'` cho toàn bộ 20 màn hình, đảm bảo tính đồng bộ thượng lưu cao cấp.
+   - **Kiểm tra nghiêm ngặt không có lỗi "Something went wrong"**:
+     * Bắt lỗi tự động: nếu trang có bất kỳ chuỗi `Something went wrong`, kịch bản sẽ báo lỗi ngay lập tức.
+
+2. **Chụp Lại Toàn Bộ 20 Màn Hình App Mobile ViOne Thành Công (12:14 - 12:16 PM)**:
+   - `app_01_login.png` (505.8 KB): Đăng nhập Obsidian Luxury & FaceID
+   - `app_02_home.png` (621.1 KB): Trang chủ Điều hành C-Level Executive Home
+   - `app_03_card_sheet.png` (442.8 KB): Danh thiếp Số vCard & Chạm 1-Tap NFC
+   - `app_04_calendar.png` (621.6 KB): Lịch trình Gặp gỡ & Nhắc hẹn Đối tác
+   - `app_05_network.png` (689.3 KB): Mạng Lưới Giao Thương & Thư Viện Doanh Nhân GPS
+   - `app_06_moments.png` (613.2 KB): Khoảnh Khắc Doanh Nhân & Bảng Tin Tương Tác
+   - `app_07_inbox.png` (548.6 KB): Hộp Thư Tin Nhắn Trực Tiếp & Chat Nhóm (Đã xóa 100% banner "Bật thông báo")
+   - `app_08_vaction.png` (621.7 KB): Menu Điều Phối Nổi VActionSheet 3D Hoàng Gia
+   - `app_09_community.png` (650.6 KB): Không Gian Cộng Đồng & Diễn Đàn Kết Nối
+   - `app_10_tasks.png` (651.0 KB): Bàn Làm Việc Cá Nhân & Tiến Độ Kanban Mobile
+   - `app_11_me.png` (425.3 KB): Hồ Sơ Cá Nhân VIP & Cài Đặt Ứng Dụng
+   - `app_12_vcard_qr.png` (442.1 KB): Xuất Bản Danh Thiếp Số Cá Nhân Hóa QR
+   - `app_13_ocr.png` (380.2 KB): Máy Quét Thông Minh & Bóc Tách AI OCR
+   - `app_14_security.png` (615.8 KB): Bảo Mật Cá Nhân, Đổi Mật Khẩu & 2FA
+   - `app_15_notifications.png` (498.1 KB): Trung Tâm Thông Báo & Cảnh Báo Realtime
+   - `app_16_tickets.png` (313.0 KB): Ví Vé Sự Kiện Điện Tử & Check-in Offline PWA
+   - `app_17_sport.png` (521.2 KB): Giải Đấu Thể Thao Đa Môn ViOne Sport
+   - `app_18_run.png` (659.5 KB): Giải Chạy ViOne Run & Chip Timing RFID Di Động (Sạch đẹp, không có Something went wrong)
+   - `app_19_museum.png` (588.1 KB): Bảo Tàng Số 3D & Thuyết Minh 1-Chạm NFC ViOne Museum
+   - `app_20_heritage.png` (554.2 KB): Di Sản Văn Hóa & Bản Đồ Di Tích ViOne Heritage
+
+3. **Tái Đóng Gói Toàn Diện Master Tài Liệu DOCX & Markdown**:
+   - Chạy `node scripts/build_vione_super_master_uniwork.js` nhúng toàn bộ 20 ảnh app mới nhất kèm 27 ảnh CRM & 4 sơ đồ kiến trúc nền trắng.
+   - Xuất bản đồng bộ ra 2 vị trí:
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (39.23 MB) & `.md` (1.07 MB)
+     * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (39.23 MB) & `.md` (1.07 MB)
+
+4. **Kiểm Tra Đo Lường Bằng Microsoft Word COM Automation**:
+   - Khởi chạy `node scripts/verify_word.js`:
+     * Kết quả: **DOCX opened successfully! Sections: 1, Pages: 441**.
+     * Exit code 0, 0 lỗi cấu trúc XML, độ phân giải sắc nét 100%.
+
+5. **Cam Kết Nghiêm Ngặt**:
+   - Tuân thủ Rule 1: Tuyệt đối không tự động chạy `git commit` hay `git push`.
+   - Giữ nguyên toàn bộ mã nguồn và tài liệu đồng bộ chuẩn xác.
+
+---
+
 ## 0.0000000000.29. KHẮC PHỤC TRIỆT ĐỂ LỖI DUPLICATE TRANG BÌA, MỞ RỘNG TO TOÀN DIỆN 4 SƠ ĐỒ VÀ BỔ SUNG 4 BẢNG KIẾN TRÚC TRỰC TIẾP TRONG WORD (30/10/2026)
 
 ### 1. Bối cảnh & Phản Hồi Từ Người Dùng
@@ -5135,3 +5328,26 @@ Người dùng phản ánh một loạt tồn đọng trong trải nghiệm th�
    - File MD: `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (201.1 KB) & `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`.
    - Kiểm tra mở tự động qua Microsoft Word COM: **80 trang chuẩn in ấn, 0 lỗi cú pháp XML, 0 cảnh báo**.
    - Tuân thủ nghiêm ngặt Strict Rule 1: Tuyệt đối không tự ý chạy git commit/push. |
+
+| 30/10/2026 | **Hoàn Thiện Tối Thượng Hồ Sơ ViOne Platform Đạt Chuẩn Uniwork 100% (444 Trang, 4 Sơ Đồ Khổ Ngang To Rộng, 20 Ảnh App Light Theme Sạch Tinh, Mục Lục Đánh Số & Dấu Chấm Dẫn Đến Số Trang Thực Tế, Khử Sạch 100% "Hội Viên" & "Hệ Sinh Thái")**:
+1) **Nâng Cấp 20 Màn Hình App ViOne Light Theme Sạch Tinh Tế**:
+   - Chụp mới toàn bộ 20 màn hình `app_01_login.png` đến `app_20_heritage.png` theo chế độ Light Theme (nền trắng ngọc trai, icon/text thanh trạng thái màu đen `09:41`, khung viền Titanium & vàng Champagne Gold).
+   - Khử sạch hoàn toàn các banner popup "Bật thông báo" hay cảnh báo "Something went wrong" che khuất thanh tiêu đề (header).
+2) **Đưa 4 Sơ Đồ Kiến Trúc Lên Khổ Giấy Nằm Ngang (Landscape) Cực Đại Như Uniwork**:
+   - Tách tài liệu thành 7 Section chuẩn Microsoft Word OpenXML, đưa 4 sơ đồ kiến trúc vào các Section nằm ngang (`w:orient="landscape"`, kích thước `16838 x 11906` dxa, lề `850` dxa).
+   - Kích thước sơ đồ mở rộng tối đa: chiều rộng 8.9 inch (`cx=8166666` EMU), chiều cao 5.35 inch (`cy=4900000` EMU), hiển thị to rõ ràng, chữ sắc nét, không bị thu hẹp hay che khuất.
+   - 4 Sơ đồ nền trắng tinh khiết (`#FFFFFF`): Hình 2.1 Kiến trúc tổng thể, Hình 2.2 Logic nghiệp vụ CRM, Hình 2.3 Luồng trải nghiệm Mobile, Hình 2.4 Triển khai hạ tầng phân lập Dev vs Prod.
+3) **Chuẩn Hóa Mục Lục (Table of Contents) Đánh Số & Dấu Chấm Dẫn Đến Trang Cụ Thể**:
+   - Xây dựng mục lục chi tiết 70 đầu mục bao gồm đầy đủ Chương 1, Chương 2 (2.1 đến 2.4), Phụ lục I (CSDL, API, Socket, Phần cứng), Phụ lục II (23 phân hệ CRM), Phụ lục III (20 phân hệ App Mobile) và Phụ lục IV (18 tệp mã nguồn cốt lõi).
+   - Ứng dụng chuẩn Word Tab Stop Leader (`<w:tabs><w:tab w:val="right" w:leader="dot" w:pos="9061"/></w:tabs>`) vẽ dải chấm `...........................` dẫn thẳng đến số trang căn phải.
+   - Tự động hóa qua Microsoft Word COM quét chính xác 100% số trang thực tế của từng đề mục trong file DOCX 444 trang.
+4) **Khử Triệt Để Thuật Ngữ "Hội Viên" & "Hệ Sinh Thái", Sửa Lỗi Định Dạng Bìa**:
+   - 100% thuật ngữ "hội viên" được thay thế bằng "doanh nhân" / "doanh nhân doanh nghiệp" (kể cả trong 4 sơ đồ kiến trúc và toàn bộ các mô-đun nghiệp vụ).
+   - Khử hoàn toàn từ "Hệ Sinh Thái" trên Header và tiêu đề: đổi thành *"ViOne Platform: CRM & ViOne Connect App — Bản Trình Bày Tác Phẩm"*.
+   - Khắc phục triệt để lỗi dãn chữ dãn dòng trên trang bìa bằng căn lề trái (`w:jc w:val="left"`) cho các dòng thông tin chấm lửng; xóa bỏ hoàn toàn đề mục trùng lặp ở cuối trang bìa.
+   - Sửa lỗi dính dòng tại Mục 2.1.2 Kiến trúc chi tiết, tách thành 4 khối luồng nghiệp vụ rõ ràng với tiêu đề in đậm và danh sách bullet.
+5) **Kiểm Thử Toàn Diện & Đồng Bộ Hóa**:
+   - File DOCX: `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (38.0 MB, **444 trang in chuẩn, 7 section, 0 lỗi cú pháp**).
+   - File MD: `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (1.12 MB, đồng bộ mục lục chấm lửng và số trang).
+   - Đồng bộ sang thư mục tải về: `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` và `.md`.
+   - Tuân thủ nghiêm ngặt Strict Rule 1: Tuyệt đối không tự ý commit/push mã nguồn lên Git. |

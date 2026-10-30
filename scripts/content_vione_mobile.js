@@ -14,19 +14,19 @@ const MOBILE_MODULES = [
       {
         name: 'Đăng nhập nhanh bằng Sinh trắc học FaceID / TouchID',
         desc: 'Sử dụng phần cứng bảo mật Apple Secure Enclave và Android Keystore để nhận diện khuôn mặt 3D hoặc vân tay, đăng nhập vào ứng dụng trong 0.3 giây mà không cần nhập mật khẩu.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Đăng nhập bằng số điện thoại và mã OTP tin nhắn',
-        desc: 'Cho phép đăng nhập bằng số điện thoại di động đăng ký; hệ thống tự động bắt mã xác thực SMS OTP / Zalo OTP an toàn để xác thực danh tính hội viên.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Cho phép đăng nhập bằng số điện thoại di động đăng ký; hệ thống tự động bắt mã xác thực SMS OTP / Zalo OTP an toàn để xác thực danh tính doanh nhân.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A09 – Dịch vụ cổng thanh toán quốc gia VNPay & Cổng thông báo Zalo OA'
       },
       {
         name: 'Giao diện thượng lưu Obsidian Gold sang trọng',
         desc: 'Thiết kế chuẩn hóa trải nghiệm người dùng cao cấp với hiệu ứng ánh kim vàng kim loại hoàng gia (Metallic Gold Gradient) dập nổi trên nền đen tuyền obsidian, tối ưu pin màn hình OLED.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
@@ -55,31 +55,31 @@ const MOBILE_MODULES = [
       {
         name: 'Thẻ định danh doanh nhân số hiển thị trực quan',
         desc: 'Hiển thị thẻ danh thiếp số nổi bật với ảnh đại diện, họ tên, chức danh, tên công ty, cấp độ thẻ VIP (Gold/Platinum) kèm hiệu ứng ánh kim chuyển màu sinh động.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
       {
         name: 'Bảng điều khiển tác vụ nhanh 1-chạm (Quick Action Chips)',
         desc: 'Cung cấp các nút bấm gradient vàng mở nhanh các tác vụ thường nhật: Chia sẻ thẻ số, Quét danh thiếp AI OCR, Mở ví vé sự kiện, Bật GPS kết nối đối tác xung quanh.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Widget lịch trình sự kiện và cuộc hẹn hôm nay',
         desc: 'Hiển thị các phiên hội nghị sắp diễn ra trong ngày, thời gian check-in, phòng họp điều hành trực tuyến và lịch hẹn giao thương với đối tác đã được xác nhận.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Chỉ số đo lường hiệu quả kết nối mạng lưới giao thương',
         desc: 'Thống kê số lượt đối tác đã xem danh thiếp, số người lưu số điện thoại vào danh bạ và số cơ hội kinh doanh đang cần xử lý trong tuần.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Cập nhật tin tức quan trọng từ chi hội qua thông báo đẩy',
         desc: 'Lướt xem các thông báo khẩn từ Ban Điều hành chi hội, thư mời tham dự gala doanh nhân và các chính sách kết nối mới nhất.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       }
     ],
@@ -102,25 +102,25 @@ const MOBILE_MODULES = [
       {
         name: 'Chạm 1-Tap NFC truyền tải danh bạ không chạm',
         desc: 'Chỉ cần chạm mặt lưng điện thoại có gắn thẻ NFC ViOne vào điện thoại của đối tác (kể cả đối tác không cài app), trang hồ sơ danh thiếp số lập tức tự động mở ra.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
         name: 'Lưu trực tiếp vào danh bạ điện thoại 1-chạm (Add to Contacts)',
         desc: 'Trang danh thiếp số cung cấp nút "Lưu danh bạ"; đối tác chỉ cần nhấp 1 lần là toàn bộ Họ tên, Số điện thoại, Email, Chức vụ, Logo công ty tự động lưu vào danh bạ máy.',
         actorMain: 'A01 – Khách truy cập vãng lai',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Ngăn kéo chia sẻ đa nền tảng (Action Share Sheet)',
         desc: 'Cho phép gửi danh thiếp số qua Zalo, tin nhắn SMS, AirDrop, quét QR hoặc sao chép liên kết rút gọn cá nhân hóa chuyên nghiệp.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A09 – Dịch vụ cổng thanh toán quốc gia VNPay & Cổng thông báo Zalo OA'
       },
       {
         name: 'Tùy biến chế độ hiển thị thông tin riêng tư',
-        desc: 'Hội viên có quyền ẩn/hiện số điện thoại cá nhân, chỉ hiển thị số hotline công ty hoặc liên kết mạng xã hội LinkedIn/Facebook tùy theo từng bối cảnh giao tiếp.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Doanh nhân có quyền ẩn/hiện số điện thoại cá nhân, chỉ hiển thị số hotline công ty hoặc liên kết mạng xã hội LinkedIn/Facebook tùy theo từng bối cảnh giao tiếp.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       }
     ],
@@ -143,25 +143,25 @@ const MOBILE_MODULES = [
       {
         name: 'Nút biểu tượng chữ "V" dập nổi 3D sang trọng',
         desc: 'Nút điều hướng trung tâm thiết kế nổi hẳn lên trên thanh TabBar, bọc viền vàng Champagne Gold sắc nét với hiệu ứng đổ bóng mờ ảo (Obsidian Glow) tạo điểm nhấn thượng lưu.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
         name: 'Menu mở rộng hiệu ứng nan quạt / cánh hoa 3D mượt mà',
         desc: 'Sử dụng công nghệ diễn hoạt Reanimated mượt mà với tốc độ 60fps; khi chạm vào nút V, các nút chức năng bung tỏa nhẹ nhàng kèm hiệu ứng rung haptic phản hồi xúc giác tinh tế.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Cổng truy cập nhanh các phân hệ thể thao và di sản',
         desc: 'Dẫn nhanh người dùng chỉ với 1-chạm tới các phân hệ: ViOne Sport (Giải đấu thể thao), ViOne Run (Chạy bộ Marathon), ViOne Museum (Bảo tàng 3D) và ViOne Heritage (Di sản văn hóa).',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A04 – Ban trọng tài & Điều phối viên thể thao'
       },
       {
         name: 'Đóng menu thông minh khi chạm nền mờ (Backdrop Blur)',
         desc: 'Nền ứng dụng được làm mờ nhẹ nhàng bằng hiệu ứng kính phủ mờ (Glassmorphism); chạm vào bất kỳ khoảng trống nào để đóng menu nhanh chóng.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -184,25 +184,25 @@ const MOBILE_MODULES = [
       {
         name: 'Khung ngắm quét camera tự động căn biên và bắt nét',
         desc: 'Hệ thống camera thông minh tự động nhận diện 4 góc của danh thiếp giấy, khử bóng mờ, cân bằng trắng và tự động chụp ngay khi phát hiện góc chụp rõ nét.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Bóc tách thông tin đa ngôn ngữ bằng mô hình AI OCR',
         desc: 'Trích xuất chính xác 100% các trường: Họ và tên, Chức vụ lãnh đạo, Tên pháp nhân công ty, Số điện thoại di động, Email, Địa chỉ trụ sở và Mã số thuế.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Xem trước và chỉnh sửa thông tin trước khi lưu',
         desc: 'Hiển thị biểu mẫu điền sẵn dữ liệu vừa bóc tách kèm ảnh chụp gốc đối chiếu; người dùng có thể chạm để chỉnh sửa nhanh các ký tự nếu cần.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
       {
         name: 'Đồng bộ tức thì lên Cổng Web Quản trị và danh bạ máy',
         desc: 'Chỉ với 1 lần chạm "Lưu đối tác", thông tin danh thiếp vừa bóc tách đồng thời được lưu vào CSDL khách hàng trên Cổng Web Quản Trị và danh bạ điện thoại di động.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -224,32 +224,32 @@ const MOBILE_MODULES = [
     features: [
       {
         name: 'Bản đồ số định vị doanh nhân ở gần (Radar GPS Connect)',
-        desc: 'Hiển thị các vị trí hội viên doanh nhân đang có mặt trong khu vực lân cận trên bản đồ số; bảo vệ quyền riêng tư bằng cách chỉ hiển thị khoảng cách ước lượng.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Hiển thị các vị trí doanh nhân đang có mặt trong khu vực lân cận trên bản đồ số; bảo vệ quyền riêng tư bằng cách chỉ hiển thị khoảng cách ước lượng.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Bộ lọc ngành nghề và quy mô doanh nghiệp thông minh',
-        desc: 'Lọc nhanh danh bạ hội viên theo nhóm ngành hàng: Xây dựng, Tài chính, Bất động sản, Công nghệ thông tin, Sản xuất xuất khẩu và cấp bậc hội viên VIP.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Lọc nhanh danh bạ doanh nhân theo nhóm ngành hàng: Xây dựng, Tài chính, Bất động sản, Công nghệ thông tin, Sản xuất xuất khẩu và cấp bậc doanh nhân VIP.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Xem hồ sơ năng lực doanh nghiệp và danh mục sản phẩm',
         desc: 'Truy cập hồ sơ chi tiết của đối tác: Xem profile lãnh đạo, tải về tài liệu hồ sơ năng lực công ty (Company Profile PDF) và xem các sản phẩm chủ lực.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
         name: 'Gửi yêu cầu kết nối giao thương 1-chạm (Connect Request)',
         desc: 'Gửi lời mời kết nối kèm lời chào giới thiệu ngắn; hệ thống gửi thông báo đẩy đến điện thoại của đối tác để phản hồi chấp thuận hoặc từ chối.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Thêm vào danh bạ đối tác yêu thích (Favorite Partners)',
         desc: 'Lưu các đối tác chiến lược vào danh sách ưu tiên để dễ dàng theo dõi các bài đăng sản phẩm và trao đổi tin nhắn khi có cơ hội kinh doanh.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       }
     ],
@@ -272,13 +272,13 @@ const MOBILE_MODULES = [
       {
         name: 'Đăng bài viết chia sẻ khoảnh khắc doanh nhân đa phương tiện',
         desc: 'Cho phép soạn thảo bài đăng đính kèm album hình ảnh độ nét cao, video phóng sự ngắn, gắn thẻ đối tác tham gia và đính kèm danh thiếp số công ty.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Tương tác bắt tay chúc mừng và bình luận giao thương',
         desc: 'Cung cấp nút biểu cảm chuyên biệt: "Bắt tay hợp tác", "Chúc mừng", "Thả tim", "Thú vị"; hỗ trợ bình luận trao đổi thông tin hợp tác kinh doanh.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
@@ -313,32 +313,32 @@ const MOBILE_MODULES = [
       {
         name: 'Trò chuyện trực tiếp 1-1 và phòng chat nhóm realtime',
         desc: 'Gửi và nhận tin nhắn tức thì với độ trễ <50ms; hỗ trợ hiển thị trạng thái đã gửi, đã nhận, đã đọc và chỉ báo đang nhập nội dung (Typing indicator).',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Gửi danh thiếp số vCard và vé sự kiện ngay trong khung chat',
         desc: 'Tích hợp widget đính kèm thông minh: Cho phép chia sẻ thẻ danh thiếp số hoặc gửi tặng vé tham dự sự kiện trực tiếp trong cuộc hội thoại chỉ với 1 chạm.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Truyền tải hình ảnh độ nét cao và tệp tài liệu hợp đồng PDF',
         desc: 'Gửi tệp tin hợp đồng, báo giá, ảnh chụp sản phẩm với dung lượng lên đến 50MB; mã hóa đường truyền bằng giao thức TLS 1.3 tuyệt đối an toàn.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Tìm kiếm tin nhắn và lịch sử tệp tin trao đổi thông minh',
         desc: 'Hỗ trợ tra cứu nhanh nội dung trò chuyện trong quá khứ theo từ khóa; có tab riêng để xem lại toàn bộ kho ảnh và tài liệu đã từng gửi trong phòng chat.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Thông báo đẩy tức thời (Push Notifications)',
         desc: 'Tích hợp dịch vụ Apple Push Notification (APNs) và Google FCM; đảm bảo người dùng nhận được chuông báo tin nhắn mới kể cả khi ứng dụng đang đóng.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
@@ -359,24 +359,24 @@ const MOBILE_MODULES = [
     features: [
       {
         name: 'Tham gia các câu lạc bộ và nhóm sở thích chuyên đề',
-        desc: 'Cho phép hội viên gia nhập các câu lạc bộ: Doanh nhân yêu thể thao, Câu lạc bộ Đầu tư & Khởi nghiệp, Câu lạc bộ Di sản Văn hóa để giao lưu cùng sở thích.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Cho phép doanh nhân gia nhập các câu lạc bộ: Doanh nhân yêu thể thao, Câu lạc bộ Đầu tư & Khởi nghiệp, Câu lạc bộ Di sản Văn hóa để giao lưu cùng sở thích.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Đăng tin tìm kiếm đối tác và cơ hội hợp tác kinh doanh',
         desc: 'Chuyên mục "Kết nối cung cầu" cho phép đăng tin: Cần tìm nguồn cung ứng nguyên liệu, Cần tìm đại lý phân phối, Cần gọi vốn đầu tư dự án.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
       {
         name: 'Bình chọn và khảo sát ý kiến cộng đồng trên di động',
         desc: 'Tham gia bỏ phiếu trực tuyến cho các chủ đề thảo luận của chi hội; kết quả hiển thị tỷ lệ phần trăm trực tiếp ngay sau khi nhấn chọn.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
-        name: 'Điều phối viên kiểm duyệt bài viết và hội viên nhóm',
+        name: 'Điều phối viên kiểm duyệt bài viết và doanh nhân nhóm',
         desc: 'Trưởng câu lạc bộ có quyền phê duyệt bài viết, ghim thông báo lịch sinh hoạt câu lạc bộ và quản lý danh sách thành viên tham gia.',
         actorMain: 'A03 – Quản trị viên phân hệ nghiệp vụ',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
@@ -401,13 +401,13 @@ const MOBILE_MODULES = [
       {
         name: 'Danh sách nhiệm vụ cá nhân hôm nay (Today Tasks)',
         desc: 'Hiển thị các đầu việc cần giải quyết trong ngày phân loại theo mức độ khẩn cấp (Khẩn, Quan trọng, Thường); tích chọn hoàn thành nhiệm vụ nhanh chóng.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Bảng tiến độ công việc dạng Kanban thu nhỏ tối ưu di động',
         desc: 'Vuốt ngang để chuyển đổi giữa các cột tiến độ: Chờ làm, Đang làm, Đã xong; hỗ trợ kéo thẻ việc để cập nhật trạng thái làm việc trực quan.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
@@ -442,25 +442,25 @@ const MOBILE_MODULES = [
       {
         name: 'Cập nhật hồ sơ doanh nhân số và ảnh chân dung',
         desc: 'Cho phép thay đổi ảnh đại diện chất lượng cao, cập nhật chức vụ mới, chỉnh sửa thông tin doanh nghiệp và liên kết các trang mạng xã hội cá nhân.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
       {
         name: 'Quản lý kho vé sự kiện và chứng nhận thi đấu cá nhân',
         desc: 'Xem lại toàn bộ lịch sử các sự kiện đã tham gia, kho vé điện tử đang còn hiệu lực và các chứng nhận hoàn thành giải chạy Marathon điện tử.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Tùy chọn giao diện Obsidian Gold và chế độ ban đêm',
         desc: 'Chuyển đổi linh hoạt giữa giao diện Sang trọng Hoàng Gia (Obsidian Dark) và giao diện Sáng tinh tế (Classic Light) theo sở thích người dùng.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
         name: 'Đăng xuất an toàn và xóa dữ liệu đệm trên thiết bị',
         desc: 'Xóa toàn bộ token xác thực và dữ liệu đệm trong máy khi đăng xuất, đảm bảo an toàn tuyệt đối khi người dùng thay đổi điện thoại mới.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A08 – Quản trị viên hệ thống cấp cao'
       }
     ],
@@ -478,30 +478,30 @@ const MOBILE_MODULES = [
     shortTitle: 'Xuất Bản Danh Thiếp Số Cá Nhân Hóa',
     imgFile: 'app_12_vcard_qr.png',
     figTitle: 'Hình 3.12 – Giao Diện Di Động Quản Trị & Xuất Bản Mã QR Danh Thiếp Số vCard',
-    generalDesc: 'Phân hệ chuyên biệt cho phép hội viên xuất bản mã QR danh thiếp số độc bản, tích hợp logo công ty vào tâm mã QR và hỗ trợ tải ảnh mã QR độ nét cao để in lên áo, standee hội chợ hoặc ấn phẩm truyền thông. Phân hệ gồm 4 chức năng chính.',
+    generalDesc: 'Phân hệ chuyên biệt cho phép doanh nhân xuất bản mã QR danh thiếp số độc bản, tích hợp logo công ty vào tâm mã QR và hỗ trợ tải ảnh mã QR độ nét cao để in lên áo, standee hội chợ hoặc ấn phẩm truyền thông. Phân hệ gồm 4 chức năng chính.',
     features: [
       {
         name: 'Sinh mã QR danh thiếp nghệ thuật tích hợp logo doanh nghiệp',
         desc: 'Mã QR được thiết kế đồng bộ với nhận diện thương hiệu, nhúng logo công ty ở chính giữa với tỷ lệ sửa lỗi cao (Error Correction Level H - 30%).',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Đổi kiểu dáng hoa văn mã QR (Dots, Rounded, Square)',
-        desc: 'Hội viên có thể lựa chọn kiểu chấm điểm mã QR dạng hạt tròn mềm mại hoặc góc bo mạ vàng sang trọng theo sở thích cá nhân.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Doanh nhân có thể lựa chọn kiểu chấm điểm mã QR dạng hạt tròn mềm mại hoặc góc bo mạ vàng sang trọng theo sở thích cá nhân.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
         name: 'Lưu mã QR vào Album ảnh máy tính bảng / điện thoại',
         desc: 'Tải mã QR định dạng PNG sắc nét về thư viện ảnh để dễ dàng đặt làm hình nền điện thoại màn hình khóa phục vụ trao đổi danh thiếp siêu tốc.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Đường dẫn cá nhân hóa URL duy nhất (Vanity URL)',
         desc: 'Cấp đường link rút gọn dạng thương hiệu: https://vione.viconnect.vn/u/[ho-ten-doanh-nhan] giúp chia sẻ thuận tiện trên các mạng xã hội.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       }
     ],
@@ -525,7 +525,7 @@ const MOBILE_MODULES = [
         name: 'Tự động nhận diện ngữ cảnh đối tượng quét thông minh',
         desc: 'Khi đưa camera lại gần đối tượng, thuật toán AI tự động phân biệt mã QR vé, mã QR danh thiếp hay danh thiếp văn bản giấy để xử lý phù hợp.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Tốc độ giải mã siêu tốc dưới 0.1 giây',
@@ -536,13 +536,13 @@ const MOBILE_MODULES = [
       {
         name: 'Bật đèn Flash trợ sáng khi quét trong bóng tối',
         desc: 'Cung cấp nút bật đèn pin LED của điện thoại ngay trên giao diện quét giúp làm việc thuận lợi tại các khán phòng hội nghị hoặc gala tối.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Lịch sử quét mã và mở lại liên kết an toàn',
         desc: 'Ghi lại danh sách các mã QR đã quét gần đây; kiểm tra đường dẫn an toàn chống mã độc trước khi cho phép người dùng mở trình duyệt.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -560,30 +560,30 @@ const MOBILE_MODULES = [
     shortTitle: 'Bảo Mật Cá Nhân, Đổi Mật Khẩu & 2FA',
     imgFile: 'app_14_security.png',
     figTitle: 'Hình 3.14 – Giao Diện Di Động Trung Tâm Bảo Mật Cá Nhân & Cài Đặt 2FA',
-    generalDesc: 'Phân hệ quản lý an toàn thông tin tài khoản cá nhân của hội viên trên thiết bị di động, kích hoạt xác thực hai yếu tố (2FA), quản lý các thiết bị đã đăng nhập và thiết lập mã PIN bảo vệ ví vé sự kiện. Phân hệ gồm 4 chức năng chính.',
+    generalDesc: 'Phân hệ quản lý an toàn thông tin tài khoản cá nhân của doanh nhân trên thiết bị di động, kích hoạt xác thực hai yếu tố (2FA), quản lý các thiết bị đã đăng nhập và thiết lập mã PIN bảo vệ ví vé sự kiện. Phân hệ gồm 4 chức năng chính.',
     features: [
       {
         name: 'Đổi mật khẩu tài khoản có đo lường độ mạnh mật khẩu',
         desc: 'Yêu cầu nhập mật khẩu cũ và xác thực mật khẩu mới; thanh đo lực mật khẩu tự động kiểm tra đủ độ dài, ký tự hoa, số và ký tự đặc biệt.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A08 – Quản trị viên hệ thống cấp cao'
       },
       {
         name: 'Bật tắt xác thực hai lớp qua mã ứng dụng (Authenticator App)',
         desc: 'Cung cấp mã khóa bí mật và mã QR để thêm tài khoản vào Google Authenticator hoặc Microsoft Authenticator; yêu cầu nhập mã kiểm tra trước khi kích hoạt.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Quản lý danh sách thiết bị tin cậy và đăng xuất từ xa',
         desc: 'Hiển thị danh sách các điện thoại, máy tính bảng đang đăng nhập tài khoản; cho phép người dùng nhấn "Đăng xuất khỏi thiết bị này" nếu nghi ngờ bị lộ thông tin.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A08 – Quản trị viên hệ thống cấp cao'
       },
       {
         name: 'Khóa ứng dụng bằng mã PIN riêng biệt (App Lock)',
         desc: 'Thiết lập mã PIN 6 số bảo vệ ứng dụng ViOne; tự động yêu cầu nhập PIN hoặc quét FaceID mỗi khi chuyển từ ứng dụng khác quay trở lại.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -606,26 +606,26 @@ const MOBILE_MODULES = [
       {
         name: 'Phân loại thông báo thông minh theo nhóm chuyên đề',
         desc: 'Chia thông báo thành các tab riêng: Sự kiện, Giao thương B2B, Tài chính và Tin nhắn hệ thống; giúp người dùng không bị bỏ lỡ các tin tức trọng yếu.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Đồng bộ lịch sự kiện vào Apple Calendar và Google Calendar',
         desc: 'Khi đăng ký vé sự kiện thành công, ứng dụng cung cấp nút "Thêm vào lịch"; hệ thống tự động chèn lịch trình, địa điểm và nhắc hẹn vào ứng dụng lịch gốc của điện thoại.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Đánh dấu đã đọc và xóa thông báo linh hoạt',
         desc: 'Cho phép người dùng nhấn "Đánh dấu tất cả đã đọc" hoặc vuốt sang trái để xóa thông báo cũ khỏi trung tâm thông báo nhằm giữ giao diện gọn gàng.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Nhận tin nhắn xác nhận song song qua Zalo OA',
         desc: 'Đồng bộ thông báo với tài khoản Zalo của người dùng; các biến động quan trọng về vé và tiền đều được Zalo OA gửi tin nhắn ZNS xác nhận chính thống.',
         actorMain: 'A09 – Dịch vụ cổng thanh toán quốc gia VNPay & Cổng thông báo Zalo OA',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
@@ -647,25 +647,25 @@ const MOBILE_MODULES = [
       {
         name: 'Hiển thị thẻ vé sang trọng kèm mã QR động (Dynamic QR)',
         desc: 'Thẻ vé thiết kế chuẩn Obsidian Gold hiển thị đầy đủ: Tên sự kiện, Hạng vé VIP, Vị trí ghế ngồi, Sơ đồ cổng vào và mã QR tự động xoay mã chống chụp ảnh màn hình.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Mở vé check-in ngoại tuyến không cần mạng Internet',
-        desc: 'Mã vé và thông tin đại biểu được mã hóa lưu trữ sẵn trong bộ nhớ bảo mật của ứng dụng; hội viên vẫn mở vé quét bình thường khi vào tầng hầm hội nghị mất sóng di động.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Mã vé và thông tin đại biểu được mã hóa lưu trữ sẵn trong bộ nhớ bảo mật của ứng dụng; doanh nhân vẫn mở vé quét bình thường khi vào tầng hầm hội nghị mất sóng di động.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Tự động đẩy độ sáng màn hình lên mức tối đa khi mở vé',
         desc: 'Khi mở chi tiết vé, ứng dụng tự động tăng độ sáng màn hình lên 100% giúp các máy quét mã vạch và camera lễ tân nhận diện mã QR trong chớp mắt.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Chuyển nhượng vé cho bạn bè hoặc đối tác doanh nghiệp',
-        desc: 'Hội viên có thể nhấn "Tặng vé", nhập số điện thoại người nhận; hệ thống thu hồi mã vé cũ và phát hành vé mới sang tài khoản người nhận tức thì.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        desc: 'Doanh nhân có thể nhấn "Tặng vé", nhập số điện thoại người nhận; hệ thống thu hồi mã vé cũ và phát hành vé mới sang tài khoản người nhận tức thì.',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -688,7 +688,7 @@ const MOBILE_MODULES = [
       {
         name: 'Tra cứu sơ đồ bốc thăm phân nhánh (Tournament Bracket) trên di động',
         desc: 'Xem sơ đồ cây thi đấu trực quan; chạm vào từng nhánh đấu để xem thông tin hai đội bóng/cặp VĐV đối đầu, giờ thi đấu và sân bãi tổ chức.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A04 – Ban trọng tài & Điều phối viên thể thao'
       },
       {
@@ -700,19 +700,19 @@ const MOBILE_MODULES = [
       {
         name: 'Đăng ký danh sách thi đấu và nộp hồ sơ đội thể thao',
         desc: 'Đội trưởng doanh nghiệp đăng ký danh sách cầu thủ/VĐV trực tiếp trên app, đính kèm ảnh thẻ và số áo thi đấu thuận tiện.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A04 – Ban trọng tài & Điều phối viên thể thao'
       },
       {
         name: 'Bảng xếp hạng vòng bảng và danh sách Vua phá lưới',
         desc: 'Tự động tính toán điểm số thắng/hòa/thua, hiệu số bàn thắng và bảng xếp hạng huy chương; vinh danh các cá nhân đạt thành tích cao trong giải đấu.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
         name: 'Bình luận và cổ vũ đội thể thao thời gian thực',
         desc: 'Khán giả và đồng nghiệp có thể gửi biểu tượng cổ vũ, bình luận trực tiếp dưới trang diễn biến trận đấu để tiếp lửa tinh thần cho đội nhà.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -735,13 +735,13 @@ const MOBILE_MODULES = [
       {
         name: 'Thẻ vận động viên số hóa kèm số BIB độc quyền',
         desc: 'Hiển thị số BIB nổi bật (Ví dụ: VNE-42-088), cự ly đăng ký (5km/10km/21km/42km), nhóm tuổi và mã QR tra cứu thành tích cá nhân.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A04 – Ban trọng tài & Điều phối viên thể thao'
       },
       {
         name: 'Bản đồ số cung đường chạy GPS và trạm tiếp nước Checkpoint',
         desc: 'Hiển thị bản đồ lộ trình giải chạy chuẩn xác trên nền vệ tinh; đánh dấu vị trí các trạm y tế, trạm tiếp nước và các mốc thảm đo thời gian RFID.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A04 – Ban trọng tài & Điều phối viên thể thao'
       },
       {
@@ -759,7 +759,7 @@ const MOBILE_MODULES = [
       {
         name: 'Tải chứng nhận điện tử (e-Certificate) và tìm ảnh chạy theo số BIB',
         desc: 'Tự động tìm kiếm ảnh chụp của VĐV trên đường chạy bằng công nghệ nhận dạng số BIB AI; hỗ trợ tải chứng nhận thành tích chính thức có dấu số.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       }
     ],
@@ -800,7 +800,7 @@ const MOBILE_MODULES = [
       {
         name: 'Chế độ xem thực tế tăng cường (AR - Augmented Reality)',
         desc: 'Đặt mô hình bảo vật 3D vào không gian phòng khách hoặc bàn làm việc thực tế thông qua camera ARKit (iOS) / ARCore (Android) với tỷ lệ 1:1 chính xác.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A01 – Khách truy cập vãng lai'
       },
       {
@@ -853,7 +853,7 @@ const MOBILE_MODULES = [
       {
         name: 'Đóng góp công đức số và tài trợ bảo tồn di sản qua VNPay',
         desc: 'Tích hợp nút "Công đức số"; du khách có thể đóng góp kinh phí tu bổ di tích một cách minh bạch thông qua cổng thanh toán VNPay-QR trên di động.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A09 – Dịch vụ cổng thanh toán quốc gia VNPay & Cổng thông báo Zalo OA'
       }
     ],

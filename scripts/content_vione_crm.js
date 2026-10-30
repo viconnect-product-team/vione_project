@@ -50,17 +50,17 @@ const CRM_MODULES = [
     shortTitle: 'Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền',
     imgFile: 'crm_02_dashboard.png',
     figTitle: 'Hình 2.2 – Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền Realtime',
-    generalDesc: 'Phân hệ cung cấp góc nhìn toàn cảnh về sức khỏe tài chính, vận hành, quy mô hội viên và các chỉ số kinh doanh sống còn của tổ chức doanh nghiệp trong thời gian thực. Tích hợp trực tiếp dữ liệu từ cổng thanh toán VNPay và máy chủ PostgreSQL. Phân hệ gồm 5 chức năng chính.',
+    generalDesc: 'Phân hệ cung cấp góc nhìn toàn cảnh về sức khỏe tài chính, vận hành, quy mô doanh nhân và các chỉ số kinh doanh sống còn của tổ chức doanh nghiệp trong thời gian thực. Tích hợp trực tiếp dữ liệu từ cổng thanh toán VNPay và máy chủ PostgreSQL. Phân hệ gồm 5 chức năng chính.',
     features: [
       {
         name: 'Giám sát tổng doanh thu & KPI dòng tiền thực tế',
-        desc: 'Tổng hợp số liệu doanh thu bán vé sự kiện, phí hội viên, doanh thu giao thương theo ngày, tuần, tháng với biểu đồ trực quan hóa dữ liệu dòng tiền và tốc độ tăng trưởng.',
+        desc: 'Tổng hợp số liệu doanh thu bán vé sự kiện, phí thường niên, doanh thu giao thương theo ngày, tuần, tháng với biểu đồ trực quan hóa dữ liệu dòng tiền và tốc độ tăng trưởng.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
         actorSub: 'A06 – Kế toán trưởng & Quản trị tài chính'
       },
       {
-        name: 'Theo dõi biến động số lượng hội viên & doanh nghiệp',
-        desc: 'Thống kê tổng số lượng hội viên cá nhân, doanh nghiệp thành viên, tỷ lệ hội viên mới tham gia và tỷ lệ gia hạn thẻ định danh số theo chu kỳ.',
+        name: 'Theo dõi biến động số lượng doanh nhân & doanh nghiệp',
+        desc: 'Thống kê tổng số lượng doanh nhân cá nhân, doanh nghiệp thành viên, tỷ lệ doanh nhân mới tham gia và tỷ lệ gia hạn thẻ định danh số theo chu kỳ.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
@@ -85,7 +85,7 @@ const CRM_MODULES = [
     ],
     steps: [
       'Bước 1: Chọn mục "Tổng quan" tại menu điều hướng thanh bên trái (Sidebar) của Cổng Web Quản Trị.',
-      'Bước 2: Quan sát 4 khối thẻ KPI chính: Tổng Doanh Thu, Hội Viên Thực Tế, Sự Kiện Đang Chạy và Tỷ Lệ Tương Tác.',
+      'Bước 2: Quan sát 4 khối thẻ KPI chính: Tổng Doanh Thu, Doanh Nhân Thực Tế, Sự Kiện Đang Chạy và Tỷ Lệ Tương Tác.',
       'Bước 3: Sử dụng bộ lọc thời gian ở góc trên cùng để chuyển đổi xem dữ liệu theo Tuần, Tháng hoặc Quý.',
       'Bước 4: Nhấn nút "Xuất báo cáo" nếu muốn tải tệp bảng tính thống kê chi tiết về máy tính.'
     ]
@@ -93,15 +93,15 @@ const CRM_MODULES = [
   {
     id: 3,
     subCode: '2.3.2.3',
-    name: 'Phân hệ Quản Trị Danh Sách Doanh Nghiệp & Hồ Sơ Hội Viên 360',
-    shortTitle: 'Quản Trị Danh Sách Doanh Nghiệp & Hồ Sơ Hội Viên 360',
+    name: 'Phân hệ Quản Trị Danh Sách Doanh Nghiệp & Hồ Sơ Doanh Nhân 360',
+    shortTitle: 'Quản Trị Danh Sách Doanh Nghiệp & Hồ Sơ Doanh Nhân 360',
     imgFile: 'crm_03_customers.png',
-    figTitle: 'Hình 2.3 – Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Hội Viên 360',
-    generalDesc: 'Phân hệ quản lý toàn bộ cơ sở dữ liệu hồ sơ pháp nhân doanh nghiệp, hội viên doanh nhân, thông tin định danh KYC, lịch sử tương tác, cấp độ hội viên (VIP, Kim Cương, Vàng, Tiêu chuẩn) và danh thiếp số vCard tích hợp. Phân hệ gồm 5 chức năng chính.',
+    figTitle: 'Hình 2.3 – Quản Lý Danh Sách Khách Hàng B2B & Hồ Sơ Doanh Nhân 360',
+    generalDesc: 'Phân hệ quản lý toàn bộ cơ sở dữ liệu hồ sơ pháp nhân doanh nghiệp, doanh nhân, thông tin định danh KYC, lịch sử tương tác, cấp độ doanh nhân (VIP, Kim Cương, Vàng, Tiêu chuẩn) và danh thiếp số vCard tích hợp. Phân hệ gồm 5 chức năng chính.',
     features: [
       {
         name: 'Tra cứu và lọc hồ sơ doanh nghiệp thông minh',
-        desc: 'Tìm kiếm nhanh hội viên theo họ tên, số điện thoại, tên công ty, mã số thuế hoặc phân loại ngành nghề kinh doanh thông qua thanh tìm kiếm toàn cục.',
+        desc: 'Tìm kiếm nhanh doanh nhân theo họ tên, số điện thoại, tên công ty, mã số thuế hoặc phân loại ngành nghề kinh doanh thông qua thanh tìm kiếm toàn cục.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
@@ -109,31 +109,31 @@ const CRM_MODULES = [
         name: 'Hồ sơ doanh nhân 360 độ (Customer 360 View)',
         desc: 'Xem chi tiết thẻ căn cước số doanh nhân: ảnh đại diện, chức vụ, tiểu sử, thông tin liên hệ, danh mục sản phẩm cung ứng, lịch sử tham gia sự kiện và lịch sử thanh toán.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
-        name: 'Cấp duyệt và quản lý hạn thẻ hội viên số',
+        name: 'Cấp duyệt và quản lý hạn thẻ doanh nhân số',
         desc: 'Phê duyệt hồ sơ đăng ký gia nhập, thay đổi trạng thái hoạt động (Đang hoạt động, Tạm ngừng, Hết hạn), gia hạn ngày hiệu lực và chỉ định cấp bậc thẻ VIP.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
-        name: 'Nhập xuất danh sách hội viên hàng loạt qua Excel',
-        desc: 'Hỗ trợ nạp dữ liệu hàng trăm doanh nghiệp từ file mẫu Excel .xlsx chuẩn hóa; đồng thời xuất toàn bộ danh bạ hội viên có phân loại phục vụ công tác kết nối giao thương.',
+        name: 'Nhập xuất danh sách doanh nhân hàng loạt qua Excel',
+        desc: 'Hỗ trợ nạp dữ liệu hàng trăm doanh nghiệp từ file mẫu Excel .xlsx chuẩn hóa; đồng thời xuất toàn bộ danh bạ doanh nhân có phân loại phục vụ công tác kết nối giao thương.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
         actorSub: 'A03 – Quản trị viên phân hệ nghiệp vụ'
       },
       {
         name: 'Cấp mã định danh số vCard và URL công khai',
-        desc: 'Tự động tạo mã QR định danh cá nhân và đường dẫn trang Profile cá nhân duy nhất (https://vione.viconnect.vn/u/[slug]) cho mỗi hội viên để chia sẻ qua NFC.',
+        desc: 'Tự động tạo mã QR định danh cá nhân và đường dẫn trang Profile cá nhân duy nhất (https://vione.viconnect.vn/u/[slug]) cho mỗi doanh nhân để chia sẻ qua NFC.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
-      'Bước 1: Điều hướng tới mục "Khách hàng / Hội viên" trên thanh điều hướng bên trái.',
-      'Bước 2: Sử dụng ô tìm kiếm để lọc hội viên theo tên công ty, số điện thoại hoặc mã định danh.',
-      'Bước 3: Nhấp vào một bản ghi cụ thể để mở ngăn kéo chi tiết (Drawer) hiển thị Hồ sơ 360 độ của hội viên.',
+      'Bước 1: Điều hướng tới mục "Khách hàng / Doanh nhân" trên thanh điều hướng bên trái.',
+      'Bước 2: Sử dụng ô tìm kiếm để lọc doanh nhân theo tên công ty, số điện thoại hoặc mã định danh.',
+      'Bước 3: Nhấp vào một bản ghi cụ thể để mở ngăn kéo chi tiết (Drawer) hiển thị Hồ sơ 360 độ của doanh nhân.',
       'Bước 4: Nhấn nút "Chỉnh sửa" để cập nhật thông tin cấp bậc, hạn thẻ hoặc "Xuất thẻ vCard" khi cần phát hành.'
     ]
   },
@@ -150,7 +150,7 @@ const CRM_MODULES = [
         name: 'Trực quan hóa phễu bán hàng Kanban đa giai đoạn',
         desc: 'Hiển thị các cơ hội kinh doanh theo các cột trạng thái: Tiềm năng (Lead), Đã liên hệ (Contacted), Đang đàm phán (Negotiation), Đã chốt thành công (Won) và Thất bại (Lost).',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Kéo thả cập nhật trạng thái cơ hội (Drag & Drop)',
@@ -162,7 +162,7 @@ const CRM_MODULES = [
         name: 'Tạo mới và quản lý giá trị hợp đồng giao thương',
         desc: 'Thiết lập cơ hội kinh doanh mới bao gồm: Tên cơ hội, Doanh nghiệp đối tác, Giá trị dự kiến (VNĐ), Người phụ trách và Ngày dự kiến ký kết.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Ghi chú lịch sử đàm phán & Đính kèm tài liệu',
@@ -197,7 +197,7 @@ const CRM_MODULES = [
         name: 'Quản lý kho mẫu thiết kế danh thiếp điện tử',
         desc: 'Cấu hình các bộ template danh thiếp: Doanh nhân Hoàng Gia (Champagne Gold), Thạch Anh Đen (Obsidian Dark), Doanh nghiệp Hiện Đại, hỗ trợ xem trước (Live Preview).',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Sinh mã QR động chống sao chép và tải định dạng cao',
@@ -207,9 +207,9 @@ const CRM_MODULES = [
       },
       {
         name: 'Liên kết thẻ chip vật lý 1-chạm NFC',
-        desc: 'Gán mã UID phần cứng của thẻ NFC vật lý (NTAG213, NTAG215) với tài khoản định danh số của hội viên; quản lý lịch sử đọc thẻ và cho phép khóa thẻ từ xa khi bị thất lạc.',
+        desc: 'Gán mã UID phần cứng của thẻ NFC vật lý (NTAG213, NTAG215) với tài khoản định danh số của doanh nhân; quản lý lịch sử đọc thẻ và cho phép khóa thẻ từ xa khi bị thất lạc.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Thống kê lượt xem và lưu danh bạ điện thoại',
@@ -220,7 +220,7 @@ const CRM_MODULES = [
     ],
     steps: [
       'Bước 1: Chọn mục "Danh thiếp số / vCard" trên thanh điều hướng bên trái.',
-      'Bước 2: Tìm kiếm hội viên cần quản lý và nhấp vào biểu tượng "Tùy biến thẻ".',
+      'Bước 2: Tìm kiếm doanh nhân cần quản lý và nhấp vào biểu tượng "Tùy biến thẻ".',
       'Bước 3: Chọn giao diện Vàng Hoàng Gia hoặc Đen Thạch Anh và bật/tắt các trường thông tin cần hiển thị.',
       'Bước 4: Nhấn nút "Tải mã QR" hoặc "Gán thẻ NFC" để xuất thông tin phục vụ in ấn hoặc ghi chip vật lý.'
     ]
@@ -232,7 +232,7 @@ const CRM_MODULES = [
     shortTitle: 'Quản Trị Sàn Giao Thương B2B & Gian Hàng Sản Phẩm',
     imgFile: 'crm_06_marketplace.png',
     figTitle: 'Hình 2.6 – Quản Trị Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp',
-    generalDesc: 'Phân hệ số hóa danh mục sản phẩm, giải pháp và dịch vụ chủ lực của các doanh nghiệp thành viên, tạo lập không gian triển lãm số B2B kết nối giao thương giữa các hội viên trong và ngoài mạng lưới. Phân hệ gồm 5 chức năng chính.',
+    generalDesc: 'Phân hệ số hóa danh mục sản phẩm, giải pháp và dịch vụ chủ lực của các doanh nghiệp thành viên, tạo lập không gian triển lãm số B2B kết nối giao thương giữa các doanh nhân trong và ngoài mạng lưới. Phân hệ gồm 5 chức năng chính.',
     features: [
       {
         name: 'Kiểm duyệt và đăng tải sản phẩm B2B',
@@ -242,9 +242,9 @@ const CRM_MODULES = [
       },
       {
         name: 'Quản lý bảng giá niêm yết và chiết khấu nội bộ',
-        desc: 'Thiết lập hai tầng giá: Giá công khai dành cho khách hàng bên ngoài và Giá ưu đãi đặc quyền (B2B Discount) dành riêng cho các hội viên chính thức.',
+        desc: 'Thiết lập hai tầng giá: Giá công khai dành cho khách hàng bên ngoài và Giá ưu đãi đặc quyền (B2B Discount) dành riêng cho các doanh nhân chính thức.',
         actorMain: 'A03 – Quản trị viên phân hệ nghiệp vụ',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Phân loại ngành hàng và tìm kiếm đa tiêu chí',
@@ -262,7 +262,7 @@ const CRM_MODULES = [
         name: 'Thống kê tương tác và lượt kết nối gian hàng',
         desc: 'Đo lường số lượt xem sản phẩm, số lượt click liên hệ Zalo/Hotline của doanh nghiệp, giúp đánh giá mức độ quan tâm của thị trường đối với sản phẩm.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
@@ -356,7 +356,7 @@ const CRM_MODULES = [
         name: 'Tích hợp màn hình LED chào mừng đại biểu tự động',
         desc: 'Khi vé được quét thành công, hệ thống phát tín hiệu WebSocket sang màn hình LED lớn tại sảnh để hiện thông điệp: "Nhiệt liệt chào mừng Ông/Bà [Họ tên] - [Chức vụ]".',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
@@ -377,7 +377,7 @@ const CRM_MODULES = [
     features: [
       {
         name: 'Thiết kế quy trình vận hành tự động BPMN 2.0',
-        desc: 'Cho phép tạo lập các luồng phê duyệt: Phê duyệt mua sắm, Quy trình tổ chức sự kiện, Quy trình tiếp nhận hội viên mới với các nút điều kiện rẽ nhánh logic.',
+        desc: 'Cho phép tạo lập các luồng phê duyệt: Phê duyệt mua sắm, Quy trình tổ chức sự kiện, Quy trình tiếp nhận doanh nhân mới với các nút điều kiện rẽ nhánh logic.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
         actorSub: 'A08 – Quản trị viên hệ thống cấp cao'
       },
@@ -551,21 +551,21 @@ const CRM_MODULES = [
   {
     id: 13,
     subCode: '2.3.2.13',
-    name: 'Phân hệ Quản Trị Phí Hội Viên Định Kỳ & Công Nợ Doanh Nghiệp',
-    shortTitle: 'Quản Trị Phí Hội Viên Định Kỳ & Công Nợ Doanh Nghiệp',
+    name: 'Phân hệ Quản Trị Phí Thường Niên Định Kỳ & Công Nợ Doanh Nghiệp',
+    shortTitle: 'Quản Trị Phí Thường Niên Định Kỳ & Công Nợ Doanh Nghiệp',
     imgFile: 'crm_13_fees.png',
-    figTitle: 'Hình 2.13 – Quản Trị Phí Hội Viên Thường Niên & Công Nợ Doanh Nghiệp',
-    generalDesc: 'Phân hệ quản trị công tác thu hội phí thường niên, nhắc nợ tự động, theo dõi tình trạng hoàn thành nghĩa vụ tài chính của từng doanh nghiệp thành viên trong mạng lưới chi hội. Phân hệ gồm 4 chức năng chính.',
+    figTitle: 'Hình 2.13 – Quản Trị Phí Thường Niên Thường Niên & Công Nợ Doanh Nghiệp',
+    generalDesc: 'Phân hệ quản trị công tác thu phí thường niên thường niên, nhắc nợ tự động, theo dõi tình trạng hoàn thành nghĩa vụ tài chính của từng doanh nghiệp thành viên trong mạng lưới chi hội. Phân hệ gồm 4 chức năng chính.',
     features: [
       {
-        name: 'Cấu hình biểu phí hội viên theo cấp bậc và niên độ',
-        desc: 'Thiết lập định mức hội phí hàng năm cho từng hạng thẻ: Hội viên Kim Cương (50.000.000đ/năm), Hội viên Vàng (20.000.000đ/năm), Hội viên Chuẩn (10.000.000đ/năm).',
+        name: 'Cấu hình biểu phí thường niên theo cấp bậc và niên độ',
+        desc: 'Thiết lập định mức phí thường niên hàng năm cho từng hạng thẻ: Doanh nhân Kim Cương (50.000.000đ/năm), Doanh nhân Vàng (20.000.000đ/năm), Doanh nhân Chuẩn (10.000.000đ/năm).',
         actorMain: 'A06 – Kế toán trưởng & Quản trị tài chính',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
       {
         name: 'Theo dõi tình trạng nộp phí và phát sinh công nợ',
-        desc: 'Quản lý trạng thái đóng phí: Đã hoàn thành, Chưa nộp, Quá hạn nộp phí; tính toán tổng số tiền công nợ hội phí của toàn bộ cộng đồng doanh nghiệp.',
+        desc: 'Quản lý trạng thái đóng phí: Đã hoàn thành, Chưa nộp, Quá hạn nộp phí; tính toán tổng số tiền công nợ phí thường niên của toàn bộ cộng đồng doanh nghiệp.',
         actorMain: 'A06 – Kế toán trưởng & Quản trị tài chính',
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
@@ -577,16 +577,16 @@ const CRM_MODULES = [
       },
       {
         name: 'Gia hạn thẻ định danh số tự động khi hoàn thành phí',
-        desc: 'Ngay khi giao dịch nộp hội phí qua cổng VNPay thành công, hệ thống tự động cộng thêm 365 ngày hiệu lực cho thẻ định danh số vCard của hội viên trên app.',
+        desc: 'Ngay khi giao dịch nộp phí thường niên qua cổng VNPay thành công, hệ thống tự động cộng thêm 365 ngày hiệu lực cho thẻ định danh số vCard của doanh nhân trên app.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
-      'Bước 1: Chọn mục "Hội phí & Công nợ" trên thanh menu Cổng Web Quản Trị.',
-      'Bước 2: Lọc danh sách các doanh nghiệp sắp hết hạn hội phí hoặc đang còn nợ phí niên độ hiện tại.',
+      'Bước 1: Chọn mục "Phí thường niên & Công nợ" trên thanh menu Cổng Web Quản Trị.',
+      'Bước 2: Lọc danh sách các doanh nghiệp sắp hết hạn phí thường niên hoặc đang còn nợ phí niên độ hiện tại.',
       'Bước 3: Nhấn nút "Gửi nhắc phí hàng loạt" để hệ thống tự động bắn tin nhắn Zalo OA kèm link thanh toán.',
-      'Bước 4: Kiểm tra trạng thái nộp tiền được hệ thống tự động tích xanh khi hội viên hoàn tất thanh toán VNPay.'
+      'Bước 4: Kiểm tra trạng thái nộp tiền được hệ thống tự động tích xanh khi doanh nhân hoàn tất thanh toán VNPay.'
     ]
   },
   {
@@ -614,7 +614,7 @@ const CRM_MODULES = [
         name: 'Quản lý hồ sơ vận động viên và thẻ VĐV điện tử',
         desc: 'Số hóa danh sách đăng ký thi đấu của các đội: Ảnh chân dung, Số áo, Vị trí thi đấu, Giấy khám sức khỏe và cấp phát thẻ VĐV số có mã QR định danh.',
         actorMain: 'A04 – Ban trọng tài & Điều phối viên thể thao',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Cập nhật tỷ số, biên bản trận đấu thời gian thực',
@@ -673,7 +673,7 @@ const CRM_MODULES = [
         name: 'Cấp chứng nhận điện tử (e-Certificate) & Ảnh kỷ niệm VĐV',
         desc: 'Tự động ghép ảnh chân dung VĐV với khung mẫu chứng nhận số có thành tích chính xác; hỗ trợ VĐV tải chứng nhận PDF có chữ ký số của Ban Tổ chức.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       }
     ],
     steps: [
@@ -790,7 +790,7 @@ const CRM_MODULES = [
         name: 'Mã hóa vé QR động theo thời gian (Dynamic Time-based Token)',
         desc: 'Mã QR trên ứng dụng di động tự động làm mới mã băm bảo mật sau mỗi 30 giây (tương tự Google Authenticator OTP), vô hiệu hóa hoàn toàn thủ đoạn chụp ảnh màn hình bán lại vé.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Sơ đồ chỗ ngồi và phân luồng cửa vào thông minh',
@@ -799,9 +799,9 @@ const CRM_MODULES = [
         actorSub: 'A07 – Quản trị viên Cổng Web Quản trị'
       },
       {
-        name: 'Ủy quyền chuyển nhượng vé an toàn giữa các hội viên',
+        name: 'Ủy quyền chuyển nhượng vé an toàn giữa các doanh nhân',
         desc: 'Cho phép chủ vé chuyển nhượng vé cho đối tác thông qua số điện thoại; hệ thống hủy mã vé cũ và phát hành vé mới cho người nhận để đảm bảo tính duy nhất.',
-        actorMain: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level',
+        actorMain: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
       {
@@ -837,7 +837,7 @@ const CRM_MODULES = [
         name: 'Xem trước tài liệu trực tiếp không cần cài phần mềm (In-browser Preview)',
         desc: 'Hỗ trợ hiển thị trực quan tệp Hợp đồng PDF, văn bản Word .docx, bảng tính Excel .xlsx, bài thuyết trình PowerPoint .pptx và hình ảnh sắc nét ngay trên web.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Phân quyền bảo mật tệp theo ma trận vai trò RBAC',
@@ -872,7 +872,7 @@ const CRM_MODULES = [
     shortTitle: 'Biểu Quyết, Khảo Sát & Bỏ Phiếu Tín Nhiệm Số',
     imgFile: 'crm_20_voting.png',
     figTitle: 'Hình 2.20 – Quản Trị Biểu Quyết, Khảo Sát & Bỏ Phiếu Tín Nhiệm Số',
-    generalDesc: 'Phân hệ điều phối công tác lấy ý kiến tập thể, biểu quyết đại hội cổ đông, bầu cử ban lãnh đạo và khảo sát ý kiến hội viên một cách minh bạch, bảo mật và kết quả được kiểm phiếu tự động theo thời gian thực. Phân hệ gồm 4 chức năng chính.',
+    generalDesc: 'Phân hệ điều phối công tác lấy ý kiến tập thể, biểu quyết đại hội cổ đông, bầu cử ban lãnh đạo và khảo sát ý kiến doanh nhân một cách minh bạch, bảo mật và kết quả được kiểm phiếu tự động theo thời gian thực. Phân hệ gồm 4 chức năng chính.',
     features: [
       {
         name: 'Khởi tạo cuộc biểu quyết và đại hội tín nhiệm số',
@@ -882,9 +882,9 @@ const CRM_MODULES = [
       },
       {
         name: 'Kiểm soát tư cách cử tri và tỷ lệ quyền biểu quyết',
-        desc: 'Hệ thống đối chiếu danh sách hội viên chính thức đủ điều kiện; gán trọng số phiếu biểu quyết theo tỷ lệ sở hữu vốn hoặc chức danh điều hành.',
+        desc: 'Hệ thống đối chiếu danh sách doanh nhân chính thức đủ điều kiện; gán trọng số phiếu biểu quyết theo tỷ lệ sở hữu vốn hoặc chức danh điều hành.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Thuật toán kiểm phiếu tự động và chống gian lận',
@@ -929,7 +929,7 @@ const CRM_MODULES = [
       },
       {
         name: 'Nhật ký kiểm toán truy vết bất biến (Audit Logs)',
-        desc: 'Ghi lại mọi thao tác quan trọng: Đổi mật khẩu, Xuất dữ liệu hội viên, Phê duyệt chi tiền, Sửa điểm giải đấu kèm địa chỉ IP, User-Agent và thời điểm chính xác.',
+        desc: 'Ghi lại mọi thao tác quan trọng: Đổi mật khẩu, Xuất dữ liệu doanh nhân, Phê duyệt chi tiền, Sửa điểm giải đấu kèm địa chỉ IP, User-Agent và thời điểm chính xác.',
         actorMain: 'A08 – Quản trị viên hệ thống cấp cao',
         actorSub: 'A10 – Động cơ nền tảng tự động'
       },
@@ -966,7 +966,7 @@ const CRM_MODULES = [
         name: 'Bóc tách thông tin danh thiếp giấy tự động AI OCR',
         desc: 'Nhận dạng ảnh chụp danh thiếp giấy, tự động bóc tách Họ tên, Chức vụ, Tên công ty, Số điện thoại, Email và Địa chỉ rồi điền chính xác vào các trường của CSDL.',
         actorMain: 'A10 – Động cơ nền tảng tự động',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Thuật toán kết nối đối tác giao thương thông minh (AI Matching)',
@@ -976,9 +976,9 @@ const CRM_MODULES = [
       },
       {
         name: 'Trợ lý ảo hỗ trợ điều hành và truy vấn dữ liệu giọng nói',
-        desc: 'Cho phép lãnh đạo đặt câu hỏi bằng ngôn ngữ tự nhiên: "Doanh thu vé tuần này là bao nhiêu?", "Có bao nhiêu hội viên mới tham gia?", trợ lý AI trích xuất dữ liệu trả lời tức thì.',
+        desc: 'Cho phép lãnh đạo đặt câu hỏi bằng ngôn ngữ tự nhiên: "Doanh thu vé tuần này là bao nhiêu?", "Có bao nhiêu doanh nhân mới tham gia?", trợ lý AI trích xuất dữ liệu trả lời tức thì.',
         actorMain: 'A07 – Quản trị viên Cổng Web Quản trị',
-        actorSub: 'A02 – Hội viên doanh nghiệp / Lãnh đạo C-Level'
+        actorSub: 'A02 – Doanh nhân doanh nghiệp / Lãnh đạo C-Level'
       },
       {
         name: 'Cảnh báo rủi ro tài chính và dự báo xu hướng doanh thu',
@@ -990,7 +990,7 @@ const CRM_MODULES = [
     steps: [
       'Bước 1: Chọn mục "Trợ lý AI / ViOne AI" trên thanh menu Cổng Web Quản Trị.',
       'Bước 2: Tải lên hình ảnh danh thiếp giấy cần bóc tách để kiểm tra độ chính xác của mô hình OCR.',
-      'Bước 3: Nhập câu hỏi truy vấn vào khung chat để yêu cầu AI tổng hợp số liệu doanh thu và hội viên.',
+      'Bước 3: Nhập câu hỏi truy vấn vào khung chat để yêu cầu AI tổng hợp số liệu doanh thu và doanh nhân.',
       'Bước 4: Xem danh sách các cặp đối tác tiềm năng được thuật toán AI gợi ý kết nối giao thương trong tháng.'
     ]
   },

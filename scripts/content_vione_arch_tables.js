@@ -28,7 +28,7 @@ const ARCH_TABLE_01 = {
     [
       '4',
       'Tầng Ứng Dụng Máy Chủ (Application Tier - NestJS API)',
-      '• Xác Thực & Phân Quyền (JWT, RoleGuard, RBAC)\n• Phân Hệ Giao Thương B2B, Deals & Matching\n• Quản Trị Hội Viên Doanh Nghiệp & Thẻ VIP\n• Quản Lý Vé, Giải Đấu Sport/Run & Di Sản 3D\n• Dịch Vụ Dùng Chung & BullMQ Background Queue',
+      '• Xác Thực & Phân Quyền (JWT, RoleGuard, RBAC)\n• Phân Hệ Giao Thương B2B, Deals & Matching\n• Quản Trị Doanh Nhân Doanh Nghiệp & Thẻ VIP\n• Quản Lý Vé, Giải Đấu Sport/Run & Di Sản 3D\n• Dịch Vụ Dùng Chung & BullMQ Background Queue',
       'Xử lý logic nghiệp vụ phân rã theo Domain-Driven Design (DDD): kiểm tra token kép (Access/Refresh), điều phối luồng giao dịch tài chính, phát sóng Socket.IO realtime <50ms, ghi log Winston tập trung.'
     ],
     [
@@ -54,8 +54,8 @@ const ARCH_TABLE_02 = {
     [
       '01',
       'Tiếp Nhận & Định Danh',
-      'Khách hàng, Hội viên C-Level',
-      'Hội viên đăng ký tài khoản hoặc gửi yêu cầu kết nối giao thương B2B; hệ thống cấp Access Token (15p) + Refresh Token (7 ngày); mã hóa mật khẩu qua Argon2id; ghi nhận log truy cập vào Audit Trail.'
+      'Khách hàng, Doanh nhân C-Level',
+      'Doanh nhân đăng ký tài khoản hoặc gửi yêu cầu kết nối giao thương B2B; hệ thống cấp Access Token (15p) + Refresh Token (7 ngày); mã hóa mật khẩu qua Argon2id; ghi nhận log truy cập vào Audit Trail.'
     ],
     [
       '02',
@@ -66,8 +66,8 @@ const ARCH_TABLE_02 = {
     [
       '03',
       'Bán Vé Sự Kiện & Thanh Toán',
-      'Hội viên, Cổng VNPay, Kế toán',
-      'Hội viên chọn mua vé sự kiện hoặc đóng hội phí; hệ thống tạo URL thanh toán VNPay có chữ ký băm HMAC-SHA512; tiếp nhận gói tin IPN Webhook, cập nhật trạng thái đơn hàng trong 1 Database Transaction duy nhất.'
+      'Doanh nhân, Cổng VNPay, Kế toán',
+      'Doanh nhân chọn mua vé sự kiện hoặc đóng phí thường niên; hệ thống tạo URL thanh toán VNPay có chữ ký băm HMAC-SHA512; tiếp nhận gói tin IPN Webhook, cập nhật trạng thái đơn hàng trong 1 Database Transaction duy nhất.'
     ],
     [
       '04',
@@ -86,7 +86,7 @@ const ARCH_TABLE_02 = {
 
 const ARCH_TABLE_03 = {
   title: 'Bảng 2.3: Đặc tả luồng tương tác phần cứng và kiến trúc ứng dụng di động ViOne (ViOne Connect)',
-  headers: ['STT', 'Phân Hệ Kỹ Thuật Mobile', 'Công Nghệ & Giao Thức', 'Cơ Chế Tương Tác & Trải Nghiệm Hội Viên'],
+  headers: ['STT', 'Phân Hệ Kỹ Thuật Mobile', 'Công Nghệ & Giao Thức', 'Cơ Chế Tương Tác & Trải Nghiệm Doanh Nhân'],
   widths: [600, 2200, 2800, 3600],
   rows: [
     [
@@ -111,7 +111,7 @@ const ARCH_TABLE_03 = {
       '4',
       'Ví Vé Điện Tử & CSDL Ngoại Tuyến (Offline)',
       '• SQLite / WatermelonDB Offline\n• AES-256 Encrypted Storage\n• Background Sync Delta-Worker',
-      'Lưu trữ cục bộ danh sách vé sự kiện, danh bạ hội viên và mã QR động; cho phép hiển thị vé và quét check-in ngay cả khi mất sóng Internet hoàn toàn; tự động đồng bộ 2 chiều (Delta Sync) khi có mạng trở lại.'
+      'Lưu trữ cục bộ danh sách vé sự kiện, danh bạ doanh nhân và mã QR động; cho phép hiển thị vé và quét check-in ngay cả khi mất sóng Internet hoàn toàn; tự động đồng bộ 2 chiều (Delta Sync) khi có mạng trở lại.'
     ],
     [
       '5',

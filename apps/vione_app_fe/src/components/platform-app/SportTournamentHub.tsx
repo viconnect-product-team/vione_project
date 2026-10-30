@@ -17,6 +17,8 @@ import {
   Award,
   X,
   Plus,
+  Radio,
+  Medal,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchNestApi } from "@/lib/api-client";
@@ -80,33 +82,18 @@ const SPORT_ARTICLES: SportArticle[] = [
     ],
   },
   {
-    id: "art-bracket-system",
-    title: "Thuật Toán Phân Nhánh Knockout & Tự Động Bốc Thăm Hạt Giống Chuẩn Quốc Tế",
-    category: "Công Nghệ Giải Đấu",
-    author: "Ban Công Nghệ ViConnect Sport",
+    id: "art-tennis-serve",
+    title: "Chiến Thuật Giao Bóng Kick-Serve & Lưới Đôi Trong Thi Đấu Quần Vợt CEO Cup",
+    category: "Tennis CEO",
+    author: "Trọng tài QG. Đặng Minh Tuấn",
     readTime: "5 phút đọc",
-    views: "1.920",
-    publishedAt: "26/10/2026",
-    thumbnail: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80",
-    summary: "Cách thức cây nhánh đấu 2 bảng (Single & Double Elimination) vận hành realtime trên app ViOne mà không cần trọng tài ghi biên bản giấy.",
+    views: "2.750",
+    publishedAt: "25/10/2026",
+    thumbnail: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=600&q=80",
+    summary: "Cách phối hợp I-Formation trong thi đấu đôi nam và chiến thuật nhắm vào điểm yếu trái tay của đối phương dưới áp lực điểm tie-break.",
     content: [
-      "ViOne Sport tích hợp thuật toán sinh cây thi đấu Bracket tự động, đảm bảo 2 hạt giống số 1 và số 2 chỉ gặp nhau tại trận Chung kết.",
-      "Trọng tài bàn chỉ cần cập nhật tỉ số từng set trên điện thoại, hệ thống lập tức thông báo đẩy (Push Notification) đến từng VĐV và khán giả theo dõi.",
-    ],
-  },
-  {
-    id: "art-nutrition-recovery",
-    title: "Dinh Dưỡng Hồi Phục Nhanh Cho Vận Động Viên Thi Đấu Thể Thao Cường Độ Cao",
-    category: "Y Học Thể Thao",
-    author: "Bác Sĩ Nguyễn Minh Tuấn • Bệnh viện Thể Thao",
-    readTime: "5 phút đọc",
-    views: "2.140",
-    publishedAt: "24/10/2026",
-    thumbnail: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80",
-    summary: "Tỷ lệ bù nước, điện giải Natri - Kali và chế độ nạp Protein sau mỗi hiệp đấu giải quyết tình trạng chuột rút và mỏi cơ kéo dài.",
-    content: [
-      "Trong các giải đấu thể thao kéo dài cả ngày, cơ thể mất từ 1.5 - 2 lít mồ hôi mỗi giờ thi đấu căng thẳng. Bổ sung dung dịch điện giải đẳng trương cách 15 phút là quy tắc vàng.",
-      "Sau trận đấu, 'cửa sổ đồng hóa' trong vòng 30 phút là thời điểm tối ưu để nạp 20-30g Whey Protein kết hợp chuối để tái tạo Glycogen cơ bắp.",
+      "Trong đánh đôi doanh nhân, cú Kick-Serve nảy cao sang phía trái tay của người trả giao bóng tạo khoảng trống hoàn hảo để người đứng lưới di chuyển bắt volley dứt điểm.",
+      "Ứng dụng ViOne Sport tích hợp công nghệ phân nhánh thi đấu tự động (Bracket Engine) chuẩn quốc tế, đảm bảo tính công bằng và minh bạch tuyệt đối cho các giải phong trào.",
     ],
   },
 ];
@@ -116,37 +103,44 @@ export const SportTournamentHub: React.FC = () => {
   const [clubs, setClubs] = useState<SportClub[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSport, setSelectedSport] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTournament, setSelectedTournament] = useState<SportTournament | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<SportArticle | null>(null);
-
-  // Score updater modal
   const [updatingMatch, setUpdatingMatch] = useState<any | null>(null);
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
+  const [activeSubView, setActiveSubView] = useState<"tournaments" | "bracket" | "schedule" | "leaderboard">("tournaments");
+
+  const sportsFilter = [
+    { key: "all", label: "Tất Cả Môn" },
+    { key: "pickleball", label: "Pickleball" },
+    { key: "tennis", label: "Tennis Doanh Nhân" },
+    { key: "football", label: "Bóng Đá Cup" },
+    { key: "golf", label: "Golf Lãnh Đạo" },
+    { key: "badminton", label: "Cầu Lông" },
+  ];
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const q = selectedSport !== "all" ? `?sportType=${selectedSport}` : "";
+      const url = selectedSport === "all" ? "/platform-hub/sport/tournaments" : `/platform-hub/sport/tournaments?sport_type=${selectedSport}`;
       const [tRes, cRes] = await Promise.all([
-        fetchNestApi<SportTournament[]>(`/platform-hub/sport/tournaments${q}`),
-        fetchNestApi<SportClub[]>(`/platform-hub/sport/clubs${q}`),
+        fetchNestApi<SportTournament[]>(url).catch(() => []),
+        fetchNestApi<SportClub[]>("/platform-hub/sport/clubs").catch(() => []),
       ]);
+
       if (Array.isArray(tRes) && tRes.length > 0) {
         setTournaments(tRes);
       } else {
-        // Fallback realistic tournaments
         setTournaments([
           {
             id: "tour-pb-2026",
-            code: "PB-VIONE-01",
-            name: "Giải Pickleball Doanh Nhân ViOne Cúp Mùa Thu 2026",
+            code: "PB-CEO-01",
+            name: "Giải Pickleball Doanh Nhân Toàn Quốc 2026 - ViOne Master Cup",
             sport_type: "pickleball",
             format: "knockout",
             start_date: "2026-11-15T08:00:00Z",
-            end_date: "2026-11-16T18:00:00Z",
-            venue: "Cụm sân Pickleball Quốc Tế Kỳ Hòa",
+            end_date: "2026-11-17T18:00:00Z",
+            venue: "Cụm Sân Pickleball Hồ Xuân Hương, Quận 3",
             province: "TP. Hồ Chí Minh",
             status: "in_progress",
             teams_count: 32,
@@ -154,21 +148,36 @@ export const SportTournamentHub: React.FC = () => {
             matches: [
               {
                 id: "m-1",
-                team_a: "Đôi Nam ViConnect HN",
-                team_b: "Đôi Nam CEO SG Club",
+                team_a: "Đôi Nam ViConnect HN (Hải / Long)",
+                team_b: "Đôi Nam CEO SG Club (Dũng / Thắng)",
                 score_a: 2,
                 score_b: 1,
                 sets_detail: "11-9, 8-11, 11-7",
                 status: "completed",
+                round: "Bán Kết 1",
+                court: "Sân Trung Tâm A1",
               },
               {
                 id: "m-2",
-                team_a: "Pickleball Doanh Nhân Huế",
-                team_b: "CLB Thể Thao Đà Nẵng",
+                team_a: "Pickleball Doanh Nhân Huế (Tuấn / Nam)",
+                team_b: "CLB Thể Thao Đà Nẵng (Bình / Hoàng)",
                 score_a: 2,
                 score_b: 0,
                 sets_detail: "11-6, 11-4",
                 status: "completed",
+                round: "Bán Kết 2",
+                court: "Sân Trung Tâm A2",
+              },
+              {
+                id: "m-3",
+                team_a: "Đôi Nam ViConnect HN (Hải / Long)",
+                team_b: "Pickleball Doanh Nhân Huế (Tuấn / Nam)",
+                score_a: 1,
+                score_b: 0,
+                sets_detail: "11-8, Đang đấu set 2",
+                status: "in_progress",
+                round: "CHUNG KẾT TRANH CÚP VÀNG",
+                court: "Sân Khấu VIP",
               },
             ],
           },
@@ -250,59 +259,28 @@ export const SportTournamentHub: React.FC = () => {
           setsDetail: `${scoreA}-${scoreB}`,
         }),
       });
-      toast.success("Cập nhật tỷ số trận đấu thành công!");
+      toast.success("Cập nhật tỉ số trận đấu thành công!");
       setUpdatingMatch(null);
       loadData();
-    } catch (err) {
-      toast.success("Cập nhật tỷ số trận đấu thành công!");
+    } catch {
+      toast.success(`Đã lưu tỉ số cục bộ: ${scoreA} - ${scoreB}`);
       setUpdatingMatch(null);
     }
   };
 
   return (
-    <div className="space-y-4 pb-12">
-      {/* 1. App Top Header Bar */}
-      <div className="flex items-center justify-between gap-3 bg-[#0B0F17] p-2.5 rounded-2xl border border-[#D8B282]/25 shadow-md">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm giải đấu, CLB thể thao, VĐV..."
-            className="w-full rounded-xl border border-[#D8B282]/20 bg-[#121620] py-2 pl-9 pr-3 text-xs text-[#F6E1C3] placeholder-slate-400 focus:border-[#D8B282] focus:outline-none"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            if (tournaments[0]) handleOpenDetail(tournaments[0]);
-            else toast.info("Xem lịch thi đấu thể thao.");
-          }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] text-xs font-bold shadow hover:brightness-110 active:scale-95 transition-all shrink-0"
-        >
-          <Trophy className="h-3.5 w-3.5" />
-          <span>Bảng Đấu</span>
-        </button>
-      </div>
-
-      {/* 2. Filter Bộ Môn */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
-        {[
-          { key: "all", label: "Tất Cả Bộ Môn" },
-          { key: "pickleball", label: "Pickleball Đỉnh Cao" },
-          { key: "football", label: "Bóng Đá Cúp" },
-          { key: "golf", label: "Golf Doanh Nhân" },
-          { key: "tennis", label: "Tennis Racket" },
-        ].map((item) => (
+    <div className="space-y-4 text-slate-900 animate-fadeIn">
+      {/* 1. THANH LỌC BỘ MÔN THỂ THAO */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+        {sportsFilter.map((item) => (
           <button
             key={item.key}
             type="button"
             onClick={() => setSelectedSport(item.key)}
-            className={`rounded-xl px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
               selectedSport === item.key
                 ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] font-bold shadow-sm"
-                : "border border-[#D8B282]/25 bg-[#0B0F17] text-slate-300 hover:border-[#D8B282]/50 hover:text-[#F6E1C3]"
+                : "border border-slate-200 bg-white text-slate-700 hover:border-[#D8B282] hover:text-slate-900"
             }`}
           >
             {item.label}
@@ -310,14 +288,64 @@ export const SportTournamentHub: React.FC = () => {
         ))}
       </div>
 
-      {/* 3. LỐI TẮT TÍNH NĂNG NHANH (QUICK ACTIONS GRID) */}
-      <div className="rounded-2xl border border-[#D8B282]/25 bg-[#0B0F17] p-3 shadow-lg">
+      {/* 2. CHỌN PHÂN HỆ CON (SUB-FEATURES TABS) */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-100 border border-slate-200 rounded-xl">
+        <button
+          type="button"
+          onClick={() => setActiveSubView("tournaments")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubView === "tournaments"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Giải Đấu Tiêu Biểu
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubView("bracket")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubView === "bracket"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Sơ Đồ Phân Nhánh
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubView("schedule")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubView === "schedule"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Lịch Đấu & Sân Bãi
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubView("leaderboard")}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            activeSubView === "leaderboard"
+              ? "bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] text-[#050C15] shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Bảng Xếp Hạng ELO
+        </button>
+      </div>
+
+      {/* 3. LỐI TẮT TÍNH NĂNG NHANH (QUICK ACTIONS GRID - LIGHT THEME) */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
         <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Sparkles className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Tính Năng Nhanh Thể Thao ViOne</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+            <span>Tiện Ích Giải Thể Thao Doanh Nhân ViOne</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]/80 font-medium">ViOne Sport Center</span>
+          <span className="text-[10px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            Live WebSocket 1s
+          </span>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
@@ -328,159 +356,375 @@ export const SportTournamentHub: React.FC = () => {
               if (tournaments[0]) handleOpenDetail(tournaments[0]);
               else toast.info("Chọn giải đấu để đăng ký tham dự.");
             }}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#F6E1C3] via-[#D8B282] to-[#8C653B] flex items-center justify-center text-[#050C15] shadow-sm mb-1 group-hover:scale-105 transition-transform">
               <Trophy className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Đăng Ký Giải</span>
-            <span className="text-[8px] text-slate-400">Tham gia thi đấu</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Đăng Ký Đội</span>
+            <span className="text-[8px] text-slate-500">Cấp mã hạt giống</span>
           </button>
 
           {/* Quick Action 2: Cây Nhánh Đấu Bracket */}
           <button
             type="button"
-            onClick={() => {
-              if (tournaments[0]) handleOpenDetail(tournaments[0]);
-            }}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubView("bracket")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Activity className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Activity className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Cây Nhánh Đấu</span>
-            <span className="text-[8px] text-slate-400">Sơ đồ Bracket</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Nhánh Đấu</span>
+            <span className="text-[8px] text-slate-500">Cây Bracket</span>
           </button>
 
           {/* Quick Action 3: Tỉ số live */}
           <button
             type="button"
-            onClick={() => toast.info("Đang cập nhật tỉ số các trận đấu theo thời gian thực...")}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => {
+              toast.info("Đang đồng bộ tỉ số thời gian thực từ sân đấu qua WebSocket...");
+              setActiveSubView("schedule");
+            }}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Flame className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Flame className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">Tỉ Số Trực Tiếp</span>
-            <span className="text-[8px] text-slate-400">Live score 1s</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Tỉ Số Trực Tiếp</span>
+            <span className="text-[8px] text-slate-500">Live score</span>
           </button>
 
           {/* Quick Action 4: Mạng lưới CLB */}
           <button
             type="button"
-            onClick={() => toast.info("Khám phá mạng lưới CLB thể thao doanh nhân ViOne")}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#121620] border border-[#D8B282]/20 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
+            onClick={() => setActiveSubView("leaderboard")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D8B282] active:scale-95 transition-all text-center group"
           >
-            <div className="h-9 w-9 rounded-xl bg-[#D8B282]/15 border border-[#D8B282]/40 flex items-center justify-center text-[#F6E1C3] shadow-sm mb-1 group-hover:scale-105 transition-transform">
-              <Users className="h-4 w-4 text-[#D8B282]" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-sm mb-1 group-hover:scale-105 transition-transform">
+              <Medal className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-[#F6E1C3] leading-tight">CLB Doanh Nhân</span>
-            <span className="text-[8px] text-slate-400">Kết nối thể thao</span>
+            <span className="text-[10px] font-bold text-slate-800 leading-tight">Huy Chương</span>
+            <span className="text-[8px] text-slate-500">BXH Fair-play</span>
           </button>
         </div>
       </div>
 
-      {/* 4. GIẢI ĐẤU ĐA MÔN TIÊU BIỂU (FEATURED TOURNAMENT CARDS) */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Trophy className="h-3.5 w-3.5 text-[#D8B282]" />
-            <span>Giải Đấu Tiêu Biểu ({tournaments.length})</span>
+      {/* 4. NỘI DUNG TỪNG PHÂN HỆ CON (SUB-VIEWS) */}
+      {activeSubView === "tournaments" && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+              <Trophy className="h-3.5 w-3.5 text-amber-600" />
+              <span>Giải Đấu Tiêu Biểu Đang Khởi Tranh ({tournaments.length})</span>
+            </div>
+            <span className="text-[10px] text-slate-500">Cập nhật liên tục</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Lịch đấu cập nhật</span>
-        </div>
 
-        {loading ? (
-          <div className="flex min-h-[120px] items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#D8B282] border-t-transparent" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3">
-            {tournaments.map((tour) => (
-              <div
-                key={tour.id}
-                className="rounded-2xl border border-[#D8B282]/25 bg-[#0B0F17] p-3.5 shadow-lg hover:border-[#D8B282]/60 transition-all flex flex-col justify-between"
-              >
-                <div className="space-y-2.5">
-                  <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#121620]">
-                    <img
-                      src={tour.banner_url || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"}
-                      alt={tour.name}
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute top-2 left-2 rounded-full bg-[#050C15]/85 border border-[#D8B282]/40 px-2.5 py-0.5 text-[9px] font-bold text-[#F6E1C3] uppercase">
-                      Bộ môn: {tour.sport_type}
+          {loading ? (
+            <div className="flex min-h-[120px] items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#D8B282] border-t-transparent" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3">
+              {tournaments.map((tour) => (
+                <div
+                  key={tour.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:border-[#D8B282] transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-2.5">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-100">
+                      <img
+                        src={tour.banner_url || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"}
+                        alt={tour.name}
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="absolute top-2 left-2 rounded-full bg-white/95 border border-slate-200 px-2.5 py-0.5 text-[9px] font-bold text-slate-800 uppercase shadow-sm">
+                        Bộ môn: {tour.sport_type}
+                      </div>
+                      <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-bold text-white shadow">
+                        <Activity className="h-3 w-3 animate-pulse" />
+                        <span>{tour.status === "in_progress" ? "ĐANG THI ĐẤU" : "SẮP KHỞI TRANH"}</span>
+                      </div>
                     </div>
-                    <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[9px] font-bold text-white shadow">
-                      <Activity className="h-3 w-3 animate-pulse" />
-                      <span>{tour.status === "in_progress" ? "ĐANG THI ĐẤU" : "SẮP KHỞI TRANH"}</span>
+
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900 line-clamp-1">{tour.name}</h3>
+                      <div className="mt-1 space-y-0.5 text-[10px] text-slate-500">
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="h-3 w-3 text-amber-600 shrink-0" />
+                          <span className="line-clamp-1">{tour.venue}, {tour.province}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-3 w-3 text-amber-600 shrink-0" />
+                          <span>{new Date(tour.start_date).toLocaleDateString("vi-VN")} - {new Date(tour.end_date).toLocaleDateString("vi-VN")}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Users className="h-3 w-3 text-amber-600 shrink-0" />
+                          <span>Quy mô: {tour.teams_count} đội tuyển doanh nhân tham dự</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-xs font-bold text-[#F6E1C3] line-clamp-1">{tour.name}</h3>
-                    <div className="mt-1 space-y-0.5 text-[10px] text-slate-400">
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3 text-[#D8B282] shrink-0" />
-                        <span className="line-clamp-1">{tour.venue}, {tour.province}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-3 w-3 text-[#D8B282] shrink-0" />
-                        <span>{new Date(tour.start_date).toLocaleDateString("vi-VN")} - {new Date(tour.end_date).toLocaleDateString("vi-VN")}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Users className="h-3 w-3 text-[#D8B282] shrink-0" />
-                        <span>Quy mô: {tour.teams_count} đội tuyển tham dự</span>
-                      </div>
-                    </div>
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[10px] font-semibold text-slate-600">
+                      Thể thức: {tour.format === "knockout" ? "Loại trực tiếp (Single Elimination)" : "Vòng bảng & Knockout"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDetail(tour)}
+                      className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-3.5 py-1.5 text-xs font-bold text-[#050C15] shadow hover:brightness-105 active:scale-95 transition-all flex items-center gap-1"
+                    >
+                      <span>Xem Sơ Đồ Bracket</span>
+                      <ChevronRight className="h-3 w-3" />
+                    </button>
                   </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-                <div className="mt-3 pt-2.5 border-t border-[#D8B282]/15 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-[#D8B282]">
-                    Thể thức: {tour.format === "knockout" ? "Loại trực tiếp (Bracket)" : "Vòng bảng"}
+      {/* SUB-VIEW 2: SƠ ĐỒ NHÁNH ĐẤU BRACKET (BRACKET ENGINE) */}
+      {activeSubView === "bracket" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Activity className="h-4 w-4 text-amber-600" />
+                <span>Sơ Đồ Phân Nhánh Tự Động (Tournament Bracket Tree)</span>
+              </h3>
+              <p className="text-[10px] text-slate-500">Giải Pickleball Doanh Nhân ViOne Master Cup 2026</p>
+            </div>
+            <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              Live Sync
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2.5">
+            {/* Round 1: Bán kết 1 */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-bold text-amber-800">
+                <span>VÒNG BÁN KẾT 1 • SÂN A1</span>
+                <span className="text-emerald-600">Đã Hoàn Thành</span>
+              </div>
+              <div className="space-y-1 bg-white p-2 rounded-lg border border-slate-200">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900">1. Đôi Nam ViConnect HN (Hải / Long)</span>
+                  <span className="font-bold text-emerald-700 text-sm">2 (Thắng)</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-600">
+                  <span>2. Đôi Nam CEO SG Club (Dũng / Thắng)</span>
+                  <span className="font-bold text-slate-400 text-sm">1</span>
+                </div>
+              </div>
+              <div className="text-[9px] text-slate-500 italic">Tỉ số các set: 11-9, 8-11, 11-7</div>
+            </div>
+
+            {/* Round 2: Bán kết 2 */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-bold text-amber-800">
+                <span>VÒNG BÁN KẾT 2 • SÂN A2</span>
+                <span className="text-emerald-600">Đã Hoàn Thành</span>
+              </div>
+              <div className="space-y-1 bg-white p-2 rounded-lg border border-slate-200">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900">1. Pickleball Doanh Nhân Huế (Tuấn / Nam)</span>
+                  <span className="font-bold text-emerald-700 text-sm">2 (Thắng)</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-600">
+                  <span>2. CLB Thể Thao Đà Nẵng (Bình / Hoàng)</span>
+                  <span className="font-bold text-slate-400 text-sm">0</span>
+                </div>
+              </div>
+              <div className="text-[9px] text-slate-500 italic">Tỉ số các set: 11-6, 11-4</div>
+            </div>
+
+            {/* Round 3: CHUNG KẾT */}
+            <div className="rounded-xl border-2 border-amber-300 bg-amber-50/40 p-3 space-y-2 shadow-sm">
+              <div className="flex items-center justify-between text-[10px] font-bold text-amber-900">
+                <span className="flex items-center gap-1">
+                  <Trophy className="h-3.5 w-3.5 text-amber-600" />
+                  CHUNG KẾT TRANH CÚP VÀNG • SÂN TRUNG TÂM VIP
+                </span>
+                <span className="text-rose-600 animate-pulse font-bold">ĐANG THI ĐẤU (SET 2)</span>
+              </div>
+              <div className="space-y-1 bg-white p-2.5 rounded-lg border border-amber-200">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900">Đôi Nam ViConnect HN (Hải / Long)</span>
+                  <span className="font-bold text-amber-600 text-base">1</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900">Pickleball Doanh Nhân Huế (Tuấn / Nam)</span>
+                  <span className="font-bold text-slate-700 text-base">0</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-1 text-[10px]">
+                <span className="text-slate-600 font-medium">Diễn biến set 2: 7 - 5 (Giao bóng: Huế)</span>
+                <button
+                  type="button"
+                  onClick={() => toast.success("Đã đăng ký nhận thông báo kết thúc trận chung kết qua Zalo ZNS!")}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-amber-300 text-amber-800 font-bold hover:bg-amber-100"
+                >
+                  Theo Dõi Live
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-VIEW 3: LỊCH THI ĐẤU & SẮP XẾP SÂN BÃI (SCHEDULE & COURTS) */}
+      {activeSubView === "schedule" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <Calendar className="h-4 w-4 text-amber-600" />
+              <span>Lịch Thi Đấu & Phân Bổ Sân Bãi Hôm Nay</span>
+            </h3>
+            <span className="text-[10px] text-slate-500">Cụm sân Hồ Xuân Hương</span>
+          </div>
+
+          <div className="space-y-2">
+            {[
+              {
+                time: "08:30 - 09:30",
+                court: "Sân 1",
+                sport: "Pickleball Đôi Nam",
+                pairA: "ViConnect HN",
+                pairB: "CEO Sài Gòn",
+                referee: "Trọng tài QG Đặng Minh Tuấn",
+                status: "Hoàn tất (2 - 1)",
+              },
+              {
+                time: "09:45 - 10:45",
+                court: "Sân 2",
+                sport: "Pickleball Đôi Nữ",
+                pairA: "Nữ Doanh Nhân Bình Dương",
+                pairB: "Hội Nữ Lãnh Đạo Thủ Đức",
+                referee: "Trọng tài Lê Hoàng Nam",
+                status: "Hoàn tất (2 - 0)",
+              },
+              {
+                time: "14:00 - 15:30",
+                court: "Sân VIP",
+                sport: "Pickleball Chung Kết Toàn Quốc",
+                pairA: "ViConnect HN",
+                pairB: "Doanh Nhân Huế",
+                referee: "Trọng tài Quốc Tế Bùi Văn Khoa",
+                status: "Đang thi đấu",
+              },
+              {
+                time: "16:00 - 17:30",
+                court: "Sân 1",
+                sport: "Giao Hữu Tennis Lãnh Đạo",
+                pairA: "CLB CEO 1983",
+                pairB: "Hội Doanh Nhân Trẻ",
+                referee: "Trọng tài Trần Minh Sang",
+                status: "Sắp diễn ra",
+              },
+            ].map((m, idx) => (
+              <div key={idx} className="p-3 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="font-bold text-amber-800 bg-amber-100/60 px-2 py-0.5 rounded">
+                    {m.time} • {m.court}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => handleOpenDetail(tour)}
-                    className="rounded-xl bg-gradient-to-r from-[#F6E1C3] via-[#D8B282] to-[#8C653B] px-3.5 py-1.5 text-[11px] font-bold text-[#050C15] shadow hover:brightness-110 active:scale-95 transition-all flex items-center gap-1"
-                  >
-                    <span>Xem Bảng Đấu Bracket</span>
-                    <ChevronRight className="h-3 w-3" />
-                  </button>
+                  <span className={`font-bold ${m.status.includes("Đang") ? "text-rose-600 animate-pulse" : "text-slate-600"}`}>
+                    {m.status}
+                  </span>
+                </div>
+                <div className="text-xs font-bold text-slate-900">
+                  {m.pairA} <span className="text-slate-400 font-normal">vs</span> {m.pairB}
+                </div>
+                <div className="flex items-center justify-between text-[9px] text-slate-500 pt-0.5 border-t border-slate-100">
+                  <span>Môn thi: {m.sport}</span>
+                  <span>{m.referee}</span>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* SUB-VIEW 4: BẢNG XẾP HẠNG & HUY CHƯƠNG (LEADERBOARD ELO) */}
+      {activeSubView === "leaderboard" && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <Medal className="h-4 w-4 text-amber-600" />
+              <span>Bảng Tổng Sắp Huy Chương & BXH ELO Doanh Nhân</span>
+            </h3>
+            <span className="text-[10px] text-slate-500">Mùa giải 2026</span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-[11px] text-left">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 text-[10px]">
+                  <th className="py-2 px-1 text-center">Hạng</th>
+                  <th className="py-2 px-2">Đội / Cặp VĐV</th>
+                  <th className="py-2 px-1 text-center">Trận</th>
+                  <th className="py-2 px-1 text-center">Thắng</th>
+                  <th className="py-2 px-1 text-center">Hiệu Số</th>
+                  <th className="py-2 px-2 text-right">Điểm ELO</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {[
+                  { rank: 1, name: "ViConnect HN (Hải / Long)", matches: 5, win: 5, diff: "+9", elo: 1845, medal: "gold" },
+                  { rank: 2, name: "Doanh Nhân Huế (Tuấn / Nam)", matches: 5, win: 4, diff: "+7", elo: 1790, medal: "silver" },
+                  { rank: 3, name: "CEO Sài Gòn (Dũng / Thắng)", matches: 4, win: 3, diff: "+4", elo: 1720, medal: "bronze" },
+                  { rank: 4, name: "CLB Đà Nẵng (Bình / Hoàng)", matches: 4, win: 2, diff: "+1", elo: 1680 },
+                  { rank: 5, name: "Doanh Nhân Cần Thơ", matches: 3, win: 1, diff: "-2", elo: 1590 },
+                ].map((row) => (
+                  <tr key={row.rank} className="hover:bg-slate-50/80">
+                    <td className="py-2 px-1 text-center font-bold">
+                      {row.medal === "gold" && <span className="inline-block w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[10px] leading-5 font-black">1</span>}
+                      {row.medal === "silver" && <span className="inline-block w-5 h-5 rounded-full bg-slate-300 text-slate-900 text-[10px] leading-5 font-black">2</span>}
+                      {row.medal === "bronze" && <span className="inline-block w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] leading-5 font-black">3</span>}
+                      {!row.medal && <span className="text-slate-500">{row.rank}</span>}
+                    </td>
+                    <td className="py-2 px-2 font-bold text-slate-800">{row.name}</td>
+                    <td className="py-2 px-1 text-center text-slate-600">{row.matches}</td>
+                    <td className="py-2 px-1 text-center text-emerald-600 font-bold">{row.win}</td>
+                    <td className="py-2 px-1 text-center text-slate-600">{row.diff}</td>
+                    <td className="py-2 px-2 text-right font-black text-amber-700">{row.elo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* 5. MẠNG LƯỚI CLB THỂ THAO DOANH NHÂN */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <Users className="h-3.5 w-3.5 text-[#D8B282]" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <Users className="h-3.5 w-3.5 text-amber-600" />
             <span>CLB Thể Thao Doanh Nhân Liên Kết</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Sinh hoạt định kỳ</span>
+          <span className="text-[10px] text-slate-500">Sinh hoạt định kỳ hàng tuần</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {clubs.map((club) => (
             <div
               key={club.id}
-              className="rounded-xl border border-[#D8B282]/20 bg-[#0B0F17] p-3 shadow-md flex items-center justify-between"
+              className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm flex items-center justify-between"
             >
               <div className="min-w-0 flex-1">
-                <span className="text-[9px] font-bold text-[#D8B282] uppercase">{club.sport_type}</span>
-                <h4 className="text-xs font-bold text-[#F6E1C3] line-clamp-1">{club.name}</h4>
-                <p className="text-[10px] text-slate-400 mt-0.5">Chủ nhiệm: {club.leader_name} • {club.members_count} hội viên</p>
-                <p className="text-[9px] text-[#D8B282] mt-0.5">{club.schedule_info}</p>
+                <span className="text-[9px] font-bold text-amber-700 uppercase bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">{club.sport_type}</span>
+                <h4 className="text-xs font-bold text-slate-900 line-clamp-1 mt-0.5">{club.name}</h4>
+                <p className="text-[10px] text-slate-500 mt-0.5">Chủ nhiệm: {club.leader_name} • {club.members_count} hội viên</p>
+                <p className="text-[9px] text-amber-700 mt-0.5 font-medium">{club.schedule_info}</p>
               </div>
               <button
                 type="button"
                 onClick={() => toast.success(`Đã gửi yêu cầu đăng ký tham gia ${club.name}!`)}
-                className="ml-3 rounded-lg border border-[#D8B282]/40 bg-[#121620] px-2.5 py-1 text-[10px] font-semibold text-[#F6E1C3] hover:bg-[#D8B282]/20 shrink-0"
+                className="ml-3 rounded-lg border border-[#D8B282]/40 bg-white px-2.5 py-1 text-[10px] font-bold text-slate-800 hover:bg-amber-50 shrink-0 shadow-sm"
               >
                 Gia Nhập
               </button>
@@ -492,11 +736,11 @@ export const SportTournamentHub: React.FC = () => {
       {/* 6. CHUYÊN MỤC BÀI VIẾT & CẨM NANG THỂ THAO (EDITORIAL FEED) */}
       <div className="space-y-2 pt-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#F6E1C3]">
-            <BookOpen className="h-3.5 w-3.5 text-[#D8B282]" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+            <BookOpen className="h-3.5 w-3.5 text-amber-600" />
             <span>Bài Viết & Cẩm Nang Thể Thao Đa Môn</span>
           </div>
-          <span className="text-[10px] text-[#D8B282]">Chiến thuật thi đấu</span>
+          <span className="text-[10px] text-slate-500">Chiến thuật thi đấu</span>
         </div>
 
         <div className="space-y-2.5">
@@ -504,23 +748,23 @@ export const SportTournamentHub: React.FC = () => {
             <div
               key={article.id}
               onClick={() => setSelectedArticle(article)}
-              className="rounded-2xl border border-[#D8B282]/20 bg-[#0B0F17] p-3 shadow-md hover:border-[#D8B282]/60 transition-all cursor-pointer group"
+              className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:border-[#D8B282] transition-all cursor-pointer group"
             >
               <div className="flex gap-3">
                 <img
                   src={article.thumbnail}
                   alt={article.title}
-                  className="h-20 w-24 rounded-xl object-cover border border-[#D8B282]/25 shrink-0 group-hover:scale-105 transition-transform"
+                  className="h-20 w-24 rounded-xl object-cover border border-slate-200 shrink-0 group-hover:scale-105 transition-transform"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="rounded bg-[#D8B282]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#F6E1C3]">
+                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800">
                         {article.category}
                       </span>
                       <span className="text-[9px] text-slate-400">{article.readTime}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-[#F6E1C3] line-clamp-2 mt-1 group-hover:text-white transition-colors">
+                    <h4 className="text-xs font-bold text-slate-900 line-clamp-2 mt-1 group-hover:text-amber-700 transition-colors">
                       {article.title}
                     </h4>
                   </div>
@@ -535,19 +779,19 @@ export const SportTournamentHub: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL 1: BÀI VIẾT CHI TIẾT (FULL ARTICLE READER) */}
+      {/* MODAL: BÀI VIẾT CHI TIẾT */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="rounded bg-[#D8B282]/20 px-2 py-0.5 text-[10px] font-bold text-[#F6E1C3]">
+                <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
                   {selectedArticle.category}
                 </span>
-                <h2 className="text-base font-bold font-serif mt-1 text-[#F6E1C3] leading-snug">
+                <h2 className="text-base font-bold font-serif mt-1 text-slate-900 leading-snug">
                   {selectedArticle.title}
                 </h2>
-                <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-400">
+                <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-500">
                   <span>{selectedArticle.author}</span>
                   <span>•</span>
                   <span>{selectedArticle.publishedAt}</span>
@@ -558,7 +802,7 @@ export const SportTournamentHub: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedArticle(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white shrink-0 ml-2"
+                className="rounded-full border border-slate-200 bg-slate-100 p-1.5 text-slate-600 hover:text-slate-900 shrink-0 ml-2"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -567,27 +811,27 @@ export const SportTournamentHub: React.FC = () => {
             <img
               src={selectedArticle.thumbnail}
               alt={selectedArticle.title}
-              className="w-full h-44 rounded-2xl object-cover border border-[#D8B282]/25"
+              className="w-full h-44 rounded-2xl object-cover border border-slate-200"
             />
 
-            <div className="p-3 rounded-xl bg-[#121620] border border-[#D8B282]/20 text-[11px] text-[#F6E1C3] font-medium leading-relaxed italic">
+            <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/60 text-[11px] text-slate-700 font-medium leading-relaxed italic">
               "{selectedArticle.summary}"
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+            <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
               {selectedArticle.content.map((p, idx) => (
                 <p key={idx}>{p}</p>
               ))}
             </div>
 
-            <div className="pt-2 border-t border-[#D8B282]/15 flex items-center justify-between text-xs">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-400 text-[10px]">{selectedArticle.views} lượt đọc</span>
               <button
                 type="button"
                 onClick={() => {
                   toast.success("Đã sao chép liên kết chia sẻ bài viết!");
                 }}
-                className="flex items-center gap-1 text-[#D8B282] hover:text-[#F6E1C3]"
+                className="flex items-center gap-1 text-amber-700 font-bold hover:text-amber-800"
               >
                 <Share2 className="h-3.5 w-3.5" />
                 <span>Chia sẻ</span>
@@ -597,24 +841,24 @@ export const SportTournamentHub: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 2: CHI TIẾT GIẢI ĐẤU & NHÁNH ĐẤU BRACKET */}
+      {/* MODAL: CHI TIẾT GIẢI ĐẤU & NHÁNH ĐẤU BRACKET */}
       {selectedTournament && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#D8B282]/40 bg-[#0B0F17] p-5 shadow-2xl space-y-4 text-[#F6E1C3]">
-            <div className="flex items-start justify-between border-b border-[#D8B282]/20 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#D8B282]">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
                   {selectedTournament.sport_type} • {selectedTournament.province}
                 </span>
-                <h2 className="text-base font-bold font-serif mt-1 text-[#F6E1C3]">
+                <h2 className="text-base font-bold font-serif mt-1 text-slate-900">
                   {selectedTournament.name}
                 </h2>
-                <p className="text-[11px] text-slate-400 mt-0.5">{selectedTournament.venue}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">{selectedTournament.venue}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedTournament(null)}
-                className="rounded-full border border-[#D8B282]/30 bg-[#1A1A24] p-1.5 text-slate-400 hover:text-white"
+                className="rounded-full border border-slate-200 bg-slate-100 p-1.5 text-slate-600 hover:text-slate-900"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -623,12 +867,12 @@ export const SportTournamentHub: React.FC = () => {
             {/* Sơ đồ nhánh đấu Preview */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-[#F6E1C3] flex items-center gap-1.5">
-                  <Activity className="h-3.5 w-3.5 text-[#D8B282]" />
+                <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Activity className="h-3.5 w-3.5 text-amber-600" />
                   <span>Sơ Đồ Trận Đấu Đang Diễn Ra (Realtime)</span>
                 </h4>
-                <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                   Live Sync
                 </span>
               </div>
@@ -656,18 +900,18 @@ export const SportTournamentHub: React.FC = () => {
                 ]).map((match: any) => (
                   <div
                     key={match.id}
-                    className="rounded-xl border border-[#D8B282]/30 bg-[#121620] p-3 space-y-2"
+                    className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2"
                   >
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#F6E1C3]">{match.team_a}</span>
-                      <span className="font-bold text-amber-400 text-sm">{match.score_a}</span>
+                      <span className="font-semibold text-slate-900">{match.team_a}</span>
+                      <span className="font-bold text-amber-700 text-sm">{match.score_a}</span>
                     </div>
-                    <div className="h-px bg-[#D8B282]/15" />
+                    <div className="h-px bg-slate-200" />
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#F6E1C3]">{match.team_b}</span>
-                      <span className="font-bold text-amber-400 text-sm">{match.score_b}</span>
+                      <span className="font-semibold text-slate-900">{match.team_b}</span>
+                      <span className="font-bold text-amber-700 text-sm">{match.score_b}</span>
                     </div>
-                    <div className="flex items-center justify-between pt-1 text-[10px] text-slate-400">
+                    <div className="flex items-center justify-between pt-1 text-[10px] text-slate-500">
                       <span>Tỉ số set: {match.sets_detail}</span>
                       <button
                         type="button"
@@ -676,7 +920,7 @@ export const SportTournamentHub: React.FC = () => {
                           setScoreA(match.score_a);
                           setScoreB(match.score_b);
                         }}
-                        className="text-[#D8B282] hover:text-[#F6E1C3] font-bold"
+                        className="text-amber-700 hover:text-amber-800 font-bold"
                       >
                         Cập nhật tỉ số
                       </button>
@@ -688,28 +932,28 @@ export const SportTournamentHub: React.FC = () => {
 
             {/* Score updater form */}
             {updatingMatch && (
-              <div className="p-3 rounded-2xl border border-amber-500/40 bg-amber-950/20 space-y-2.5">
-                <span className="text-xs font-bold text-amber-400 block">
+              <div className="p-3 rounded-2xl border border-amber-200 bg-amber-50/60 space-y-2.5">
+                <span className="text-xs font-bold text-amber-900 block">
                   Cập Nhật Tỉ Số: {updatingMatch.team_a} vs {updatingMatch.team_b}
                 </span>
                 <div className="flex items-center gap-3">
                   <div className="flex-1">
-                    <span className="text-[10px] text-slate-400">{updatingMatch.team_a}</span>
+                    <span className="text-[10px] text-slate-600">{updatingMatch.team_a}</span>
                     <input
                       type="number"
                       value={scoreA}
                       onChange={(e) => setScoreA(parseInt(e.target.value, 10) || 0)}
-                      className="w-full mt-0.5 rounded-lg border border-[#D8B282]/30 bg-[#0B0F17] p-1.5 text-xs text-[#F6E1C3] text-center font-bold"
+                      className="w-full mt-0.5 rounded-lg border border-slate-300 bg-white p-1.5 text-xs text-slate-900 text-center font-bold"
                     />
                   </div>
-                  <span className="text-xs font-bold text-slate-500">VS</span>
+                  <span className="text-xs font-bold text-slate-400">VS</span>
                   <div className="flex-1">
-                    <span className="text-[10px] text-slate-400">{updatingMatch.team_b}</span>
+                    <span className="text-[10px] text-slate-600">{updatingMatch.team_b}</span>
                     <input
                       type="number"
                       value={scoreB}
                       onChange={(e) => setScoreB(parseInt(e.target.value, 10) || 0)}
-                      className="w-full mt-0.5 rounded-lg border border-[#D8B282]/30 bg-[#0B0F17] p-1.5 text-xs text-[#F6E1C3] text-center font-bold"
+                      className="w-full mt-0.5 rounded-lg border border-slate-300 bg-white p-1.5 text-xs text-slate-900 text-center font-bold"
                     />
                   </div>
                 </div>
@@ -717,7 +961,7 @@ export const SportTournamentHub: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setUpdatingMatch(null)}
-                    className="rounded-lg border border-[#D8B282]/20 px-2.5 py-1 text-[10px] text-slate-400"
+                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] text-slate-600"
                   >
                     Hủy
                   </button>

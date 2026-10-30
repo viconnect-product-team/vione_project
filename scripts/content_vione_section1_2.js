@@ -8,7 +8,7 @@ const SECTION_1 = {
 3. Số hóa thể thao phong trào cộng đồng & di sản văn hóa dân tộc: Nền tảng điều phối giải đấu thể thao ViOne Sport (bốc thăm tự động Tournament Bracket), giải chạy bộ marathon ViOne Run (đo đạc thành tích bằng thảm Chip Timing RFID UHF), bảo tàng số 3D Photogrammetry/GLTF 360 độ kèm thuyết minh 1-chạm NFC ViOne Museum và kho số hóa di sản sắc phong triều Nguyễn kết hợp định vị GPS Geofencing ViOne Heritage.`,
   phamVi: `Phạm vi giải pháp của phần mềm ViOne Platform bao phủ toàn bộ các quy trình nghiệp vụ số hóa từ trung tâm máy chủ đám mây đến thiết bị cầm tay của người dùng cuối:
 - Cổng Web Quản Trị ViOne Platform (https://crm_vione.viconnect.vn): Dành cho Ban Lãnh đạo, Hội đồng Quản trị, Quản trị viên chi hội, Kế toán trưởng, Ban trọng tài thể thao và Cán bộ bảo tàng điều hành toàn bộ dữ liệu, phân quyền ma trận vai trò RBAC, phát hành vé, duyệt chi ngân sách và giám sát hệ thống thời gian thực.
-- Ứng dụng Di động ViOne / ViOne Connect (iOS & Android): Dành cho các chủ doanh nghiệp, hội viên doanh nhân, vận động viên và khách tham quan trải nghiệm giao diện thượng lưu Obsidian Gold; thực hiện giao lưu danh thiếp số, quét AI OCR, nhận thông báo Zalo OA, tham gia giải chạy marathon, trải nghiệm bảo tàng số 3D và check-in sự kiện offline không cần Internet.`,
+- Ứng dụng Di động ViOne / ViOne Connect (iOS & Android): Dành cho các chủ doanh nghiệp, doanh nhân, vận động viên và khách tham quan trải nghiệm giao diện thượng lưu Obsidian Gold; thực hiện giao lưu danh thiếp số, quét AI OCR, nhận thông báo Zalo OA, tham gia giải chạy marathon, trải nghiệm bảo tàng số 3D và check-in sự kiện offline không cần Internet.`,
   doiTuong: `Hệ thống phục vụ đa dạng các nhóm người dùng trong và ngoài tổ chức, được phân định rõ ràng thông qua bảng danh mục 10 mã tác nhân (Actors) chuẩn mực từ A01 đến A10.`
 };
 
@@ -32,7 +32,7 @@ const SECTION_2_TECH = {
    - Sử dụng cơ chế token kép: Access Token có thời hạn ngắn (15 phút) mang thông tin định danh và ma trận quyền RBAC, kết hợp Refresh Token có thời hạn 7 ngày lưu trữ trong phần cứng an toàn (Keystore/Keychain).
    - Mỗi yêu cầu HTTP gửi đến đều được kiểm tra chữ ký điện tử qua Middleware JwtAuthGuard và đối soát ma trận quyền RoleGuard trước khi cấp quyền can thiệp CSDL.
 2. Luồng Xử lý Giao dịch Cổng Thanh toán VNPay & Zalo OA:
-   - Khi hội viên chọn mua vé sự kiện hoặc đóng hội phí, máy chủ sinh mã đơn hàng duy nhất và tạo URL thanh toán có chữ ký băm bảo mật HMAC-SHA512.
+   - Khi doanh nhân chọn mua vé sự kiện hoặc đóng phí thường niên, máy chủ sinh mã đơn hàng duy nhất và tạo URL thanh toán có chữ ký băm bảo mật HMAC-SHA512.
    - Người dùng quét mã VNPay-QR trên ứng dụng ngân hàng; cổng VNPay gửi gói tin IPN (Instant Payment Notification) về webhook hệ thống.
    - Hệ thống đối soát chữ ký số, cập nhật trạng thái đơn hàng thành "ĐÃ THANH TOÁN" trong một Transaction cơ sở dữ liệu duy nhất, phát sinh mã vé điện tử QR động và tự động phát lệnh qua Zalo OpenAPI v3 gửi tin nhắn ZNS xác nhận kèm mã QR về máy người dùng.
 3. Luồng Đồng bộ Thời gian thực Socket.IO Realtime:
@@ -68,7 +68,7 @@ const SECTION_2_TECH = {
 2. Kiểm soát truy cập dựa trên vai trò (RBAC): Toàn bộ các tài nguyên, màn hình và API đều được kiểm soát bởi ma trận vai trò người dùng (Super Admin, Portal Admin, Event Operator, Referee, Curator, Finance Admin, Member); tuyệt đối không cho phép tài khoản thông thường truy cập dữ liệu quản trị.
 3. Ngôn ngữ thiết kế thương hiệu thống nhất (Obsidian & Champagne Gold): Màu chủ đạo là Vàng Hoàng Gia Champagne Gold (#D8B282 / #F6E1C3) kết hợp nền Đen Thạch Anh Obsidian (#050C15 / #0B0F17), mang đến cảm xúc sang trọng, tôn vinh đẳng cấp lãnh đạo và tăng cường khả năng tập trung.
 4. Trung tâm thông báo đa kênh thời gian thực: Đồng bộ hóa toàn bộ các tin nhắn, lời mời sự kiện, cảnh báo tài chính và lịch thi đấu giữa máy chủ, ứng dụng di động và kênh Zalo OA chính thức.
-5. Thanh tìm kiếm toàn cục (Global Command Palette): Cho phép người dùng nhấn tổ hợp phím tắt (Ctrl+K / Cmd+K trên web) hoặc ô tìm kiếm nhanh trên app để tra cứu tức thì bất kỳ hội viên, sự kiện, tệp tài liệu hay bảo vật nào.`,
+5. Thanh tìm kiếm toàn cục (Global Command Palette): Cho phép người dùng nhấn tổ hợp phím tắt (Ctrl+K / Cmd+K trên web) hoặc ô tìm kiếm nhanh trên app để tra cứu tức thì bất kỳ doanh nhân, sự kiện, tệp tài liệu hay bảo vật nào.`,
 
   yeuCauPhiChucNang: {
     hieuNang: `1. Thời gian phản hồi của các yêu cầu API RESTful đạt dưới 150ms đối với 95% các truy vấn cơ bản.
