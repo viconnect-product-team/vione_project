@@ -103,331 +103,331 @@ const TOC_ITEMS = [
   {
     "id": "sec2_4",
     "title": "  2.4 Các yêu cầu phi chức năng khác",
-    "page": 41,
+    "page": 43,
     "level": 2
   },
   {
     "id": "sec2_4_1",
     "title": "    2.4.1 Yêu cầu về hiệu năng (Performance Requirements)",
-    "page": 41,
+    "page": 43,
     "level": 3
   },
   {
     "id": "sec2_4_2",
     "title": "    2.4.2 Yêu cầu về bảo mật (Security Requirements)",
-    "page": 41,
+    "page": 43,
     "level": 3
   },
   {
     "id": "sec2_4_3",
     "title": "    2.4.3 Yêu cầu tuân thủ (Compliance Requirements)",
-    "page": 41,
+    "page": 43,
     "level": 3
   },
   {
     "id": "app1",
     "title": "PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm (Đặc tả CSDL, API, Socket.IO)",
-    "page": 42,
+    "page": 44,
     "level": 1
   },
   {
     "id": "app2",
     "title": "PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - CỔNG WEB QUẢN TRỊ VIONE PLATFORM (23 PHÂN HỆ)",
-    "page": 46,
+    "page": 48,
     "level": 1
   },
   {
     "id": "app2_crm_1",
     "title": "  1. Phân hệ Đăng nhập Quản trị & Xác thực Đa tầng",
-    "page": 46,
+    "page": 48,
     "level": 2
   },
   {
     "id": "app2_crm_2",
     "title": "  2. Phân hệ Bảng Điều Hành C-Level Dashboard & KPI Dòng Tiền Realtime",
-    "page": 46,
+    "page": 49,
     "level": 2
   },
   {
     "id": "app2_crm_3",
     "title": "  3. Phân hệ Quản Trị Danh Sách Doanh Nghiệp & Hồ Sơ Doanh Nhân 360",
-    "page": 47,
+    "page": 50,
     "level": 2
   },
   {
     "id": "app2_crm_4",
     "title": "  4. Phân hệ Quản Trị Cơ Hội Kinh Doanh & Phễu Bán Hàng B2B Deals",
-    "page": 48,
+    "page": 51,
     "level": 2
   },
   {
     "id": "app2_crm_5",
     "title": "  5. Phân hệ Quản Trị Danh Thiếp Thông Minh VIP vCard & Mã QR Động",
-    "page": 49,
+    "page": 52,
     "level": 2
   },
   {
     "id": "app2_crm_6",
     "title": "  6. Phân hệ Quản Trị Sàn Giao Thương B2B & Gian Hàng Sản Phẩm Doanh Nghiệp",
-    "page": 50,
+    "page": 53,
     "level": 2
   },
   {
     "id": "app2_crm_7",
     "title": "  7. Phân hệ Quản Trị Sự Kiện Doanh Nhân & Phân Hạng Vé Bán Qua VNPay",
-    "page": 51,
+    "page": 54,
     "level": 2
   },
   {
     "id": "app2_crm_8",
     "title": "  8. Phân hệ Quản Trị Cổng Soát Vé Điện Tử & Check-in QR Siêu Tốc <100ms",
-    "page": 52,
+    "page": 55,
     "level": 2
   },
   {
     "id": "app2_crm_9",
     "title": "  9. Phân hệ Quản Trị Quy Trình Vận Hành BPMN 2.0 & Bảng Việc Kanban",
-    "page": 53,
+    "page": 56,
     "level": 2
   },
   {
     "id": "app2_crm_10",
     "title": "  10. Phân hệ Quản Trị Chấm Công Định Vị AI GPS & Chuyên Cần Doanh Nghiệp",
-    "page": 54,
+    "page": 57,
     "level": 2
   },
   {
     "id": "app2_crm_11",
     "title": "  11. Phân hệ Quản Trị Dòng Tiền Thu & Báo Cáo Doanh Thu Bán Vé VNPay",
-    "page": 55,
+    "page": 58,
     "level": 2
   },
   {
     "id": "app2_crm_12",
     "title": "  12. Phân hệ Quản Trị Phê Duyệt Chi Tiền 3 Cấp & Ngân Sách Dự Án",
-    "page": 56,
+    "page": 59,
     "level": 2
   },
   {
     "id": "app2_crm_13",
     "title": "  13. Phân hệ Quản Trị Phí Thường Niên Định Kỳ & Công Nợ Doanh Nghiệp",
-    "page": 57,
+    "page": 60,
     "level": 2
   },
   {
     "id": "app2_crm_14",
     "title": "  14. Phân hệ Quản Trị Giải Đấu Thể Thao Doanh Nghiệp ViOne Sport",
-    "page": 58,
+    "page": 61,
     "level": 2
   },
   {
     "id": "app2_crm_15",
     "title": "  15. Phân hệ Quản Trị Giải Chạy Bộ ViOne Run Marathon & Chip Timing RFID UHF",
-    "page": 59,
+    "page": 62,
     "level": 2
   },
   {
     "id": "app2_crm_16",
     "title": "  16. Phân hệ Quản Trị Không Gian Trưng Bày Bảo Tàng Số 3D & Hiện Vật NFC ViOne Museum",
-    "page": 60,
+    "page": 63,
     "level": 2
   },
   {
     "id": "app2_crm_17",
     "title": "  17. Phân hệ Quản Trị & Số Hóa Di Sản Văn Hóa ViOne Heritage",
-    "page": 61,
+    "page": 64,
     "level": 2
   },
   {
     "id": "app2_crm_18",
     "title": "  18. Phân hệ Quản Trị Vé Sự Kiện Điện Tử & Mã Hóa Chống Giả ViOne Tickets",
-    "page": 62,
+    "page": 65,
     "level": 2
   },
   {
     "id": "app2_crm_19",
     "title": "  19. Phân hệ Quản Trị Kho Lưu Trữ Tài Liệu Phân Cấp Đa Tầng ViOne Archive (/documents)",
-    "page": 63,
+    "page": 66,
     "level": 2
   },
   {
     "id": "app2_crm_20",
     "title": "  20. Phân hệ Quản Trị Biểu Quyết, Khảo Sát & Bỏ Phiếu Tín Nhiệm Số",
-    "page": 64,
+    "page": 67,
     "level": 2
   },
   {
     "id": "app2_crm_21",
     "title": "  21. Phân hệ Cấu Hình Phân Quyền RBAC Ma Trận Vai Trò & Nhật Ký Kiểm Toán Audit Log",
-    "page": 65,
+    "page": 68,
     "level": 2
   },
   {
     "id": "app2_crm_22",
     "title": "  22. Phân hệ Trợ Lý Trí Tuệ Nhân Tạo & Bóc Tách Dữ Liệu AI OCR ViOne AI",
-    "page": 66,
+    "page": 69,
     "level": 2
   },
   {
     "id": "app2_crm_23",
     "title": "  23. Phân hệ Cấu Hình Nền Tảng, Tích Hợp Zalo OA & Cổng Thanh Toán VNPay",
-    "page": 67,
+    "page": 70,
     "level": 2
   },
   {
     "id": "app3",
     "title": "PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG DI ĐỘNG VIONE (20 PHÂN HỆ MOCKUP)",
-    "page": 69,
+    "page": 71,
     "level": 1
   },
   {
     "id": "app3_mob_1",
     "title": "  1. Phân hệ Màn hình Đăng nhập Di động Chuẩn Obsidian Luxury & Sinh trắc học Biometrics",
-    "page": 69,
+    "page": 71,
     "level": 2
   },
   {
     "id": "app3_mob_2",
     "title": "  2. Phân hệ Trang chủ Điều hành C-Level Executive Home & Widget Chỉ số Realtime",
-    "page": 70,
+    "page": 72,
     "level": 2
   },
   {
     "id": "app3_mob_3",
     "title": "  3. Phân hệ Danh thiếp Số vCard & Chạm 1-Tap NFC Vật lý Độc quyền",
-    "page": 71,
+    "page": 73,
     "level": 2
   },
   {
     "id": "app3_mob_4",
     "title": "  4. Phân hệ Menu Điều phối Nổi Độc Quyền VActionSheet 3D Dập Nổi Vàng Hoàng Gia",
-    "page": 72,
+    "page": 74,
     "level": 2
   },
   {
     "id": "app3_mob_5",
     "title": "  5. Phân hệ Quét Thẻ Thông Minh & Bóc Tách Danh Thiếp Tự Động AI OCR",
-    "page": 73,
+    "page": 75,
     "level": 2
   },
   {
     "id": "app3_mob_6",
     "title": "  6. Phân hệ Mạng Lưới Giao Thương & Thư Viện Doanh Nhân GPS Geolocation",
-    "page": 74,
+    "page": 76,
     "level": 2
   },
   {
     "id": "app3_mob_7",
     "title": "  7. Phân hệ Khoảnh Khắc Doanh Nhân & Bảng Tin Tương Tác Doanh Nghiệp",
-    "page": 75,
+    "page": 77,
     "level": 2
   },
   {
     "id": "app3_mob_8",
     "title": "  8. Phân hệ Hộp Thư Tin Nhắn Trực Tiếp & Phòng Trò Chuyện Nhóm Socket.IO",
-    "page": 76,
+    "page": 78,
     "level": 2
   },
   {
     "id": "app3_mob_9",
     "title": "  9. Phân hệ Không Gian Cộng Đồng & Diễn Đàn Kết Nối Thương Mại",
-    "page": 77,
+    "page": 79,
     "level": 2
   },
   {
     "id": "app3_mob_10",
     "title": "  10. Phân hệ Bàn Làm Việc Cá Nhân, Nhiệm Vụ Hôm Nay & Tiến Độ Kanban Mobile",
-    "page": 78,
+    "page": 80,
     "level": 2
   },
   {
     "id": "app3_mob_11",
     "title": "  11. Phân hệ Hồ Sơ Cá Nhân VIP, Quản Trị Danh Mục Yêu Thích & Cài Đặt Ứng Dụng",
-    "page": 79,
+    "page": 81,
     "level": 2
   },
   {
     "id": "app3_mob_12",
     "title": "  12. Phân hệ Quản Trị & Xuất Bản Danh Thiếp Số Cá Nhân Hóa (Custom vCard QR)",
-    "page": 80,
+    "page": 82,
     "level": 2
   },
   {
     "id": "app3_mob_13",
     "title": "  13. Phân hệ Máy Quét Thông Minh Toàn Năng (Smart Scanner: QR / Barcode / NFC / OCR)",
-    "page": 81,
+    "page": 83,
     "level": 2
   },
   {
     "id": "app3_mob_14",
     "title": "  14. Phân hệ Trung Tâm Bảo Mật Cá Nhân, Đổi Mật Khẩu & Xác Thực Hai Lớp (2FA)",
-    "page": 82,
+    "page": 84,
     "level": 2
   },
   {
     "id": "app3_mob_15",
     "title": "  15. Phân hệ Trung Tâm Thông Báo Đa Kênh & Đồng Bộ Lịch Sự Kiện Cá Nhân",
-    "page": 83,
+    "page": 85,
     "level": 2
   },
   {
     "id": "app3_mob_16",
     "title": "  16. Phân hệ Ví Vé Sự Kiện Điện Tử Thông Minh & Check-in Offline Mã QR",
-    "page": 84,
+    "page": 86,
     "level": 2
   },
   {
     "id": "app3_mob_17",
     "title": "  17. Phân hệ Giải Đấu Thể Thao Doanh Nghiệp ViOne Sport Trên Di Động",
-    "page": 85,
+    "page": 88,
     "level": 2
   },
   {
     "id": "app3_mob_18",
     "title": "  18. Phân hệ Giải Chạy Bộ ViOne Run Marathon & Chip Timing RFID Di Động",
-    "page": 86,
+    "page": 92,
     "level": 2
   },
   {
     "id": "app3_mob_19",
     "title": "  19. Phân hệ Khám Phá Bảo Tàng Số 3D & Thuyết Minh 1-Chạm NFC ViOne Museum",
-    "page": 87,
+    "page": 96,
     "level": 2
   },
   {
     "id": "app3_mob_20",
     "title": "  20. Phân hệ Khám Phá Di Sản Văn Hóa & Bản Đồ Số Di Tích Lịch Sử ViOne Heritage",
-    "page": 88,
+    "page": 100,
     "level": 2
   },
   {
     "id": "app4",
     "title": "PHỤ LỤC IV - Mã nguồn phần mềm (18 Mô-đun Hệ thống Cốt lõi)",
-    "page": 90,
+    "page": 106,
     "level": 1
   },
   {
     "id": "app4_file_1",
     "title": "  1. Mã Nguồn Cổng Web Quản Trị ViOne Platform (CRM)",
-    "page": 91,
+    "page": 106,
     "level": 2
   },
   {
     "id": "app4_file_7",
     "title": "  2. Mã Nguồn Máy Chủ Xử Lý Nghiệp Vụ Trung Tâm (Backend Core)",
-    "page": 150,
+    "page": 165,
     "level": 2
   },
   {
     "id": "app4_file_11",
     "title": "  3. Mã Nguồn Giao Diện Điều Hành & Dashboard ViOne",
-    "page": 256,
+    "page": 271,
     "level": 2
   },
   {
     "id": "app4_file_18",
     "title": "  4. Mã Nguồn Ứng Dụng Di Động ViOne Native Mobile App",
-    "page": 409,
+    "page": 433,
     "level": 2
   }
 ];
@@ -746,7 +746,7 @@ async function buildMasterDocxAndMd() {
     mod.docPrId = docPrId;
   }
 
-  // 20 Mobile Images
+  // 20 Mobile Images & Sub-screens
   for (const mod of MOBILE_MODULES) {
     const imgPath = path.join('document/images/evidence_v9', mod.imgFile);
     if (!fs.existsSync(imgPath)) {
@@ -765,6 +765,28 @@ async function buildMasterDocxAndMd() {
 
     mod.rId = rId;
     mod.docPrId = docPrId;
+
+    if (mod.subScreens && mod.subScreens.length > 0) {
+      for (const sub of mod.subScreens) {
+        const subImgPath = path.join('document/images/evidence_v9', sub.imgFile);
+        if (fs.existsSync(subImgPath)) {
+          const subImgBuf = fs.readFileSync(subImgPath);
+          const subMediaName = `media/vione_sub_${sub.imgFile}`;
+          zip.file(`word/${subMediaName}`, subImgBuf);
+
+          const subRId = `rIdAPP${nextRId++}`;
+          const subDocPrId = nextDocPrId++;
+
+          const subRelEntry = `<Relationship Id="${subRId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="${subMediaName}"/>`;
+          relsXml = relsXml.replace('</Relationships>', `${subRelEntry}</Relationships>`);
+
+          sub.rId = subRId;
+          sub.docPrId = subDocPrId;
+        } else {
+          console.warn(`Không tìm thấy ảnh subScreen: ${subImgPath}`);
+        }
+      }
+    }
   }
 
   zip.file(relsXmlPath, relsXml);
@@ -1028,6 +1050,17 @@ async function buildMasterDocxAndMd() {
     });
     bodyXml += makeImageDrawing(mod.rId, mod.docPrId, 'mobile');
     bodyXml += makeFigureCaption(mod.figTitle);
+
+    if (mod.subScreens && mod.subScreens.length > 0) {
+      mod.subScreens.forEach((sub, sIdx) => {
+        bodyXml += makeHeading(`${idx + 1}.${sIdx + 1}. Giao diện mở rộng: ${sub.title}`, 4);
+        bodyXml += makeP(sub.desc, { after: 60 });
+        if (sub.rId) {
+          bodyXml += makeImageDrawing(sub.rId, sub.docPrId, 'mobile');
+          bodyXml += makeFigureCaption(sub.figTitle);
+        }
+      });
+    }
   });
 
   // PHỤ LỤC IV - MÃ NGUỒN PHẦN MỀM (18 CORE MODULES, ~21,523 DÒNG MÃ NGUỒN THỰC TẾ)
@@ -1247,6 +1280,15 @@ async function buildMasterDocxAndMd() {
     });
     md += `\n![${mod.figTitle}](images/evidence_v9/${mod.imgFile})\n\n`;
     md += `*${mod.figTitle}*\n\n`;
+
+    if (mod.subScreens && mod.subScreens.length > 0) {
+      mod.subScreens.forEach((sub, sIdx) => {
+        md += `#### ${idx + 1}.${sIdx + 1}. Giao diện mở rộng: ${sub.title}\n\n`;
+        md += `${sub.desc}\n\n`;
+        md += `![${sub.figTitle}](images/evidence_v9/${sub.imgFile})\n\n`;
+        md += `*${sub.figTitle}*\n\n`;
+      });
+    }
   });
 
   // PHỤ LỤC IV

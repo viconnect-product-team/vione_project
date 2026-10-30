@@ -1,5 +1,58 @@
 # System Memory & Architecture
 
+## 0.0000000000.33. CHỤP MỚI TOÀN BỘ BỘ ẢNH MINH CHỨNG (23 CRM + 20 APP + 13 SUB-SCREENS), MÔ TẢ CHUYÊN SÂU TỪNG CHỨC NĂNG VÀ XUẤT MASTER TÀI LIỆU BẢN QUYỀN 468 TRANG (30/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
+- **Người dùng yêu cầu**:
+  1. *"sau khi đã bổ sung các tính năng mới, thì hãy mo tả chi tiết lại từng chức năng hơn vào file tình bày tác phẩm vione."*
+  2. *"hãy chụp bộ ảnh mới hoàn toàn và đưa vào file trình bày tác phẩm vione"*
+- **Quy chuẩn bắt buộc tuân thủ nghiêm ngặt**:
+  - **Mô tả chi tiết, chuyên sâu từng tính năng**: Không dừng lại ở mô tả khái quát mà phải đặc tả kỹ thuật, luồng vận hành, giao thức truyền tin (REST API, WebSocket Socket.IO), mô hình dữ liệu, chuẩn phần cứng (NFC NDEF ISO 14443A, RFID UHF 860-960MHz, GPS Haversine) và ma trận phân quyền tác nhân (Actors A01 - A10).
+  - **Chụp mới 100% toàn bộ bộ ảnh minh chứng**:
+    * 23 ảnh Desktop Web Quản trị C-Level (CRM 01 - CRM 23) với độ phân giải chuẩn 1440x900 từ máy chủ production `https://crm_vione.viconnect.vn`.
+    * 20 ảnh Mobile App (App 01 - App 20) thuần Theme Sáng (Light Theme) đóng khung viền iPhone 15/16 Pro sang trọng, triệt tiêu 100% các popup, banner hay toast che khuất header.
+    * 13 ảnh sub-screens đặc tả các chức năng con tương tác thực tế: Sơ đồ phân nhánh Bracket (`app_17b`), Lịch đấu sân bãi (`app_17c`), BXH ELO (`app_17d`), Thảm đo RFID Timing (`app_18b`), Lộ trình GPS Track (`app_18c`), BXH Finisher & e-Cert (`app_18d`), Xoay lật cổ vật 360° (`app_19b`), Audio Guide 4 ngôn ngữ (`app_19c`), Niên biểu khảo cổ (`app_19d`), GPS Geofencing 20m (`app_20b`), Sắc phong Deep Zoom (`app_20c`), Tuyến tham quan (`app_20d`), và Cổng soát vé POS (`app_16b`).
+  - **Quy chuẩn ngôn từ & thương hiệu**: Tuyệt đối không dùng tên "viplus", không dùng "hội viên" (dùng tên "doanh nhân", "vận động viên", "khách tham quan"), không dùng cụm từ "hệ sinh thái" tại header.
+  - **Mục lục chính xác 100%**: Đánh số và dấu chấm dóng hàng (`............................`) với số trang thực tế đo đạc qua Microsoft Word COM.
+  - **Chất lượng mã nguồn (Strict Code Quality)**: Typecheck trả về Exit code 0 (0 errors) trên cả hai bản app PWA và Native.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Chụp Mới Hoàn Toàn 56 Ảnh Minh Chứng Nền Tảng (Evidence V9)**:
+   - Viết các kịch bản tự động hóa Playwright (`scripts/recapture_all_evidence_fresh_v14.js` và `scripts/capture_platform_subviews.js`) sử dụng trình duyệt Google Chrome headless.
+   - Cơ chế tiêm CSS & LocalStorage: cưỡng chế `theme = light`, thiết lập quyền thông báo giả lập ngầm, xóa sạch triệt để mọi phần tử `#pwa-install-prompt`, `.toaster`, `.sonner-toast`, `aside[aria-label*="thông báo"]`.
+   - Đóng gói toàn bộ 20 màn hình chính và 13 màn hình con vào khung viền iPhone sang trọng với Dynamic Island và status bar 09:41 chuẩn xác.
+2. **Nâng Cấp Chi Tiết Mô Tả Nghiệp Vụ & Kỹ Thuật Trong Toàn Bộ Tài Liệu**:
+   - `scripts/content_vione_mobile.js`:
+     * Bổ sung chi tiết từng luồng xử lý dữ liệu cho 20 phân hệ di động.
+     * Mở rộng đặc tả cho các module nền tảng mới:
+       + *ViOne Tickets (Module 16)*: Cơ chế sinh mã QR động TOTP xoay vòng mỗi 60 giây chống bán lại vé; Cổng soát vé POS di động ngoại tuyến xử lý dưới 100ms.
+       + *ViOne Sport (Module 17)*: Thuật toán phân nhánh Tournament Bracket (Single/Double Knockout); Điều phối sân bãi và lịch trọng tài; WebSocket Live Score ticker thời gian thực dưới 50ms; Bảng xếp hạng ELO và điểm trừ Fair-play.
+       + *ViOne Run (Module 18)*: Hệ thống cấp phát số BIB điện tử; Động cơ giải mã thảm đo RFID UHF 860-960MHz (Gun Time vs Net Time); Bản đồ GPS Track trắc dọc độ dốc elevation profile; Bảng xếp hạng Finisher và chứng nhận số e-Certificate.
+       + *ViOne Museum (Module 19)*: Không gian WebGL 3D canvas; Xoay lật 360° Photogrammetry các bảo vật quốc gia (Trống đồng Ngọc Lũ, Thạp đồng Đào Thịnh, Ngai vàng triều Nguyễn); Kích hoạt tự động 1-chạm NFC NTAG213/215; Audio Guide đa ngữ 4 thứ tiếng (Việt, Anh, Pháp, Nhật); Niên biểu lịch sử và tra cứu QR.
+       + *ViOne Heritage (Module 20)*: Bản đồ số GIS di sản; Vệ tinh GPS Geofencing bán kính 20m kích hoạt thuyết minh tự động theo công thức Haversine; Kính lúp Deep Zoom soi từng nét bút lông và triện son sắc phong triều Nguyễn kèm bản dịch Hán Nôm; Tuyến tham quan chuyên đề; Hộ chiếu Di sản số.
+     * Tích hợp mảng `subScreens` vào cấu trúc dữ liệu để tự động nhúng hình ảnh và thuyết minh giao diện mở rộng vào Phụ lục III.
+3. **Hoàn Thiện Bộ Khung Biên Dịch Master Uniwork (`scripts/build_vione_super_master_uniwork.js`)**:
+   - Tự động nạp và đăng ký 47 quan hệ ảnh trong `word/_rels/document.xml.rels` (`rIdAPP...`, `rIdCRM...`, `rIdDiagram...`).
+   - Chuyển tiếp định dạng trang thông minh (SectPr): Các sơ đồ kiến trúc Hình 2.1, 2.2, 2.3, 2.4 được hiển thị toàn khổ trên các trang nằm ngang (Landscape), trong khi văn bản và bảng biểu hiển thị trang đứng (Portrait) trang nhã.
+   - Sửa lỗi ngắt dòng Section 2.1.2: Sử dụng `renderFormattedTextBlock` phân tách từng mục số (`makePWithBoldPrefix`) và gạch đầu dòng (`makeBullet`) độc lập, xóa bỏ hoàn toàn hiện tượng dính chữ trên một đoạn văn.
+   - Cập nhật số trang Mục lục (TOC) đồng bộ chính xác 100% dựa trên kết quả tính toán của Microsoft Word COM:
+     * Tổng số trang thực tế: **468 trang** (Vượt mốc 390 trang theo đúng kỳ vọng của người dùng).
+     * Tổng số từ: **117,275 từ**.
+     * Phụ lục II (CRM): Trang 48 - 70.
+     * Phụ lục III (Mobile App): Trang 71 - 105.
+     * Phụ lục IV (Mã nguồn 18 file thực tế, 22,126 dòng code): Trang 106 - 468.
+4. **Kiểm Thử Chất Lượng & Tuân Thủ Quy Chuẩn**:
+   - `apps/vione_app_fe`: `npx tsc --noEmit` -> **Exit code 0 (0 errors, 0 warnings)**.
+   - `apps/mobile_vione`: `npm run typecheck` -> **Exit code 0 (0 errors, 0 warnings)**.
+   - Bản xuất bản được lưu trữ đồng bộ tại:
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (38.67 MB)
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (1.12 MB)
+     * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (38.67 MB)
+     * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (1.12 MB)
+   - Tuân thủ nghiêm ngặt Rule 1: Không tự ý thực thi `git commit` hay `git push`.
+
+---
+
 ## 0.0000000000.32. CHUYỂN ĐỔI THEME SÁNG TOÀN DIỆN CHO VIONE PLATFORM APP, QUY CHUẨN HEADER TỐI GIẢN (LOGO + CHUÔNG), NÂNG CẤP HỆ THỐNG CHỨC NĂNG CON (SPORT, RUN, MUSEUM, HERITAGE, TICKETS) & XUẤT MASTER TÀI LIỆU BẢN QUYỀN 453 TRANG (30/10/2026)
 
 ### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
