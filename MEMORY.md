@@ -1,5 +1,215 @@
 # System Memory & Architecture
 
+## 0.0000000000.29. KHẮC PHỤC TRIỆT ĐỂ LỖI DUPLICATE TRANG BÌA, MỞ RỘNG TO TOÀN DIỆN 4 SƠ ĐỒ VÀ BỔ SUNG 4 BẢNG KIẾN TRÚC TRỰC TIẾP TRONG WORD (30/10/2026)
+
+### 1. Bối cảnh & Phản Hồi Từ Người Dùng
+1. **Lỗi duplicate trình bày ở trang bìa (Ảnh 1 người dùng gửi)**:
+   - Trên Trang 1 / 395, khối `MÔI TRƯỜNG TRIỂN KHAI VẬN HÀNH HỆ THỐNG:` và tiêu đề `Chủ sở hữu quyền tác giả:` cùng các dòng điền chấm bị lặp lại 2 lần liên tiếp do tệp script trước đó chưa được chạy lại sau khi dọn dẹp các dòng thừa.
+2. **Yêu cầu về sơ đồ kiến trúc (Ảnh 2 người dùng gửi)**:
+   - *"làm ảnh sơ đồ kiến trúc to rộng ra không cần giữ form word cứ mở rộng ra để người đọc nhìn được hoặc là bạn vẽ trực tiếp sơ đồ ra"*.
+   - Khắc phục triệt để việc sơ đồ bị thu nhỏ, chữ khó nhìn: mở rộng kích thước ảnh tối đa toàn chiều ngang trang giấy, tăng mạnh cỡ chữ trong ảnh (tăng 40-50%) và đặc biệt là **"vẽ trực tiếp sơ đồ ra"** bằng 4 bảng cấu trúc kiến trúc phân tầng dạng bảng ma trận trong Microsoft Word với 100% font chữ vector sắc nét, rõ ràng.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Xóa Sạch 100% Hiện Tượng Duplicate Trên Trang Bìa**:
+   - Dọn dẹp dứt điểm các dòng thừa trong `scripts/build_vione_super_master_uniwork.js` ở cả phần dựng OpenXML (`bodyXml`) và Markdown (`md`).
+   - Kiểm tra trực tiếp tệp đầu ra: Mỗi trường thông tin (`CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM`, `Độc lập - Tự do - Hạnh phúc`, `CHƯƠNG TRÌNH MÁY TÍNH:`, Tiêu đề in hoa, Phụ đề, `(Không bao gồm dữ liệu)`, `MÔI TRƯỜNG TRIỂN KHAI VẬN HÀNH HỆ THỐNG:` với 2 mục đánh số 1 và 2, `Chủ sở hữu quyền tác giả:`, các dòng chấm điền thông tin và `Hà Nội, Năm 2026`) chỉ xuất hiện DUY NHẤT 1 LẦN, căn lề trái chuẩn xác, không dãn chữ.
+2. **Nâng Cấp Kích Thước & Font Chữ 4 Sơ Đồ Siêu Nét Nền Trắng (`#FFFFFF`)**:
+   - Trong `scripts/generate_all_clean_white_diagrams.js`: Mở rộng khung đồ họa lên `2300 x 1420` (kết xuất Playwright DPR 2 thành ảnh `4600 x 2840` pixel).
+   - Tăng mạnh cỡ chữ trong toàn bộ 4 sơ đồ: Tiêu đề từ 28px lên 34px bold, tiêu đề phân lớp từ 15-16px lên 20-22px, tiêu đề thẻ dịch vụ từ 13.5px lên 17-19px, mô tả từ 11.5px lên 15-16px.
+   - Kết quả xuất ảnh trong `document/images/evidence_v9/`:
+     * `diagram_01_overall_architecture.png` (886.4 KB): Kiến trúc tổng thể hợp nhất Web CRM & Mobile App.
+     * `diagram_02_crm_workflow.png` (632.8 KB): Sơ đồ luồng nghiệp vụ & dữ liệu CRM.
+     * `diagram_03_mobile_app_architecture.png` (663.0 KB): Sơ đồ luồng tương tác phần cứng & trải nghiệm Mobile.
+     * `diagram_04_deployment_topology.png` (534.5 KB): Sơ đồ kiến trúc triển khai phân lập & an ninh hạ tầng.
+3. **Mở Rộng Kích Thước Khung Ảnh Trong Word Lên Tối Đa**:
+   - Trong hàm `makeImageDrawing`: Tăng kích thước ảnh từ `cx = 5860000` (6.4 in) lên `cx = 6480000` (~7.08 inches) và `cy = 4000000` (~4.37 inches). Hình ảnh mở rộng căng trọn chiều ngang trang in, các khối hộp to bản, người đọc quan sát dễ dàng.
+4. **"Vẽ Trực Tiếp Sơ Đồ Ra" Bằng 4 Bảng Ma Trận Kiến Trúc Native Trong Word**:
+   - Tạo mới `scripts/content_vione_arch_tables.js` và nhúng trực tiếp 4 bảng chuẩn thương hiệu (Header nền Đen Obsidian `#0E1724`, chữ Vàng Champagne `#F6E1C3`, viền `#D8B282`, nền xen kẽ `#FCFAF6`):
+     * **Bảng 2.1**: *Đặc tả các phân tầng & khối chức năng kiến trúc tổng thể ViOne Platform (Hợp nhất Web CRM & App Mobile)* - 6 phân tầng (Hiện trường ngoại vi, Kênh người dùng, Lớp biên Ingress, Tầng ứng dụng NestJS DDD, Tầng CSDL & Lưu trữ, Dịch vụ tích hợp ngoại vi).
+     * **Bảng 2.2**: *Đặc tả quy trình luồng nghiệp vụ và xử lý dữ liệu Cổng Web Quản Trị ViOne CRM* - 5 bước chuẩn hóa (Tiếp nhận định danh token kép, Thẩm định duyệt B2B, Bán vé thanh toán VNPay HMAC-SHA512, Sinh vé QR động & Zalo ZNS, Check-in realtime Socket.IO <50ms).
+     * **Bảng 2.3**: *Đặc tả luồng tương tác phần cứng và kiến trúc ứng dụng di động ViOne (ViOne Connect)* - 5 phân hệ (Mô-đun 1-Chạm NFC ISO 14443 & FaceID, Quét AI OCR & Camera Vision, Hiện vật 3D GLTF xoay 360° & Audio Guide GPS Haversine, CSDL Offline SQLite/WatermelonDB, Kênh Realtime Socket.IO & Push FCM).
+     * **Bảng 2.4**: *Đặc tả phân định môi trường triển khai Subdomain Production và Dev Server ViOne* - 5 tiêu chí phân định rõ ràng (Domain/Port, Proxy vione-ssl-proxy độc lập, CSDL Sandbox vs Prod, Kịch bản Fast Deploy .ps1, Kế hoạch backup 6h & khắc phục thảm họa RTO < 15p, RPO < 6h).
+5. **Kiểm Tra Lỗi Nghiêm Ngặt & Đo Lường Thực Tế Qua Word COM**:
+   - Sử dụng Microsoft Word COM Automation (`$doc.ComputeStatistics(2)`) kiểm tra toàn bộ tệp xuất bản:
+     * Tổng số trang đo lường thực tế: **441 trang** (vượt xa mục tiêu 400 trang).
+     * Exit code 0, 0 errors, XML cấu trúc toàn vẹn 100%.
+   - Cập nhật đồng bộ sang cả 2 vị trí tệp:
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (36.06 MB) & `.md` (1.07 MB)
+     * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (36.06 MB) & `.md` (1.07 MB)
+   - Tiếp tục tuân thủ tuyệt đối: Không chạy `git commit` hay `git push`.
+
+---
+
+## 0.0000000000.28. KHẮC PHỤC TRIỆT ĐỂ SƠ ĐỒ KIẾN TRÚC CHI TIẾT: LOẠI BỎ 100% NỀN ĐEN, MỞ RỘNG TO RÕ RÀNG VÀ CHUẨN NỀN TRẮNG TINH KHIẾT (30/10/2026)
+
+### 1. Bối cảnh & Phản Hồi Từ Người Dùng
+- **Người dùng yêu cầu**: *"vẫn phải sửa lại kiến trúc chi tiết nhìn chẳng rõ gì cả và đừng để màu nền đen, làm kiến trúc rõ ràng rộng ra"*.
+- **Phân tích nguyên nhân**:
+  1. Các sơ đồ luồng chi tiết trong Mục `2.1.2 Kiến trúc chi tiết` (`diagram_02_crm_workflow.png`, `diagram_03_mobile_app_architecture.png`) và `2.1.3` (`diagram_04_deployment_topology.png`) trước đó được tạo trên nền đen Obsidian (`#050C15`) với các thẻ màu tối, cỡ chữ nhỏ (10-11px), khi chèn vào văn bản Word nền trắng tạo cảm giác chật chội, chữ bị mờ, khó đọc và thiếu tính chuyên nghiệp cho hồ sơ bản quyền.
+  2. Kích thước hiển thị trong Word chưa được mở rộng tối đa theo bề rộng lề trang in.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Chuyển Đổi 100% Sang Nền Trắng Tinh Khiết (`#FFFFFF`) Cho Toàn Bộ 4 Sơ Đồ**:
+   - Viết kịch bản `scripts/generate_all_clean_white_diagrams.js` sử dụng Playwright kết xuất 4 sơ đồ ở độ phân giải siêu nét `2200 x 1350` (DPR 2 xuất ảnh `4400 x 2700`, dung lượng 440KB - 740KB mỗi tệp).
+   - Tuyệt đối loại bỏ nền đen `#050C15`, sử dụng nền trắng sáng, viền khối màu đậm nét (Xanh dương `#3B82F6`, Xanh lá `#10B981`, Cam hổ phách `#F59E0B`, Tím `#8B5CF6`).
+2. **Tái Cấu Trúc To Rõ Ràng, Mở Rộng Không Gian ("Làm kiến trúc rõ ràng rộng ra")**:
+   - **Tăng cỡ chữ toàn diện**: Tiêu đề chính 28px đậm nét, tiêu đề phụ 15px, tiêu đề thẻ 15-16px, nội dung mô tả 12.5-13.5px (tăng 30% so với bản cũ), dòng chú thích sắc nét tương phản cao trên nền trắng.
+   - **Mở rộng đệm (padding) và khoảng cách (gap)**: Đệm thẻ từ 14-18px, khoảng cách giữa các khối 16-24px, phân chia bố cục mạch lạc:
+     * `diagram_01_overall_architecture.png` (721.7 KB): Bố cục phân lớp 4 tầng chuẩn Uniwork kết hợp 2 khối ngoại vi / app di động cột trái to rõ.
+     * `diagram_02_crm_workflow.png` (514.3 KB): Bố cục 4 giai đoạn khép kín (Xác thực RBAC hội viên 360 -> Giao thương B2B deals tài chính -> Điều hành sự kiện giải đấu bảo tàng 3D -> Phân tích C-Level & Audit Log).
+     * `diagram_03_mobile_app_architecture.png` (536.9 KB): Bố cục 3 trục dọc rộng rãi (Cảm biến hiện trường NFC/FaceID/GPS -> Động cơ lõi ngoại tuyến SQLite/3D/TOTP QR -> Giao tiếp mạng đám mây SSL Pinning/Socket.IO/FCM).
+     * `diagram_04_deployment_topology.png` (432.1 KB): Phân định trực quan 2 cột lớn (Dev Server Sandbox cổng 5445/5446 vs Production Subdomain cổng 80/443 SSL và cụm proxy `vione-ssl-proxy`).
+3. **Mở Rộng Kích Thước Hiển Thị Trong File Word**:
+   - Trong `makeImageDrawing`: Tăng kích thước ảnh từ `cx = 5669280` lên `cx = 5860000` (~6.4 inch, chiếm trọn chiều rộng văn bản giữa 2 lề trang in) và `cy = 3596000` (chuẩn tỷ lệ 2200 x 1350), giúp hình ảnh hiển thị bề thế, to rõ, người đọc không cần phóng to vẫn đọc rõ từng chi tiết.
+4. **Đóng Gói & Xuất Bản Đồng Bộ DOCX & Markdown**:
+   - Chạy `node scripts/build_vione_super_master_uniwork.js` xuất bản thành công:
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (35.57 MB) & `.md` (1.07 MB)
+     * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (35.57 MB) & `.md` (1.07 MB)
+   - Tiếp tục tuân thủ nghiêm ngặt quy tắc: Không tự động chạy `git commit` hay `git push`.
+
+---
+
+## 0.0000000000.27. HOÀN THIỆN SƠ ĐỒ KIẾN TRÚC CHUẨN UNIWORK (ẢNH 1), SỬA LỖI FORMAT TRANG BÌA (ẢNH 2) VÀ LOẠI BỎ HỆ SINH THÁI TẠI HEADER (30/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
+1. **Sửa ngay lại Sơ đồ Kiến trúc phải là dạng như Ảnh 1**:
+   - Sơ đồ kiến trúc tổng thể phải tuân thủ 100% bố cục của Uniwork: cột trái gồm 2 khối thiết bị ngoại vi/hiện trường và bên trong ứng dụng di động; khu vực trung tâm phân tầng rõ ràng gồm Kênh người dùng (3 cards), Lớp biên (Ingress proxy), Tầng ứng dụng (NestJS API 8 dịch vụ + dịch vụ dùng chung), Tầng CSDL (PostgreSQL, MinIO S3, Redis) và Dịch vụ tích hợp bên ngoài (VNPay, Zalo ZNS, Stores, AI OCR).
+2. **Khắc phục lỗi format trang bìa (Ảnh 2)**:
+   - Các dòng thông tin chủ sở hữu (`Tên tổ chức`, `Mã số`, `Địa chỉ`, `Số điện thoại`, `Tác giả`) bị dãn chữ rất xấu (`Tên     tổ     chức     /     doanh     nghiệp:`) do lỗi justify (`w:jc w:val="both"`).
+   - Khắc phục bằng cách cưỡng chế căn lề trái (`align: 'left'`), điều chỉnh số lượng dấu chấm vừa vặn trên 1 dòng đơn.
+   - Loại bỏ lỗi đúp bullet `• 1. ` tại khối môi trường triển khai.
+3. **Loại bỏ "Hệ sinh thái" tại header**:
+   - Cập nhật header tài liệu từ `Hệ Sinh Thái ViOne: CRM & ViOne Connect App — Bản Trình Bày Tác Phẩm` thành `ViOne Platform: CRM & ViOne Connect App — Bản Trình Bày Tác Phẩm`.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Tạo Sơ Đồ Kiến Trúc Tổng Thể Mới `diagram_01_overall_architecture.png` Chuẩn Bố Cục Uniwork**:
+   - Viết kịch bản `scripts/generate_diagram_uniwork_style.js` sử dụng Playwright xuất ảnh 4096x2456px (DPR 2, 609 KB):
+     * **Cột trái**: Khối `THIẾT BỊ NGOẠI VI & HIỆN TRƯỜNG THỰC TẾ` (viền cam hổ phách `#E8A87C`) gồm Thẻ chip 1-Chạm NFC NTAG213/215, Mã QR động & Vé điện tử, Chip timing RFID & Máy in POS; Khối `BÊN TRONG ỨNG DỤNG DI ĐỘNG VIONE` (viền xanh ngọc `#78C2AD`) gồm Mô-đun đọc thẻ NFC & FaceID, Bộ quét mã QR & Camera AI OCR, Trình phát Audio Guide & Bảo tàng 3D, Ví vé & CSDL ngoại tuyến SQLite.
+     * **Khu vực trung tâm**:
+       - *Kênh người dùng* (viền xanh lá `#85D2A0`): App Di động ViOne Connect, Cổng Web Quản trị ViOne CRM, Quầy bán vé & POS check-in.
+       - *Lớp biên và kiểm soát truy cập* (viền xanh dương `#85BEE8`): Ingress / Reverse Proxy (vione-ssl-proxy / Nginx) HTTPS/TLS.
+       - *Tầng ứng dụng* (NestJS API, nền `#F8FAFC`): 8 khối dịch vụ nghiệp vụ (Xác thực, Giao thương Deals, Hội viên, Vé thanh toán, Sự kiện, Thể thao Sport/Run, Bảo tàng 3D, Quản trị log) cùng hộp dịch vụ dùng chung nền tảng.
+       - *Tầng dữ liệu* (viền tím `#C4B5FD`): PostgreSQL 15 `vione_app` và Kho tệp MinIO / S3.
+       - *Dịch vụ bên ngoài* (viền nét đứt `#94A3B8`): Cổng VNPay/ZaloPay, Zalo OpenAPI ZNS, App Store / Google Play, Dịch vụ AI OCR.
+2. **Khắc Phục Toàn Diện Lỗi Format Trang Bìa**:
+   - Trong `makeP`: Cập nhật logic để luôn xuất thuộc tính `<w:jc w:val="${align}"/>` ngay cả khi `align === 'left'`.
+   - Các trường `Chủ sở hữu quyền tác giả` được gán cố định `align: 'left'`, chấm vừa vặn trên 1 dòng đơn, không còn hiện tượng dãn chữ hay gãy dòng.
+   - Khối `MÔI TRƯỜNG TRIỂN KHAI VẬN HÀNH HỆ THỐNG` chuyển sang dùng đoạn văn đánh số chuẩn `1.` và `2.` căn trái, bỏ hoàn toàn dấu bullet `• `.
+3. **Loại Bỏ Hoàn Toàn "Hệ Sinh Thái" Tại Header**:
+   - Quét và thay thế toàn bộ các tệp `word/header*.xml` trong gói nén OpenXML, loại bỏ từ khóa "Hệ Sinh Thái", hiển thị chuẩn mực `ViOne Platform: CRM & ViOne Connect App — Bản Trình Bày Tác Phẩm`.
+4. **Build Lại DOCX & Markdown và Đồng Bộ**:
+   - Chạy `scripts/build_vione_super_master_uniwork.js` xuất bản đồng thời:
+     * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (34.76 MB) & `.md` (1.07 MB)
+     * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (34.76 MB) & `.md` (1.07 MB)
+   - Tuyệt đối không commit hay push git.
+
+---
+
+## 0.0000000000.26. HOÀN THIỆN TOÀN DIỆN MASTER [VIONE] 06: LOẠI BỎ VIPLUS, KHẮC PHỤC LỖI DÍNH DÒNG, BỔ SUNG 4 SƠ ĐỒ APP/WEB VÀ CHUẨN MÀU VÀNG HOÀNG GIA ĐẠT 437 TRANG (30/10/2026)
+
+### 1. Bối cảnh & 4 Phản Hồi Trọng Yếu Từ Người Dùng
+1. **Loại bỏ triệt để từ khóa "ViPlus"**: Người dùng chỉ rõ hệ thống là **ViOne** (gồm Cổng Web Quản trị ViOne Platform & Ứng dụng Di động ViOne / ViOne Connect), tuyệt đối không tồn tại tên gọi "ViPlus".
+2. **Khắc phục lỗi dính dòng (Ảnh 1 người dùng gửi)**: Tại mục `2.1.2 Kiến trúc chi tiết`, các luồng 1, 2, 3, 4 và các gạch đầu dòng bị nối dính thành một khối đặc chữ do Microsoft Word bỏ qua ký tự `\n` trong thẻ `<w:t>`.
+3. **Bổ sung sơ đồ kiến trúc & luồng xử lý như Uniwork (bao gồm cả phần App Mobile)**: Uniwork có 4 sơ đồ (Kiến trúc tổng thể, Luồng nghiệp vụ, Luồng beacon đặc thù, Kiến trúc triển khai). Người dùng yêu cầu ViOne phải có các sơ đồ chi tiết tương tự và sơ đồ phải bao hàm cả phần App di động.
+4. **Khôi phục màu sắc nhận diện thương hiệu ViOne & Độ dày tài liệu**:
+   - Khôi phục màu Vàng Hoàng Gia Champagne Gold (`#8C653B`, `#D8B282`, `#F6E1C3`) và Đen Thạch Anh Obsidian (`#050C15`, `#0E1724`), loại bỏ màu xanh navy/blue của Uniwork.
+   - Tài liệu đạt độ dày thực tế vượt mốc 390 trang, đạt **437 trang** đo lường trực tiếp qua Microsoft Word COM.
+   - Giữ nguyên các trường thông tin tác giả, công ty dạng dấu chấm dài (`....................................................................`) trên trang bìa.
+
+### 2. Các Biện Pháp Kỹ Thuật Đã Triển Khai
+1. **Xóa Sạch 100% Từ Khóa "ViPlus"**:
+   - Quét regex toàn bộ các tệp nội dung: `content_vione_meta.js`, `content_vione_section1_2.js`, `content_vione_crm.js`, `content_vione_mobile.js`, `content_vione_code_loader.js`.
+   - Chuyển đổi toàn diện sang: "Nền tảng ViOne", "Ứng dụng Di động ViOne", "ViOne Connect".
+   - Kết quả kiểm tra: 0 xuất hiện của "viplus" trong mã nguồn tài liệu và tệp xuất bản.
+2. **Khắc Phục Triệt Để Lỗi Dính Dòng Bằng Bộ Phân Tích Cú Pháp `renderFormattedTextBlock`**:
+   - Tách chuỗi theo dòng (`split('\n')`), phân loại từng dòng:
+     * Dòng đánh số (`1. `, `2. `): Tạo đoạn văn bản `<w:p>` độc lập với tiêu đề in đậm màu Vàng Hoàng Gia `#8C653B`.
+     * Dòng gạch đầu dòng (`- `, `• `): Sử dụng `<w:pStyle w:val="ListParagraph"/>` với thụt lề chuẩn (`w:ind w:left="480" w:hanging="240"`), tách biệt hoàn toàn nội dung.
+     * Dòng văn xuôi thông thường: Tạo thẻ đoạn văn bản riêng biệt.
+3. **Tạo 4 Sơ Đồ Kiến Trúc & Luồng Xử Lý Chuyên Sâu Tích Hợp Cả Web CRM & Mobile App**:
+   - Sử dụng Playwright DPR 2 xuất đồ họa sắc nét 1400x960 pixel:
+     * `diagram_01_overall_architecture.png` (460.9 KB): Kiến trúc tổng thể 4 tầng (Client Tier tích hợp đồng thời Web CRM & Native/PWA App, Edge & Security Tier, Application Services Tier, Data & Storage Tier).
+     * `diagram_02_crm_workflow.png` (219.7 KB): Sơ đồ 12 bước luồng nghiệp vụ & luân chuyển dữ liệu Cổng Web Quản trị ViOne Platform (CRM Enterprise).
+     * `diagram_03_mobile_app_architecture.png` (227.5 KB): Sơ đồ 12 bước kiến trúc xử lý & luồng trải nghiệm Ứng dụng Di động ViOne (FaceID, NFC 1-Tap, AI OCR, Vé QR offline, GPS Geofencing).
+     * `diagram_04_deployment_topology.png` (259.3 KB): Sơ đồ kiến trúc triển khai phân lập Dev vs Production, cụm `vione-ssl-proxy`, cơ chế sao lưu định kỳ 6h và khắc phục thảm họa RTO/RPO.
+4. **Chuẩn Hóa Hệ Bảng Màu Thương Hiệu ViOne**:
+   - Heading 1, Title, Heading 4: `#8C653B` (Vàng Hoàng Gia đậm cổ điển).
+   - Heading 2: `#B38646` (Vàng Kim Champagne kim loại).
+   - Heading 3: `#1A2332` (Đen Thạch Anh Obsidian).
+   - Header bảng: Nền `#0E1724` (Obsidian), chữ `#F6E1C3` (Vàng Champagne sáng, bold).
+   - Đường viền bảng: `#D8B282` (Viền mạ vàng). Xen kẽ nền trắng và `#FCFAF6` (Vàng kem siêu nhẹ).
+
+### 3. Kết Quả Kiểm Định Trực Tiếp Qua Microsoft Word COM Engine
+- **Tổng số trang hiển thị trên Microsoft Word**: **437 TRANG** (Vượt mốc 390 trang như người dùng dự kiến).
+- **Tổng số từ (Words)**: **109,898 TỪ**.
+- **Tổng số đoạn văn (Paragraphs)**: **22,778 ĐOẠN**.
+- **Dung lượng tệp DOCX**: **34.62 MB (36,301,741 bytes)** - nhúng trọn vẹn 47 ảnh (4 Sơ đồ + 43 Giao diện live) cùng 18 file mã nguồn thực tế (21,523 dòng code).
+- **Dung lượng tệp Markdown**: **1.07 MB (1,117,343 bytes)**.
+- **Tình trạng kỹ thuật**: 0 lỗi cú pháp XML, Word mở ngay lập tức không bị báo lỗi repaired hay unreadable content.
+- **Vị trí bàn giao đồng bộ**:
+  * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` & `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+  * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` & `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+- **Cam kết**: Tuyệt đối KHÔNG tự ý thực hiện `git commit` hay `git push`.
+
+---
+
+## 0.0000000000.25. TÁI CẤU TRÚC VÀ XUẤT BẢN TOÀN DIỆN MASTER [VIONE] 06 CHUẨN BỐ CỤC UNIWORK ĐẠT 433 TRANG (30/10/2026)
+
+### 1. Bối cảnh & Yêu Cầu Cốt Lõi Từ Người Dùng
+- **Người dùng phản ánh**: Bản trình bày tác phẩm ViOne trước đó thiếu nội dung, chưa giống bố cục chuẩn mực của tệp tham chiếu `Trình bày tác phẩm Uniwork.docx` (221 trang).
+- **Yêu cầu cụ thể**:
+  1. Tuân thủ 100% bố cục và các đầu mục của Uniwork nhưng biến tấu nội dung nghiệp vụ cho ViOne Platform.
+  2. Bổ sung rất chi tiết về Cổng Web Quản trị (CRM Enterprise) đan xen với Ứng dụng di động ViPlus Mobile (bản di động).
+  3. **Quy chuẩn pháp lý nghiêm ngặt**: TUYỆT ĐỐI KHÔNG ĐƯỢC xóa các trường thông tin tác giả, công ty... đã để trống dưới dạng dấu chấm dài (`....................................................................`) như bản ViOne cũ; không được tự điền thông tin giả lập để người dùng chủ động điền pháp lý khi nộp Cục Bản quyền tác giả.
+  4. Đạt quy mô chuẩn mực: Dự kiến dài gần 400 trang tính cả mã nguồn (Phụ lục IV).
+  5. Tuyệt đối không tự ý `git commit` hay `git push`.
+
+### 2. Quá Trình Thực Hiện & Thiết Kế Kiến Trúc
+1. **Phân Tích Chi Tiết Tệp Nguồn Tham Chiếu `Trình bày tác phẩm Uniwork.docx`**:
+   - Trích xuất toàn bộ cấu trúc từ `D:\download\VICONNECT\CEO_VIONE_PROJECT\Trình bày tác phẩm Uniwork.docx` (23.28 MB).
+   - Xác định rõ khung mục lục:
+     * **Trang bìa**: Quốc hiệu, Tên tác phẩm, Bảng trường thông tin chủ sở hữu và tác giả để trống (`...................................................`).
+     * **Mục lục tổng thể**: Word Field TOC tự động kết hợp bảng text tĩnh cho các trình đọc bên ngoài.
+     * **Chương 1**: 1.1 Mục tiêu, 1.2 Phạm vi của dự án (1.2.1 Phạm vi, 1.2.2 Đối tượng sử dụng kèm bảng 10 tác nhân A01-A10).
+     * **Chương 2**: 2.1 Kiến trúc hạ tầng (2.1.1 Kiến trúc tổng thể 4 tầng, 2.1.2 Kiến trúc chi tiết các luồng xử lý JWT/VNPay/QR/Socket.IO/NFC/GIS, 2.1.3 Triển khai & an toàn), 2.2 Công nghệ sử dụng (Bảng 20+ nền tảng/thư viện), 2.3 Yêu cầu chức năng (2.3.1 Chung, 2.3.2 Chi tiết 23 phân hệ Cổng Web Quản trị CRM, 2.3.3 Chi tiết 20 phân hệ App Di động ViPlus), 2.4 Phi chức năng (Hiệu năng, Bảo mật, Tuân thủ).
+     * **Phụ lục I**: Yêu cầu kỹ thuật phần mềm (Bảng CSDL PostgreSQL 18 thực thể, Bảng 20 API RESTful cốt lõi, Bảng Socket.IO Realtime Gateway, Bảng cấu hình phần cứng).
+     * **Phụ lục II**: Hướng dẫn sử dụng Cổng Web Quản trị ViOne Platform (23 phân hệ, 5 nhóm nghiệp vụ, cấu trúc Mục đích, Các bước thực hiện 1-2-3-4, Kết quả, 23 ảnh Desktop screenshot 1440x900 sắc nét).
+     * **Phụ lục III**: Hướng dẫn sử dụng Ứng dụng Di động ViPlus (20 phân hệ màn hình Mobile, cấu trúc Mục đích, Thao tác vuốt chạm / camera / NFC, Kết quả, 20 ảnh Mobile Mockup iPhone Obsidian sang trọng không lỗi header/something went wrong).
+     * **Phụ lục IV**: Mã nguồn phần mềm (Trích xuất 18 mô-đun mã nguồn cốt lõi từ backend, frontend và mobile với hơn 21,523 dòng mã nguồn thực tế).
+
+2. **Xây Dựng Script Master Builder `scripts/build_vione_super_master_uniwork.js`**:
+   - Tích hợp `content_vione_code_loader.js` nạp 18 tệp nguồn:
+     * `apps/vione_app_be/src/auth/auth.service.ts` & `auth.controller.ts`
+     * `apps/vione_app_be/src/platform-hub/platform-hub.service.ts` & `platform-hub.controller.ts`
+     * `apps/vione_app_be/src/events/events.service.ts` & `events.controller.ts`
+     * `apps/vione_app_be/src/members/members.service.ts`
+     * `apps/vione_app_be/src/companies/companies.service.ts`
+     * `apps/vione_app_be/src/admin/admin.service.ts`
+     * `apps/vione_app_be/src/operations/operations.service.ts`
+     * `apps/vione_app_fe/src/components/dashboard/ExecutiveDashboard.tsx`
+     * `apps/vione_app_fe/src/components/business-connect/mobile/ExecutiveHome.tsx`
+     * `apps/vione_app_fe/src/components/platform-app/SportTournamentHub.tsx`
+     * `apps/vione_app_fe/src/components/platform-app/RunRaceHub.tsx`
+     * `apps/vione_app_fe/src/components/platform-app/MuseumExplorer.tsx`
+     * `apps/vione_app_fe/src/components/platform-app/HeritageExplorer.tsx`
+     * `apps/vione_app_fe/src/components/platform-app/TicketWallet.tsx`
+     * `apps/mobile_vione/src/screens/platform/PlatformAppScreen.tsx`
+   - Khởi tạo cấu trúc OpenXML hoàn chỉnh với font Times New Roman cho văn bản và Consolas cho mã nguồn, ngắt dòng chính xác.
+
+### 3. Kết Quả Kiểm Định Toàn Diện Qua Microsoft Word COM
+- **Độ Dày & Quy Mô Tài Liệu**:
+  * **Tổng số trang thực tế đo bởi Microsoft Word Engine**: **433 TRANG** (Đạt chuẩn mong muốn của người dùng: "dài gần 400 trang tính cả code").
+  * **Tổng số từ (Words)**: **109,844 TỪ**.
+  * **Dung lượng file DOCX**: **35.19 MB (35,191,113 bytes)**.
+  * **Dung lượng file Markdown**: **1.06 MB (1,116,207 bytes)**.
+  * **Tình trạng kiểm tra**: 0 lỗi cú pháp XML, Microsoft Word mở tệp mượt mà và hiển thị trọn vẹn 100%.
+- **Bàn Giao Đồng Bộ Tại 2 Vị Trí**:
+  * `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` & `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+  * `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` & `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`
+- **Cam kết**: Tuyệt đối KHÔNG tự ý thực hiện `git commit` hay `git push`.
+
+---
+
 ## 0.0000000000.24. KHẮC PHỤC TRIỆT ĐỂ LỖI HEADER ĐÈ STATUS BAR/DYNAMIC ISLAND VÀ LỖI ERRORBOUNDARY "SOMETHING WENT WRONG" TRÊN VIONE APP (29/10/2026)
 
 ### 1. Phân Tích & Nguyên Nhân Gốc Rễ
@@ -4900,3 +5110,28 @@ Người dùng phản ánh một loạt tồn đọng trong trải nghiệm th�
    - Strict Rule 1: Không tự động chạy `git commit` hay `git push`.
    - Strict Rule 2: Cập nhật `MEMORY.md` và tài liệu kỹ thuật đầy đủ.
    - Strict Rule 3: Kiểm thử toàn bộ 8 file docx qua Microsoft Word COM (0 errors). |
+
+| 30/10/2026 | **Tái Cấu Trúc Toàn Diện & Nâng Cấp Hồ Sơ Đăng Ký Bản Quyền Tác Giả ViOne Platform Đạt Chuẩn Uniwork Parity 100% (Chi Tiết Hóa 23 Phân Hệ Web Quản Trị, Đan Xen 20 Phân Hệ App ViPlus, Nhúng 43 Ảnh Live Không Lỗi)**:
+1) **Chuẩn Hóa Pháp Lý Tên Tác Phẩm & Quy Chuẩn Thuật Ngữ**:
+   - Tên tác phẩm chuẩn xác 100%: *"Phần mềm ViOne Platform– Nền tảng định danh số, kết nối kinh doanh, quản trị cộng đồng, sự kiện và số hóa di sản văn hóa"*.
+   - Khử hoàn toàn từ "hệ sinh thái" và "CRM", thay thế bằng *"Cổng Web Quản Trị ViOne Platform"* / *"Web Quản trị"*.
+   - Mô hình phân quyền chuẩn RBAC (Role-Based Access Control) ma trận vai trò độc lập, không dùng khái niệm "các ban".
+   - Tích hợp cổng thanh toán trực tuyến quốc gia *"VNPay"* (VNPay-QR) và kênh thông báo khách hàng *"Zalo OA"* (thay thế triệt để VietQR/Napas).
+2) **Tái Cấu Trúc Đạt Chuẩn 100% Cấu Trúc Tệp Mẫu Uniwork**:
+   - **Chương 1: Giới thiệu**: 1.1 Mục tiêu nền tảng hợp nhất 3 trụ cột (Quản trị C-Level, Định danh số B2B, Thể thao & Di sản văn hóa); 1.2 Phạm vi dự án; 1.2.2 Đối tượng sử dụng kèm **Bảng ma trận 10 mã tác nhân (Actors A01 – A10)**.
+   - **Chương 2: Yêu cầu kỹ thuật**:
+     * 2.1 Kiến trúc hạ tầng 4 tầng phân lập (Presentation, Gateway Nginx vione-ssl-proxy 5445/5446, Application Services, Data & Storage PostgreSQL/Redis/MinIO).
+     * 2.2 Công nghệ sử dụng: Bảng 12 lĩnh vực công nghệ mã nguồn mở hiện đại.
+     * 2.3.1 Các chức năng nền tảng chung: JWT RS256 kép, RBAC, theme Obsidian & Vàng Champagne Gold (#D8B282), Socket.IO, Command Palette.
+     * **2.3.2 Chức năng chi tiết Cổng Web Quản Trị ViOne Platform (23 Phân hệ)**: Trình bày chi tiết từng phân hệ chuẩn Uniwork gồm Mô tả chung, danh sách tính năng có bullet, quy trình xử lý, kiểm tra dữ liệu và gán mã Tác nhân chính / phụ.
+     * **2.3.3 Chức năng chi tiết Phân hệ Ứng dụng Di động ViPlus (20 Phân hệ)**: Đan xen trình bày chi tiết tuyệt đối từng màn hình di động chuẩn Uniwork gồm Mô tả chung, tính năng native, sensor, camera OCR, chip NFC, GPS Geofencing và gán mã Tác nhân.
+     * 2.4 Các yêu cầu phi chức năng: Hiệu năng (API < 150ms, QR checkin < 100ms, Socket < 50ms, 10.000 users), Bảo mật (AES-256, TLS 1.3, Audit Logs 365 ngày), Tuân thủ (Nghị định 13/2023/NĐ-CP, W3C WCAG 2.1).
+   - **Phụ Lục I - Yêu cầu kỹ thuật của phần mềm**: Bảng 18 bảng CSDL PostgreSQL cốt lõi, Bảng 15 API RESTful, Bảng 6 sự kiện Socket.IO Realtime, Bảng cấu hình phần cứng (Server, Web Client, Mobile App).
+   - **Phụ Lục II – Hướng dẫn sử dụng Cổng Web Quản Trị (23 Phân hệ)**: Mục đích, 4 bước thực hiện, ảnh desktop 1440x900 chụp live từ server và chú thích hình ảnh.
+   - **Phụ Lục III – Hướng dẫn sử dụng Ứng dụng Di động ViPlus (20 Phân hệ)**: Mục đích, 4 bước thực hiện, ảnh di động bọc khung mockup iPhone Obsidian sang trọng (100% không có lỗi Something went wrong, không cắt header) và chú thích hình ảnh.
+   - **Phụ Lục IV - Mã nguồn phần mềm**: Trích đoạn 4 tệp mã nguồn tiêu biểu: Backend Controller, Realtime Gateway, Mobile VIP Component, PostgreSQL Schema DDL.
+3) **Kiểm Định Chất Lượng & Lưu Trữ Đích**:
+   - File DOCX: `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx` (33.27 MB) & `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.docx`.
+   - File MD: `document/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md` (201.1 KB) & `C:/Users/vumik/Downloads/[VIONE] 06. Trình bày tác phẩm.cop đĩa.md`.
+   - Kiểm tra mở tự động qua Microsoft Word COM: **80 trang chuẩn in ấn, 0 lỗi cú pháp XML, 0 cảnh báo**.
+   - Tuân thủ nghiêm ngặt Strict Rule 1: Tuyệt đối không tự ý chạy git commit/push. |

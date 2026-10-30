@@ -1,0 +1,466 @@
+[
+  {
+    "style": "TOC1",
+    "text": "PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm24"
+  },
+  {
+    "style": "TOC1",
+    "text": "PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG WEB UNIWORK27"
+  },
+  {
+    "style": "TOC1",
+    "text": "PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - BẢNG ĐIỀU KHIỂN QUẢN TRỊ NỀN TẢNG79"
+  },
+  {
+    "style": "TOC1",
+    "text": "PHỤ LỤC IV - Mã nguồn phần mềm88"
+  },
+  {
+    "style": "Heading1",
+    "text": "1. Giới thiệu"
+  },
+  {
+    "style": "Heading2",
+    "text": "1.1 Mục tiêu"
+  },
+  {
+    "style": "Heading2",
+    "text": "1.2 Phạm vi của dự án"
+  },
+  {
+    "style": "Heading1",
+    "text": "2. Yêu cầu kỹ thuật"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.1 Kiến trúc hạ tầng"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.1.1 Kiến trúc tổng thể"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.1.2 Kiến trúc chi tiết"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.1.3 Kiến trúc triển khai, dự phòng và an toàn"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.2 Công nghệ sử dụng"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.3 Yêu cầu chức năng"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.3.1 Các chức năng chung"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.3.2 Chức năng chi tiết"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.1. Phân hệ trang giới thiệu công khai"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.2. Phân hệ tài khoản và xác thực"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.3. Phân hệ khởi tạo và quản lý workspace"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.4. Phân hệ quản lý tổ chức và nhân sự"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.5. Phân hệ công việc"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.6. Phân hệ dự án"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.7. Phân hệ lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.8. Phân hệ cuộc họp"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.9. Phân hệ trò chuyện"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.10. Phân hệ Email Hub"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.11. Phân hệ tài liệu và Office"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.12. Phân hệ trang chủ, hộp việc và thông báo"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.13. Phân hệ trí tuệ nhân tạo và kết nối AI"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.14. Phân hệ quản trị nền tảng"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.4 Các yêu cầu phi chức năng khác"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.4.1 Yêu cầu về hiệu năng (Performance Requirements)"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.4.2 Yêu cầu về bảo mật (Security Requirements)"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.4.3 Yêu cầu tuân thủ (Compliance Requirements)"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG WEB UNIWORK"
+  },
+  {
+    "style": "Heading2",
+    "text": "Thông tin chung"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đăng ký tài khoản"
+  },
+  {
+    "style": "Heading3",
+    "text": "Xác thực email"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đăng nhập"
+  },
+  {
+    "style": "Heading3",
+    "text": "Quên mật khẩu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Khởi tạo tổ chức và workspace"
+  },
+  {
+    "style": "Heading3",
+    "text": "Hồ sơ cá nhân"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bảo mật tài khoản"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tuỳ chọn giao diện và ngôn ngữ"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đăng xuất"
+  },
+  {
+    "style": "Heading2",
+    "text": "Trang chủ và Hộp việc"
+  },
+  {
+    "style": "Heading3",
+    "text": "Trang chủ"
+  },
+  {
+    "style": "Heading3",
+    "text": "Hộp việc"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tuỳ chọn thông báo"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bảng lệnh tìm kiếm nhanh"
+  },
+  {
+    "style": "Heading2",
+    "text": "Công việc"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bảng Kanban"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chuyển kiểu hiển thị"
+  },
+  {
+    "style": "Heading3",
+    "text": "Dạng danh sách"
+  },
+  {
+    "style": "Heading3",
+    "text": "Dạng bảng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Lọc công việc"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tạo công việc"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chi tiết công việc"
+  },
+  {
+    "style": "Heading3",
+    "text": "Việc của tôi"
+  },
+  {
+    "style": "Heading2",
+    "text": "Dự án"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh sách dự án"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tạo dự án"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chi tiết dự án"
+  },
+  {
+    "style": "Heading2",
+    "text": "Lịch"
+  },
+  {
+    "style": "Heading3",
+    "text": "Lịch công việc và cuộc họp"
+  },
+  {
+    "style": "Heading2",
+    "text": "Cuộc họp"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh sách cuộc họp"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tạo cuộc họp"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chi tiết cuộc họp"
+  },
+  {
+    "style": "Heading3",
+    "text": "Kiểm tra thiết bị trước khi vào phòng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Phòng họp trực tuyến"
+  },
+  {
+    "style": "Heading2",
+    "text": "Trò chuyện"
+  },
+  {
+    "style": "Heading3",
+    "text": "Kênh trò chuyện"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tin nhắn trực tiếp"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tạo cuộc trò chuyện"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đính kèm và tiện ích tin nhắn"
+  },
+  {
+    "style": "Heading2",
+    "text": "Email Hub"
+  },
+  {
+    "style": "Heading3",
+    "text": "Email Hub"
+  },
+  {
+    "style": "Heading3",
+    "text": "Kết nối hộp thư"
+  },
+  {
+    "style": "Heading2",
+    "text": "Tài liệu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Kho tài liệu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tạo mới tài liệu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Trang tài liệu"
+  },
+  {
+    "style": "Heading2",
+    "text": "Danh bạ"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh bạ nhân sự"
+  },
+  {
+    "style": "Heading3",
+    "text": "Hồ sơ nhân sự"
+  },
+  {
+    "style": "Heading2",
+    "text": "Quản trị tổ chức và workspace"
+  },
+  {
+    "style": "Heading3",
+    "text": "Cài đặt chung workspace"
+  },
+  {
+    "style": "Heading3",
+    "text": "Thành viên workspace"
+  },
+  {
+    "style": "Heading3",
+    "text": "Thành viên tổ chức"
+  },
+  {
+    "style": "Heading3",
+    "text": "Phòng ban"
+  },
+  {
+    "style": "Heading3",
+    "text": "Thanh toán và hạn mức"
+  },
+  {
+    "style": "Heading3",
+    "text": "Nhật ký hoạt động"
+  },
+  {
+    "style": "Heading2",
+    "text": "Trợ lý AI"
+  },
+  {
+    "style": "Heading3",
+    "text": "Hỏi UNI"
+  },
+  {
+    "style": "Heading3",
+    "text": "Mức sử dụng AI"
+  },
+  {
+    "style": "Heading2",
+    "text": "Trang giới thiệu công khai"
+  },
+  {
+    "style": "Heading3",
+    "text": "Trang chủ giới thiệu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bảng giá"
+  },
+  {
+    "style": "Heading3",
+    "text": "Yêu cầu demo"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - BẢNG ĐIỀU KHIỂN QUẢN TRỊ NỀN TẢNG"
+  },
+  {
+    "style": "Heading2",
+    "text": "Truy cập bảng điều khiển"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tổng quan nền tảng"
+  },
+  {
+    "style": "Heading2",
+    "text": "Quản lý khách hàng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh sách tổ chức"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chi tiết tổ chức"
+  },
+  {
+    "style": "Heading3",
+    "text": "Hoá đơn và giao dịch"
+  },
+  {
+    "style": "Heading3",
+    "text": "Yêu cầu demo"
+  },
+  {
+    "style": "Heading2",
+    "text": "Cấu hình nền tảng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Catalog gói dịch vụ"
+  },
+  {
+    "style": "Heading3",
+    "text": "Cờ tính năng"
+  },
+  {
+    "style": "Heading2",
+    "text": "Giám sát và xử lý sự cố"
+  },
+  {
+    "style": "Heading3",
+    "text": "Hệ thống"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tra cứu trace"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC IV - Mã nguồn phần mềm"
+  }
+]

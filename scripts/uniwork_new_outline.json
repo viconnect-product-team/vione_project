@@ -1,0 +1,666 @@
+[
+  {
+    "style": "Heading1",
+    "text": "1. Giới thiệu"
+  },
+  {
+    "style": "Heading2",
+    "text": "1.1 Mục tiêu"
+  },
+  {
+    "style": "Heading2",
+    "text": "1.2 Phạm vi của dự án"
+  },
+  {
+    "style": "Heading1",
+    "text": "2. Yêu cầu kỹ thuật"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.1 Kiến trúc hạ tầng"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.1.1 Kiến trúc tổng thể"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.1.2 Kiến trúc chi tiết"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.1.3 Kiến trúc triển khai, dự phòng và an toàn"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.2 Công nghệ sử dụng"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.3 Yêu cầu chức năng"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.3.1 Các chức năng chung"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.3.2 Chức năng chi tiết"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.1. Phân hệ quản lý truy cập &amp; tài khoản"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.2. Phân hệ bán vé &amp; POS"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.3. Phân hệ quản lý nội dung tham quan"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.4. Phân hệ phê duyệt &amp; xuất bản nội dung"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.5. Phân hệ quản lý beacon &amp; gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.6. Phân hệ hệ sinh thái du lịch địa phương"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.7. Phân hệ quản trị hệ thống &amp; giám sát"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.8. Phân hệ khởi tạo &amp; vé tham quan (ứng dụng di động)"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.9. Phân hệ thuyết minh tự động theo beacon (ứng dụng di động)"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.10. Phân hệ tham quan &amp; khám phá (ứng dụng di động)"
+  },
+  {
+    "style": "Heading4",
+    "text": "2.3.2.11. Phân hệ cài đặt &amp; dữ liệu ngoại tuyến (ứng dụng di động)"
+  },
+  {
+    "style": "Heading2",
+    "text": "2.4 Các yêu cầu phi chức năng khác"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.4.1 Yêu cầu về hiệu năng (Performance Requirements)"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.4.2 Yêu cầu về bảo mật (Security Requirements)"
+  },
+  {
+    "style": "Heading3",
+    "text": "2.4.3 Yêu cầu tuân thủ (Compliance Requirements)"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC I - Yêu cầu kỹ thuật của phần mềm"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC II – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - HỆ THỐNG QUẢN TRỊ NỘI DUNG (CMS)"
+  },
+  {
+    "style": "Heading2",
+    "text": "Thông tin chung"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đăng nhập"
+  },
+  {
+    "style": "Heading3",
+    "text": "Quên mật khẩu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đổi mật khẩu"
+  },
+  {
+    "style": "Heading3",
+    "text": "Xem chi tiết thông tin tài khoản"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đăng xuất"
+  },
+  {
+    "style": "Heading2",
+    "text": "Bán vé &amp; POS"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bán &amp; In vé POS"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh sách vé phát hành"
+  },
+  {
+    "style": "Heading3",
+    "text": "Cấu hình gói vé"
+  },
+  {
+    "style": "Heading3",
+    "text": "Báo cáo doanh thu"
+  },
+  {
+    "style": "Heading2",
+    "text": "Vận hành"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tổng quan"
+  },
+  {
+    "style": "Heading3",
+    "text": "Địa danh"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách địa danh"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới địa danh"
+  },
+  {
+    "style": "Heading4",
+    "text": "Sửa địa danh"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá địa danh"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết địa danh"
+  },
+  {
+    "style": "Heading3",
+    "text": "Địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Sửa địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xuất bản địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem lịch sử cập nhật địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Gửi duyệt địa điểm"
+  },
+  {
+    "style": "Heading3",
+    "text": "Phê duyệt địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Tab Chờ duyệt"
+  },
+  {
+    "style": "Heading4",
+    "text": "Tab Đã duyệt"
+  },
+  {
+    "style": "Heading4",
+    "text": "Tab Từ chối"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh mục địa điểm"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách danh mục"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới danh mục"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật danh mục"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá danh mục"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tuyến đi tham quan"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách tuyến tham quan"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới tuyến tham quan"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết tuyến"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật tuyến tham quan"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá tuyến tham quan"
+  },
+  {
+    "style": "Heading3",
+    "text": "Beacon"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách beacon"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới beacon"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật beacon"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu beacon"
+  },
+  {
+    "style": "Heading3",
+    "text": "Gói đồng bộ (Offline Package)"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xóa dữ liệu gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "Tải gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xuất bản gói đồng bộ"
+  },
+  {
+    "style": "Heading4",
+    "text": "Chuyển gói đồng bộ về nháp"
+  },
+  {
+    "style": "Heading2",
+    "text": "Hệ sinh thái địa phương"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đặc sản"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách đặc sản"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới đặc sản"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật đặc sản"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu đặc sản"
+  },
+  {
+    "style": "Heading3",
+    "text": "Địa điểm du lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách địa điểm du lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới địa điểm du lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật địa điểm du lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu địa điểm du lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "Ẩn địa điểm du lịch"
+  },
+  {
+    "style": "Heading4",
+    "text": "Hiển thị địa điểm du lịch"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đối tác ẩm thực"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách đối tác ẩm thực"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới đối tác ẩm thực"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật đối tác ẩm thực"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu đối tác ẩm thực"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết đối tác ẩm thực"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đối tác lưu trú"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách đối tác lưu trú"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới đối tác lưu trú"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật đối tác lưu trú"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu đối tác lưu trú"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết đối tác lưu trú"
+  },
+  {
+    "style": "Heading3",
+    "text": "Đối tác OCOP"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách đối tác OCOP"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới đối tác OCOP"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật đối tác OCOP"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu đối tác OCOP"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết đối tác OCOP"
+  },
+  {
+    "style": "Heading2",
+    "text": "Quản trị hệ thống"
+  },
+  {
+    "style": "Heading3",
+    "text": "Quản trị người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xem chi tiết người dùng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Nhóm người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách nhóm người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới nhóm người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật nhóm người dùng"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu nhóm người dùng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Nhóm quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách nhóm quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới nhóm quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật nhóm quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu nhóm quyền"
+  },
+  {
+    "style": "Heading3",
+    "text": "Quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Danh sách quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Thêm mới quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Cập nhật quyền"
+  },
+  {
+    "style": "Heading4",
+    "text": "Xoá dữ liệu quyền"
+  },
+  {
+    "style": "Heading3",
+    "text": "Phân quyền"
+  },
+  {
+    "style": "Heading3",
+    "text": "Nhật ký truy cập"
+  },
+  {
+    "style": "Heading3",
+    "text": "Phiên bản ứng dụng"
+  },
+  {
+    "style": "Heading1",
+    "text": "PHỤ LỤC III – HƯỚNG DẪN SỬ DỤNG PHẦN MỀM - ỨNG DỤNG NGƯỜI DÙNG (MOBILE APP)"
+  },
+  {
+    "style": "Heading2",
+    "text": "Mua vé, tải ứng dụng &amp; thuê tai nghe dịch vụ tại quầy"
+  },
+  {
+    "style": "Heading2",
+    "text": "Thiết lập ban đầu &amp; Kích hoạt vé"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chọn ngôn ngữ &amp; tải dữ liệu ngoại tuyến"
+  },
+  {
+    "style": "Heading3",
+    "text": "Quét mã vé hoặc nhập mã vé thủ công"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bật tính năng Tự dò beacon &amp; Bluetooth"
+  },
+  {
+    "style": "Heading2",
+    "text": "Khám phá Trang chủ – Nắm trọn thông tin hành trình"
+  },
+  {
+    "style": "Heading3",
+    "text": "Giao diện Trang chủ và các khu vực chức năng"
+  },
+  {
+    "style": "Heading3",
+    "text": "Bộ 3 chỉ số thống kê &amp; 4 Lối tắt tiện ích nhanh"
+  },
+  {
+    "style": "Heading2",
+    "text": "Quản lý &amp; Chi tiết Vé tham quan (&quot;Vé của tôi&quot;)"
+  },
+  {
+    "style": "Heading3",
+    "text": "Xem chi tiết vé và mã QR điện tử"
+  },
+  {
+    "style": "Heading2",
+    "text": "Tra cứu Lộ trình tham quan &amp; Danh sách tất cả địa điểm"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tab Lộ trình tham quan"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tab Tất cả địa điểm"
+  },
+  {
+    "style": "Heading2",
+    "text": "Nghe thuyết minh &amp; Xem chi tiết địa điểm di tích"
+  },
+  {
+    "style": "Heading3",
+    "text": "Trình phát âm thanh thuyết minh đa ngôn ngữ"
+  },
+  {
+    "style": "Heading3",
+    "text": "Thông tin lịch sử kiến trúc, Bản đồ toạ độ &amp; Ẩm thực lân cận"
+  },
+  {
+    "style": "Heading2",
+    "text": "Tra cứu Đặc sản địa phương &amp; Chi tiết món ăn"
+  },
+  {
+    "style": "Heading3",
+    "text": "Danh mục đặc sản vùng miền &amp; Tìm kiếm món ăn"
+  },
+  {
+    "style": "Heading3",
+    "text": "Chi tiết đặc sản, Mức giá tham khảo &amp; Cơ sở bán uy tín"
+  },
+  {
+    "style": "Heading2",
+    "text": "Phân hệ Khám phá – Địa điểm du lịch, Ẩm thực &amp; Lưu trú lân cận"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tab Địa điểm du lịch"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tab Quanh đây – Dịch vụ Ẩm thực"
+  },
+  {
+    "style": "Heading3",
+    "text": "Tab Quanh đây – Dịch vụ Lưu trú &amp; Sản phẩm OCOP"
+  },
+  {
+    "style": "Heading2",
+    "text": "Một số lưu ý quan trọng trong quá trình trải nghiệm"
+  }
+]
